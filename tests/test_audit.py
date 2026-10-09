@@ -64,10 +64,12 @@ class NetworkTests(unittest.TestCase):
         """Only a 404 means "no release"; a rate limit or server error propagates."""
         class Missing(GitHub):
             def json(self, path: str) -> dict:
+                """Always answer 404."""
                 raise NotFound("404")
 
         class Broken(GitHub):
             def json(self, path: str) -> dict:
+                """Always fail like a rate limit."""
                 raise FetchError("HTTP 403")
 
         self.assertIsNone(Missing(token="").latest_release("o/r"))
@@ -78,6 +80,7 @@ class NetworkTests(unittest.TestCase):
         """catalogue.build lets FetchError through instead of listing the app as left out."""
         class Down(FakeGitHub):
             def repo(self, name: str) -> dict:
+                """Always fail like a server error."""
                 raise FetchError("HTTP 503")
 
         with self.assertRaises(FetchError):
