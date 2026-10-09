@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://labconstrictor.cellmig.org/schema/labconstrictor-app.schema.json
+# DRAFT for the app owners: copy to the app repository root as labconstrictor-app.yaml and edit.
+schema: 1
+name: VLab4Mic
+summary: A virtual lab to simulate fluorescence microscopy images, from molecular structures to acquisition, with no coding.
+description: |-
+  Build virtual samples from molecular structures, apply fluorescent labelling and simulate image acquisition across microscopy modalities, before stepping into the microscope room.
+
+  This is the desktop installer distribution of VLab4Mic. Two of its tools also run in Napari and Fiji.
+kind: simulation
+hosts: [notebook, napari, fiji]
+distribution:
+  installer: true
+license: MIT
+categories: [microscopy simulation, experiment design]
+homepage: https://vlab4mic.henriqueslab.org/
+icon: src/logo/logo.png

@@ -1,0 +1,13 @@
+{#- Same as the theme's actions.html, but the edit button goes to the page's `edit_url:`
+    (front matter). Guides carry the template file they come from; generated pages (home,
+    apps) have none, so they get no button: the theme's default would link to a
+    generated, git-ignored docs/*.md file. -#}
+{% set edit_url = page.meta.edit_url %}
+{% if edit_url %}
+  {% if "content.action.edit" in features %}
+    <a href="{{ edit_url }}" title="{{ lang.t('action.edit') }}" class="md-content__button md-icon" rel="edit noopener" target="_blank">
+      {% set icon = config.theme.icon.edit or "material/file-edit-outline" %}
+      {% include ".icons/" ~ icon ~ ".svg" %}
+    </a>
+  {% endif %}
+{% endif %}

@@ -1,0 +1,21 @@
+# Site-wide text and links. Pages are generated from this and from the app catalogue.
+name: LabConstrictor
+org: Cell Migration Lab
+org_url: https://cellmig.org/
+hero:
+  title: Notebooks in. Desktop apps out.
+  text: LabConstrictor turns Jupyter notebooks into installable apps for Windows, macOS and Linux. No Python, pip or terminal needed.
+links:
+  template: https://github.com/CellMigrationLab/LabConstrictor
+  init_form: https://labconstrictor-form.streamlit.app
+  site_repo: https://github.com/CellMigrationLab/LabConstrictor-Site
+  submit_issue: https://github.com/CellMigrationLab/LabConstrictor-Site/issues/new?template=submit-app.yml
+  tools_docs: https://github.com/CellMigrationLab/LabConstrictor-Tools/tree/main/docs
+  citation_doi: https://doi.org/10.5281/zenodo.20758747
+steps:
+  - title: Write notebooks
+    text: Create your repository from the LabConstrictor template and upload your notebooks.
+  - title: Publish a release
+    text: One GitHub Release builds installers for Windows, macOS (Apple Silicon and Intel) and Linux.
+  - title: Share it
+    text: Users download and install in a few clicks. Add your app to this centre so others can find it.

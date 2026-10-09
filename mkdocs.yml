@@ -1,0 +1,54 @@
+site_name: LabConstrictor
+site_description: Turn Jupyter notebooks into installable desktop apps, and find ready-made bioimage analysis apps built with LabConstrictor.
+site_author: Cell Migration Lab
+# The address of the site: canonical links, sitemap and llms.txt follow it.
+site_url: https://labconstrictor.cellmig.org/
+repo_url: https://github.com/CellMigrationLab/LabConstrictor-Site
+repo_name: CellMigrationLab/LabConstrictor-Site
+edit_uri: edit/main/content/
+copyright: © Cell Migration Lab
+use_directory_urls: true
+
+theme:
+  name: material
+  custom_dir: overrides
+  language: en
+  font: false          # Inter is self-hosted in docs/assets/fonts
+  features:
+    - navigation.top
+    - search.suggest
+    - search.highlight
+  palette:
+    scheme: default
+    primary: custom
+    accent: custom
+
+# Generated pages (scripts/build_site.py) are listed like normal pages.
+nav:
+  - Home: index.md
+  - Apps: apps/index.md
+  - Guides: guides/index.md
+  - Ecosystem: ecosystem.md
+  - Submit your app: submit.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - admonition
+  - tables
+  - toc:
+      permalink: false
+
+extra_css:
+  - assets/stylesheets/lc.css
+extra_javascript:
+  - assets/javascripts/lc.js
+
+validation:
+  nav:
+    omitted_files: info
+  links:
+    absolute_links: ignore

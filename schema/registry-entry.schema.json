@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "registry/<owner>__<repo>.yaml",
+  "description": "A pointer to an app repository. Everything else comes from the app's own labconstrictor-app.yaml and its latest release.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["repo", "repo_id", "owner_id", "added"],
+  "properties": {
+    "repo": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", "description": "owner/name on GitHub."},
+    "repo_id": {"type": "integer", "minimum": 1, "description": "Numeric GitHub id; survives renames, so a changed owner can be noticed."},
+    "owner_id": {"type": "integer", "minimum": 1},
+    "added": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "verified_version": {"type": "string", "description": "Release tag a maintainer installed and ran. Absent means Listed only."},
+    "verified_on": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "featured": {"type": "boolean", "description": "Show on the home page."}
+  }
+}

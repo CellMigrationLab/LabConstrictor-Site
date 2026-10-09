@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://labconstrictor.cellmig.org/schema/labconstrictor-app.schema.json
+# DRAFT for the app owners: copy to the app repository root as labconstrictor-app.yaml and edit.
+schema: 1
+name: LabConstrictor Demo
+summary: A one-notebook example app that shows what a LabConstrictor repository produces.
+description: |-
+  A small image-preview notebook packaged as an installable app. Look at its repository to see how a LabConstrictor app is laid out.
+kind: training
+hosts: [notebook]
+distribution:
+  installer: true
+license: MIT
+categories: [example]
+icon: app/logo/logo.png

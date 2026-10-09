@@ -1,0 +1,90 @@
+{#- LabConstrictor layout (adapted from cellmig.org): slim header with a top menu, centred
+    content, dark footer. Guides get a sidebar from the page's `guide_nav` front matter. -#}
+{% extends "base.html" %}
+
+{% block htmltitle %}
+  {#- Zensical does not set page.is_homepage, so the home page passes head_title. -#}
+  {%- if page.meta and page.meta.head_title %}<title>{{ page.meta.head_title }}</title>
+  {%- else %}<title>{{ page.title | striptags }} – {{ config.site_name }}</title>{% endif %}
+{% endblock %}
+
+{% block extrahead %}
+  <link rel="preload" href="{{ 'assets/fonts/inter-latin-wght-normal.woff2' | url }}" as="font" type="font/woff2" crossorigin>
+  {% set description = page.meta.description if page.meta and page.meta.description else config.site_description %}
+  {% if page and page.canonical_url %}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:title" content="{{ (page.meta.head_title or page.title) | striptags | e }}">
+  <meta property="og:description" content="{{ description | e }}">
+  <meta property="og:url" content="{{ page.canonical_url }}">
+  <meta name="twitter:card" content="summary">
+  {% else %}
+  <meta name="robots" content="noindex">
+  {% endif %}
+  {% if page.meta and page.meta.jsonld %}<script type="application/ld+json">{{ page.meta.jsonld }}</script>{% endif %}
+  <meta name="theme-color" content="#ffffff">
+{% endblock %}
+
+{% block header %}
+<header class="lc-header" data-md-component="header">
+  <nav class="lc-header__inner" aria-label="Main">
+    <a class="lc-brand" href="{{ nav.homepage.url | url }}"><span class="lc-brand__mark" aria-hidden="true"></span>{{ config.site_name }}</a>
+    <input class="lc-menu-toggle" type="checkbox" id="lc-menu" aria-hidden="true" tabindex="-1">
+    <ul class="lc-menu" id="lc-menu-list">
+      {% for item in nav.items %}
+        {% set current = item.active or (page.meta and page.meta.menu == item.url) %}
+        <li><a href="{{ item.url | url }}" class="{% if current %}is-active{% endif %}{% if loop.last %} lc-menu__cta{% endif %}"{% if item.active %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+      {% endfor %}
+    </ul>
+    <div class="lc-header__tools">
+      {% include "partials/search.html" %}
+      <label class="lc-burger" for="lc-menu" aria-label="Menu" role="button" tabindex="0" aria-controls="lc-menu-list"><span></span><span></span></label>
+    </div>
+  </nav>
+</header>
+{% endblock %}
+
+{% block tabs %}{% endblock %}
+{% block site_nav %}{% endblock %}
+
+{% block container %}
+  {% set wide = page.meta and page.meta.layout == "wide" %}
+  <div class="md-content lc-content{% if wide %} lc-content--wide{% endif %}" data-md-component="content">
+    {% if page.meta and page.meta.guide_nav %}
+    <div class="lc-docs">
+      <aside class="lc-docs__nav" aria-label="Guides">
+        {% for section in page.meta.guide_nav %}
+        <h2>{{ section.title }}</h2>
+        <ul>{% for item in section.items %}
+          <li><a href="{{ item.path | url }}"{% if item.id == page.meta.guide_id %} class="is-active" aria-current="page"{% endif %}>{{ item.title }}</a></li>
+        {% endfor %}</ul>
+        {% endfor %}
+      </aside>
+      <article class="md-content__inner md-typeset" id="__skip">{% include "partials/content.html" %}</article>
+    </div>
+    {% else %}
+    <article class="md-content__inner md-typeset" id="__skip">
+      {% block content %}{% include "partials/content.html" %}{% endblock %}
+    </article>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block footer %}
+<footer class="lc-footer">
+  <div class="lc-footer__inner">
+    <div><strong>LabConstrictor</strong><p>Turn notebooks into installable apps. Open source, MIT licensed.</p></div>
+    <ul>
+      <li><a href="{{ 'apps/' | url }}">Apps</a></li>
+      <li><a href="{{ 'guides/' | url }}">Guides</a></li>
+      <li><a href="{{ 'submit/' | url }}">Submit your app</a></li>
+    </ul>
+    <ul>
+      <li><a href="https://github.com/CellMigrationLab/LabConstrictor" target="_blank" rel="noopener">Template on GitHub</a></li>
+      <li><a href="{{ config.repo_url }}" target="_blank" rel="noopener">This site on GitHub</a></li>
+      <li><a href="https://doi.org/10.5281/zenodo.20758747" target="_blank" rel="noopener">Cite LabConstrictor</a></li>
+    </ul>
+    <p class="lc-footer__by">A project of the <a href="https://cellmig.org/" target="_blank" rel="noopener">Cell Migration Lab</a>.</p>
+  </div>
+</footer>
+{% endblock %}
