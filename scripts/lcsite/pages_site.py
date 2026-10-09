@@ -11,6 +11,19 @@ COMIC_ALT = ("A three-panel comic. Panel 1: a delighted scientist says \"Finally
              "Panel 3: the LabConstrictor snake coiled around an orange notebook glows, with the words \"LabConstrictor will solve it!\"")
 
 
+PANEL_ALTS = ("A delighted scientist says: Finally, my ultimate notebook is ready!",
+              "A worried colleague beside a computer showing a warning says: Sorry, not even able to install it.",
+              "The LabConstrictor snake coiled around an orange notebook glows: LabConstrictor will solve it!")
+
+
+def comic_figure() -> str:
+    """The comic: the whole strip on wide screens, three stacked panels (cropped by CSS from the same image) on phones."""
+    panels = "".join(f'<span class="lc-comic__panel" role="img" aria-label="{esc(alt)}" style="--i:{i}"></span>'
+                     for i, alt in enumerate(PANEL_ALTS))
+    return (f'<figure class="lc-comic"><img class="lc-comic__strip" src="assets/images/comic.png" alt="{esc(COMIC_ALT)}" loading="lazy">'
+            f'<div class="lc-comic__panels">{panels}</div><figcaption>The problem LabConstrictor was made for.</figcaption></figure>')
+
+
 def choice(title: str, text: str, href: str, label: str, cls: str = "") -> str:
     """One of the two big "what do you want to do" cards on the home page."""
     return (f'<a class="lc-choice {cls}" href="{href}"><strong>{esc(title)}</strong><span>{esc(text)}</span>'
@@ -27,7 +40,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
           + choice("I want to use an app", f"Browse {plural(len(apps), 'app')} for image analysis. Install in a few clicks.", "apps/", "Open the App Centre")
           + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "guides/", "Read the guides", "lc-choice--make") +
           '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256"></div></div></section>')
-    p.add(f'<figure class="lc-comic"><img src="assets/images/comic.png" alt="{esc(COMIC_ALT)}" loading="lazy"><figcaption>The problem LabConstrictor was made for.</figcaption></figure>')
+    p.add(comic_figure())
     p.add('<section class="lc-band"><h2 class="lc-title">Featured apps</h2>',
           '<ul class="lc-grid">' + "\n".join(card(a) for a in featured) + '</ul>',
           '<p class="lc-more"><a href="apps/">See every app</a></p></section>')

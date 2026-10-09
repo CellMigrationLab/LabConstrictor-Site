@@ -15,6 +15,8 @@ REGISTRY = ROOT / "registry"
 SCHEMA = ROOT / "schema"
 BUILD = ROOT / "build"                # git-ignored: snapshot, problems report, downloaded files
 SNAPSHOT = BUILD / "snapshot.json"
+SNAPSHOT_FORMAT = 1                   # bump when the snapshot layout changes; build_site refuses other formats
+RESERVED_SLUGS = {"index", "assets"}  # web addresses under /apps/ that an app may not take
 REPO = "https://github.com/CellMigrationLab/LabConstrictor-Site"
 TEMPLATE_REPO = "CellMigrationLab/LabConstrictor"
 MANIFEST_NAME = "labconstrictor-app.yaml"
@@ -38,13 +40,16 @@ def fail(message: str) -> NoReturn:
 
 
 def load_yaml(path: Path) -> Any:
-    """Parse a YAML file that must exist; an empty file gives {}."""
+    """Parse a YAML file that must exist and must not be empty."""
     if not path.is_file():
         fail(f"missing file {path}")
     try:
-        return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
     except yaml.YAMLError as err:
         fail(f"{path} is not valid YAML: {err}")
+    if data is None:
+        fail(f"{path} is empty")
+    return data
 
 
 def load_json(path: Path) -> Any:
@@ -62,3 +67,10 @@ class AppProblem(Exception):
 
     The catalogue records it in build/problems.md and leaves that app out; it
     never stops the other apps and is never swallowed (see catalogue.build)."""
+
+
+class FetchError(Exception):
+    """GitHub could not be reached or answered with an error (network, rate limit, server error).
+
+    Unlike AppProblem this is not about one app, so it is never recorded and skipped: it stops the whole
+    fetch. Dropping apps because GitHub had a bad minute would silently shrink the live site."""

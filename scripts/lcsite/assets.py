@@ -9,7 +9,6 @@ INSTALLER = re.compile(
 OS_NAMES = {"Windows": "windows", "Linux": "linux", "MacOSX": "macos"}
 PREFERRED = {"windows": "exe", "macos": "pkg", "linux": "sh"}   # the graphical or simplest route per system
 IMAGE_SIGNATURES = (b"\x89PNG\r\n\x1a\n", b"\xff\xd8\xff", b"GIF87a", b"GIF89a")
-MAX_DOWNLOAD = 8 * 1024 * 1024   # larger files are refused; the build shrinks what it keeps (images.py)
 
 
 def download_prefix(repo: str, tag: str) -> str:

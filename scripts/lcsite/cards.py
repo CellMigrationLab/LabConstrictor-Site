@@ -1,6 +1,7 @@
 """HTML snippets shared by several pages: app cards, badges and download data."""
 
 from .text import esc, long_date
+from .validate import optional_list
 
 KINDS = {"analysis": "Analysis", "segmentation": "Segmentation", "simulation": "Simulation",
          "game": "Game", "training": "Training", "utility": "Utility"}
@@ -55,25 +56,27 @@ def release_line(app: dict) -> str:
 def downloads(app: dict) -> dict[str, list[dict]]:
     """The recommended installer per system and architecture, grouped by system, for the buttons.
     {"windows": [{"label", "arch", "url", "size", "ext"}], "macos": [...], "linux": [...]}"""
-    out: dict[str, list[dict]] = {}
-    for a in (app["release"] or {"assets": []})["assets"]:
+    out: dict[str, list[dict]] = {system: [] for system in SYSTEMS}   # every system is present, possibly empty
+    if app["release"] is None:
+        return out   # an app without a release (Colab or pip only) has no installers
+    for a in app["release"]["assets"]:
         if a["primary"]:
             label = SYSTEM_LABELS[(a["os"], a["arch"])]
-            out.setdefault(a["os"], []).append({"label": label, "arch": a["arch"], "url": a["url"], "size": a["size"], "ext": a["ext"]})
+            out[a["os"]].append({"label": label, "arch": a["arch"], "url": a["url"], "size": a["size"], "ext": a["ext"]})
     return out
 
 
 def search_text(app: dict) -> str:
     """Lower-case text the live filter searches: name, summary and categories."""
     m = app["manifest"]
-    return " ".join([m["name"], m["summary"], *m.get("categories", [])]).lower()
+    return " ".join([m["name"], m["summary"], *optional_list(m, "categories")]).lower()
 
 
 def card(app: dict) -> str:
     """One app card for the App Centre grid and the home page."""
     m, slug = app["manifest"], app["slug"]
     attrs = (f'data-kind="{esc(m["kind"])}" data-routes="{" ".join(routes(app))}" '
-             f'data-hosts="{" ".join(m.get("hosts", []))}" data-search="{esc(search_text(app))}"')
+             f'data-hosts="{" ".join(optional_list(m, "hosts"))}" data-search="{esc(search_text(app))}"')
     get = f'<a class="lc-card__get" href="apps/{slug}/#get">Get</a>' if routes(app) else ""
     return (f'<li class="lc-card" {attrs}><a class="lc-card__main" href="apps/{slug}/">'
             f'<span class="lc-card__head">{icon(app)}<span class="lc-card__title"><strong>{esc(m["name"])}</strong>'

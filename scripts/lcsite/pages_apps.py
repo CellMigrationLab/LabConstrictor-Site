@@ -4,6 +4,7 @@ import json
 
 from .cards import CHIPS, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, icon, is_verified, release_line, tier_badge
 from .page import Page
+from .validate import optional_list
 from .text import esc, long_date, megabytes, paragraphs, plural
 
 LEGEND = ("<strong>Verified</strong>: a maintainer installed and ran this exact version. "
@@ -59,8 +60,8 @@ def get_section(app: dict) -> str:
     parts = ['<h2 id="get">Get it</h2>']
     if app["release"] and dist.get("installer"):
         have = downloads(app)
-        parts.append('<div class="lc-osgrid" data-lc-osgrid>' + "".join(os_tile(k, have.get(k, [])) for k in SYSTEMS) + "</div>")
-    colab = "".join(f'<a class="lc-btn lc-btn--ghost" href="{esc(l["url"])}">Open in Colab: {esc(l["label"])}</a>' for l in dist.get("colab", []))
+        parts.append('<div class="lc-osgrid" data-lc-osgrid>' + "".join(os_tile(k, have[k]) for k in SYSTEMS) + "</div>")
+    colab = "".join(f'<a class="lc-btn lc-btn--ghost" href="{esc(l["url"])}">Open in Colab: {esc(l["label"])}</a>' for l in optional_list(dist, "colab"))
     if colab:
         parts.append(f'<div class="lc-routes">{colab}</div>')
     if dist.get("pip"):
@@ -91,7 +92,7 @@ def downloads_table(app: dict) -> str:
     return (f'<h2 id="downloads">All downloads</h2><p class="lc-small">Version {esc(app["release"]["tag"])}, '
             f'released {long_date(app["release"]["published_at"])}. Files come straight from the app\'s '
             f'<a href="{esc(app["release"]["url"])}">GitHub release</a>.</p>'
-            f'<table class="lc-table"><thead><tr><th>System</th><th>Format</th><th>Size</th><th>File</th></tr></thead><tbody>{rows}</tbody></table>')
+            f'<div class="lc-scroll"><table class="lc-table"><thead><tr><th>System</th><th>Format</th><th>Size</th><th>File</th></tr></thead><tbody>{rows}</tbody></table></div>')
 
 
 def install_help(systems: list[dict]) -> str:
@@ -120,7 +121,8 @@ def details_list(app: dict) -> str:
 
 
 def jsonld(app: dict) -> str:
-    """schema.org SoftwareApplication data for search engines (as a JSON string, safe inside <script>)."""
+    """schema.org SoftwareApplication data for search engines, as JSON in which < > & are escaped so that no
+    manifest text can close the <script> block or start an HTML comment."""
     m = app["manifest"]
     data = {"@context": "https://schema.org", "@type": "SoftwareApplication", "name": m["name"], "description": m["summary"],
             "applicationCategory": "ScientificApplication", "url": app["html_url"]}
@@ -128,20 +130,21 @@ def jsonld(app: dict) -> str:
         data["softwareVersion"] = app["release"]["tag"]
     if m["distribution"].get("installer"):
         data["operatingSystem"] = "Windows, macOS, Linux"
-    return json.dumps(data).replace("</", "<\\/")
+    return json.dumps(data).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
 
 
 def page_app(app: dict, systems: list[dict]) -> None:
     """apps/<slug>/index.md: everything a visitor needs to decide, install, cite and report a problem."""
     m = app["manifest"]
     p = Page(f"apps/{app['slug']}/index.md", title=m["name"], description=m["summary"], jsonld=jsonld(app), layout="wide")
-    hosts = [HOSTS[h] for h in m.get("hosts", []) if h != "notebook"]
+    hosts = [HOSTS[h] for h in optional_list(m, "hosts") if h != "notebook"]
     p.add('<p class="lc-crumb"><a href="apps/">&larr; All apps</a></p>',
           f'<header class="lc-apphead">{icon(app, 72)}<div><h1>{esc(m["name"])}</h1>'
           f'<p class="lc-lead">{esc(m["summary"])}</p><p>{tier_badge(app)}{badge(KINDS[m["kind"]])}'
           f'{"".join(badge("Works in " + h, "host") for h in hosts)}</p></div></header>')
     p.add(get_section(app))
-    p.add('<h2 id="about">About</h2>', paragraphs(m.get("description", m["summary"])))
+    if m.get("description"):
+        p.add('<h2 id="about">About</h2>', paragraphs(m["description"]))
     for i, s in enumerate(app["screenshots"], 1):
         p.add(f'<figure class="lc-shot"><img src="assets/shots/{app["slug"]}-{i}.jpg" alt="{esc(s["caption"])}" loading="lazy"><figcaption>{esc(s["caption"])}</figcaption></figure>')
     p.add(using_section(app))

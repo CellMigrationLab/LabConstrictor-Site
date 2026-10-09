@@ -16,7 +16,7 @@ from .page import Page
 from .text import esc
 
 SKIP = {"download_executable.md"}   # replaced by guides/install/, generated from data/install.yaml
-LINK = re.compile(r"\]\(\s*(?:\./)?([A-Za-z0-9_./-]+\.md)(#[^)\s]*)?\s*\)")
+LINK = re.compile(r"\]\(\s*(?!(?:[a-z][a-z0-9+.-]*:|#|/))(?:\./)?([A-Za-z0-9_./-]+\.[A-Za-z0-9]+)(#[^)\s]*)?\s*\)")
 IMAGE = re.compile(rf"https://github\.com/{TEMPLATE_REPO}/(?:blob|raw)/doc_source/([^\s)\"'?]+)(?:\?raw=true)?")
 NAV_BLOCK = re.compile(r'<div align="center">(?:(?!</div>).)*?(?:Previous|Next|Home)(?:(?!</div>).)*?</div>', re.S)
 GUIDE_DEPTH = "../../"   # guides/<slug>/index.md -> the site root
@@ -42,10 +42,11 @@ def parse_index(readme: str) -> list[dict]:
 
 
 def rewrite_links(text: str, known: set[str]) -> str:
-    """Links to other docs pages -> site guide pages; other relative .md links -> the file on GitHub."""
+    """Links to other docs pages -> site guide pages; every other relative link (a file of the template) -> that file on GitHub."""
     def link(m: re.Match) -> str:
+        """The Markdown link rewritten for the site (guide page) or for GitHub (any other file)."""
         target = posixpath.normpath(posixpath.join(".tools/docs", m.group(1)))
-        frag = m.group(2) or ""
+        frag = m.group(2) if m.group(2) is not None else ""
         if posixpath.basename(m.group(1)) in known and posixpath.dirname(target) == ".tools/docs":
             return f"](../{slug_of(posixpath.basename(m.group(1)))}/index.md{frag})"
         return f"](https://github.com/{TEMPLATE_REPO}/blob/main/{target}{frag})"
@@ -56,8 +57,11 @@ def rewrite_links(text: str, known: set[str]) -> str:
 def copy_images(text: str, doc_source: Path, page_file: str) -> str:
     """Pictures hosted on the doc_source branch -> copies under assets/docs-img/ (a missing picture stops the build)."""
     def image(m: re.Match) -> str:
+        """The copied picture's path relative to the guide; stops the build for a picture outside doc_source."""
         name = unquote(m.group(1))
-        src = doc_source / name
+        src = (doc_source / name).resolve()
+        if not src.is_relative_to(doc_source.resolve()):
+            fail(f"{page_file} uses {name}, which is outside {doc_source}")
         if not src.is_file():
             fail(f"{page_file} uses {name}, which is not in {doc_source}")
         dest = DOCS / "assets" / "docs-img" / name
@@ -71,6 +75,7 @@ def copy_images(text: str, doc_source: Path, page_file: str) -> str:
 def pager(prev: dict | None, nxt: dict | None) -> str:
     """Previous / next links at the end of a guide (they replace the template's own footer)."""
     def side(item: dict | None, cls: str, label: str) -> str:
+        """One link of the pager (an empty spacer at the ends)."""
         if not item:
             return "<span></span>"
         return f'<a class="{cls}" href="../{item["slug"]}/"><span>{label}</span><strong>{esc(item["title"])}</strong></a>'

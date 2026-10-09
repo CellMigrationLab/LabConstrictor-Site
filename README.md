@@ -43,6 +43,7 @@ The website for [LabConstrictor](https://github.com/CellMigrationLab/LabConstric
 
 1. Create the repository and push; in *Settings > Pages* choose *Source: GitHub Actions*.
 2. Add the custom domain `labconstrictor.cellmig.org` there, and a `CNAME` record `labconstrictor` pointing to `cellmigrationlab.github.io` where the cellmig.org DNS is managed. Enable *Enforce HTTPS*.
-3. Add the issue label `app-submission`, and allow Actions to create pull requests (*Settings > Actions > General*).
+3. Add the issue label `app-submission`, and allow Actions to create pull requests (*Settings > Actions > General*). Pull requests made with the default `GITHUB_TOKEN` do not start other workflows, so the submission workflow itself runs the full app check before it opens one; use a token or GitHub App for `peter-evans/create-pull-request` if you also want the build to run on them.
+4. Pin the third-party actions (`peter-evans/create-pull-request`, `actions/*`) to commit SHAs before the repository is public.
 
 See [AGENTS.md](AGENTS.md) for the coding rules.

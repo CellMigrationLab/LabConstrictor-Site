@@ -19,9 +19,15 @@ import yaml
 from lcsite import catalogue, registry
 from lcsite.config import BUILD, REGISTRY, AppProblem
 from lcsite.github import GitHub
+from lcsite.text import one_line
 
 FIELD = re.compile(r"###\s*Repository\s+(\S+)")
-REPO = re.compile(r"^(?:https://github\.com/)?([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+?)(?:\.git)?/?$")
+REPO = re.compile(r"^(?:https://github\.com/)?(?!\.+/)([A-Za-z0-9_.-]+)/(?!\.+(?:/|$))([A-Za-z0-9_.-]+?)(?:\.git)?/?$")
+
+
+def code(text: str) -> str:
+    """Untrusted text made safe inside an inline code span of a comment (no backticks or line breaks, so no @mentions or links)."""
+    return one_line(text).replace("`", "'")
 
 
 def parse_repo(body: str) -> str:
@@ -30,7 +36,7 @@ def parse_repo(body: str) -> str:
     found = REPO.match(m.group(1)) if m else None
     if not found:
         raise AppProblem("The Repository field must hold a GitHub address such as https://github.com/owner/name")
-    return found.group(1)
+    return f"{found.group(1)}/{found.group(2)}"
 
 
 def new_entry(repo: dict, today: str) -> dict:
@@ -47,9 +53,9 @@ def check(body: str, gh: GitHub, today: str) -> tuple[dict | None, list[str]]:
         entry = new_entry(gh.repo(name), today)
         app = catalogue.resolve(entry, gh, None)
     except AppProblem as err:
-        return None, [f"- ✘ {err}"]
-    lines = [f"- ✔ {app['manifest']['name']}: manifest is valid", f"- ✔ latest release: {app['release']['tag'] if app['release'] else 'none (Colab or pip only)'}"]
-    lines += [f"- ⚠ {w}" for w in app["warnings"]]
+        return None, [f"- ✘ {one_line(err)}"]
+    lines = [f"- ✔ `{code(app['manifest']['name'])}`: manifest is valid", f"- ✔ latest release: {app['release']['tag'] if app['release'] else 'none (Colab or pip only)'}"]
+    lines += [f"- ⚠ {one_line(w)}" for w in app["warnings"]]
     return entry, lines
 
 

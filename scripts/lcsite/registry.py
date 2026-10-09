@@ -21,7 +21,7 @@ def load_entry(path: Path) -> dict:
 
 
 def load_all(folder: Path = REGISTRY) -> list[dict]:
-    """Every registry entry, sorted by repo. A bad file or a repeated repo stops the build:
+    """Every registry entry, oldest first (so the first app registered keeps a contested name), then by repo. A bad file or a repeated repo stops the build:
     the registry is reviewed in pull requests, so mistakes are fixed there."""
     entries, seen = [], {}
     for path in sorted(folder.glob("*.yaml")):
@@ -36,4 +36,4 @@ def load_all(folder: Path = REGISTRY) -> list[dict]:
         entries.append(entry)
     if not entries:
         fail(f"no registry entries in {folder}")
-    return entries
+    return sorted(entries, key=lambda e: (e["added"], e["repo"].lower()))

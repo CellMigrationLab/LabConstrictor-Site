@@ -19,6 +19,12 @@ def paragraphs(text: str) -> str:
     return "".join(f"<p>{esc(p.strip())}</p>" for p in text.split("\n\n") if p.strip())
 
 
+def one_line(text: str) -> str:
+    """Text on a single line with no link or tag characters: whitespace runs become one space and [ ] ( ) < > are removed.
+    For untrusted text placed in plain-text or Markdown-like files (llms.txt, comments)."""
+    return re.sub(r"[\[\]()<>]", "", " ".join(str(text).split()))
+
+
 def slugify(text: str) -> str:
     """ASCII, lowercase, dash-separated: "Iván Hidalgo" -> "ivan-hidalgo"."""
     text = unicodedata.normalize("NFKD", str(text)).encode("ascii", "ignore").decode()

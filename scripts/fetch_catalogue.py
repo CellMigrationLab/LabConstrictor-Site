@@ -5,7 +5,8 @@
 Reads registry/*.yaml, each app's labconstrictor-app.yaml and latest GitHub release.
 Writes build/snapshot.json, build/problems.md and build/media/<app>/ (icons, screenshots).
 Apps that cannot be resolved are left out and listed in problems.md; --strict makes the
-command exit with status 3 when there are any (use it in pull-request checks).
+command exit with status 3 when there are any (use it in pull-request checks). A GitHub outage (network, rate limit,
+server error) stops the fetch with status 4 and writes nothing, so the site is never rebuilt from a half-empty catalogue.
 --manifest-dir previews manifests that are not yet in the app repositories (development only).
 """
 
@@ -14,6 +15,7 @@ import sys
 from pathlib import Path
 
 from lcsite import catalogue, registry
+from lcsite.config import FetchError
 from lcsite.github import GitHub
 
 
@@ -25,7 +27,11 @@ def main() -> int:
     args = parser.parse_args()
     if args.manifest_dir:
         print(f"NOTE: manifests are read from {args.manifest_dir}, not from the app repositories")
-    snapshot = catalogue.build(registry.load_all(), GitHub(), args.manifest_dir)
+    try:
+        snapshot = catalogue.build(registry.load_all(), GitHub(), args.manifest_dir)
+    except FetchError as err:
+        print(f"GitHub could not be read, nothing was written: {err}", file=sys.stderr)
+        return 4
     catalogue.write(snapshot)
     print(f"Resolved {len(snapshot['apps'])} apps; {len(snapshot['problems'])} left out.")
     for problem in snapshot["problems"]:

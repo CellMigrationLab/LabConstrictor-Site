@@ -3,21 +3,20 @@
 This is the only module that reads the network (through github.GitHub). The site
 build reads the snapshot and never goes online. An app that cannot be resolved is
 left out and named in build/problems.md; it never silently disappears and it
-never stops the other apps.
+never stops the other apps. A GitHub outage (FetchError) is different: it stops the whole fetch, so
+the live site is never rebuilt from a half-empty catalogue.
 """
 
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-import yaml
-
-from .assets import MAX_DOWNLOAD, check_image, parse_assets
-from .config import BUILD, MANIFEST_NAME, AppProblem
+from .assets import check_image, parse_assets
+from .config import BUILD, MANIFEST_NAME, RESERVED_SLUGS, SNAPSHOT_FORMAT, AppProblem
+from .github import MAX_FILE, GitHub
 from .images import check_square
-from .github import GitHub
 from .text import slugify
-from .validate import MANIFEST_SCHEMA, check
+from .validate import MANIFEST_SCHEMA, check, load_plain_yaml, optional_list
 
 
 def check_identity(entry: dict, repo: dict) -> None:
@@ -32,11 +31,14 @@ def read_manifest(gh: GitHub, name: str, branch: str, manifest_dir: Path | None)
     """The app's labconstrictor-app.yaml, validated. `manifest_dir` (a development flag)
     reads <repo-name>.yaml from that folder instead, so a manifest can be previewed
     before it is committed to the app's repository."""
-    if manifest_dir:
-        text = (manifest_dir / f"{name.split('/')[1]}.yaml").read_text(encoding="utf-8")
-    else:
-        text = gh.raw(name, branch, MANIFEST_NAME).decode("utf-8")
-    manifest = yaml.safe_load(text)
+    try:
+        if manifest_dir:
+            text = (manifest_dir / f"{name.split('/')[1]}.yaml").read_text(encoding="utf-8")
+        else:
+            text = gh.raw(name, branch, MANIFEST_NAME).decode("utf-8")
+    except (OSError, UnicodeDecodeError) as err:
+        raise AppProblem(f"cannot read {MANIFEST_NAME}: {err}") from err
+    manifest = load_plain_yaml(text, MANIFEST_NAME)
     check(manifest, MANIFEST_SCHEMA, MANIFEST_NAME)
     return manifest
 
@@ -45,11 +47,10 @@ def read_release(gh: GitHub, name: str, manifest: dict) -> dict | None:
     """The latest release with its installers. A release is required when the manifest
     claims installers; otherwise an app without one simply has no release (optional)."""
     claims = bool(manifest["distribution"].get("installer"))
-    try:
-        raw = gh.latest_release(name)
-    except AppProblem:
+    raw = gh.latest_release(name)
+    if raw is None:
         if claims:
-            raise
+            raise AppProblem("manifest promises installers but the repository has no release")
         return None
     assets = parse_assets(name, raw["tag_name"], raw["assets"])
     if claims and not assets:
@@ -59,8 +60,8 @@ def read_release(gh: GitHub, name: str, manifest: dict) -> dict | None:
 
 def save_image(gh: GitHub, name: str, branch: str, path: str, slug: str, stem: str) -> str:
     """Download an image named in the manifest into build/media/<slug>/; return its file name."""
-    data = gh.raw(name, branch, path)
-    check_image(data, MAX_DOWNLOAD, path)
+    data = gh.raw(name, branch, path, limit=MAX_FILE)
+    check_image(data, MAX_FILE, path)
     out = BUILD / "media" / slug / f"{stem}.{path.rsplit('.', 1)[1].lower()}"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(data)
@@ -79,6 +80,11 @@ def read_icon(gh: GitHub, name: str, branch: str, path: str, slug: str, warnings
         return None
 
 
+def repo_license(repo: dict) -> str | None:
+    """The SPDX identifier GitHub detected, or None when it detected no license (the page then says "Not stated")."""
+    return repo["license"]["spdx_id"] if repo["license"] else None
+
+
 def resolve(entry: dict, gh: GitHub, manifest_dir: Path | None) -> dict:
     """Everything the site shows about one registered app (raises AppProblem)."""
     name = entry["repo"]
@@ -91,16 +97,19 @@ def resolve(entry: dict, gh: GitHub, manifest_dir: Path | None) -> dict:
         "slug": slug, "repo": name, "html_url": repo["html_url"], "tier": "verified" if entry.get("verified_version") else "listed",
         "verified_version": entry.get("verified_version"), "verified_on": entry.get("verified_on"),
         "featured": bool(entry.get("featured")), "manifest": manifest,
-        "license": manifest.get("license") or (repo.get("license") or {}).get("spdx_id"),
+        "license": manifest["license"] if "license" in manifest else repo_license(repo),
         "release": read_release(gh, name, manifest),
         "icon": read_icon(gh, name, branch, icon, slug, warnings) if icon else None,
         "screenshots": [{"file": save_image(gh, name, branch, s["path"], slug, f"shot-{i}"), "caption": s["caption"]}
-                        for i, s in enumerate(manifest.get("screenshots", []), 1)],
+                        for i, s in enumerate(optional_list(manifest, "screenshots"), 1)],
     }
 
 
 def check_unique(app: dict, taken: dict[str, str]) -> None:
-    """Slugs (web addresses) and display names must be unique; the first app registered keeps them."""
+    """Slugs (web addresses) and display names must be unique, and a slug may not be empty or reserved;
+    the first app registered keeps them."""
+    if not app["slug"] or app["slug"] in RESERVED_SLUGS:
+        raise AppProblem(f"{app['slug']!r} cannot be used as a web address (empty or reserved)")
     for key in (app["slug"], app["manifest"]["name"].lower()):
         if key in taken:
             raise AppProblem(f"{key!r} is already used by {taken[key]}")
@@ -119,14 +128,19 @@ def build(entries: list[dict], gh: GitHub, manifest_dir: Path | None = None) -> 
             warnings += [f"{entry['repo']}: {w}" for w in app.pop("warnings")]
         except AppProblem as err:
             problems.append(f"{entry['repo']}: {err}")
-    return {"fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "apps": apps, "problems": problems, "warnings": warnings}
+    return {"format": SNAPSHOT_FORMAT, "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "apps": apps, "problems": problems, "warnings": warnings}
+
+
+def bullet_list(items: list[str], when_empty: str) -> str:
+    """The items as a Markdown bullet list, or `when_empty` (plain text) when there are none."""
+    return "\n".join(f"- {item}" for item in items) if items else when_empty
 
 
 def write(snapshot: dict) -> None:
     """Write build/snapshot.json and build/problems.md (the latter lists what was left out, or says nothing was)."""
     BUILD.mkdir(exist_ok=True)
     (BUILD / "snapshot.json").write_text(json.dumps(snapshot, indent=1, ensure_ascii=False), encoding="utf-8")
-    problems = [f"- {p}" for p in snapshot["problems"]] or ["Every registered app was resolved."]
-    warnings = [f"- {w}" for w in snapshot["warnings"]] or ["None."]
-    text = "# Catalogue problems\n\n" + "\n".join(problems) + "\n\n## Warnings (apps still listed)\n\n" + "\n".join(warnings) + "\n"
-    (BUILD / "problems.md").write_text(text, encoding="utf-8")
+    problems = bullet_list(snapshot["problems"], "Every registered app was resolved.")
+    warnings = bullet_list(snapshot["warnings"], "None.")
+    report = f"# Catalogue problems\n\n{problems}\n\n## Warnings (apps still listed)\n\n{warnings}\n"
+    (BUILD / "problems.md").write_text(report, encoding="utf-8")

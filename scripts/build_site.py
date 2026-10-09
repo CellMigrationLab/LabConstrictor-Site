@@ -20,7 +20,7 @@ import shutil
 from pathlib import Path
 
 from lcsite import guides, llms, pages_apps, pages_site
-from lcsite.config import BUILD, DATA, DOCS, GENERATED, SITE_URL, SNAPSHOT, fail, load_json, load_yaml
+from lcsite.config import BUILD, DATA, DOCS, GENERATED, SITE_URL, SNAPSHOT, SNAPSHOT_FORMAT, fail, load_json, load_yaml
 from lcsite.images import ICON_PX, SHOT_PX, shrink
 
 
@@ -51,6 +51,17 @@ def copy_brand(doc_source: Path) -> None:
         shrink(src, DOCS / "assets" / "images" / dest, side, square=square)
 
 
+def load_apps() -> list[dict]:
+    """The apps of build/snapshot.json, sorted by name. Stops the build when the snapshot has another format
+    or no apps at all: publishing an empty App Centre because every app failed would be a silent failure."""
+    snapshot = load_json(SNAPSHOT)
+    if snapshot.get("format") != SNAPSHOT_FORMAT:
+        fail(f"{SNAPSHOT} has format {snapshot.get('format')!r}, expected {SNAPSHOT_FORMAT}: run scripts/fetch_catalogue.py again")
+    if not snapshot["apps"]:
+        fail(f"{SNAPSHOT} has no apps; see build/problems.md")
+    return sorted(snapshot["apps"], key=lambda a: a["manifest"]["name"].lower())
+
+
 def main() -> None:
     """Build every generated page."""
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -59,7 +70,7 @@ def main() -> None:
     args = parser.parse_args()
     if not SNAPSHOT.is_file():
         fail(f"no {SNAPSHOT}: run scripts/fetch_catalogue.py first")
-    apps = sorted(load_json(SNAPSHOT)["apps"], key=lambda a: a["manifest"]["name"].lower())
+    apps = load_apps()
     site, install, ecosystem = (load_yaml(DATA / f"{n}.yaml") for n in ("site", "install", "ecosystem"))
     clean()
     copy_media(apps)

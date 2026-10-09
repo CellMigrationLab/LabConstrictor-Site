@@ -53,14 +53,20 @@
     {% if page.meta and page.meta.guide_nav %}
     <div class="lc-docs">
       <aside class="lc-docs__nav" aria-label="Guides">
+        {#- Each section is collapsible; the one that holds this page starts open. -#}
         {% for section in page.meta.guide_nav %}
-        <h2>{{ section.title }}</h2>
-        <ul>{% for item in section.items %}
-          <li><a href="{{ item.path | url }}"{% if item.id == page.meta.guide_id %} class="is-active" aria-current="page"{% endif %}>{{ item.title }}</a></li>
-        {% endfor %}</ul>
+        <details class="lc-docs__section"{% if section.items | selectattr("id", "equalto", page.meta.guide_id) | list %} open{% endif %}>
+          <summary>{{ section.title }}</summary>
+          <ul>{% for item in section.items %}
+            <li><a href="{{ item.path | url }}"{% if item.id == page.meta.guide_id %} class="is-active" aria-current="page"{% endif %}>{{ item.title }}</a></li>
+          {% endfor %}</ul>
+        </details>
         {% endfor %}
       </aside>
-      <article class="md-content__inner md-typeset" id="__skip">{% include "partials/content.html" %}</article>
+      <article class="md-content__inner md-typeset" id="__skip">
+        <p class="lc-crumb"><a href="{{ 'guides/' | url }}">&larr; All guides</a></p>
+        {% include "partials/content.html" %}
+      </article>
     </div>
     {% else %}
     <article class="md-content__inner md-typeset" id="__skip">

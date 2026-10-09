@@ -24,17 +24,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          persist-credentials: false   # the build never pushes; keep the token out of .git/config
 
       # The template's documentation and its pictures (the doc_source branch) are read, not copied.
       - uses: actions/checkout@v5
         with:
           repository: CellMigrationLab/LabConstrictor
           path: build/template
+          persist-credentials: false
       - uses: actions/checkout@v5
         with:
           repository: CellMigrationLab/LabConstrictor
           ref: doc_source
           path: build/doc_source
+          persist-credentials: false
 
       - uses: actions/setup-python@v6
         with:
@@ -43,7 +47,7 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Unit tests
-        run: PYTHONPATH=scripts python -m unittest discover -s tests
+        run: PYTHONPATH=scripts:tests python -m unittest discover -s tests
 
       # Pull requests fail when any registered app cannot be resolved; scheduled and main builds
       # list what was left out (below) instead, so one broken app never takes the site down.
@@ -73,6 +77,10 @@ jobs:
 
       - name: Sitemap, robots.txt and schemas
         run: python scripts/write_sitemap.py
+
+      # Dead links, author text that is not escaped, missing files: stop here rather than publish them.
+      - name: Check the built site
+        run: python scripts/check_site.py
 
       - name: Upload preview (pull requests)
         if: github.event_name == 'pull_request'

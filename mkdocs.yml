@@ -39,6 +39,8 @@ markdown_extensions:
   - attr_list
   - md_in_html
   - admonition
+  - fenced_code
+  - sane_lists
   - tables
   - toc:
       permalink: false
