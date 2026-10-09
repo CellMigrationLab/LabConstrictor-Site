@@ -1,0 +1,13 @@
+# Guides written for this site, in sidebar order. The template's own guides (Build an app) are imported
+# separately from LabConstrictor/.tools/docs. `generated: true` pages are written by scripts/lcsite/guides.py.
+sections:
+  - title: Use an app
+    items:
+      - {slug: install, title: Install an app, generated: true}
+      - {slug: using-apps, title: Open and use an app, file: using-apps.md}
+  - title: Use apps in your image software
+    items:
+      - {slug: image-software, title: How it works, file: image-software.md}
+      - {slug: napari, title: Install the napari plugin, file: napari.md}
+      - {slug: fiji, title: Install the Fiji plugin, file: fiji.md}
+      - {slug: qupath, title: Install the QuPath extension, file: qupath.md}

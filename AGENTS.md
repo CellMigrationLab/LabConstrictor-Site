@@ -4,11 +4,12 @@ This repository is small on purpose. Keep it that way. (Conventions follow the l
 
 ## Sources of truth
 
-- Hand-written pages: `content/*.md` (`submit.md`) and `data/*.yaml` (site text, install steps, ecosystem).
+- Hand-written pages: `content/submit.md`, `content/guides/*.md` (listed in `data/guides.yaml`) and `data/*.yaml` (site text, install steps, ecosystem).
 - Which apps are listed: `registry/<owner>__<repo>.yaml`, one pointer file per app. Nothing else about an app is stored here.
 - What an app says about itself: `labconstrictor-app.yaml` in the app's own repository, checked against `schema/labconstrictor-app.schema.json`.
-- Guides: written in the template repository (`LabConstrictor/.tools/docs`), imported at build time. Fix guide mistakes there.
-- `docs/index.md`, `docs/apps/`, `docs/guides/`, `docs/ecosystem.md`, `docs/submit.md`, `docs/llms.txt`, `docs/assets/{icons,shots,docs-img}/`, `build/` and `site/` are generated and git-ignored. Fix the source or the generator, never the generated file.
+- Guides for building an app are written in the template repository (`LabConstrictor/.tools/docs`) and imported at build time; fix those there. Guides for using apps and the plugins are `content/guides/`; keep them in step with the plugin READMEs (install commands, menu names, status).
+- The logo and the comic come from the template's `doc_source` branch at build time.
+- `docs/index.md`, `docs/apps/`, `docs/guides/`, `docs/ecosystem.md`, `docs/submit.md`, `docs/llms.txt`, `docs/assets/{icons,shots,docs-img,images}/`, `build/` and `site/` are generated and git-ignored. Fix the source or the generator, never the generated file.
 
 ## Two stages
 

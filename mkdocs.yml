@@ -13,7 +13,8 @@ theme:
   name: material
   custom_dir: overrides
   language: en
-  font: false          # Inter is self-hosted in docs/assets/fonts
+  font: false          # Inter and Bricolage Grotesque are self-hosted in docs/assets/fonts
+  favicon: assets/images/favicon.png   # generated from the logo (scripts/build_site.py)
   features:
     - navigation.top
     - search.suggest

@@ -11,7 +11,7 @@ import shutil
 from pathlib import Path
 from urllib.parse import unquote
 
-from .config import DOCS, TEMPLATE_REPO, fail
+from .config import CONTENT, DATA, DOCS, REPO, TEMPLATE_REPO, fail, load_yaml
 from .page import Page
 from .text import esc
 
@@ -77,24 +77,31 @@ def pager(prev: dict | None, nxt: dict | None) -> str:
     return f'<nav class="lc-pager">{side(prev, "lc-pager__prev", "&larr; Previous")}{side(nxt, "lc-pager__next", "Next &rarr;")}</nav>'
 
 
-def nav_for(own: list[dict], built: list[dict]) -> list[dict]:
-    """The sidebar: our own guides first, then the template's sections (each item: title, path, id)."""
-    def item(g: dict) -> dict:
-        return {"title": g["title"], "path": f"guides/{g['slug']}/", "id": g["slug"]}
-    sections = [{"title": "Use an app", "items": [item(g) for g in own]}]
-    for s in built:
-        sections.append({"title": s["title"], "items": [item(g) for g in s["items"]]})
-    return sections
+def nav_for(sections: list[dict]) -> list[dict]:
+    """The sidebar: every section with its items as title, path and id."""
+    return [{"title": s["title"], "items": [{"title": g["title"], "path": f"guides/{g['slug']}/", "id": g["slug"]} for g in s["items"]]}
+            for s in sections]
 
 
-def write_install(site_systems: list[dict], note: str, nav: list[dict]) -> None:
+def write_install(site_systems: list[dict], note: str, nav: list[dict], tail: str) -> None:
     """guides/install/index.md: how to install an app on each system (data/install.yaml)."""
     body = ["# Install an app", "", note, ""]
     for s in site_systems:
         body += [f"## {s['title']}", ""] + [f"{i}. {step}" for i, step in enumerate(s["steps"], 1)] + [""]
     body += ["Something went wrong? Open an issue in the app's repository, linked from its page in the [App Centre](../../apps/index.md).", ""]
     p = Page("guides/install/index.md", title="Install an app", guide_nav=nav, guide_id="install")
-    p.add("\n".join(body))
+    p.add("\n".join(body), "", tail)
+    p.write()
+
+
+def write_own(item: dict, nav: list[dict], tail: str) -> None:
+    """guides/<slug>/index.md from content/guides/<file> (hand-written Markdown with its own H1)."""
+    src = CONTENT / "guides" / item["file"]
+    if not src.is_file():
+        fail(f"data/guides.yaml lists {item['file']}, which is not in content/guides/")
+    p = Page(f"guides/{item['slug']}/index.md", guide_nav=nav, guide_id=item["slug"],
+             edit_url=f"{REPO}/edit/main/content/guides/{item['file']}")
+    p.add(src.read_text(encoding="utf-8").strip(), "", tail)
     p.write()
 
 
@@ -103,33 +110,48 @@ def write_landing(nav: list[dict]) -> None:
     lists = "".join(
         f'<h2>{esc(s["title"])}</h2><ul>' + "".join(f'<li><a href="{i["path"]}">{esc(i["title"])}</a></li>' for i in s["items"]) + "</ul>"
         for s in nav)
-    p = Page("guides/index.md", title="Guides", description="How to install LabConstrictor apps and how to build your own.", layout="wide")
-    p.add('<section class="lc-pagehead"><h1>Guides</h1><p class="lc-lead">Install an app, or build one from your notebooks.</p></section>',
+    p = Page("guides/index.md", title="Guides", description="How to install LabConstrictor apps, use them in napari, Fiji and QuPath, and build your own.", layout="wide")
+    p.add('<section class="lc-pagehead"><h1>Guides</h1><p class="lc-lead">Install an app, use it in your image software, or build your own.</p></section>',
           f'<div class="lc-guides">{lists}</div>')
     p.write()
 
 
+def write_template_guide(g: dict, docs_dir: Path, doc_source: Path, nav: list[dict], known: set[str], tail: str) -> None:
+    """guides/<slug>/index.md from one page of the template's .tools/docs."""
+    src = docs_dir / g["file"]
+    if not src.is_file():
+        fail(f"README of the template lists {g['file']}, which does not exist")
+    text = NAV_BLOCK.sub("", src.read_text(encoding="utf-8"))
+    text = copy_images(rewrite_links(text, known), doc_source, g["file"])
+    edit = f"https://github.com/{TEMPLATE_REPO}/edit/main/.tools/docs/{g['file']}"
+    p = Page(f"guides/{g['slug']}/index.md", guide_nav=nav, guide_id=g["slug"], edit_url=edit)
+    p.add(text.strip(), "", tail)
+    p.write()
+
+
 def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str) -> None:
-    """Write guides/ from the template's .tools/docs and data/install.yaml."""
+    """Write guides/: our own guides (data/guides.yaml) first, then the template's .tools/docs as "Build an app"."""
     docs_dir = template_dir / ".tools" / "docs"
     if not docs_dir.is_dir():
         fail(f"{docs_dir} not found: pass --template-dir with a checkout of {TEMPLATE_REPO}")
-    sections = parse_index((docs_dir / "README.md").read_text(encoding="utf-8"))
-    own = [{"title": "Install an app", "slug": "install"}]
-    for s in sections:
+    own = load_yaml(DATA / "guides.yaml")["sections"]
+    theirs = parse_index((docs_dir / "README.md").read_text(encoding="utf-8"))
+    for s in theirs:
         for g in s["items"]:
             g["slug"] = slug_of(g["file"])
-    flat = own + [g for s in sections for g in s["items"]]
-    nav, known = nav_for(own, sections), {g["file"] for s in sections for g in s["items"]}
-    write_install(systems, note, nav)
-    for i, g in enumerate(flat[1:], 1):
-        src = docs_dir / g["file"]
-        if not src.is_file():
-            fail(f"README of the template lists {g['file']}, which does not exist")
-        text = NAV_BLOCK.sub("", src.read_text(encoding="utf-8"))
-        text = copy_images(rewrite_links(text, known), doc_source, g["file"])
-        edit = f"https://github.com/{TEMPLATE_REPO}/edit/main/.tools/docs/{g['file']}"
-        p = Page(f"guides/{g['slug']}/index.md", guide_nav=nav, guide_id=g["slug"], edit_url=edit)
-        p.add(text.strip(), "", pager(flat[i - 1], flat[i + 1] if i + 1 < len(flat) else None))
-        p.write()
+    sections = own + theirs
+    clash = {g["slug"] for s in own for g in s["items"]} & {g["slug"] for s in theirs for g in s["items"]}
+    if clash:
+        fail(f"guide address used twice (data/guides.yaml and the template): {sorted(clash)}")
+    nav = nav_for(sections)
+    flat = [g for s in sections for g in s["items"]]
+    known = {g["file"] for s in theirs for g in s["items"]}
+    for i, g in enumerate(flat):
+        tail = pager(flat[i - 1] if i else None, flat[i + 1] if i + 1 < len(flat) else None)
+        if g.get("generated"):
+            write_install(systems, note, nav, tail)
+        elif g in [x for s in own for x in s["items"]]:
+            write_own(g, nav, tail)
+        else:
+            write_template_guide(g, docs_dir, doc_source, nav, known, tail)
     write_landing(nav)

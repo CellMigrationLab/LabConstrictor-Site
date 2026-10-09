@@ -2,7 +2,7 @@
 
 import json
 
-from .cards import HOSTS, KINDS, ROUTES, SYSTEM_LABELS, badge, card, downloads_attr, icon, is_verified, release_line, tier_badge
+from .cards import CHIPS, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, icon, is_verified, release_line, tier_badge
 from .page import Page
 from .text import esc, long_date, megabytes, paragraphs, plural
 
@@ -37,17 +37,49 @@ def page_catalogue(apps: list[dict]) -> None:
     p.write()
 
 
+def os_button(option: dict, system: str, first: bool) -> str:
+    """One download button inside a system tile: macOS buttons are named by chip, others by system."""
+    name = CHIPS[option["arch"]] if system == "macos" else f"{SYSTEMS[system]} installer"
+    return (f'<a class="lc-btn{"" if first else " lc-btn--ghost"}" href="{esc(option["url"])}" data-arch="{option["arch"]}">'
+            f'{esc(name)}<small>{megabytes(option["size"])} · .{option["ext"]}</small></a>')
+
+
+def os_tile(system: str, options: list[dict]) -> str:
+    """The tile for one system: its download buttons, or "not available" when the release has none (never hidden)."""
+    body = ("".join(os_button(o, system, i == 0) for i, o in enumerate(options)) if options
+            else '<p class="lc-small">No installer in this release.</p>')
+    hint = {"macos": "Not sure? Apple menu, About This Mac: Intel, or M1 and later (Apple Silicon).",
+            "linux": "Run it with: bash &lt;file name&gt;", "windows": "If Windows warns you, choose More info, then Run anyway."}[system]
+    return f'<div class="lc-ostile" data-os="{system}"><h3>{SYSTEMS[system]}</h3>{body}<p class="lc-small">{hint}</p></div>'
+
+
 def get_section(app: dict) -> str:
-    """The "Get it" block: OS-aware download buttons (lc.js), Colab buttons and the pip command."""
-    m, dist = app["manifest"], app["manifest"]["distribution"]
+    """The "Get it" block: a download tile per system, Colab buttons and the pip command."""
+    dist = app["manifest"]["distribution"]
     parts = ['<h2 id="get">Get it</h2>']
     if app["release"] and dist.get("installer"):
-        parts.append(f'<div class="lc-get" data-downloads="{downloads_attr(app)}"><a class="lc-btn" href="#downloads">See all downloads</a></div>')
+        have = downloads(app)
+        parts.append('<div class="lc-osgrid" data-lc-osgrid>' + "".join(os_tile(k, have.get(k, [])) for k in SYSTEMS) + "</div>")
     colab = "".join(f'<a class="lc-btn lc-btn--ghost" href="{esc(l["url"])}">Open in Colab: {esc(l["label"])}</a>' for l in dist.get("colab", []))
     if colab:
         parts.append(f'<div class="lc-routes">{colab}</div>')
     if dist.get("pip"):
         parts.append(f'<div class="lc-code"><code>pip install {esc(dist["pip"])}</code><button type="button" data-copy>Copy</button></div>')
+    return "\n".join(parts)
+
+
+def using_section(app: dict) -> str:
+    """"Using it": the manifest's quick start (optional), how a desktop app starts, and the documentation link
+    (the manifest's docs_url, else the README on GitHub; the label says which)."""
+    m = app["manifest"]
+    parts = ['<h2 id="use">Using it</h2>']
+    if m.get("quickstart"):
+        parts.append("<ol>" + "".join(f"<li>{esc(step)}</li>" for step in m["quickstart"]) + "</ol>")
+    if m["distribution"].get("installer"):
+        parts.append('<p>After installing, open the app from your Start Menu or Applications folder. Its Welcome notebook lists what it can do; '
+                     'the <a href="guides/notebook-usage/">notebook usage guide</a> shows how to work with it.</p>')
+    docs, label = (m["docs_url"], "Documentation") if m.get("docs_url") else (app["html_url"] + "#readme", "README on GitHub")
+    parts.append(f'<p><a class="lc-btn lc-btn--ghost" href="{esc(docs)}">{label}</a></p>')
     return "\n".join(parts)
 
 
@@ -107,11 +139,12 @@ def page_app(app: dict, systems: list[dict]) -> None:
     p.add('<p class="lc-crumb"><a href="apps/">&larr; All apps</a></p>',
           f'<header class="lc-apphead">{icon(app, 72)}<div><h1>{esc(m["name"])}</h1>'
           f'<p class="lc-lead">{esc(m["summary"])}</p><p>{tier_badge(app)}{badge(KINDS[m["kind"]])}'
-          f'{"".join(badge("Works in " + h) for h in hosts)}</p></div></header>')
+          f'{"".join(badge("Works in " + h, "host") for h in hosts)}</p></div></header>')
     p.add(get_section(app))
     p.add('<h2 id="about">About</h2>', paragraphs(m.get("description", m["summary"])))
     for i, s in enumerate(app["screenshots"], 1):
         p.add(f'<figure class="lc-shot"><img src="assets/shots/{app["slug"]}-{i}.jpg" alt="{esc(s["caption"])}" loading="lazy"><figcaption>{esc(s["caption"])}</figcaption></figure>')
+    p.add(using_section(app))
     if app["release"] and m["distribution"].get("installer"):
         p.add(downloads_table(app), install_help(systems))
     p.add(details_list(app))

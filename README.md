@@ -6,7 +6,7 @@ The website for [LabConstrictor](https://github.com/CellMigrationLab/LabConstric
 |---|---|---|
 | Home | what LabConstrictor is, two paths (use / make), featured apps | `data/site.yaml`, `registry/` |
 | Apps | filterable catalogue, one page per app, OS-aware downloads | each app's `labconstrictor-app.yaml` and latest GitHub release |
-| Guides | install an app; build an app | `data/install.yaml`; the template's `.tools/docs` |
+| Guides | install and use an app; plugins for napari, Fiji, QuPath; build an app | `data/install.yaml`, `content/guides/`; the template's `.tools/docs` |
 | Ecosystem | napari, Fiji, QuPath, template, Tools library | `data/ecosystem.yaml` |
 | Submit your app | how to be listed | `content/submit.md`, `.github/ISSUE_TEMPLATE/submit-app.yml` |
 

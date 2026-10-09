@@ -1,7 +1,5 @@
 """HTML snippets shared by several pages: app cards, badges and download data."""
 
-import json
-
 from .text import esc, long_date
 
 KINDS = {"analysis": "Analysis", "segmentation": "Segmentation", "simulation": "Simulation",
@@ -10,6 +8,8 @@ HOSTS = {"notebook": "Notebook", "napari": "napari", "fiji": "Fiji", "qupath": "
 ROUTES = {"installer": "Desktop", "colab": "Colab", "pip": "pip"}
 SYSTEM_LABELS = {("windows", "x86_64"): "Windows", ("macos", "arm64"): "macOS (Apple Silicon)",
                  ("macos", "x86_64"): "macOS (Intel)", ("linux", "x86_64"): "Linux"}
+SYSTEMS = {"windows": "Windows", "macos": "macOS", "linux": "Linux"}   # one download tile each, in this order
+CHIPS = {"arm64": "Apple Silicon (M1 or later)", "x86_64": "Intel"}     # macOS buttons are named by chip
 
 
 def routes(app: dict) -> list[str]:
@@ -54,18 +54,13 @@ def release_line(app: dict) -> str:
 
 def downloads(app: dict) -> dict[str, list[dict]]:
     """The recommended installer per system and architecture, grouped by system, for the buttons.
-    {"windows": [{"label", "url", "size", "ext"}], "macos": [...], "linux": [...]}"""
+    {"windows": [{"label", "arch", "url", "size", "ext"}], "macos": [...], "linux": [...]}"""
     out: dict[str, list[dict]] = {}
     for a in (app["release"] or {"assets": []})["assets"]:
         if a["primary"]:
             label = SYSTEM_LABELS[(a["os"], a["arch"])]
-            out.setdefault(a["os"], []).append({"label": label, "url": a["url"], "size": a["size"], "ext": a["ext"]})
+            out.setdefault(a["os"], []).append({"label": label, "arch": a["arch"], "url": a["url"], "size": a["size"], "ext": a["ext"]})
     return out
-
-
-def downloads_attr(app: dict) -> str:
-    """The downloads as an escaped JSON attribute value (read by lc.js to offer the visitor's system)."""
-    return esc(json.dumps(downloads(app), separators=(",", ":")))
 
 
 def search_text(app: dict) -> str:
@@ -79,8 +74,7 @@ def card(app: dict) -> str:
     m, slug = app["manifest"], app["slug"]
     attrs = (f'data-kind="{esc(m["kind"])}" data-routes="{" ".join(routes(app))}" '
              f'data-hosts="{" ".join(m.get("hosts", []))}" data-search="{esc(search_text(app))}"')
-    get = (f'<a class="lc-card__get" href="apps/{slug}/#get" data-downloads="{downloads_attr(app)}">Get</a>'
-           if downloads(app) else "")
+    get = f'<a class="lc-card__get" href="apps/{slug}/#get">Get</a>' if routes(app) else ""
     return (f'<li class="lc-card" {attrs}><a class="lc-card__main" href="apps/{slug}/">'
             f'<span class="lc-card__head">{icon(app)}<span class="lc-card__title"><strong>{esc(m["name"])}</strong>'
             f'<small>{KINDS[m["kind"]]}</small></span></span><span class="lc-card__text">{esc(m["summary"])}</span>'

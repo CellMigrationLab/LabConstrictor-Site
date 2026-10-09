@@ -8,7 +8,7 @@ Reads                                       Writes (git-ignored, rebuilt every t
   build/media/<app>/                          docs/assets/icons/, docs/assets/shots/ (resized)
   data/site.yaml, install.yaml, ecosystem.yaml  docs/index.md, ecosystem.md, guides/install/
   content/submit.md                           docs/submit.md
-  template .tools/docs + doc_source pictures  docs/guides/, docs/assets/docs-img/
+  template .tools/docs + doc_source pictures  docs/guides/, docs/assets/docs-img/, docs/assets/images/ (logo, comic)
   (all of the above)                          docs/llms.txt
 
 The build never uses the network. Anything missing or inconsistent stops it with a
@@ -41,6 +41,16 @@ def copy_media(apps: list[dict]) -> None:
             shrink(folder / shot["file"], DOCS / "assets" / "shots" / f"{app['slug']}-{i}.jpg", SHOT_PX)
 
 
+def copy_brand(doc_source: Path) -> None:
+    """The logo (header, favicon, home page) and the comic, from the template's doc_source branch."""
+    for name, dest, side, square in [("LabConstrictor_Logo.png", "logo.png", 320, True), ("LabConstrictor_Logo.png", "logo-64.png", 64, True),
+                                     ("LabConstrictor_Logo.png", "favicon.png", 48, True), ("comic.png", "comic.png", 1800, False)]:
+        src = doc_source / name
+        if not src.is_file():
+            fail(f"{src} not found: the doc_source branch should hold {name}")
+        shrink(src, DOCS / "assets" / "images" / dest, side, square=square)
+
+
 def main() -> None:
     """Build every generated page."""
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -53,6 +63,7 @@ def main() -> None:
     site, install, ecosystem = (load_yaml(DATA / f"{n}.yaml") for n in ("site", "install", "ecosystem"))
     clean()
     copy_media(apps)
+    copy_brand(args.doc_source_dir)
     pages_site.page_home(site, apps)
     pages_apps.page_catalogue(apps)
     for app in apps:

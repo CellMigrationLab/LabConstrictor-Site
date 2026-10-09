@@ -28,7 +28,7 @@
 {% block header %}
 <header class="lc-header" data-md-component="header">
   <nav class="lc-header__inner" aria-label="Main">
-    <a class="lc-brand" href="{{ nav.homepage.url | url }}"><span class="lc-brand__mark" aria-hidden="true"></span>{{ config.site_name }}</a>
+    <a class="lc-brand" href="{{ nav.homepage.url | url }}"><img src="{{ 'assets/images/logo-64.png' | url }}" alt="" width="30" height="30">{{ config.site_name }}</a>
     <input class="lc-menu-toggle" type="checkbox" id="lc-menu" aria-hidden="true" tabindex="-1">
     <ul class="lc-menu" id="lc-menu-list">
       {% for item in nav.items %}
@@ -73,7 +73,7 @@
 {% block footer %}
 <footer class="lc-footer">
   <div class="lc-footer__inner">
-    <div><strong>LabConstrictor</strong><p>Turn notebooks into installable apps. Open source, MIT licensed.</p></div>
+    <div class="lc-footer__brand"><img src="{{ 'assets/images/logo-64.png' | url }}" alt="" width="42" height="42"><div><strong>LabConstrictor</strong><p>Turn notebooks into installable apps. Open source, MIT licensed.</p></div></div>
     <ul>
       <li><a href="{{ 'apps/' | url }}">Apps</a></li>
       <li><a href="{{ 'guides/' | url }}">Guides</a></li>

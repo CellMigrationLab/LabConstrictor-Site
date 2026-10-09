@@ -4,46 +4,49 @@
 
 const lcFold = (s) => s.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase();
 
-/** The visitor's system ("windows", "macos", "linux"), or null on phones and anything unknown. */
+/** The visitor's system ("windows", "macos", "linux"), or null on phones, Chromebooks and anything unknown. */
 function lcSystem() {
   const ua = navigator.userAgent.toLowerCase();
-  if (/android|iphone|ipad/.test(ua)) return null;
+  if (/android|iphone|ipad|cros/.test(ua)) return null;
   const p = (navigator.userAgentData?.platform || navigator.platform || ua).toLowerCase();
   if (p.includes("win")) return "windows";
   if (p.includes("mac")) return "macos";
-  if (p.includes("linux") || p.includes("x11") || p.includes("cros")) return "linux";
+  if (p.includes("linux") || p.includes("x11")) return "linux";
   return null;
 }
 
-const lcSize = (bytes) => `${Math.round(bytes / 2 ** 20)} MB`;
-
-/** Downloads for the visitor's system, from an element's data-downloads JSON ([] when none). */
-function lcOptions(el, system) {
-  return system ? (JSON.parse(el.dataset.downloads)[system] || []) : [];
+/** "arm", "x86" or null. Only Chromium-based browsers can say (client hints); Safari and Firefox cannot. */
+async function lcArchitecture() {
+  try {
+    const hints = await navigator.userAgentData?.getHighEntropyValues(["architecture"]);
+    return hints?.architecture || null;
+  } catch (err) {
+    return null;
+  }
 }
 
-/** Replace the "See all downloads" button by one button per download for this system. */
-function lcFillGet(el, system) {
-  const options = lcOptions(el, system);
-  if (!options.length) return;
-  const primary = options.map((o, i) =>
-    `<a class="lc-btn${i ? " lc-btn--ghost" : ""}" href="${o.url}">Download for ${o.label}<small>${lcSize(o.size)} · .${o.ext}</small></a>`);
-  const hint = system === "macos" ? '<p class="lc-small">Not sure which Mac you have? Apple menu, About This Mac: "Intel" means Intel, "M1" or later means Apple Silicon.</p>' : "";
-  el.innerHTML = primary.join("") + '<a class="lc-btn lc-btn--ghost" href="#downloads">All downloads</a>' + hint;
-}
-
-/** Make a card's "Get" link a direct download when the system has exactly one choice. */
-function lcFillCard(el, system) {
-  const options = lcOptions(el, system);
-  if (options.length === 1) { el.href = options[0].url; el.textContent = "Download"; }
-}
-
-function lcInitDownloads() {
+/** Mark the visitor's tile ("Your system") and, on a Mac where the browser says which chip, the matching button.
+ *  Every tile stays visible: a wrong guess costs nothing. */
+async function lcInitSystem() {
+  const grid = document.querySelector("[data-lc-osgrid]");
   const system = lcSystem();
-  document.querySelectorAll(".lc-get[data-downloads]").forEach((el) => lcFillGet(el, system));
-  document.querySelectorAll(".lc-card__get[data-downloads]").forEach((el) => lcFillCard(el, system));
-  document.querySelectorAll(".lc-os").forEach((el) => { el.open = el.dataset.os === system; });
+  if (!grid || !system) return;
+  const tile = grid.querySelector(`[data-os="${system}"]`);
+  tile.classList.add("is-yours");
+  grid.prepend(tile);
+  const arch = await lcArchitecture();
+  if (system === "macos" && arch) {
+    const mine = tile.querySelector(`[data-arch="${arch === "arm" ? "arm64" : "x86_64"}"]`);
+    if (mine) {
+      tile.querySelectorAll(".lc-btn").forEach((b) => b.classList.add("lc-btn--ghost"));
+      mine.classList.remove("lc-btn--ghost");
+      tile.querySelector("h3").after(mine);
+    }
+  }
+  if (system !== "macos" && arch === "arm") tile.querySelector(".lc-small:last-child").textContent = "Only 64-bit Intel/AMD (x86_64) installers exist; this device looks like ARM.";
 }
+
+function lcInitDownloads() { lcInitSystem(); document.querySelectorAll(".lc-os").forEach((el) => { el.open = el.dataset.os === lcSystem(); }); }
 
 /** True when a card passes the current search text and the three drop-downs. */
 function lcMatches(card, state) {

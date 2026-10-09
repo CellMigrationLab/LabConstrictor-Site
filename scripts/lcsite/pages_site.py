@@ -6,22 +6,28 @@ from .page import Page
 from .text import esc, plural
 
 
-def choice(title: str, text: str, href: str, label: str) -> str:
+COMIC_ALT = ("A three-panel comic. Panel 1: a delighted scientist says \"Finally, my ultimate notebook is ready!\" "
+             "Panel 2: a worried colleague beside a computer showing a warning says \"Sorry, not even able to install it.\" "
+             "Panel 3: the LabConstrictor snake coiled around an orange notebook glows, with the words \"LabConstrictor will solve it!\"")
+
+
+def choice(title: str, text: str, href: str, label: str, cls: str = "") -> str:
     """One of the two big "what do you want to do" cards on the home page."""
-    return (f'<a class="lc-choice" href="{href}"><strong>{esc(title)}</strong><span>{esc(text)}</span>'
+    return (f'<a class="lc-choice {cls}" href="{href}"><strong>{esc(title)}</strong><span>{esc(text)}</span>'
             f'<span class="lc-choice__go">{esc(label)} &rarr;</span></a>')
 
 
 def page_home(site: dict, apps: list[dict]) -> None:
-    """index.md: hero, the two paths (use / make), featured apps, how it works, and where apps run."""
+    """index.md: hero with the logo, the two paths (use / make), the comic, featured apps, how it works, where apps run."""
     hero = site["hero"]
     featured = [a for a in apps if a["featured"]]
-    p = Page("index.md", title="LabConstrictor", head_title=f"{site['name']}: {hero['title']}", description=site["hero"]["text"], template="home.html")
-    p.add(f'<section class="lc-hero"><div class="lc-hero__in"><h1>{esc(hero["title"])}</h1><p>{esc(hero["text"])}</p>'
+    p = Page("index.md", title="LabConstrictor", head_title=f"{site['name']}: {hero['title']}", description=hero["text"], template="home.html")
+    p.add(f'<section class="lc-hero"><div class="lc-hero__in"><div><h1>{esc(hero["title"])}</h1><p>{esc(hero["text"])}</p>'
           '<div class="lc-choices">'
           + choice("I want to use an app", f"Browse {plural(len(apps), 'app')} for image analysis. Install in a few clicks.", "apps/", "Open the App Centre")
-          + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "guides/", "Read the guides") +
-          '</div></div></section>')
+          + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "guides/", "Read the guides", "lc-choice--make") +
+          '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256"></div></div></section>')
+    p.add(f'<figure class="lc-comic"><img src="assets/images/comic.png" alt="{esc(COMIC_ALT)}" loading="lazy"><figcaption>The problem LabConstrictor was made for.</figcaption></figure>')
     p.add('<section class="lc-band"><h2 class="lc-title">Featured apps</h2>',
           '<ul class="lc-grid">' + "\n".join(card(a) for a in featured) + '</ul>',
           '<p class="lc-more"><a href="apps/">See every app</a></p></section>')
@@ -29,9 +35,14 @@ def page_home(site: dict, apps: list[dict]) -> None:
     p.add(f'<section class="lc-band lc-band--soft"><h2 class="lc-title">How it works</h2><ol class="lc-steps">{steps}</ol>',
           f'<p class="lc-more"><a href="{esc(site["links"]["template"])}">Start from the template</a> · <a href="guides/">Read the guides</a></p></section>')
     p.add('<section class="lc-band"><h2 class="lc-title">Works where you work</h2>',
-          '<p class="lc-center">Desktop installers, Google Colab and pip, plus napari, Fiji and QuPath for apps that expose tools.</p>',
-          '<p class="lc-more"><a href="ecosystem/">Explore the ecosystem</a></p></section>')
+          '<p class="lc-center">Desktop installers, Google Colab and pip. Apps that declare tools also run inside napari, Fiji and QuPath.</p>',
+          '<p class="lc-more"><a href="guides/image-software/">Use apps in your image software</a> · <a href="ecosystem/">Explore the ecosystem</a></p></section>')
     p.write()
+
+
+def guide_link(item: dict) -> str:
+    """The install-guide footer of an ecosystem card (empty when the project has no guide on this site)."""
+    return f'<div class="lc-card__foot"><a href="guides/{esc(item["guide"])}/">Install guide</a></div>' if item.get("guide") else ""
 
 
 def page_ecosystem(ecosystem: dict) -> None:
@@ -42,7 +53,7 @@ def page_ecosystem(ecosystem: dict) -> None:
         items = "".join(
             f'<li class="lc-card lc-card--plain"><a class="lc-card__main" href="{esc(i.get("url") or "https://github.com/" + i["repo"])}">'
             f'<span class="lc-card__title"><strong>{esc(i["name"])}</strong></span><span class="lc-card__text">{esc(i["text"])}</span>'
-            f'<span class="lc-card__badges"><span class="lc-badge">{esc(i["status"])}</span></span></a></li>' for i in tier["items"])
+            f'<span class="lc-card__badges"><span class="lc-badge">{esc(i["status"])}</span></span></a>{guide_link(i)}</li>' for i in tier["items"])
         p.add(f'<h2 class="lc-tier" id="{esc(tier["key"])}">{esc(tier["title"])}</h2><p>{esc(tier["text"])}</p><ul class="lc-grid">{items}</ul>')
     p.write()
 
