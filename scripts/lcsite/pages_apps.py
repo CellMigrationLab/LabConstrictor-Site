@@ -141,7 +141,7 @@ def page_app(app: dict, systems: list[dict]) -> None:
     p.add('<p class="lc-crumb"><a href="apps/">&larr; All apps</a></p>',
           f'<header class="lc-apphead">{icon(app, 72)}<div><h1>{esc(m["name"])}</h1>'
           f'<p class="lc-lead">{esc(m["summary"])}</p><p>{tier_badge(app)}{badge(KINDS[m["kind"]])}'
-          f'{"".join(badge(f"Works in {h} (experimental)", "host") for h in hosts)}</p></div></header>')
+          f'{"".join(badge(f"Soon in {h}", "host") for h in hosts)}</p></div></header>')
     p.add(get_section(app))
     if m.get("description"):
         p.add('<h2 id="about">About</h2>', paragraphs(m["description"]))
