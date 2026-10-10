@@ -28,7 +28,9 @@ Each fact is written in one place. Fix it there, never in a generated file.
 - **Ecosystem cards**: each project's `docs/labconstrictor-project.yaml` (checked against `schema/labconstrictor-project.schema.json`); `data/ecosystem.yaml` lists the repositories and headings. The template's card is inline there because its repository is copied into every app. Each card gets a GitHub badge and, when `data/guides.yaml` has a guide for that repository, a Guide link.
 - **Apps**: `registry/<owner>__<repo>.yaml` is a pointer (`repo`, `repo_id`, `owner_id`, `added`) plus optional curation: `featured` (home page), `verified_version`/`verified_on`, `section: testing` (listed apart under "Testing and maintenance", with a Testing badge). Everything an app says about itself is `labconstrictor-app.yaml` in its repository, checked against `schema/labconstrictor-app.schema.json`. Host chips on an app page (Soon in napari/Fiji/QuPath) link to the matching guide.
 - **Use / Build pictures and cards**: `data/hubs.yaml`; every picture is `doc_source:` (the template's `doc_source` branch) or `repo` + `path` (fetched), and needs alt text. A card marked `live_card` shows a real app card.
-- **Hand-written here**: `content/guides/using-apps.md`, `content/submit.md`, `data/install.yaml` (install steps per system; keep it in step with the template's download guide, which cannot be imported because it carries one app's name), `data/site.yaml`.
+- **Install guide**: the template's `.tools/docs/install.md` (generic, for every app), placed in track use with `template: install.md`. App pages only link to it; the OS tile's short hint lines are in `pages_apps.os_tile`.
+- **Hand-written here**: `content/guides/using-apps.md`, `content/submit.md`, `data/site.yaml`.
+- **Moved addresses**: `data/redirects.yaml` (old -> new, both with a trailing slash) writes a small redirect page at the old address; the build stops if the old address is a real page or the new one does not exist. Add a line whenever a page is renamed, including a template doc renamed in the template.
 - The logo and the comic come from the template's `doc_source` branch.
 - **Generated and git-ignored**: `docs/index.md`, `docs/apps/`, `docs/guides/`, `docs/use/`, `docs/build/`, `docs/ecosystem.md`, `docs/submit.md`, `docs/llms.txt`, `docs/assets/{icons,shots,docs-img,images,hubs}/`, `build/`, `site/`.
 - The site is unlisted while `extra.listed` is `false` in `mkdocs.yml` (noindex on every page, `robots.txt` disallows all, empty sitemap). `site_url` is the address everything follows.
@@ -38,7 +40,7 @@ Each fact is written in one place. Fix it there, never in a generated file.
 1. `scripts/fetch_catalogue.py` and `scripts/fetch_guides.py` are the only code that uses the network. They write `build/snapshot.json` (format number `SNAPSHOT_FORMAT`; bump it when its layout changes), `build/problems.md` and `build/sources/`.
 2. `scripts/build_site.py` reads those and writes pages. It never goes online, so a build is repeatable. Then `zensical build --strict`, `scripts/write_sitemap.py`, `scripts/check_site.py`.
 
-The publish workflow does all of this on every push to `main`, daily, and on demand.
+The publish workflow does all of this on every push to `main`, daily, and on demand. Its actions are pinned to commit SHAs (Dependabot proposes updates monthly), and a failed daily run opens or updates an issue.
 
 ## Untrusted input
 
@@ -47,11 +49,11 @@ Everything in an app's manifest, its release and its repository is written by so
 - Text goes into pages only through `text.esc` (HTML) or `text.one_line` (plain files); the theme prints a front-matter `description` unescaped, so `Page` neutralises its quotes.
 - Manifests are parsed with `validate.load_plain_yaml` (no anchors or aliases) and checked against the schema; downloads are size-capped; redirects to other hosts are refused (`github.py`).
 - Web addresses come from `slugify`, may not be empty or reserved; a file the guide importer copies must stay inside its source folder; pictures are re-encoded (SVG is refused); app downloads come only from the app's own GitHub release.
-- `scripts/check_site.py` fails on dead links and anchors, author text that appears unescaped, and missing files.
+- `scripts/check_site.py` fails on dead links and anchors, author text that appears unescaped, missing files, an "edit this page" link into generated files, a page with no current top-menu entry, and a page not reachable from the home page within 3 clicks.
 
 ## No silent fallbacks
 
-If required input is missing, malformed, ambiguous or unsupported, raise a clear error that names the file or app. Do not substitute defaults, accept legacy aliases, skip files that should exist, or catch broad exceptions and continue. A guide, picture, project file or schema that cannot be read stops the build; a GitHub outage (`FetchError`) stops the whole fetch (exit 4) so the live site is never rebuilt from a half-empty catalogue.
+If required input is missing, malformed, ambiguous or unsupported, raise a clear error that names the file or app. Do not substitute defaults, accept legacy aliases, skip files that should exist, or catch broad exceptions and continue. A guide, picture, project file, redirect or schema that cannot be read stops the build; a project's `status` must be one of Experimental, Available, Install from GitHub or Deprecated (the project schema); a GitHub outage (`FetchError`) stops the whole fetch (exit 4) so the live site is never rebuilt from a half-empty catalogue.
 
 The one deliberate exception is per-app: an app that cannot be resolved is left out of the site, but it is always named in `build/problems.md`, printed, and (on scheduled builds) opened as an issue. Optional manifest fields may be absent (checked explicitly with `optional_list` or `in`); a broken optional icon becomes a reported warning and a monogram. Template pages the README does not list are reported as a WARNING on every build.
 

@@ -46,7 +46,7 @@ async function lcInitSystem() {
   if (system !== "macos" && arch === "arm") tile.querySelector(".lc-small:last-child").textContent = "Only 64-bit Intel/AMD (x86_64) installers exist; this device looks like ARM.";
 }
 
-function lcInitDownloads() { lcInitSystem(); document.querySelectorAll(".lc-os").forEach((el) => { el.open = el.dataset.os === lcSystem(); }); }
+function lcInitDownloads() { lcInitSystem(); }
 
 /** True when a card passes the current search text and the three drop-downs. */
 function lcMatches(card, state) {

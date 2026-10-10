@@ -88,12 +88,11 @@
   <div class="lc-footer__inner">
     <div class="lc-footer__brand"><img src="{{ 'assets/images/logo-64.png' | url }}" alt="" width="42" height="42"><div><strong>LabConstrictor</strong><p>Turn notebooks into installable apps. Open source, MIT licensed.</p></div></div>
     <ul>
-      <li><a href="{{ 'apps/' | url }}">Apps</a></li>
-      <li><a href="{{ 'guides/' | url }}">Docs</a></li>
-      <li><a href="{{ 'use/' | url }}">Use an app</a></li>
-      <li><a href="{{ 'build/' | url }}">Build an app</a></li>
-      <li><a href="{{ 'ecosystem/' | url }}">Ecosystem</a></li>
-      <li><a href="{{ 'submit/' | url }}">Submit your app</a></li>
+      {#- The same entries as the top menu (mkdocs.yml nav), plus the two tracks of the docs, so the labels are written once. -#}
+      {% for item in nav.items[1:] %}
+      <li><a href="{{ item.url | url }}">{{ item.title }}</a></li>
+      {% if item.url == 'guides/' %}<li><a href="{{ 'use/' | url }}">Use an app</a></li><li><a href="{{ 'build/' | url }}">Build an app</a></li>{% endif %}
+      {% endfor %}
     </ul>
     <ul>
       <li><a href="https://github.com/CellMigrationLab/LabConstrictor" target="_blank" rel="noopener">Template on GitHub</a></li>

@@ -106,12 +106,10 @@ def downloads_table(app: dict) -> str:
             f'<div class="lc-scroll"><table class="lc-table"><thead><tr><th>System</th><th>Format</th><th>Size</th><th>File</th></tr></thead><tbody>{rows}</tbody></table></div>')
 
 
-def install_help(systems: list[dict]) -> str:
-    """Collapsible per-system install steps (from data/install.yaml); lc.js opens the visitor's own system."""
-    items = "".join(
-        f'<details class="lc-os" data-os="{s["key"]}"><summary>{esc(s["title"])}</summary><ol>'
-        + "".join(f"<li>{esc(step)}</li>" for step in s["steps"]) + "</ol></details>" for s in systems)
-    return f'<h2 id="install">How to install</h2>{items}'
+def install_help() -> str:
+    """"How to install": a pointer to the install guide (the template's page, imported by the site), so the steps are written once."""
+    return ('<h2 id="install">How to install</h2><p>Step by step for Windows, macOS and Linux, with the pictures: '
+            '<a href="guides/install/">Install an app</a>.</p>')
 
 
 def details_list(app: dict) -> str:
@@ -144,10 +142,10 @@ def jsonld(app: dict) -> str:
     return json.dumps(data).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
 
 
-def page_app(app: dict, systems: list[dict]) -> None:
+def page_app(app: dict) -> None:
     """apps/<slug>/index.md: everything a visitor needs to decide, install, cite and report a problem."""
     m = app["manifest"]
-    p = Page(f"apps/{app['slug']}/index.md", title=m["name"], description=m["summary"], jsonld=jsonld(app), layout="wide",
+    p = Page(f"apps/{app['slug']}/index.md", title=m["name"], description=m["summary"], jsonld=jsonld(app), layout="wide", menu="apps/",
              edit_url=f"{app['html_url']}/edit/HEAD/labconstrictor-app.yaml")
     hosts = [h for h in optional_list(m, "hosts") if h != "notebook"]
     p.add('<p class="lc-crumb"><a href="apps/">&larr; All apps</a></p>',
@@ -161,6 +159,6 @@ def page_app(app: dict, systems: list[dict]) -> None:
         p.add(f'<figure class="lc-shot"><img src="assets/shots/{app["slug"]}-{i}.jpg" alt="{esc(s["caption"])}" loading="lazy"><figcaption>{esc(s["caption"])}</figcaption></figure>')
     p.add(using_section(app))
     if app["release"] and m["distribution"].get("installer"):
-        p.add(downloads_table(app), install_help(systems))
+        p.add(downloads_table(app), install_help())
     p.add(details_list(app))
     p.write()

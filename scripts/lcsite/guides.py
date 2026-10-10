@@ -17,7 +17,7 @@ from . import sources
 from .page import Page
 from .text import esc
 
-SKIP = {"download_executable.md"}   # replaced by guides/install/, generated from data/install.yaml
+SKIP = {"download_executable.md"}   # written per app (it carries one app's name); the generic install.md replaces it
 LINK = re.compile(r"\]\(\s*(?!(?:[a-z][a-z0-9+.-]*:|#|/))(?:\./)?([A-Za-z0-9_./-]+\.[A-Za-z0-9]+)(#[^)\s]*)?\s*\)")
 IMAGE = re.compile(rf"https://github\.com/{TEMPLATE_REPO}/(?:blob|raw)/doc_source/([^\s)\"'?]+)(?:\?raw=true)?")
 NAV_BLOCK = re.compile(r'<div align="center">(?:(?!</div>).)*?(?:Previous|Next|Home)(?:(?!</div>).)*?</div>', re.S)
@@ -100,17 +100,6 @@ def guide_meta(nav: list[dict], slug: str) -> dict:
     return {"guide_nav": nav, "guide_id": slug, "guide_track": track, "guide_track_title": TRACKS[track], "menu": "guides/"}
 
 
-def write_install(site_systems: list[dict], note: str, nav: list[dict], tail: str) -> None:
-    """guides/install/index.md: how to install an app on each system (data/install.yaml)."""
-    body = ["# Install an app", "", note, ""]
-    for s in site_systems:
-        body += [f"## {s['title']}", ""] + [f"{i}. {step}" for i, step in enumerate(s["steps"], 1)] + [""]
-    body += ["Something went wrong? Open an issue in the app's repository, linked from its page in the [App Centre](../../apps/index.md).", ""]
-    p = Page("guides/install/index.md", title="Install an app", **guide_meta(nav, "install"))
-    p.add("\n".join(body), "", tail)
-    p.write()
-
-
 def write_own(item: dict, nav: list[dict], tail: str) -> None:
     """guides/<slug>/index.md from content/guides/<file> (hand-written Markdown with its own H1)."""
     src = CONTENT / "guides" / item["file"]
@@ -154,11 +143,9 @@ def write_template_guide(g: dict, docs_dir: Path, doc_source: Path, nav: list[di
     p.write()
 
 
-def write_guide(g: dict, nav: list[dict], tail: str, install: tuple, template: tuple, pages: dict[tuple[str, str], str]) -> None:
-    """Write one guide from wherever it lives: generated, the template, another repository or this repository."""
-    if g.get("generated"):
-        write_install(install[0], install[1], nav, tail)
-    elif g["from_template"]:
+def write_guide(g: dict, nav: list[dict], tail: str, template: tuple, pages: dict[tuple[str, str], str]) -> None:
+    """Write one guide from wherever it lives: the template, another repository or this repository."""
+    if g["from_template"]:
         write_template_guide(g, template[0], template[1], nav, template[2], tail)
     elif "repo" in g:
         write_source_guide(g, nav, tail, pages)
@@ -216,7 +203,7 @@ def read_sections(docs_dir: Path) -> tuple[list[dict], list[dict]]:
     return own, theirs
 
 
-def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str) -> list[dict]:
+def build(template_dir: Path, doc_source: Path) -> list[dict]:
     """Write guides/: our own sections (data/guides.yaml, track "use"), then the template's .tools/docs as track "build".
     Returns the sidebar sections (title, track, items) for the hub pages."""
     docs_dir = template_dir / ".tools" / "docs"
@@ -237,5 +224,5 @@ def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str) 
         flat = [g for s in sections if s["track"] == track for g in s["items"]]
         for i, g in enumerate(flat):
             tail = pager(flat[i - 1] if i else None, flat[i + 1] if i + 1 < len(flat) else None)
-            write_guide(g, nav, tail, (systems, note), (docs_dir, doc_source, known), pages)
+            write_guide(g, nav, tail, (docs_dir, doc_source, known), pages)
     return nav

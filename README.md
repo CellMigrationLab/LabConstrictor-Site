@@ -29,13 +29,14 @@ Find the thing you want to change; edit it **there**, never in the site's genera
 | Which apps are listed; featured on the home page; verified; shown under *Testing and maintenance* | `registry/<owner>__<repo>.yaml` (`featured`, `verified_version`, `section: testing`) | this repository |
 | The picture cards on the **Use** and **Build** pages | `data/hubs.yaml` | this repository |
 | *Open and use an app* | `content/guides/using-apps.md` | this repository |
-| *Install an app* (steps for each system) | `data/install.yaml` | this repository (keep it in step with the template's download guide) |
+| *Install an app* (steps for each system) | `.tools/docs/install.md` | LabConstrictor |
 | Home page text | `data/site.yaml` | this repository |
 | The **Submit** page | `content/submit.md` | this repository |
 | The **menu** | `nav:` in `mkdocs.yml` | this repository |
 | The footer, page layout, colours | `overrides/`, `docs/assets/stylesheets/lc.css` | this repository |
 | Which projects the Ecosystem page lists | `data/ecosystem.yaml` (one `- repo: owner/name` line each) | this repository |
 | Add another guide kept in a repository | one line in `data/guides.yaml` | this repository |
+| An address that moved (so old links keep working) | one line in `data/redirects.yaml` | this repository |
 
 To **list an app**, the app's authors use the [submission form](https://github.com/CellMigrationLab/LabConstrictor-Site/issues/new?template=submit-app.yml) (or add a pointer file in `registry/`).
 
@@ -49,7 +50,7 @@ The site rebuilds by itself, so you rarely need to do anything:
 - every day (so edits in the other repositories, new app releases and new manifests show up within 24 hours);
 - on demand: **Actions → Build and publish site → Run workflow**.
 
-A build that fails leaves the previous site online. A broken or missing guide, picture, project file or manifest stops the build and the error names the file to fix.
+A build that fails leaves the previous site online, and a failed daily build opens an issue in this repository. A broken or missing guide, picture, project file or manifest stops the build and the error names the file to fix.
 
 ## Going public
 

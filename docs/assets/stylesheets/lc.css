@@ -190,10 +190,6 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .md-typeset .lc-table td, .md-typeset .lc-table th { padding: .5rem .8rem .5rem 0; }
 .lc-scroll { max-width: 100%; overflow-x: auto; }   /* a wide table scrolls inside its box instead of widening the page */
 .lc-table td:last-child { white-space: nowrap; }
-[dir] .md-typeset details.lc-os { margin: .5rem 0; padding: 0; border: 1px solid var(--lc-line); border-radius: .4rem; background: #fff; box-shadow: none; }
-.md-typeset .lc-os summary { padding: .65rem .9rem; font-weight: 600; cursor: pointer; color: var(--lc-strong); background: none; }
-.md-typeset .lc-os summary::before { display: none; }
-.md-typeset .lc-os summary::after { background-color: var(--lc-muted); }
 .lc-os[open] summary { border-bottom: 1px solid var(--lc-line); }
 .lc-os ol { margin: .6rem .9rem .8rem 2rem; }
 .lc-facts { display: grid; grid-template-columns: max-content 1fr; gap: .45rem 1.4rem; margin: .8rem 0; }

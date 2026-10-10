@@ -6,7 +6,7 @@
 Reads                                       Writes (git-ignored, rebuilt every time)
   build/snapshot.json (fetch_catalogue.py)    docs/apps/index.md, docs/apps/<app>/index.md
   build/media/<app>/                          docs/assets/icons/, docs/assets/shots/ (resized)
-  data/site.yaml, install.yaml, ecosystem.yaml  docs/index.md, ecosystem.md, guides/install/
+  data/site.yaml, ecosystem.yaml  docs/index.md, ecosystem.md
   content/submit.md                           docs/submit.md
   template .tools/docs + doc_source pictures  docs/guides/, docs/assets/docs-img/, docs/assets/images/ (logo, comic)
   (all of the above)                          docs/llms.txt
@@ -19,7 +19,7 @@ import argparse
 import shutil
 from pathlib import Path
 
-from lcsite import guides, hubs, llms, pages_apps, pages_site, projects
+from lcsite import guides, hubs, llms, pages_apps, pages_site, projects, redirects
 from lcsite.config import BUILD, DATA, DOCS, GENERATED, SITE_URL, SNAPSHOT, SNAPSHOT_FORMAT, fail, load_json, load_yaml
 from lcsite.images import ICON_PX, SHOT_PX, shrink
 
@@ -29,6 +29,7 @@ def clean() -> None:
     for name in GENERATED:
         path = DOCS / name
         shutil.rmtree(path) if path.is_dir() else path.unlink(missing_ok=True)
+    redirects.clean()
 
 
 def copy_media(apps: list[dict]) -> None:
@@ -71,18 +72,19 @@ def main() -> None:
     if not SNAPSHOT.is_file():
         fail(f"no {SNAPSHOT}: run scripts/fetch_catalogue.py first")
     apps = load_apps()
-    site, install, ecosystem = (load_yaml(DATA / f"{n}.yaml") for n in ("site", "install", "ecosystem"))
+    site, ecosystem = (load_yaml(DATA / f"{n}.yaml") for n in ("site", "ecosystem"))
     clean()
     copy_media(apps)
     copy_brand(args.doc_source_dir)
     pages_site.page_home(site, apps)
     pages_apps.page_catalogue(apps)
     for app in apps:
-        pages_apps.page_app(app, install["systems"])
+        pages_apps.page_app(app)
     pages_site.page_ecosystem(projects.resolve(ecosystem))
     pages_site.page_submit(site, f"{SITE_URL}schema/labconstrictor-app.schema.json")
-    nav = guides.build(args.template_dir, args.doc_source_dir, install["systems"], install["note"])
+    nav = guides.build(args.template_dir, args.doc_source_dir)
     hubs.write_all(load_yaml(DATA / "hubs.yaml"), nav, args.doc_source_dir, apps)
+    redirects.write_all(redirects.load())
     llms.write(site, apps)
     print(f"Generated pages for {len(apps)} apps.")
 

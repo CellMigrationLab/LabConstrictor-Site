@@ -6,6 +6,7 @@ Fails (exit status 1) and lists every problem when:
   - a link between pages of the site points to a page, file or anchor that does not exist,
   - text written by an app's author appears unescaped in a page (a sign of HTML injection),
   - an "edit this page" link points at a generated file instead of its source,
+  - a page has no current entry in the top menu, or cannot be reached from the home page within 3 clicks,
   - a file that must exist is missing (sitemap, robots.txt, llms.txt, the schemas).
 Run it after `zensical build` and `write_sitemap.py`.
 """
@@ -32,9 +33,25 @@ class PageParts(HTMLParser):
         super().__init__()
         self.links: list[str] = []
         self.ids: set[str] = set()
+        self.in_menu = False
+        self.has_menu = False
+        self.active_menu = 0
+        self.redirect = False
+
+    def handle_endtag(self, tag: str) -> None:
+        """Leave the top menu when its list ends."""
+        if tag == "ul":
+            self.in_menu = False
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        """Remember hrefs, srcs and ids."""
+        """Remember hrefs, srcs and ids, and which top-menu entries are marked as the current one."""
+        a = dict(attrs)
+        if tag == "ul" and "lc-menu" in (a.get("class") or "").split():
+            self.in_menu = self.has_menu = True
+        if tag == "a" and self.in_menu and "is-active" in (a.get("class") or "").split():
+            self.active_menu += 1
+        if tag == "meta" and (a.get("http-equiv") or "").lower() == "refresh":
+            self.redirect = True
         for name, value in attrs:
             if name in ("href", "src") and value:
                 self.links.append(value)
@@ -112,6 +129,40 @@ def edit_link_problems(pages: dict[Path, PageParts]) -> list[str]:
             for page, parts in pages.items() for a in parts.links if GENERATED_EDIT.search(a)]
 
 
+def menu_problems(pages: dict[Path, PageParts]) -> list[str]:
+    """One line per page whose top menu does not mark exactly one entry as the current one (visitors lose their place)."""
+    return [f"{page.relative_to(SITE)}: {parts.active_menu} menu entries are marked current (should be 1)"
+            for page, parts in pages.items() if parts.has_menu and parts.active_menu != 1]
+
+
+def click_depths(pages: dict[Path, PageParts]) -> dict[Path, int]:
+    """Clicks from the home page to every page it can reach through internal links."""
+    home = (SITE / "index.html").resolve()
+    depth, queue = {home: 0}, [home]
+    while queue:
+        page = queue.pop(0)
+        for address in pages[page].links if page in pages else []:
+            target = target_file(page, address)
+            if target in pages and target not in depth:
+                depth[target] = depth[page] + 1
+                queue.append(target)
+    return depth
+
+
+def reach_problems(pages: dict[Path, PageParts], max_clicks: int = 3) -> list[str]:
+    """One line per page that cannot be reached from the home page, or needs more than `max_clicks` clicks (redirect pages are exempt)."""
+    depth = click_depths(pages)
+    found = []
+    for page, parts in pages.items():
+        if parts.redirect:
+            continue
+        if page not in depth:
+            found.append(f"{page.relative_to(SITE)}: no link leads here from the home page")
+        elif depth[page] > max_clicks:
+            found.append(f"{page.relative_to(SITE)}: {depth[page]} clicks from the home page (limit {max_clicks})")
+    return found
+
+
 def missing_files() -> list[str]:
     """One line per required file that is missing from site/."""
     return [f"missing {name}" for name in REQUIRED if not (SITE / name).is_file()]
@@ -124,7 +175,8 @@ def main() -> int:
         return 2
     # The 404 page uses absolute addresses on purpose (it is served from any depth), so it is not link-checked.
     pages = {p.resolve(): parse(p) for p in sorted(SITE.rglob("*.html")) if p.name != "404.html"}
-    problems = missing_files() + link_problems(pages) + edit_link_problems(pages) + escaping_problems(load_json(SNAPSHOT))
+    problems = (missing_files() + link_problems(pages) + edit_link_problems(pages) + menu_problems(pages)
+                + reach_problems(pages) + escaping_problems(load_json(SNAPSHOT)))
     for problem in problems:
         print(f"PROBLEM {problem}", file=sys.stderr)
     print(f"check_site: {len(pages)} pages, {len(problems)} problems")

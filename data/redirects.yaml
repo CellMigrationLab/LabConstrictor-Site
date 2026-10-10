@@ -1,0 +1,4 @@
+# Old address -> new address, both relative to the site root and ending with a slash. Add a line whenever a page is
+# renamed or moved (a template doc renamed in the template changes its guide address), so existing links keep working.
+# Example:  guides/old-name/: guides/new-name/
+redirects: {}

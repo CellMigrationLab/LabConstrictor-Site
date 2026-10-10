@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from lcsite import cards, guides, hubs, projects, registry, sources
+from lcsite import cards, guides, hubs, projects, redirects, registry, sources
 from lcsite.config import AppProblem, DATA
 
 APP = {"slug": "demo", "repo": "o/demo", "html_url": "https://github.com/o/demo", "tier": "listed", "verified_version": None,
@@ -61,10 +61,17 @@ class CardTests(unittest.TestCase):
 
 
 class DataTests(unittest.TestCase):
-    def test_install_steps_cover_the_three_systems(self) -> None:
-        """Install steps cover the three systems."""
+    """The data files the build reads are well formed."""
+
+    def test_redirects_file_is_a_mapping(self) -> None:
+        """data/redirects.yaml loads as a mapping of old to new addresses."""
+        self.assertIsInstance(redirects.load(), dict)
+
+    def test_the_install_guide_comes_from_the_template(self) -> None:
+        """data/guides.yaml places the template's install.md under Use an app (so there is one install guide, not two)."""
         from lcsite.config import load_yaml
-        self.assertEqual([s["key"] for s in load_yaml(DATA / "install.yaml")["systems"]], ["windows", "macos", "linux"])
+        items = [g for s in load_yaml(DATA / "guides.yaml")["sections"] for g in s["items"]]
+        self.assertIn({"template": "install.md"}, items)
 
 
 if __name__ == "__main__":
@@ -218,3 +225,45 @@ class NavigationTests(unittest.TestCase):
         """`section: testing` shows a Testing badge; any other app shows none."""
         self.assertIn("Testing", cards.testing_badge({"section": "testing"}))
         self.assertEqual(cards.testing_badge({"section": "apps"}), "")
+
+
+class RedirectTests(unittest.TestCase):
+    """A redirect is only allowed between a free old address and an existing new one."""
+
+    def test_check_names_each_problem(self) -> None:
+        """A redirect over a real page, to a missing page, or with a malformed address is refused with the reason."""
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp)
+            (docs / "guides" / "a").mkdir(parents=True)
+            (docs / "guides" / "a" / "index.md").write_text("x", encoding="utf-8")
+            self.assertEqual(redirects.check("guides/old/", "guides/a/", docs), [])
+            self.assertIn("real page", " ".join(redirects.check("guides/a/", "guides/a/", docs)))
+            self.assertIn("does not exist", " ".join(redirects.check("guides/old/", "guides/zzz/", docs)))
+            self.assertIn("slash", " ".join(redirects.check("/guides/old", "guides/a/", docs)))
+
+    def test_previous_redirect_pages_are_cleaned(self) -> None:
+        """clean() removes pages made from the redirect template and leaves ordinary pages alone."""
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp)
+            (docs / "old").mkdir()
+            (docs / "old" / "index.md").write_text("---\ntemplate: redirect.html\n---\n", encoding="utf-8")
+            (docs / "keep").mkdir()
+            (docs / "keep" / "index.md").write_text("---\ntitle: Keep\n---\n", encoding="utf-8")
+            redirects.clean(docs)
+            self.assertFalse((docs / "old" / "index.md").exists())
+            self.assertTrue((docs / "keep" / "index.md").exists())
+
+
+class SiteCheckTests(unittest.TestCase):
+    """check_site's navigation rules."""
+
+    def test_menu_and_reach_rules(self) -> None:
+        """A page with no current menu entry, or no link leading to it, is reported."""
+        import check_site
+        from check_site import PageParts
+        home, lost = PageParts(), PageParts()
+        home.has_menu, home.active_menu, lost.has_menu, lost.active_menu = True, 1, True, 0
+        site = check_site.SITE
+        pages = {(site / "index.html").resolve(): home, (site / "lost" / "index.html").resolve(): lost}
+        self.assertEqual(len(check_site.menu_problems(pages)), 1)
+        self.assertEqual(len(check_site.reach_problems(pages)), 1)

@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Moved – {{ config.site_name }}</title>
+  <meta name="robots" content="noindex">
+  <meta http-equiv="refresh" content="0; url={{ page.meta.redirect_to | url }}">
+  <link rel="canonical" href="{{ (config.site_url ~ page.meta.redirect_to) if config.site_url else page.meta.redirect_to }}">
+</head>
+<body>
+  <p>This page has moved to <a href="{{ page.meta.redirect_to | url }}">{{ page.meta.redirect_to }}</a>.</p>
+</body>
+</html>
