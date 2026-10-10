@@ -43,6 +43,12 @@ def logo(key: str) -> str:
     return f'<img class="lc-logo" src="assets/hosts/{esc(key)}.png" alt="" width="18" height="18" loading="lazy">'
 
 
+def pill(key: str, hosts: dict[str, dict], label: str = "") -> str:
+    """The program pill: the program's logo and name, linked to the program's own website."""
+    h = hosts[key]
+    return f'<a class="lc-gh lc-gh--host" href="{esc(h["url"])}">{logo(key)}<span>{esc(label or h["name"])}</span></a>'
+
+
 def host_of_plugin(repo: str, hosts: dict[str, dict]) -> str | None:
     """The host key of one of our plugin repositories (CellMigrationLab/napari-labconstrictor -> napari), or None for any other repository."""
     return next((k for k, h in hosts.items() if h["plugin"] == repo), None)

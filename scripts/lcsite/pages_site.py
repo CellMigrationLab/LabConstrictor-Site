@@ -31,6 +31,13 @@ def choice(title: str, text: str, href: str, label: str, cls: str = "") -> str:
             f'<span class="lc-go">{esc(label)}</span></a>')
 
 
+def program_pills() -> str:
+    """"napari, Fiji and QuPath" as program pills (logo + name, linked to each program's website)."""
+    table = hosts.load()
+    pills = [hosts.pill(k, table) for k in table]
+    return ", ".join(pills[:-1]) + " and " + pills[-1]
+
+
 def page_home(site: dict, apps: list[dict]) -> None:
     """index.md: hero with the logo, the two paths (use / make), the comic, featured apps, how it works, where apps run."""
     hero = site["hero"]
@@ -49,7 +56,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
     p.add(f'<section class="lc-band lc-band--soft"><h2 class="lc-title">How it works</h2><ol class="lc-steps">{steps}</ol>',
           f'<p class="lc-more">{github_badge(site["links"]["template"].removeprefix("https://github.com/"), "Start from the template")} · <a href="build/">Read the guides</a></p></section>')
     p.add('<section class="lc-band"><h2 class="lc-title">Works where you work</h2>',
-          '<p class="lc-center">Desktop installers, Google Colab and pip. Apps that declare tools also run inside napari, Fiji and QuPath.</p>',
+          f'<p class="lc-center">Desktop installers, Google Colab and pip. Apps that declare tools also run inside {program_pills()}.</p>',
           '<p class="lc-more"><a href="guides/image-software/">Use apps in your image software</a> · <a href="guides/">Read the docs</a> · <a href="ecosystem/">Explore the ecosystem</a></p></section>')
     p.write()
 
@@ -57,7 +64,8 @@ def page_home(site: dict, apps: list[dict]) -> None:
 def card_foot(card: dict) -> str:
     """The footer of an ecosystem card: a GitHub badge for its repository and, when it has one, a link to its guide here."""
     guide = f'<a class="lc-go" href="guides/{esc(card["guide"])}/">Guide</a>' if card["guide"] else ""
-    return f'<div class="lc-card__foot">{github_badge(card["repo"])}{guide}</div>'
+    program = hosts.pill(card["host"], hosts.load()) if card["host"] else ""
+    return f'<div class="lc-card__foot">{github_badge(card["repo"])}{program}{guide}</div>'
 
 
 def ecosystem_card(card: dict) -> str:

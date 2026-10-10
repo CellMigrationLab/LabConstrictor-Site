@@ -2,7 +2,8 @@
 
 import json
 
-from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, github_badge, host_badge, icon, is_verified, release_line, testing_badge, tier_badge
+from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, github_badge, host_badge, icon, is_verified, link_pill, release_line, testing_badge, tier_badge
+from . import hosts
 from .page import Page
 from .validate import optional_list
 from .text import esc, long_date, megabytes, paragraphs, plural
@@ -117,6 +118,8 @@ def details_list(app: dict) -> str:
     verified = (f"Verified for {esc(app['verified_version'])}" + (f" on {long_date(app['verified_on'])}" if app["verified_on"] else "")
                 if is_verified(app) else "Community listing (not verified by a maintainer)")
     rows = [("Kind", KINDS[m["kind"]]), ("Latest release", release_line(app)), ("License", esc(app["license"] or "Not stated")), ("Status", verified)]
+    if works_in(app):
+        rows.append(("Works in", works_in(app)))
     if m.get("authors"):
         rows.append(("Authors", ", ".join(esc(a["name"]) for a in m["authors"])))
     if m.get("categories"):
@@ -126,6 +129,23 @@ def details_list(app: dict) -> str:
     links = [("Report a problem", app["html_url"] + "/issues"), ("Homepage", m.get("homepage")), ("Documentation", m.get("docs_url"))]
     rows.append(("Links", " · ".join(f'<a href="{esc(u)}">{t}</a>' for t, u in links if u)))
     return '<h2 id="details">Details</h2><dl class="lc-facts">' + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows) + "</dl>"
+
+
+def header_links(app: dict) -> str:
+    """The pills under the summary: the repository, then the app's documentation and website when its manifest gives them."""
+    m = app["manifest"]
+    pills = [github_badge(app["repo"])]
+    if m.get("docs_url"):
+        pills.append(link_pill(m["docs_url"], "Documentation", "docs"))
+    if m.get("homepage"):
+        pills.append(link_pill(m["homepage"], "Website", "web"))
+    return "".join(pills)
+
+
+def works_in(app: dict) -> str:
+    """The programs the app works in, each a pill with its logo linked to the program's website (empty when only a notebook)."""
+    table = hosts.load()
+    return " ".join(hosts.pill(h, table) for h in optional_list(app["manifest"], "hosts") if h in table)
 
 
 def jsonld(app: dict) -> str:
@@ -148,9 +168,9 @@ def page_app(app: dict) -> None:
              edit_url=f"{app['html_url']}/edit/HEAD/labconstrictor-app.yaml")
     plugins = [h for h in optional_list(m, "hosts") if h != "notebook"]
     p.add('<p class="lc-crumb"><a href="apps/">&larr; All apps</a></p>',
-          f'<header class="lc-apphead">{icon(app, 72)}<div><h1>{esc(m["name"])}</h1>'
+          f'<header class="lc-apphead"><div class="lc-apphead__name">{icon(app, 56)}<h1>{esc(m["name"])}</h1></div>'
           f'<p class="lc-lead">{esc(m["summary"])}</p><p>{tier_badge(app)}{badge(KINDS[m["kind"]])}'
-          f'{"".join(host_badge(h) for h in plugins)}{testing_badge(app)}</p><p>{github_badge(app["repo"])}</p></div></header>')
+          f'{"".join(host_badge(h) for h in plugins)}{testing_badge(app)}</p><p>{header_links(app)}</p></header>')
     p.add(get_section(app))
     if m.get("description"):
         p.add('<h2 id="about">About</h2>', paragraphs(m["description"]))

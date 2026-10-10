@@ -15,6 +15,7 @@ find its type below and use that pattern; if there is no pattern, add one here f
 | Menu | Exactly one top-menu entry is marked as the current one (apps → Apps; guides, Use and Build → Docs). |
 | Edit | Every page except the home page ends with "Edit this page on GitHub", pointing to the file where its text is really written. |
 | Reach | Every page is reachable from the home page in at most 3 clicks. |
+| App header | The app's icon sits **next to its name** on one line; the summary, the badges (tier, kind, programs) and the pills (GitHub, Documentation and Website when the manifest gives `docs_url` and `homepage`) follow below. |
 | Back link | Apps: "← All apps". Guides and the Use and Build pages: "← Use an app" or "← Build an app". |
 
 ## Headings and text
@@ -28,7 +29,7 @@ find its type below and use that pattern; if there is no pattern, add one here f
 
 1. **Text link**: inside a sentence. Underlined, ink colour. The text says where it goes; "here", "this link" and "more" are not allowed.
 2. **Action link** (`lc-go`): a destination at the end of a card or block ("Open", "Guide", "Install an app"). Green, bold, no underline, with an arrow that the style adds. The text never contains an arrow.
-3. **Pill**: a small rounded link that names a thing. The **GitHub pill** (mark + repository name, or a short label) is the only way to link to a repository; the **program pill** (the program's logo + its name) is the only way to link to napari, Fiji or QuPath. Badges that link (for example "Soon in napari") are pills.
+3. **Pill**: a small rounded link that names a thing. The **GitHub pill** (mark + repository name, or a short label) is the only way to link to a repository; the **program pill** (the program's logo + its name) is the only way to link to napari, Fiji or QuPath (their own websites); the **documentation pill** (a book) links to an app's documentation. Badges that link (for example "Soon in napari", which goes to our guide) are pills.
 
 Behaviour: a link that leaves the site opens in a new tab with `rel="noopener"` (done by `finish_site.py` for Markdown, by `page.py` for generated pages); a link inside the site never does. Every link has a name a screen reader can read.
 
@@ -41,7 +42,7 @@ Behaviour: a link that leaves the site opens in a new tab with `rel="noopener"` 
 
 ## Cards
 
-A card is **one link** (the whole card) to one destination: icon or logo and name, kind, summary, badges, a footer with its facts. Cards that need separate actions (ecosystem cards) put them in the footer as a GitHub pill and an action link, never inside the main text. Cards of the same kind have the same parts in the same order.
+A card is **one link** (the whole card) to one destination: icon or logo and name, kind, summary, badges, a footer with its facts. App cards show the logo of each program the app works in as a chip (the chips are not links; the name is there for screen readers). Ecosystem cards put the repository, the program and the guide in the footer. Cards that need separate actions (ecosystem cards) put them in the footer as a GitHub pill and an action link, never inside the main text. Cards of the same kind have the same parts in the same order.
 
 ## Badges and pills
 

@@ -6,7 +6,7 @@ import yaml
 
 from .cards import GITHUB_MARK
 from .config import DOCS, SITE_URL
-from .hosts import load as load_hosts, logo
+from .hosts import load as load_hosts, pill
 from .text import is_external, opens_new_tab
 
 NEW_TAB = 'target="_blank" rel="noopener"'
@@ -32,7 +32,8 @@ HOST_LINK = re.compile(r"\[([^\]]+)\]\((https://(?:napari\.org|fiji\.sc|qupath\.
 def decorate_links(text: str) -> str:
     """Markdown links to a GitHub repository or to napari, Fiji or QuPath become the site's pills (GitHub mark; the program's logo),
     so the same kind of link looks the same everywhere. Other links are untouched."""
-    hosts_by_url = {h["url"]: key for key, h in load_hosts().items()}
+    table = load_hosts()
+    hosts_by_url = {h["url"]: key for key, h in table.items()}
 
     def repo(m: re.Match) -> str:
         """The GitHub pill for a repository link."""
@@ -40,7 +41,7 @@ def decorate_links(text: str) -> str:
 
     def host(m: re.Match) -> str:
         """The program's logo before its name, as a pill."""
-        return f'<a class="lc-gh lc-gh--host" href="{m.group(2)}">{logo(hosts_by_url[m.group(2)])}<span>{m.group(1)}</span></a>'
+        return pill(hosts_by_url[m.group(2)], table, m.group(1))
 
     return HOST_LINK.sub(host, GITHUB_REPO_LINK.sub(repo, text))
 

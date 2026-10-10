@@ -49,6 +49,22 @@ def tier_badge(app: dict) -> str:
     return badge("Verified", "verified") if is_verified(app) else badge("Community")
 
 
+BOOK_MARK = ('<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path fill="currentColor" '
+             'd="M2 2.75C2 1.78 2.78 1 3.75 1h9.5c.41 0 .75.34.75.75v10.5c0 .41-.34.75-.75.75H4.5a1 1 0 0 0 0 2h8.75a.75.75 0 0 1 0 1.5H4.5A2.5 2.5 0 0 1 2 13.5Zm1.5 8.9c.3-.1.62-.15.95-.15H12.5v-9h-8.75a.25.25 0 0 0-.25.25Z"/></svg>')
+
+
+def link_pill(url: str, label: str, kind: str) -> str:
+    """A pill for a page about the app: kind "docs" shows a book, "web" a plain label."""
+    mark = BOOK_MARK if kind == "docs" else ""
+    return f'<a class="lc-gh" href="{esc(url)}">{mark}<span>{esc(label)}</span></a>'
+
+
+def host_chip(key: str) -> str:
+    """A program's logo as a small chip on an app card (the card is one link, so the chip is not one): "Soon in napari" for screen readers and as a tooltip."""
+    return (f'<span class="lc-badge lc-badge--host lc-badge--logo" title="Soon in {esc(HOSTS[key])}">{hosts.logo(key)}'
+            f'<span class="lc-sr">Soon in {esc(HOSTS[key])}</span></span>')
+
+
 def host_badge(key: str) -> str:
     """"Soon in napari" with the program's logo, linked to our guide for it."""
     return (f'<a class="lc-badge lc-badge--host" href="{esc(HOST_GUIDES[key])}">{hosts.logo(key)}'
@@ -58,6 +74,11 @@ def host_badge(key: str) -> str:
 def testing_badge(app: dict) -> str:
     """"Testing" for apps that check or maintain LabConstrictor itself (registry `section: testing`); nothing for the others."""
     return badge("Testing", "testing") if app["section"] == "testing" else ""
+
+
+def host_chips(app: dict) -> str:
+    """The logos of the programs the app's manifest says it works in (notebook has none)."""
+    return "".join(host_chip(h) for h in optional_list(app["manifest"], "hosts") if h in HOST_GUIDES)
 
 
 def route_badges(app: dict) -> str:
@@ -105,5 +126,5 @@ def card(app: dict) -> str:
     return (f'<li class="lc-card" {attrs}><a class="lc-card__main" href="apps/{slug}/">'
             f'<span class="lc-card__head">{icon(app)}<span class="lc-card__title"><strong>{esc(m["name"])}</strong>'
             f'<small>{KINDS[m["kind"]]}</small></span></span><span class="lc-card__text">{esc(m["summary"])}</span>'
-            f'<span class="lc-card__badges">{tier_badge(app)}{testing_badge(app)}{route_badges(app)}</span>'
+            f'<span class="lc-card__badges">{tier_badge(app)}{testing_badge(app)}{route_badges(app)}{host_chips(app)}</span>'
             f'<span class="lc-card__foot lc-card__foot--in">{release_line(app)}</span></a></li>')

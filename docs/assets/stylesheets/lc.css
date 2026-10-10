@@ -168,8 +168,9 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .md-typeset .lc-filter__count { flex-basis: 100%; margin: 0; font-size: .66rem; color: var(--lc-muted); }
 
 /* ------------------------------------------------------------------ app page */
-.lc-apphead { display: flex; gap: 1.2rem; align-items: center; margin-bottom: 1.4rem; }
-.lc-apphead h1 { margin-bottom: .1em; }
+.lc-apphead { margin-bottom: 1.4rem; }
+.lc-apphead__name { display: flex; align-items: center; gap: 1rem; margin-bottom: .6rem; }
+.lc-apphead h1 { margin: 0; }
 .lc-apphead p { margin: .3rem 0 0; }
 .lc-osgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: .6rem 0 1rem; }
 .lc-ostile { position: relative; display: flex; flex-direction: column; gap: .5rem; padding: 1rem; border: 1px solid var(--lc-line); border-radius: .6rem; background: #fff; }
@@ -314,3 +315,12 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-docs__nav .lc-logo { width: 1.2em; height: 1.2em; }
 .lc-card__title .lc-logo { width: 1.5em; height: 1.5em; margin-right: .5em; vertical-align: -.35em; }
 .lc-card--plain .lc-card__title { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; text-align: left; }
+
+/* A program's logo on its own as a chip (app cards); the name is there for screen readers and as a tooltip. */
+.lc-badge--logo { padding: .1rem .35rem; }
+.lc-badge--logo .lc-logo { margin: 0; width: 1.4em; height: 1.4em; vertical-align: middle; }
+.lc-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.lc-card--plain .lc-card__foot { flex-wrap: wrap; justify-content: flex-start; gap: .4rem .6rem; }
+.lc-card--plain .lc-card__foot .lc-go { margin-left: auto; }
+.lc-apphead p { margin: .5rem 0 0; }
+.md-typeset a.lc-gh { margin: 0 .3rem .2rem 0; }
