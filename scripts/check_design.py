@@ -19,7 +19,7 @@ from lcsite.config import SITE_URL
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "site"
 GENERIC_LINK_TEXT = {"here", "click here", "link", "more", "read more", "this", "this link"}
-DECORATIVE_IMAGE_PARENTS = ("lc-brand", "lc-footer__brand", "lc-icon", "lc-logo")
+DECORATIVE_IMAGE_PARENTS = ("lc-brand", "lc-footer__brand", "lc-icon", "lc-logo", "lc-shot__img")   # lc-shot__img: its figcaption says what it shows
 DESCRIPTION_LENGTH = (20, 200)
 # Known breaks of a rule in imported content we cannot change from here yet, each with the reason. A new break is never added silently.
 KNOWN_EXCEPTIONS = {
@@ -78,7 +78,7 @@ class Facts(HTMLParser):
             if self._open_link is not None and a.get("alt"):
                 self._open_link["img_alt"] = True
         elif tag == "button" or (tag == "a" and "lc-btn" in classes):
-            self.buttons.append({"tag": tag, "classes": classes, "copy": "data-copy" in a, "main": self._in_main})
+            self.buttons.append({"tag": tag, "classes": classes, "copy": "data-copy" in a or "data-lc-reset" in a, "main": self._in_main})
 
     def handle_endtag(self, tag: str) -> None:
         """Close the title, the main area and the current link."""
@@ -149,7 +149,7 @@ def button_problems(name: str, f: Facts) -> list[str]:
         if "md-top" in b["classes"]:
             continue   # the theme's own "back to top" button
         if b["tag"] == "button" and b["main"] and not b["copy"]:
-            found.append(f"{name}: a <button> in the content that is not a copy button")
+            found.append(f"{name}: a <button> in the content that is neither a copy nor a clear-filters button")
         if b["tag"] == "button" and b["main"] and "lc-btn" not in b["classes"]:
             found.append(f"{name}: a <button> in the content is not styled as a button")
     return found

@@ -113,9 +113,9 @@ def downloads(app: dict) -> dict[str, list[dict]]:
 
 
 def search_text(app: dict) -> str:
-    """Lower-case text the live filter searches: name, summary and categories."""
+    """Lower-case text the live filter searches: name, summary, the longer description and categories."""
     m = app["manifest"]
-    return " ".join([m["name"], m["summary"], *optional_list(m, "categories")]).lower()
+    return " ".join([m["name"], m["summary"], m["description"] if "description" in m else "", *optional_list(m, "categories")]).lower()
 
 
 def card(app: dict) -> str:

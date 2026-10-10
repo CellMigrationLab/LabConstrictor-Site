@@ -45,7 +45,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
     p = Page("index.md", title="LabConstrictor", head_title=f"{site['name']}: {hero['title']}", description=hero["text"], template="home.html")
     p.add(f'<section class="lc-hero"><div class="lc-hero__in"><div><h1>{esc(hero["title"])}</h1><p>{esc(hero["text"])}</p>'
           '<div class="lc-choices">'
-          + choice("I want to use an app", f"Browse {plural(len(apps), 'app')} for image analysis. Install in a few clicks.", "apps/", "Open the App Centre")
+          + choice("I want to find an app", f"Browse {plural(len(apps), 'app')} for image analysis. Install in a few clicks.", "apps/", "Open the App Centre")
           + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "build/", "Why and how to build one", "lc-choice--make") +
           '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256"></div></div></section>')
     p.add(comic_figure())

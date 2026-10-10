@@ -2,6 +2,9 @@
 # Every picture is `doc_source: <file in the template's doc_source branch>` or `repo` + `path` (a file kept in
 # another repository, fetched by scripts/fetch_guides.py). Every picture needs an `alt`. Keep each claim true of
 # what the template builds today; the guides they link to are the proof.
+docs:
+  title: Docs
+  lead: Use an app someone built, or build your own.
 use:
   title: Use an app
   lead: Install an app on your computer, open it, and, if you work in napari, Fiji or QuPath, run its tools there.
@@ -19,11 +22,11 @@ use:
       image: {doc_source: Welcome_Notebook.png}
       alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks and an orange Open the Notebook button.
     - title: Use it in your image software (soon)
-      text: Apps that declare tools will run inside napari, Fiji and QuPath. These plugins are experimental.
+      text: Apps that declare tools will run inside napari, Fiji and QuPath. These plugins are experimental; the picture is a prototype running a test app.
       href: guides/image-software/
       link: How it works
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/N2_napari_form.png}
-      alt: napari with the LabConstrictor dock widget open, showing a form generated from a tool's declaration.
+      alt: A prototype - napari with the LabConstrictor dock widget open on a test app, showing a form generated from a tool's declaration.
   help:
     title: Something went wrong?
     text: Known problems and their fixes, such as an app that still shows in Windows' list after uninstalling.

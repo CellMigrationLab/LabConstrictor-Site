@@ -18,7 +18,7 @@ HUB_PX = 1000   # widest picture on a hub page; larger ones are shrunk
 
 def image_sources(hubs: dict) -> list[dict]:
     """The pictures kept in other repositories (`repo` + `path`), for scripts/fetch_guides.py to download."""
-    found = [f["image"] for h in hubs.values() for f in h["cards"] if "image" in f]
+    found = [f["image"] for h in hubs.values() if "cards" in h for f in h["cards"] if "image" in f]
     return [{"repo": i["repo"], "path": i["path"], "limit": MAX_FILE} for i in found if "repo" in i]
 
 
@@ -98,7 +98,7 @@ def write_docs_home(hubs: dict, nav: list[dict]) -> None:
              guide_nav=nav, guide_id="", docs_home=True, menu="guides/", edit_url=f"{REPO}/edit/main/data/hubs.yaml")
     cards = "".join(f'<a class="lc-choice{" lc-choice--make" if t == "build" else ""}" href="{t}/"><strong>{esc(hubs[t]["title"])}</strong>'
                     f'<span>{esc(hubs[t]["lead"])}</span><span class="lc-go">Open</span></a>' for t in TRACKS)
-    p.add('<h1>Docs</h1><p class="lc-lead">Use an app someone built, or build your own.</p>',
+    p.add(f'<h1>{esc(hubs["docs"]["title"])}</h1><p class="lc-lead">{esc(hubs["docs"]["lead"])}</p>',
           f'<div class="lc-choices">{cards}</div>',
           '<div class="lc-guides lc-guides--two">' + "".join(f'<section id="all-{t}"><h2>{esc(TRACKS[t])}</h2>{guide_lists(nav, t)}</section>' for t in TRACKS) + "</div>")
     p.write()

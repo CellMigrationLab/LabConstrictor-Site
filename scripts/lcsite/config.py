@@ -26,6 +26,9 @@ GENERATED = ["index.md", "apps", "guides", "use", "build", "ecosystem.md", "subm
              "assets/docs-img", "assets/hubs", "assets/hosts", "assets/icons", "assets/shots", "assets/images"]
 
 
+FINAL_URL = "https://labconstrictor.cellmig.org/"   # the address the docs and schemas name; until the domain is live the site is served elsewhere
+
+
 def _site_url() -> str:
     """`site_url` from mkdocs.yml, ending in a slash: the one place the site's address is set."""
     m = re.search(r"^site_url:\s*(\S+)", (ROOT / "mkdocs.yml").read_text(encoding="utf-8"), re.M)

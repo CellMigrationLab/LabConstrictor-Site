@@ -3,6 +3,7 @@
 import unittest
 
 from lcsite import page
+from lcsite.config import DOCS
 from lcsite.text import lead_paragraph
 
 
@@ -47,8 +48,17 @@ class DesignTests(unittest.TestCase):
         facts.feed(bad)
         report = "\n".join(check_design.all_problems({"p/index.html": facts}))
         for expected in ("2 h1", "lang", "no description", "skipped", "new tab with rel", "opens in a new tab", "does not say where",
-                         "not a GitHub pill", "no alt attribute", "not a copy button"):
+                         "not a GitHub pill", "no alt attribute", "neither a copy nor"):
             self.assertIn(expected, report)
+
+
+class StyleTests(unittest.TestCase):
+    """Rules about the stylesheet that broke the site once."""
+
+    def test_the_hidden_attribute_always_wins(self) -> None:
+        """lc.css must make [hidden] beat every component's display rule, or the App Centre filter hides nothing."""
+        css = (DOCS / "assets" / "stylesheets" / "lc.css").read_text(encoding="utf-8")
+        self.assertIn("[hidden] { display: none !important; }", css)
 
 
 if __name__ == "__main__":

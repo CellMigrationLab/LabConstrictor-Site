@@ -75,6 +75,8 @@ function lcInitFilter() {
     history.replaceState(null, "", next.toString() ? `?${next}` : location.pathname);
   };
   Object.values(fields).forEach((el) => el.addEventListener("input", apply));
+  form.querySelector("[data-lc-reset]").addEventListener("click", () => { Object.values(fields).forEach((el) => { el.value = ""; }); apply(); });
+  form.hidden = false;
   apply();
 }
 
@@ -90,7 +92,17 @@ function lcInitCopy() {
   });
 }
 
-function lcInit() { lcInitDownloads(); lcInitFilter(); lcInitCopy(); lcInitDrawer(); }
+/** The phone menu is a checkbox: Space toggles it natively; Enter toggles it too and Escape closes it. */
+function lcInitMenu() {
+  const box = document.querySelector(".lc-menu-toggle");
+  if (!box) return;
+  box.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { box.checked = !box.checked; e.preventDefault(); }
+    if (e.key === "Escape") box.checked = false;
+  });
+}
+
+function lcInit() { lcInitDownloads(); lcInitFilter(); lcInitCopy(); lcInitDrawer(); lcInitMenu(); }
 if (typeof document$ !== "undefined") document$.subscribe(lcInit);
 else document.addEventListener("DOMContentLoaded", lcInit);
 

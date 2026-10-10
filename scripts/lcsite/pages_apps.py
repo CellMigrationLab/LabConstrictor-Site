@@ -9,7 +9,8 @@ from .validate import optional_list
 from .text import esc, long_date, megabytes, paragraphs, plural
 
 LEGEND = ("<strong>Verified</strong>: a maintainer installed and ran this exact version. "
-          "<strong>Community</strong>: public repository, valid manifest and downloads straight from GitHub, checked automatically.")
+          "<strong>Community</strong>: public repository, valid manifest and downloads straight from GitHub, checked automatically. "
+          "Neither label is a security audit: download only from an owner you trust.")
 
 
 def select(name: str, label: str, options: dict[str, str]) -> str:
@@ -20,10 +21,11 @@ def select(name: str, label: str, options: dict[str, str]) -> str:
 
 def filter_bar() -> str:
     """Search box and drop-downs; lc.js filters the cards live and keeps the count."""
-    return ('<form class="lc-filter" data-lc-filter role="search" onsubmit="return false">'
+    return ('<form class="lc-filter" data-lc-filter role="search" onsubmit="return false" hidden>'
             '<label class="lc-filter__search">Search<input type="search" data-lc-search placeholder="Name, topic, what it does"></label>'
             + select("kind", "Kind", KINDS) + select("route", "Get it as", ROUTES) + select("host", "Works in", HOSTS) +
-            '<p class="lc-filter__count" data-lc-count aria-live="polite"></p></form>')
+            '<p class="lc-filter__count" data-lc-count aria-live="polite"></p>'
+            '<button type="button" class="lc-btn lc-btn--ghost lc-btn--small" data-lc-reset>Clear filters</button></form>')
 
 
 def grid(apps: list[dict], extra: str = "") -> str:
@@ -51,7 +53,8 @@ def page_catalogue(all_apps: list[dict]) -> None:
 def os_button(option: dict, system: str, first: bool) -> str:
     """One download button inside a system tile: macOS buttons are named by chip, others by system."""
     name = CHIPS[option["arch"]] if system == "macos" else f"{SYSTEMS[system]} installer"
-    return (f'<a class="lc-btn{"" if first else " lc-btn--ghost"}" href="{esc(option["url"])}" data-arch="{option["arch"]}">'
+    emphasised = first and system != "macos"   # a Mac's chip is unknown until lc.js detects it: both buttons look the same
+    return (f'<a class="lc-btn{"" if emphasised else " lc-btn--ghost"}" href="{esc(option["url"])}" data-arch="{option["arch"]}">'
             f'{esc(name)}<small>{megabytes(option["size"])} · .{option["ext"]}</small></a>')
 
 
@@ -116,7 +119,7 @@ def details_list(app: dict) -> str:
     """The facts: kind, version, license, authors, categories, links, verification."""
     m = app["manifest"]
     verified = (f"Verified for {esc(app['verified_version'])}" + (f" on {long_date(app['verified_on'])}" if app["verified_on"] else "")
-                if is_verified(app) else "Community listing (not verified by a maintainer)")
+                if is_verified(app) else "Community listing: not verified by a maintainer, and not a security audit")
     rows = [("Kind", KINDS[m["kind"]]), ("Latest release", release_line(app)), ("License", esc(app["license"] or "Not stated")), ("Status", verified)]
     if works_in(app):
         rows.append(("Works in", works_in(app)))
@@ -175,7 +178,7 @@ def page_app(app: dict) -> None:
     if m.get("description"):
         p.add('<h2 id="about">About</h2>', paragraphs(m["description"]))
     for i, s in enumerate(app["screenshots"], 1):
-        p.add(f'<figure class="lc-shot"><img src="assets/shots/{app["slug"]}-{i}.jpg" alt="{esc(s["caption"])}" loading="lazy"><figcaption>{esc(s["caption"])}</figcaption></figure>')
+        p.add(f'<figure class="lc-shot"><img class="lc-shot__img" src="assets/shots/{app["slug"]}-{i}.jpg" alt="" loading="lazy"><figcaption>{esc(s["caption"])}</figcaption></figure>')
     p.add(using_section(app))
     if app["release"] and m["distribution"].get("installer"):
         p.add(downloads_table(app), install_help())

@@ -30,16 +30,16 @@
 <header class="lc-header" data-md-component="header">
   <nav class="lc-header__inner" aria-label="Main">
     <a class="lc-brand" href="{{ nav.homepage.url | url }}"><img src="{{ 'assets/images/logo-64.png' | url }}" alt="" width="30" height="30">{{ config.site_name }}</a>
-    <input class="lc-menu-toggle" type="checkbox" id="lc-menu" aria-hidden="true" tabindex="-1">
     <ul class="lc-menu" id="lc-menu-list">
       {% for item in nav.items %}
         {% set current = item.active or (page.meta and page.meta.menu == item.url) %}
-        <li><a href="{{ item.url | url }}" class="{% if current %}is-active{% endif %}{% if loop.last %} lc-menu__cta{% endif %}"{% if item.active %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+        <li><a href="{{ item.url | url }}" class="{% if current %}is-active{% endif %}{% if loop.last %} lc-menu__cta{% endif %}"{% if current %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
       {% endfor %}
     </ul>
     <div class="lc-header__tools">
       {% include "partials/search.html" %}
-      <label class="lc-burger" for="lc-menu" aria-label="Menu" role="button" tabindex="0" aria-controls="lc-menu-list"><span></span><span></span></label>
+      {#- The checkbox itself is the control (focusable, Space toggles it, lc.js adds Enter and Escape); the two bars are only its picture. -#}
+      <span class="lc-burger"><input class="lc-menu-toggle" type="checkbox" id="lc-menu" aria-label="Menu" aria-controls="lc-menu-list"><span></span><span></span></span>
     </div>
   </nav>
 </header>

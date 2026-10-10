@@ -35,7 +35,7 @@ Behaviour: a link that leaves the site opens in a new tab with `rel="noopener"` 
 
 ## Buttons
 
-- Only a **link** navigates; a `<button>` only acts inside the page (copy, open the menu, search). A button never goes anywhere.
+- Only a **link** navigates; a `<button>` only acts inside the page (copy, clear filters, open the menu, search). A button never goes anywhere.
 - **Filled button** (`lc-btn`): the main action of a block: download an installer, the page's call to action ("Add your app"). **Ghost button** (`lc-btn--ghost`): the alternative route in the same block (the other Mac chip, Open in Colab). **Small ghost** (`lc-btn--small`): in-page actions such as Copy.
 - A card contains no button. A page has at most one filled button outside the download tiles.
 - Before adding a button, ask whether a link would do. "Get" on a card was a link to the card's own page, so it was removed.

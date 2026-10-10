@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 from urllib.parse import unquote
 
-from .config import CONTENT, DATA, DOCS, REPO, TEMPLATE_REPO, fail, load_yaml
+from .config import CONTENT, DATA, DOCS, FINAL_URL, REPO, SITE_URL, TEMPLATE_REPO, fail, load_yaml
 from . import hosts, sources
 from .page import Page
 from .text import esc, lead_paragraph
@@ -41,6 +41,25 @@ def parse_index(readme: str) -> list[dict]:
             seen.add(m.group(2))
             sections[-1]["items"].append({"title": m.group(1), "file": m.group(2)})
     return [s for s in sections if s["items"]]
+
+
+OWN_REPO_PATH = re.compile(r"\[`?([^\]`]+)`?\]\(\s*((?:\.\./)+[^)\s#]+)\s*\)")
+
+
+def own_repo_paths(text: str) -> str:
+    """A link whose text is the path it points to (`[.github/workflows/x.yml](../../.github/workflows/x.yml)`) names a file in the
+    reader's own repository: on the website, where that file is not, it becomes plain code instead of a link to the template's copy."""
+    def code(m: re.Match) -> str:
+        """The path as code when the link text is the path; otherwise the link unchanged."""
+        target = posixpath.normpath(posixpath.join(".tools/docs", m.group(2)))
+        return f"`{target}`" if m.group(1) == target else m.group(0)
+    return OWN_REPO_PATH.sub(code, text)
+
+
+def localise(text: str) -> str:
+    """Addresses of this site written with its final domain (in guides from other repositories) -> this site's own address,
+    so the links work before the domain is live. When the two are the same this changes nothing."""
+    return text.replace(FINAL_URL, SITE_URL)
 
 
 def rewrite_links(text: str, known: set[str]) -> str:
@@ -115,7 +134,7 @@ def write_own(item: dict, nav: list[dict], tail: str) -> None:
     src = CONTENT / "guides" / item["file"]
     if not src.is_file():
         fail(f"data/guides.yaml lists {item['file']}, which is not in content/guides/")
-    text = src.read_text(encoding="utf-8").strip()
+    text = localise(src.read_text(encoding="utf-8").strip())
     p = Page(f"guides/{item['slug']}/index.md", **guide_meta(nav, item["slug"]), description=describe(text, item["file"]),
              edit_url=f"{REPO}/edit/main/content/guides/{item['file']}")
     p.add(text, "", tail)
@@ -134,7 +153,7 @@ def write_source_guide(g: dict, nav: list[dict], tail: str, pages: dict[tuple[st
     where = f"{g['repo']}/{g['path']}"
     text = sources.read(g["repo"], g["path"])
     sources.check_links(text, where)
-    text = sources.admonitions(sources.site_links(text, pages))
+    text = localise(sources.admonitions(sources.site_links(text, pages)))
     p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]), description=describe(text, where),
              edit_url=f"https://github.com/{g['repo']}/edit/main/{g['path']}")
     p.add(text.strip(), "", tail)
@@ -147,7 +166,7 @@ def write_template_guide(g: dict, docs_dir: Path, doc_source: Path, nav: list[di
     if not src.is_file():
         fail(f"README of the template lists {g['file']}, which does not exist")
     text = NAV_BLOCK.sub("", src.read_text(encoding="utf-8"))
-    text = copy_images(rewrite_links(text, known), doc_source, g["file"])
+    text = localise(copy_images(rewrite_links(own_repo_paths(text), known), doc_source, g["file"]))
     edit = f"https://github.com/{TEMPLATE_REPO}/edit/main/.tools/docs/{g['file']}"
     p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]), description=describe(text, g["file"]), edit_url=edit)
     p.add(text.strip(), "", tail)

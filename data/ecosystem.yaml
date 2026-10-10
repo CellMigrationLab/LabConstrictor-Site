@@ -13,7 +13,7 @@ tiers:
       - repo: CellMigrationLab/LabConstrictor-QuPath
   - key: dev
     title: Build and maintain apps
-    text: What authors use to make and keep an app.
+    text: What authors use to make, test and keep an app.
     items:
       - repo: CellMigrationLab/LabConstrictor
         name: LabConstrictor template
@@ -21,8 +21,4 @@ tiers:
         status: Available
       - repo: CellMigrationLab/LabConstrictor_streamlit
       - repo: CellMigrationLab/LabConstrictor-Tools
-  - key: test
-    title: Test and maintain
-    text: Apps for checking that LabConstrictor works on your computer and in your image software. They are listed apart in the App Centre.
-    items:
       - repo: CellMigrationLab/LabConstrictor-Playground
