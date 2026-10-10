@@ -4,7 +4,9 @@ import re
 
 import yaml
 
+from .cards import GITHUB_MARK
 from .config import DOCS, SITE_URL
+from .hosts import load as load_hosts, logo
 from .text import is_external, opens_new_tab
 
 NEW_TAB = 'target="_blank" rel="noopener"'
@@ -21,6 +23,26 @@ def new_tab_links(text: str) -> str:
         return tag[:-1] + f" {NEW_TAB}>"
 
     return re.sub(r'<a\b[^>]*\bhref="([^"]*)"[^>]*>', link, text)
+
+
+GITHUB_REPO_LINK = re.compile(r"\[([^\]]+)\]\((https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)/?\)")
+HOST_LINK = re.compile(r"\[([^\]]+)\]\((https://(?:napari\.org|fiji\.sc|qupath\.github\.io))/?\)")
+
+
+def decorate_links(text: str) -> str:
+    """Markdown links to a GitHub repository or to napari, Fiji or QuPath become the site's pills (GitHub mark; the program's logo),
+    so the same kind of link looks the same everywhere. Other links are untouched."""
+    hosts_by_url = {h["url"]: key for key, h in load_hosts().items()}
+
+    def repo(m: re.Match) -> str:
+        """The GitHub pill for a repository link."""
+        return f'<a class="lc-gh" href="{m.group(2)}">{GITHUB_MARK}<span>{m.group(1)}</span></a>'
+
+    def host(m: re.Match) -> str:
+        """The program's logo before its name, as a pill."""
+        return f'<a class="lc-gh lc-gh--host" href="{m.group(2)}">{logo(hosts_by_url[m.group(2)])}<span>{m.group(1)}</span></a>'
+
+    return HOST_LINK.sub(host, GITHUB_REPO_LINK.sub(repo, text))
 
 
 class Page:
@@ -66,5 +88,5 @@ class Page:
         out = DOCS / self.path
         out.parent.mkdir(parents=True, exist_ok=True)
         front = yaml.safe_dump(self.meta, allow_unicode=True, sort_keys=False, width=10**9).strip()
-        body = self.fix_links("\n".join(self.parts))
+        body = self.fix_links(decorate_links("\n".join(self.parts)))
         out.write_text(f"---\n{front}\n---\n\n{body}\n", encoding="utf-8")

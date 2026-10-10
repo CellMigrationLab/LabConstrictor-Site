@@ -23,7 +23,7 @@ MANIFEST_NAME = "labconstrictor-app.yaml"
 
 # Everything build_site.py writes into docs/ (deleted and rebuilt on every run). All git-ignored.
 GENERATED = ["index.md", "apps", "guides", "use", "build", "ecosystem.md", "submit.md", "llms.txt",
-             "assets/docs-img", "assets/hubs", "assets/icons", "assets/shots", "assets/images"]
+             "assets/docs-img", "assets/hubs", "assets/hosts", "assets/icons", "assets/shots", "assets/images"]
 
 
 def _site_url() -> str:

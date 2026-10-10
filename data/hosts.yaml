@@ -1,0 +1,20 @@
+# The image-analysis programs LabConstrictor apps can run inside (the plugin guides are named after them). Each one gets its
+# logo wherever the site links to it, so the program is recognised at a glance. The logo is downloaded at build time from the
+# project's own repository (scripts/fetch_guides.py); `plugin` is the repository of our plugin for it.
+# The logos belong to their projects; the site shows them only to identify the program (the Ecosystem page says so).
+hosts:
+  napari:
+    name: napari
+    url: https://napari.org
+    plugin: CellMigrationLab/napari-labconstrictor
+    logo: {repo: napari/napari, path: src/napari/resources/icon.ico}
+  fiji:
+    name: Fiji
+    url: https://fiji.sc
+    plugin: CellMigrationLab/LabConstrictor-Fiji
+    logo: {repo: fiji/fiji, path: images/icon.png}
+  qupath:
+    name: QuPath
+    url: https://qupath.github.io
+    plugin: CellMigrationLab/LabConstrictor-QuPath
+    logo: {repo: qupath/qupath, path: qupath-gui-fx/src/main/resources/icons/QuPath_128.png}

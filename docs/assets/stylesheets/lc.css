@@ -88,8 +88,8 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-pagehead { margin: 0 0 1.4rem; }
 .lc-pagehead h1 { margin-bottom: .2em; }
 .lc-crumb { font-size: .68rem; margin: 0 0 1rem; }
-.lc-title { display: flex; align-items: center; gap: 1.2rem; margin: 0 auto 1.6rem !important; max-width: 36rem; font-size: .64rem !important; font-weight: 500 !important; letter-spacing: .35em; text-transform: uppercase; color: var(--lc-fg) !important; text-align: center; }
-.lc-title::before, .lc-title::after { content: ""; flex: 1; height: 1px; background: var(--lc-line); }
+.md-typeset .lc-title { margin: 0 0 1.2rem; }
+.lc-band .lc-title { text-align: center; }
 .lc-more { text-align: center; margin: 1.4rem 0 0; font-size: .68rem; }
 
 /* ------------------------------------------------------------------ buttons and badges */
@@ -119,12 +119,12 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .md-typeset .lc-choice--make { border-top-color: var(--lc-orange); }
 .md-typeset .lc-choice:hover { transform: translateY(-2px); box-shadow: 0 .7rem 1.6rem rgba(16, 33, 26, .12); color: var(--lc-fg); }
 .lc-choice strong { font-family: var(--lc-display); color: var(--lc-strong); font-size: 1.05rem; }
-.lc-choice__go { margin-top: auto; padding-top: .4rem; font-weight: 600; color: var(--lc-accent-strong); font-size: .72rem; }
+.lc-choice .lc-go { margin-top: auto; padding-top: .4rem; }
 .lc-comic { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: 3rem var(--lc-gutter) 0; text-align: center; }
 .md-typeset .lc-comic img { display: block; width: 100%; height: auto; border-radius: .5rem; box-shadow: 0 .6rem 1.6rem rgba(16, 33, 26, .14); }
 .lc-comic__panels { display: none; }
 @media (max-width: 40rem) {   /* a phone: three stacked panels, each a third of the strip, instead of a strip too small to read */
-  .lc-comic__strip { display: none; }
+  [dir] .md-typeset .lc-comic .lc-comic__strip { display: none; }
   .lc-comic__panels { display: grid; gap: .8rem; }
   .lc-comic__panel { display: block; aspect-ratio: 1.163; border-radius: .5rem; background: #000 url("../images/comic.png") no-repeat; background-size: 300% 100%; background-position: calc(var(--i) * 50%) 0; box-shadow: 0 .4rem 1rem rgba(16, 33, 26, .14); }
 }
@@ -137,7 +137,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-steps li { counter-increment: step; display: flex; flex-direction: column; gap: .3rem; margin: 0; padding-top: .6rem; border-top: 3px solid var(--lc-orange); }
 .lc-steps li::before { content: counter(step); font-family: var(--lc-display); font-size: 1.9rem; font-weight: 700; color: var(--lc-accent-strong); line-height: 1; }
 .lc-steps strong { color: var(--lc-strong); }
-@media (max-width: 44rem) { .lc-choices, .lc-steps { grid-template-columns: 1fr; } .lc-hero__in { grid-template-columns: 1fr; } .lc-hero__art { order: -1; width: 9rem; } }
+@media (max-width: 44rem) { .lc-choices { grid-template-columns: 1fr; } [dir] .md-typeset ol.lc-steps { grid-template-columns: 1fr; } .lc-hero__in { grid-template-columns: 1fr; } .lc-hero__art { order: -1; width: 9rem; } }
 
 /* ------------------------------------------------------------------ cards */
 [dir] .md-typeset ul.lc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr)); gap: 1.1rem; list-style: none; margin: 1rem 0; padding: 0; }
@@ -152,8 +152,6 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-card__text { font-size: .74rem; line-height: 1.55; }
 .lc-card__badges { margin-top: auto; }
 .lc-card__foot { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .55rem 1rem; border-top: 1px solid var(--lc-line); font-size: .62rem; color: var(--lc-muted); }
-.md-typeset .lc-card__get { padding: .22rem .75rem; border-radius: 1rem; background: var(--lc-accent-soft); color: var(--lc-accent-strong); font-weight: 600; text-decoration: none; }
-.md-typeset .lc-card__get:hover { background: var(--lc-accent-strong); color: #fff; }
 .lc-card--plain .lc-card__main { padding-bottom: 1rem; }
 .lc-icon { flex: none; border-radius: 22%; object-fit: contain; background: var(--lc-soft); }
 .lc-icon--mono { --size: 48px; display: inline-flex; align-items: center; justify-content: center; width: var(--size); height: var(--size); font-weight: 600; font-size: calc(var(--size) * .45); color: #fff; background: linear-gradient(135deg, var(--lc-accent), var(--lc-accent-deep)); }
@@ -184,7 +182,6 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-routes { display: flex; flex-wrap: wrap; gap: .6rem; margin: .4rem 0; }
 .lc-code { display: flex; align-items: center; gap: .6rem; max-width: 30rem; margin: .6rem 0; padding: .35rem .5rem .35rem .8rem; border: 1px solid var(--lc-line); border-radius: .3rem; background: var(--lc-soft); }
 .lc-code code { flex: 1; background: none; color: var(--lc-strong); }
-.lc-code button { padding: .2rem .6rem; border: 1px solid #cfcfcf; border-radius: .3rem; background: #fff; font: inherit; font-size: .62rem; cursor: pointer; }
 [dir] .md-typeset table.lc-table { display: table; width: 100%; font-size: .72rem; }
 .md-typeset .lc-table th { text-align: left; font-weight: 600; color: var(--lc-strong); }
 .md-typeset .lc-table td, .md-typeset .lc-table th { padding: .5rem .8rem .5rem 0; }
@@ -236,7 +233,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-docs__section summary::before { content: "+"; display: inline-block; width: 1.1em; }
 .lc-docs__section[open] summary::before { content: "\2212"; }
 .lc-docs__section summary:hover { color: var(--lc-strong); }
-.lc-docs__nav h2, .lc-guides h2 { margin: 1.1rem 0 .3rem; font-size: .6rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--lc-muted); }
+.lc-docs__nav h2 { margin: 1.1rem 0 .3rem; font-size: .6rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--lc-muted); }
 .lc-docs__nav ul, .lc-guides ul { list-style: none; margin: 0; padding: 0; }
 .lc-docs__nav li { margin: 0; }
 .lc-docs__nav a { display: block; padding: .14rem .6rem; line-height: 1.35; border-left: 2px solid var(--lc-line); color: var(--lc-fg); text-decoration: none; }
@@ -276,7 +273,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 @media print { .lc-header, .lc-footer, .lc-filter, .lc-docs__nav, .md-content__button { display: none !important; } }
 
 /* GitHub badge: a small pill that links to a repository. */
-.md-typeset a.lc-gh { display: inline-flex; align-items: center; gap: .35rem; padding: .12rem .6rem .12rem .45rem; border: 1px solid var(--lc-line); border-radius: 1rem; background: #fff; color: var(--lc-fg); font-size: .62rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.md-typeset a.lc-gh { display: inline-flex; align-items: center; gap: .35rem; padding: .12rem .6rem .12rem .45rem; border: 1px solid var(--lc-line); border-radius: 1rem; background: #fff; color: var(--lc-fg); font-size: .6rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
 .md-typeset a.lc-gh:hover { border-color: var(--lc-accent); color: var(--lc-accent-strong); }
 .lc-gh svg { flex: none; }
 .lc-testing { margin-top: 2.4rem; padding-top: .4rem; border-top: 1px dashed var(--lc-line); }
@@ -300,3 +297,20 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 
 .lc-edit { margin: 2rem 0 0; font-size: .66rem; }
 .lc-edit a { color: var(--lc-muted); }
+
+/* Buttons: .lc-btn is for the one action of a block (download, open in Colab, the page's call to action); small ghost is for in-page actions such as Copy. */
+.md-typeset .lc-btn--small { padding: .2rem .6rem; font-size: .62rem; cursor: pointer; font-family: inherit; }
+/* Action links ("Open →", "Guide →"): green, bold, no underline, an arrow added by the style so the text stays clean. */
+.md-typeset a.lc-go, .md-typeset span.lc-go { color: var(--lc-accent-strong); font-weight: 600; font-size: .72rem; text-decoration: none; }
+.md-typeset a.lc-go:hover { text-decoration: underline; }
+.lc-go::after { content: " \2192"; }
+
+/* The footer of an app card sits inside the card's one link, so the whole card is a single target. */
+.md-typeset .lc-card__foot--in { display: block; margin: auto -1rem -.6rem; padding: .55rem 1rem; border-top: 1px solid var(--lc-line); font-size: .62rem; color: var(--lc-muted); }
+
+/* Logos of the programs we link to (napari, Fiji, QuPath): small, before the name. */
+.lc-logo { display: inline-block; width: 1.1em; height: 1.1em; margin: 0 .4em 0 0; vertical-align: -.2em; object-fit: contain; border-radius: .2em; }
+.lc-badge .lc-logo { width: 1.25em; height: 1.25em; vertical-align: -.3em; margin-right: .3em; }
+.lc-docs__nav .lc-logo { width: 1.2em; height: 1.2em; }
+.lc-card__title .lc-logo { width: 1.5em; height: 1.5em; margin-right: .5em; vertical-align: -.35em; }
+.lc-card--plain .lc-card__title { display: flex; flex-direction: row; align-items: center; justify-content: flex-start; text-align: left; }

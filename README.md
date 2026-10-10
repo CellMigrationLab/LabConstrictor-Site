@@ -58,4 +58,4 @@ In `mkdocs.yml`, `extra: listed: false` keeps the site out of search engines. Se
 
 ## For developers and agents
 
-Read [AGENTS.md](AGENTS.md): how the site is built, the coding rules (they are checked by the tests), and how untrusted input is handled.
+Read [AGENTS.md](AGENTS.md): how the site is built, the coding rules (they are checked by the tests), and how untrusted input is handled. [DESIGN.md](DESIGN.md) says how every kind of title, link, button, card and image must look and behave.

@@ -13,9 +13,9 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from .config import CONTENT, DATA, DOCS, REPO, TEMPLATE_REPO, fail, load_yaml
-from . import sources
+from . import hosts, sources
 from .page import Page
-from .text import esc
+from .text import esc, lead_paragraph
 
 SKIP = {"download_executable.md"}   # written per app (it carries one app's name); the generic install.md replaces it
 LINK = re.compile(r"\]\(\s*(?!(?:[a-z][a-z0-9+.-]*:|#|/))(?:\./)?([A-Za-z0-9_./-]+\.[A-Za-z0-9]+)(#[^)\s]*)?\s*\)")
@@ -74,6 +74,14 @@ def copy_images(text: str, doc_source: Path, page_file: str) -> str:
     return IMAGE.sub(image, text)
 
 
+def describe(markdown: str, where: str) -> str:
+    """The meta description of a guide: its opening paragraph. Stops the build, naming the guide, when it has none."""
+    try:
+        return lead_paragraph(markdown, where)
+    except ValueError as err:
+        fail(str(err))
+
+
 def pager(prev: dict | None, nxt: dict | None) -> str:
     """Previous / next links at the end of a guide (they replace the template's own footer)."""
     def side(item: dict | None, cls: str, label: str) -> str:
@@ -84,13 +92,15 @@ def pager(prev: dict | None, nxt: dict | None) -> str:
     return f'<nav class="lc-pager" aria-label="Previous and next guide">{side(prev, "lc-pager__prev", "&larr; Previous")}{side(nxt, "lc-pager__next", "Next &rarr;")}</nav>'
 
 
+HOSTS_BY_SLUG = hosts.load()   # a guide named after a host (napari, fiji, qupath) shows that program's logo
 TRACKS = {"use": "Use an app", "build": "Build an app"}   # the two audiences; every guide section belongs to one
 
 
 def nav_for(sections: list[dict]) -> list[dict]:
     """The sidebar: every section with its track and its items as title, path and id."""
     return [{"title": s["title"], "track": s["track"], "track_title": TRACKS[s["track"]],
-             "items": [{"title": g["title"], "path": f"guides/{g['slug']}/", "id": g["slug"]} for g in s["items"]]}
+             "items": [{"title": g["title"], "path": f"guides/{g['slug']}/", "id": g["slug"], "host": g["slug"] if g["slug"] in HOSTS_BY_SLUG else None}
+                       for g in s["items"]]}
             for s in sections]
 
 
@@ -105,16 +115,17 @@ def write_own(item: dict, nav: list[dict], tail: str) -> None:
     src = CONTENT / "guides" / item["file"]
     if not src.is_file():
         fail(f"data/guides.yaml lists {item['file']}, which is not in content/guides/")
-    p = Page(f"guides/{item['slug']}/index.md", **guide_meta(nav, item["slug"]),
+    text = src.read_text(encoding="utf-8").strip()
+    p = Page(f"guides/{item['slug']}/index.md", **guide_meta(nav, item["slug"]), description=describe(text, item["file"]),
              edit_url=f"{REPO}/edit/main/content/guides/{item['file']}")
-    p.add(src.read_text(encoding="utf-8").strip(), "", tail)
+    p.add(text, "", tail)
     p.write()
 
 
 def guide_lists(nav: list[dict], track: str) -> str:
     """The sections of one track with a link to each guide (HTML for a hub page)."""
     return "".join(
-        f'<h3>{esc(s["title"])}</h3><ul>' + "".join(f'<li><a href="{i["path"]}">{esc(i["title"])}</a></li>' for i in s["items"]) + "</ul>"
+        f'<h3>{esc(s["title"])}</h3><ul>' + "".join(f'<li><a href="{i["path"]}">{hosts.logo(i["host"]) if i["host"] else ""}{esc(i["title"])}</a></li>' for i in s["items"]) + "</ul>"
         for s in nav if s["track"] == track)
 
 
@@ -124,7 +135,7 @@ def write_source_guide(g: dict, nav: list[dict], tail: str, pages: dict[tuple[st
     text = sources.read(g["repo"], g["path"])
     sources.check_links(text, where)
     text = sources.admonitions(sources.site_links(text, pages))
-    p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]),
+    p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]), description=describe(text, where),
              edit_url=f"https://github.com/{g['repo']}/edit/main/{g['path']}")
     p.add(text.strip(), "", tail)
     p.write()
@@ -138,7 +149,7 @@ def write_template_guide(g: dict, docs_dir: Path, doc_source: Path, nav: list[di
     text = NAV_BLOCK.sub("", src.read_text(encoding="utf-8"))
     text = copy_images(rewrite_links(text, known), doc_source, g["file"])
     edit = f"https://github.com/{TEMPLATE_REPO}/edit/main/.tools/docs/{g['file']}"
-    p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]), edit_url=edit)
+    p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]), description=describe(text, g["file"]), edit_url=edit)
     p.add(text.strip(), "", tail)
     p.write()
 

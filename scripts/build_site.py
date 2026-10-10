@@ -19,7 +19,7 @@ import argparse
 import shutil
 from pathlib import Path
 
-from lcsite import guides, hubs, llms, pages_apps, pages_site, projects, redirects
+from lcsite import guides, hosts, hubs, llms, pages_apps, pages_site, projects, redirects
 from lcsite.config import BUILD, DATA, DOCS, GENERATED, SITE_URL, SNAPSHOT, SNAPSHOT_FORMAT, fail, load_json, load_yaml
 from lcsite.images import ICON_PX, SHOT_PX, shrink
 
@@ -75,6 +75,7 @@ def main() -> None:
     site, ecosystem = (load_yaml(DATA / f"{n}.yaml") for n in ("site", "ecosystem"))
     clean()
     copy_media(apps)
+    hosts.prepare(hosts.load())
     copy_brand(args.doc_source_dir)
     pages_site.page_home(site, apps)
     pages_apps.page_catalogue(apps)

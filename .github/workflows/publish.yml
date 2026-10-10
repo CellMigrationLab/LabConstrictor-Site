@@ -82,9 +82,17 @@ jobs:
       - name: Sitemap, robots.txt and schemas
         run: python scripts/write_sitemap.py
 
+      # Outside links in a new tab and lazy images, for Markdown that comes from other repositories.
+      - name: Finish the built site
+        run: python scripts/finish_site.py
+
       # Dead links, author text that is not escaped, missing files: stop here rather than publish them.
       - name: Check the built site
         run: python scripts/check_site.py
+
+      # The design rules (DESIGN.md): metadata, headings, links, buttons, images.
+      - name: Check the design rules
+        run: python scripts/check_design.py
 
       - name: Upload preview (pull requests)
         if: github.event_name == 'pull_request'

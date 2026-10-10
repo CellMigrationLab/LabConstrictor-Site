@@ -55,7 +55,7 @@ def feature(item: dict, shot: str) -> str:
     shot_html = shot if shot.startswith("<ul") else f'<a href="{esc(item["href"])}" tabindex="-1" aria-hidden="true">{shot}</a>'
     return (f'<li class="lc-feature"><div class="lc-feature__shot{wide}">{shot_html}</div>'
             f'<div class="lc-feature__body"><strong>{esc(item["title"])}</strong><span>{esc(item["text"])}</span>'
-            f'<a href="{esc(item["href"])}">{esc(item["link"])} &rarr;</a></div></li>')
+            f'<a class="lc-go" href="{esc(item["href"])}">{esc(item["link"])}</a></div></li>')
 
 
 def live_shot(apps: list[dict]) -> str:
@@ -74,7 +74,7 @@ def features_html(items: list[dict], doc_source: Path, apps: list[dict], taken: 
 
 def flow_html(title: str, steps: list[dict]) -> str:
     """The numbered row of what you do to build an app, each step linking to its guide."""
-    items = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["text"])}</span><a href="{esc(s["href"])}">{esc(s["link"])} &rarr;</a></li>' for s in steps)
+    items = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["text"])}</span><a class="lc-go" href="{esc(s["href"])}">{esc(s["link"])}</a></li>' for s in steps)
     return f'<h2 class="lc-title">{esc(title)}</h2><ol class="lc-steps lc-steps--flow">{items}</ol>'
 
 
@@ -86,7 +86,7 @@ def write_hub(track: str, hub: dict, nav: list[dict], doc_source: Path, apps: li
     p.add(features_html(hub["cards"], doc_source, apps, taken))
     if "help" in hub:
         h = hub["help"]
-        p.add(f'<p class="lc-help"><strong>{esc(h["title"])}</strong> {esc(h["text"])} <a href="{esc(h["href"])}">{esc(h["link"])} &rarr;</a></p>')
+        p.add(f'<p class="lc-help"><strong>{esc(h["title"])}</strong> {esc(h["text"])} <a class="lc-go" href="{esc(h["href"])}">{esc(h["link"])}</a></p>')
     if "flow" in hub:
         p.add(flow_html(hub["flow_title"], hub["flow"]))
     p.write()
@@ -97,7 +97,7 @@ def write_docs_home(hubs: dict, nav: list[dict]) -> None:
     p = Page("guides/index.md", title="Docs", description="Guides for using LabConstrictor apps and for building your own.",
              guide_nav=nav, guide_id="", docs_home=True, menu="guides/", edit_url=f"{REPO}/edit/main/data/hubs.yaml")
     cards = "".join(f'<a class="lc-choice{" lc-choice--make" if t == "build" else ""}" href="{t}/"><strong>{esc(hubs[t]["title"])}</strong>'
-                    f'<span>{esc(hubs[t]["lead"])}</span><span class="lc-choice__go">Open &rarr;</span></a>' for t in TRACKS)
+                    f'<span>{esc(hubs[t]["lead"])}</span><span class="lc-go">Open</span></a>' for t in TRACKS)
     p.add('<h1>Docs</h1><p class="lc-lead">Use an app someone built, or build your own.</p>',
           f'<div class="lc-choices">{cards}</div>',
           '<div class="lc-guides lc-guides--two">' + "".join(f'<section id="all-{t}"><h2>{esc(TRACKS[t])}</h2>{guide_lists(nav, t)}</section>' for t in TRACKS) + "</div>")

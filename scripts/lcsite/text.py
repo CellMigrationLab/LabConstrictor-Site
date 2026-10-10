@@ -25,6 +25,21 @@ def one_line(text: str) -> str:
     return re.sub(r"[\[\]()<>]", "", " ".join(str(text).split()))
 
 
+BLOCK_START = re.compile(r"^(#|!|>|\||-|\*|\d+[.)]|<|```|\s{4})")
+
+
+def lead_paragraph(markdown: str, where: str, limit: int = 160) -> str:
+    """The first plain paragraph of a Markdown page, as one line of at most `limit` characters (cut at a word, with an
+    ellipsis): the page's meta description. Raises ValueError, naming `where`, when the page has no such paragraph."""
+    for block in re.split(r"\n\s*\n", markdown):
+        lines = block.strip().splitlines()
+        if lines and not BLOCK_START.match(lines[0]):
+            plain = re.sub(r"[*_`]", "", re.sub(r"!?\[([^\]]*)\]\([^)]*\)", r"\1", " ".join(lines)))
+            plain = " ".join(plain.split())
+            return plain if len(plain) <= limit else plain[:limit].rsplit(" ", 1)[0].rstrip(",;:.") + "\u2026"
+    raise ValueError(f"{where} has no opening paragraph to use as its description")
+
+
 def slugify(text: str) -> str:
     """ASCII, lowercase, dash-separated: "Iván Hidalgo" -> "ivan-hidalgo"."""
     text = unicodedata.normalize("NFKD", str(text)).encode("ascii", "ignore").decode()

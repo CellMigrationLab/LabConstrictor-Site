@@ -35,10 +35,14 @@ Each fact is written in one place. Fix it there, never in a generated file.
 - **Generated and git-ignored**: `docs/index.md`, `docs/apps/`, `docs/guides/`, `docs/use/`, `docs/build/`, `docs/ecosystem.md`, `docs/submit.md`, `docs/llms.txt`, `docs/assets/{icons,shots,docs-img,images,hubs}/`, `build/`, `site/`.
 - The site is unlisted while `extra.listed` is `false` in `mkdocs.yml` (noindex on every page, `robots.txt` disallows all, empty sitemap). `site_url` is the address everything follows.
 
+## Design
+
+How every page type looks and behaves (headings, text, links, buttons, cards, badges, images, interactions, metadata) is in [DESIGN.md](DESIGN.md), and `scripts/check_design.py` enforces what a program can check. Follow the pattern for the thing you add; if there is none, add it to DESIGN.md first. Programs we link to (napari, Fiji, QuPath) are in `data/hosts.yaml`; their logos are downloaded from the projects' repositories and shown wherever the site links to them. Links to a GitHub repository are always the GitHub pill (`cards.github_badge`; Markdown links are converted by `page.decorate_links`).
+
 ## Two stages
 
 1. `scripts/fetch_catalogue.py` and `scripts/fetch_guides.py` are the only code that uses the network. They write `build/snapshot.json` (format number `SNAPSHOT_FORMAT`; bump it when its layout changes), `build/problems.md` and `build/sources/`.
-2. `scripts/build_site.py` reads those and writes pages. It never goes online, so a build is repeatable. Then `zensical build --strict`, `scripts/write_sitemap.py`, `scripts/check_site.py`.
+2. `scripts/build_site.py` reads those and writes pages. It never goes online, so a build is repeatable. Then `zensical build --strict`, `scripts/write_sitemap.py`, `scripts/finish_site.py` (outside links in a new tab, lazy images), `scripts/check_site.py`, `scripts/check_design.py`.
 
 The publish workflow does all of this on every push to `main`, daily, and on demand. Its actions are pinned to commit SHAs (Dependabot proposes updates monthly), and a failed daily run opens or updates an issue.
 
@@ -74,6 +78,7 @@ The one deliberate exception is per-app: an app that cannot be resolved is left 
     python scripts/fetch_catalogue.py && python scripts/fetch_guides.py
     python scripts/build_site.py --template-dir <LabConstrictor checkout> --doc-source-dir <doc_source checkout>
     zensical build --strict
-    python scripts/write_sitemap.py && python scripts/check_site.py
+    python scripts/write_sitemap.py && python scripts/finish_site.py
+    python scripts/check_site.py && python scripts/check_design.py
 
 Changes to other repositories (the template, plugins, projects) go in a pull request there; check out a fresh branch from that repository's `main` with an explicit refspec (`git fetch origin +refs/heads/main:refs/remotes/origin/main`), because a shallow clone's `origin/main` can be stale. Do not push to `main` here before the pull requests the build depends on are merged: the daily build reads those repositories' default branches.

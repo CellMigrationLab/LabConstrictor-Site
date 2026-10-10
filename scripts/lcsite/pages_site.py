@@ -1,5 +1,6 @@
 """Home, ecosystem and submit pages."""
 
+from . import hosts
 from .cards import card, github_badge
 from .config import CONTENT, DOCS, REPO
 from .page import Page
@@ -27,7 +28,7 @@ def comic_figure() -> str:
 def choice(title: str, text: str, href: str, label: str, cls: str = "") -> str:
     """One of the two big "what do you want to do" cards on the home page."""
     return (f'<a class="lc-choice {cls}" href="{href}"><strong>{esc(title)}</strong><span>{esc(text)}</span>'
-            f'<span class="lc-choice__go">{esc(label)} &rarr;</span></a>')
+            f'<span class="lc-go">{esc(label)}</span></a>')
 
 
 def page_home(site: dict, apps: list[dict]) -> None:
@@ -46,7 +47,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
           '<p class="lc-more"><a href="apps/">See every app</a></p></section>')
     steps = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["text"])}</span></li>' for s in site["steps"])
     p.add(f'<section class="lc-band lc-band--soft"><h2 class="lc-title">How it works</h2><ol class="lc-steps">{steps}</ol>',
-          f'<p class="lc-more"><a href="{esc(site["links"]["template"])}">Start from the template</a> · <a href="build/">Read the guides</a></p></section>')
+          f'<p class="lc-more">{github_badge(site["links"]["template"].removeprefix("https://github.com/"), "Start from the template")} · <a href="build/">Read the guides</a></p></section>')
     p.add('<section class="lc-band"><h2 class="lc-title">Works where you work</h2>',
           '<p class="lc-center">Desktop installers, Google Colab and pip. Apps that declare tools also run inside napari, Fiji and QuPath.</p>',
           '<p class="lc-more"><a href="guides/image-software/">Use apps in your image software</a> · <a href="guides/">Read the docs</a> · <a href="ecosystem/">Explore the ecosystem</a></p></section>')
@@ -55,14 +56,14 @@ def page_home(site: dict, apps: list[dict]) -> None:
 
 def card_foot(card: dict) -> str:
     """The footer of an ecosystem card: a GitHub badge for its repository and, when it has one, a link to its guide here."""
-    guide = f'<a href="guides/{esc(card["guide"])}/">Guide</a>' if card["guide"] else ""
+    guide = f'<a class="lc-go" href="guides/{esc(card["guide"])}/">Guide</a>' if card["guide"] else ""
     return f'<div class="lc-card__foot">{github_badge(card["repo"])}{guide}</div>'
 
 
 def ecosystem_card(card: dict) -> str:
     """One project card: its name, summary and status, linked to its repository (or hosted app), with its guide."""
     return (f'<li class="lc-card lc-card--plain"><a class="lc-card__main" href="{esc(card["link"])}">'
-            f'<span class="lc-card__title"><strong>{esc(card["name"])}</strong></span><span class="lc-card__text">{esc(card["summary"])}</span>'
+            f'<span class="lc-card__title">{hosts.logo(card["host"]) if card["host"] else ""}<strong>{esc(card["name"])}</strong></span><span class="lc-card__text">{esc(card["summary"])}</span>'
             f'<span class="lc-card__badges"><span class="lc-badge">{esc(card["status"])}</span></span></a>{card_foot(card)}</li>')
 
 
@@ -74,6 +75,7 @@ def page_ecosystem(tiers: list[dict]) -> None:
     for tier in tiers:
         items = "".join(ecosystem_card(c) for c in tier["cards"])
         p.add(f'<h2 class="lc-tier" id="{esc(tier["key"])}">{esc(tier["title"])}</h2><p>{esc(tier["text"])}</p><ul class="lc-grid">{items}</ul>')
+    p.add('<p class="lc-small">The logos of napari, Fiji and QuPath belong to those projects and are shown only to identify them.</p>')
     p.write()
 
 

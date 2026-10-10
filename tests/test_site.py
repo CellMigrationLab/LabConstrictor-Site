@@ -74,8 +74,6 @@ class DataTests(unittest.TestCase):
         self.assertIn({"template": "install.md"}, items)
 
 
-if __name__ == "__main__":
-    unittest.main()
 
 
 class RobotsTests(unittest.TestCase):
@@ -267,3 +265,7 @@ class SiteCheckTests(unittest.TestCase):
         pages = {(site / "index.html").resolve(): home, (site / "lost" / "index.html").resolve(): lost}
         self.assertEqual(len(check_site.menu_problems(pages)), 1)
         self.assertEqual(len(check_site.reach_problems(pages)), 1)
+
+
+if __name__ == "__main__":
+    unittest.main()

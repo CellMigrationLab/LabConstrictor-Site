@@ -12,6 +12,7 @@ from typing import Any
 from . import sources
 from .config import DATA, fail, load_yaml
 from .github import MAX_TEXT
+from .hosts import host_of_plugin, load as host_table
 from .validate import AppProblem, check, load_plain_yaml
 
 PROJECT_FILE = "docs/labconstrictor-project.yaml"
@@ -55,13 +56,13 @@ def guide_slugs() -> dict[str, str]:
 
 def resolve(ecosystem: dict) -> list[dict]:
     """The tiers with every card resolved to name, summary, status, link and (when the repository has one) guide slug."""
-    slugs = guide_slugs()
+    slugs, hosts = guide_slugs(), host_table()
     tiers = []
     for tier in ecosystem["tiers"]:
         cards = []
         for item in tier["items"]:
             data = inline_card(item) if "name" in item else load_project(item["repo"])
             link = data["url"] if "url" in data else f"https://github.com/{item['repo']}"
-            cards.append(dict(data, repo=item["repo"], link=link, guide=slugs[item["repo"]] if item["repo"] in slugs else None))
+            cards.append(dict(data, repo=item["repo"], host=host_of_plugin(item["repo"], hosts), link=link, guide=slugs[item["repo"]] if item["repo"] in slugs else None))
         tiers.append({"key": tier["key"], "title": tier["title"], "text": tier["text"], "cards": cards})
     return tiers

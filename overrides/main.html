@@ -62,7 +62,7 @@
         <details class="lc-docs__section"{% if section.items | selectattr("id", "equalto", page.meta.guide_id) | list or (not page.meta.guide_id and section.track == page.meta.guide_track) %} open{% endif %}>
           <summary>{{ section.title }}</summary>
           <ul>{% for item in section.items %}
-            <li><a href="{{ item.path | url }}"{% if item.id == page.meta.guide_id %} class="is-active" aria-current="page"{% endif %}>{{ item.title }}</a></li>
+            <li><a href="{{ item.path | url }}"{% if item.id == page.meta.guide_id %} class="is-active" aria-current="page"{% endif %}>{% if item.host %}<img class="lc-logo" src="{{ ('assets/hosts/' ~ item.host ~ '.png') | url }}" alt="" width="16" height="16" loading="lazy">{% endif %}{{ item.title }}</a></li>
           {% endfor %}</ul>
         </details>
         {% endfor %}

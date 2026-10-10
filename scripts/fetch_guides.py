@@ -10,16 +10,16 @@ A file that does not exist stops with its repository and path (exit 1); a GitHub
 import argparse
 import sys
 
-from lcsite import hubs, projects, sources
+from lcsite import hosts, hubs, projects, sources
 from lcsite.config import DATA, FetchError, load_yaml
 from lcsite.github import MAX_TEXT, GitHub
 
 
 def entries() -> list[dict]:
-    """Everything kept in other repositories: the guides of data/guides.yaml, the pictures of data/hubs.yaml and the project files of data/ecosystem.yaml."""
+    """Everything kept in other repositories: the guides of data/guides.yaml, the pictures of data/hubs.yaml and the project files of data/ecosystem.yaml and the logos of data/hosts.yaml."""
     guides = [{"repo": g["repo"], "path": g["path"], "limit": MAX_TEXT}
               for s in load_yaml(DATA / "guides.yaml")["sections"] for g in s["items"] if "repo" in g]
-    return guides + hubs.image_sources(load_yaml(DATA / "hubs.yaml")) + projects.fetch_entries(load_yaml(DATA / "ecosystem.yaml"))
+    return guides + hubs.image_sources(load_yaml(DATA / "hubs.yaml")) + projects.fetch_entries(load_yaml(DATA / "ecosystem.yaml")) + hosts.logo_sources(hosts.load())
 
 
 def main() -> int:
