@@ -53,15 +53,14 @@ class DesignTests(unittest.TestCase):
 
 
 class HeroTests(unittest.TestCase):
-    """The home page's second line names the programs with pills."""
+    """The home page's second line is plain text."""
 
-    def test_the_line_has_the_pills_and_the_experimental_badge(self) -> None:
-        """The hero's second line shows the text, the three program pills and an "experimental" badge, with the text escaped."""
+    def test_the_line_is_escaped_text_without_links(self) -> None:
+        """The hero's second line is the data text, escaped, with no link in it."""
         from lcsite import pages_site
-        out = pages_site.hero_also({"also": "Also in <b>"})
-        self.assertEqual(out.count("lc-gh--host"), 3)
-        self.assertIn("experimental", out)
-        self.assertIn("&lt;b&gt;", out)
+        out = pages_site.hero_also({"also": "Soon, apps <b>work</b> in napari."})
+        self.assertEqual(out, "Soon, apps &lt;b&gt;work&lt;/b&gt; in napari.")
+        self.assertNotIn("<a", out)
 
 
 class StyleTests(unittest.TestCase):

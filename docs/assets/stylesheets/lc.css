@@ -328,8 +328,7 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 
 /* The hidden attribute always wins (the filter hides cards and groups with it; a component's own display rule must not undo it). */
 [hidden] { display: none !important; }
-.md-typeset .lc-hero__also { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; margin: .7rem 0 1.6rem; font-size: .76rem; color: var(--lc-fg); }
-.lc-hero__also .lc-gh, .lc-hero__also .lc-badge { margin: 0; }
+.md-typeset .lc-hero__also { margin: .5rem 0 1.6rem; font-size: .8rem; color: var(--lc-muted); }
 .lc-gh .lc-logo { margin: 0; }
 
 /* The notebooks an app lists: one row each, name first, then the actions. */
