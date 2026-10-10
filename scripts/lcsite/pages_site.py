@@ -1,7 +1,7 @@
 """Home, ecosystem and submit pages."""
 
 from . import hosts
-from .cards import card, github_badge
+from .cards import badge, card, github_badge
 from .config import CONTENT, DOCS, REPO, fail
 from .page import Page
 from .text import esc, plural
@@ -39,11 +39,10 @@ def program_pills() -> str:
 
 
 def hero_also(hero: dict) -> str:
-    """The second line of the hero: the programs apps can also work in, with their pills where `{programs}` stands (the rest is escaped text)."""
-    before, marker, after = hero["also"].partition("{programs}")
-    if not marker:
-        fail("data/site.yaml: hero.also must contain {programs}")
-    return f"{esc(before)}{program_pills()}{esc(after)}"
+    """The second line of the hero: "Apps can also work inside", the program pills, and an "experimental" badge, as one wrapping row."""
+    table = hosts.load()
+    pills = " ".join(hosts.pill(k, table) for k in table)
+    return f'<span>{esc(hero["also"])}</span> {pills} {badge("experimental", "testing")}'
 
 
 def page_home(site: dict, apps: list[dict]) -> None:

@@ -55,14 +55,13 @@ class DesignTests(unittest.TestCase):
 class HeroTests(unittest.TestCase):
     """The home page's second line names the programs with pills."""
 
-    def test_programs_replace_the_marker_and_the_rest_is_escaped(self) -> None:
-        """{programs} becomes the three program pills; other text is escaped; a line without the marker stops the build."""
+    def test_the_line_has_the_pills_and_the_experimental_badge(self) -> None:
+        """The hero's second line shows the text, the three program pills and an "experimental" badge, with the text escaped."""
         from lcsite import pages_site
-        out = pages_site.hero_also({"also": "Also in {programs} <b>."})
+        out = pages_site.hero_also({"also": "Also in <b>"})
         self.assertEqual(out.count("lc-gh--host"), 3)
+        self.assertIn("experimental", out)
         self.assertIn("&lt;b&gt;", out)
-        with self.assertRaises(SystemExit):
-            pages_site.hero_also({"also": "no marker"})
 
 
 class StyleTests(unittest.TestCase):

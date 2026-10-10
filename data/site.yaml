@@ -5,7 +5,7 @@ org_url: https://cellmig.org/
 hero:
   title: Notebooks in. Desktop apps out.
   text: LabConstrictor turns Jupyter notebooks into installable apps for Windows, macOS and Linux. No Python or pip needed.
-  also: Apps can also be made to work inside {programs} (experimental).   # {programs} becomes the program pills
+  also: Apps can also work inside   # followed by the program pills and an "experimental" badge
 links:
   template: https://github.com/CellMigrationLab/LabConstrictor
   init_form: https://labconstrictor-form.streamlit.app
