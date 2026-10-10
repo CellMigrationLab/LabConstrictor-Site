@@ -2,6 +2,8 @@
 
 The website for [LabConstrictor](https://github.com/CellMigrationLab/LabConstrictor): the user guides, and an **App Centre** that lists the apps built with it. Built with [Zensical](https://zensical.org) like the other lab sites and published with GitHub Pages.
 
+**Live site:** <https://cellmigrationlab.github.io/LabConstrictor-Site/> (a preview address; the site is not public yet, so it is hidden from search engines and not linked from the other repositories).
+
 | Section | What it is | Where it comes from |
 |---|---|---|
 | Home | what LabConstrictor is, two paths (use / make), featured apps | `data/site.yaml`, `registry/` |
