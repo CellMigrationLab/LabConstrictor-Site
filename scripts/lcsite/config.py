@@ -34,6 +34,14 @@ def _site_url() -> str:
     return m.group(1).rstrip("/") + "/"
 
 
+def _listed() -> bool:
+    """`extra.listed` from mkdocs.yml: false keeps the site out of search engines (noindex, robots.txt, no sitemap)."""
+    m = re.search(r"^  listed:\s*(true|false)\s*(#.*)?$", (ROOT / "mkdocs.yml").read_text(encoding="utf-8"), re.M)
+    if not m:
+        fail("mkdocs.yml needs `extra: listed: true` or `listed: false`")
+    return m.group(1) == "true"
+
+
 def fail(message: str) -> NoReturn:
     """Stop with a message that says which file to fix."""
     raise SystemExit(f"labconstrictor-site: {message}")
@@ -60,6 +68,7 @@ def load_json(path: Path) -> Any:
 
 
 SITE_URL = _site_url()
+LISTED = _listed()
 
 
 class AppProblem(Exception):

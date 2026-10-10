@@ -11,6 +11,7 @@
 {% block extrahead %}
   <link rel="preload" href="{{ 'assets/fonts/inter-latin-wght-normal.woff2' | url }}" as="font" type="font/woff2" crossorigin>
   {% set description = page.meta.description if page.meta and page.meta.description else config.site_description %}
+  {% if not config.extra.listed %}<meta name="robots" content="noindex, nofollow">{% endif %}
   {% if page and page.canonical_url %}
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="{{ config.site_name }}">

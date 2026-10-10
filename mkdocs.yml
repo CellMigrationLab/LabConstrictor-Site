@@ -45,6 +45,11 @@ markdown_extensions:
   - toc:
       permalink: false
 
+extra:
+  # false = not for search engines yet (noindex on every page, robots.txt disallows all, empty
+  # sitemap). Set to true at launch.
+  listed: false
+
 extra_css:
   - assets/stylesheets/lc.css
 extra_javascript:

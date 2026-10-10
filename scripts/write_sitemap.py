@@ -13,7 +13,7 @@ import shutil
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-from lcsite.config import ROOT, SCHEMA, SITE_URL, fail
+from lcsite.config import LISTED, ROOT, SCHEMA, SITE_URL, fail
 
 SITE = ROOT / "site"
 REDIRECT = re.compile(r'<meta[^>]+http-equiv="refresh"', re.I)
@@ -38,8 +38,10 @@ def sitemap(base: str, paths: list[str]) -> str:
             f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
 
 
-def robots(base: str) -> str:
-    """robots.txt: everything may be crawled; says where the sitemap is."""
+def robots(base: str, listed: bool) -> str:
+    """robots.txt: everything may be crawled and the sitemap is named; when not listed, nothing may be crawled."""
+    if not listed:
+        return "User-agent: *\nDisallow: /\n"
     return f"User-agent: *\nAllow: /\n\nSitemap: {base}sitemap.xml\n"
 
 
@@ -47,9 +49,9 @@ def main() -> None:
     """Replace Zensical's sitemap.xml, write robots.txt, publish the schemas."""
     if not (SITE / "index.html").is_file():
         fail("run `zensical build` first (no site/index.html)")
-    paths = page_paths(SITE)
+    paths = page_paths(SITE) if LISTED else []
     (SITE / "sitemap.xml").write_text(sitemap(SITE_URL, paths), encoding="utf-8")
-    (SITE / "robots.txt").write_text(robots(SITE_URL), encoding="utf-8")
+    (SITE / "robots.txt").write_text(robots(SITE_URL, LISTED), encoding="utf-8")
     shutil.copytree(SCHEMA, SITE / "schema", dirs_exist_ok=True)
     print(f"sitemap.xml: {len(paths)} pages")
 

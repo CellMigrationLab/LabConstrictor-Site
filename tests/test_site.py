@@ -69,3 +69,21 @@ class DataTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RobotsTests(unittest.TestCase):
+    """The site stays out of search engines until `extra.listed` is true."""
+
+    def test_unlisted_robots_disallows_everything(self) -> None:
+        """robots.txt for an unlisted site blocks all crawling and names no sitemap."""
+        from write_sitemap import robots
+        text = robots("https://example.org/", False)
+        self.assertIn("Disallow: /", text)
+        self.assertNotIn("Sitemap", text)
+
+    def test_listed_robots_names_the_sitemap(self) -> None:
+        """robots.txt for a listed site allows crawling and points to the sitemap."""
+        from write_sitemap import robots
+        text = robots("https://example.org/", True)
+        self.assertIn("Allow: /", text)
+        self.assertIn("Sitemap: https://example.org/sitemap.xml", text)
