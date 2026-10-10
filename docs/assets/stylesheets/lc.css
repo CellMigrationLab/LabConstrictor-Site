@@ -331,3 +331,9 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .md-typeset .lc-hero__also { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .5rem; margin: .7rem 0 1.6rem; font-size: .76rem; color: var(--lc-fg); }
 .lc-hero__also .lc-gh, .lc-hero__also .lc-badge { margin: 0; }
 .lc-gh .lc-logo { margin: 0; }
+
+/* The notebooks an app lists: one row each, name first, then the actions. */
+[dir] .md-typeset ul.lc-notebooks { list-style: none; margin: .4rem 0 1rem; padding: 0; display: grid; gap: .5rem; }
+[dir] .md-typeset ul.lc-notebooks > li { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1rem; margin: 0; padding: .55rem .8rem; border: 1px solid var(--lc-line); border-radius: .4rem; background: #fff; }
+.lc-notebooks__name { flex: 1 1 12rem; font-weight: 600; color: var(--lc-strong); }
+.md-typeset .lc-btn .lc-logo { margin-right: .4em; vertical-align: -.25em; }

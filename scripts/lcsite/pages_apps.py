@@ -1,6 +1,7 @@
 """The App Centre (apps/index.md) and one page per app (apps/<slug>/index.md)."""
 
 import json
+import re
 
 from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, github_badge, host_badge, icon, is_verified, link_pill, release_line, testing_badge, tier_badge
 from . import hosts
@@ -67,6 +68,28 @@ def os_tile(system: str, options: list[dict]) -> str:
     return f'<div class="lc-ostile" data-os="{system}"><h3>{SYSTEMS[system]}</h3>{body}<p class="lc-small">{hint}</p></div>'
 
 
+COLAB_FILE = re.compile(r"^https://colab\.research\.google\.com/github/([^/]+)/([^/]+)/blob/([^/]+)/(.+)$")
+
+
+def github_view(colab_url: str) -> str:
+    """The GitHub address of the notebook behind a Colab link (colab.research.google.com/github/o/r/blob/branch/path), or "" when the link is of another kind."""
+    m = COLAB_FILE.match(colab_url)
+    return f"https://github.com/{m.group(1)}/{m.group(2)}/blob/{m.group(3)}/{m.group(4)}" if m else ""
+
+
+def notebook_row(link: dict) -> str:
+    """One notebook the author chose to show: its name, "Open in Colab" with the logo, and "View on GitHub" when the link says where the file is."""
+    view = github_view(link["url"])
+    source = f'<a href="{esc(view)}">View on GitHub</a>' if view else ""
+    return (f'<li><span class="lc-notebooks__name">{esc(link["label"])}</span>'
+            f'<a class="lc-btn lc-btn--ghost lc-btn--small" href="{esc(link["url"])}">{hosts.service_logo("colab")}Open in Colab</a>{source}</li>')
+
+
+def notebooks_list(links: list[dict]) -> str:
+    """The notebooks listed in the manifest (`distribution.colab`): only what the author lists is shown."""
+    return '<h3 id="notebooks">Notebooks to open in your browser</h3><ul class="lc-notebooks">' + "".join(notebook_row(l) for l in links) + "</ul>"
+
+
 def get_section(app: dict) -> str:
     """The "Get it" block: a download tile per system, Colab buttons and the pip command."""
     dist = app["manifest"]["distribution"]
@@ -75,9 +98,8 @@ def get_section(app: dict) -> str:
         have = downloads(app)
         parts.append('<div class="lc-osgrid" data-lc-osgrid>' + "".join(os_tile(k, have[k]) for k in SYSTEMS) + "</div>")
         parts.append('<p class="lc-small">Need help installing? See the <a href="guides/install/">install guide</a>.</p>')
-    colab = "".join(f'<a class="lc-btn lc-btn--ghost" href="{esc(l["url"])}">Open in Colab: {esc(l["label"])}</a>' for l in optional_list(dist, "colab"))
-    if colab:
-        parts.append(f'<div class="lc-routes">{colab}</div>')
+    if optional_list(dist, "colab"):
+        parts.append(notebooks_list(optional_list(dist, "colab")))
     if dist.get("pip"):
         parts.append(f'<div class="lc-code"><code>pip install {esc(dist["pip"])}</code><button type="button" class="lc-btn lc-btn--ghost lc-btn--small" data-copy>Copy</button></div>')
     return "\n".join(parts)

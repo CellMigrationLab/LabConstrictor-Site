@@ -18,3 +18,12 @@ hosts:
     url: https://qupath.github.io
     plugin: CellMigrationLab/LabConstrictor-QuPath
     logo: {repo: qupath/qupath, path: qupath-gui-fx/src/main/resources/icons/QuPath_128.png}
+
+# Services where an app's notebooks can be opened. Same rules as the programs above: the logo is downloaded at build time from a
+# public icon collection (its SVG is reduced to one checked path, in the service's brand colour), and always shown with the name.
+services:
+  colab:
+    name: Google Colab
+    url: https://colab.research.google.com
+    color: "#F9AB00"
+    logo: {repo: simple-icons/simple-icons, path: icons/googlecolab.svg}

@@ -53,7 +53,7 @@ One size (12 px, bold). Colour says the role: green = tier or route (Community, 
 - Every image has an `alt` attribute. An empty `alt` is allowed only for a logo, icon or brand mark whose name is written next to it.
 - Pictures of the real product (screenshots) have a description in `alt` and, if they teach something, a caption.
 - Content images load lazily; images above the fold do not. Icons are square. Formats: PNG, JPEG, GIF; no SVG from app authors.
-- Logos of other programs (napari, Fiji, QuPath) come only from `data/hosts.yaml` (downloaded from the project's own repository) and are always shown with the program's name.
+- Logos of other programs (napari, Fiji, QuPath) and of services (Google Colab) come only from `data/hosts.yaml` (downloaded at build time; an SVG is reduced to one checked path) and are always shown with the name. "Open in Colab" is the small ghost button with the Colab logo; the notebooks on an app page are exactly the ones the author lists in the manifest (`distribution.colab`), each with Open in Colab and View on GitHub.
 
 ## Interactions
 

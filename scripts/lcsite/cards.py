@@ -83,7 +83,12 @@ def host_chips(app: dict) -> str:
 
 def route_badges(app: dict) -> str:
     """One badge per way to get the app (Desktop, Colab, pip)."""
-    return "".join(badge(ROUTES[r]) for r in routes(app))
+    return "".join(colab_badge() if r == "colab" else badge(ROUTES[r]) for r in routes(app))
+
+
+def colab_badge() -> str:
+    """The "Colab" route badge, with Google Colab's logo."""
+    return f'<span class="lc-badge">{hosts.service_logo("colab")}<span>{ROUTES["colab"]}</span></span>'
 
 
 def icon(app: dict, size: int = 48) -> str:

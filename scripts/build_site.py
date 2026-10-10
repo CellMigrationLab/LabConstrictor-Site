@@ -76,6 +76,7 @@ def main() -> None:
     clean()
     copy_media(apps)
     hosts.prepare(hosts.load())
+    hosts.prepare_services()
     copy_brand(args.doc_source_dir)
     pages_site.page_home(site, apps)
     pages_apps.page_catalogue(apps)
