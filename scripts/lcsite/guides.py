@@ -12,6 +12,7 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from .config import CONTENT, DATA, DOCS, REPO, TEMPLATE_REPO, fail, load_yaml
+from . import sources
 from .page import Page
 from .text import esc
 
@@ -136,6 +137,18 @@ def write_landing(nav: list[dict], why_build: list[dict]) -> None:
     p.write()
 
 
+def write_source_guide(g: dict, nav: list[dict], tail: str, pages: dict[tuple[str, str], str]) -> None:
+    """guides/<slug>/index.md from a guide kept in another repository (fetched by scripts/fetch_guides.py)."""
+    where = f"{g['repo']}/{g['path']}"
+    text = sources.read(g["repo"], g["path"])
+    sources.check_links(text, where)
+    text = sources.admonitions(sources.site_links(text, pages))
+    p = Page(f"guides/{g['slug']}/index.md", guide_nav=nav, guide_id=g["slug"],
+             edit_url=f"https://github.com/{g['repo']}/edit/main/{g['path']}")
+    p.add(text.strip(), "", tail)
+    p.write()
+
+
 def write_template_guide(g: dict, docs_dir: Path, doc_source: Path, nav: list[dict], known: set[str], tail: str) -> None:
     """guides/<slug>/index.md from one page of the template's .tools/docs."""
     src = docs_dir / g["file"]
@@ -176,6 +189,9 @@ def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str, 
     for s in own:
         s["track"] = "use"
         s["items"] = [dict(g, from_template="template" in g) for g in s["items"]]
+        for g in (g for g in s["items"] if "repo" in g):
+            g["title"] = sources.title_of(sources.read(g["repo"], g["path"]), f"{g['repo']}/{g['path']}")
+    pages = {(g["repo"], g["path"]): g["slug"] for s in own for g in s["items"] if "repo" in g}
     known = {g["file"] for s in theirs for g in s["items"]}
     claim_template_pages(own, theirs)
     clash = {g["slug"] for s in own for g in s["items"] if not g["from_template"]} & {g["slug"] for s in theirs for g in s["items"]}
@@ -190,6 +206,8 @@ def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str, 
             write_install(systems, note, nav, tail)
         elif g["from_template"]:
             write_template_guide(g, docs_dir, doc_source, nav, known, tail)
+        elif "repo" in g:
+            write_source_guide(g, nav, tail, pages)
         else:
             write_own(g, nav, tail)
     write_landing(nav, why_build)

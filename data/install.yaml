@@ -1,5 +1,6 @@
-# How to install an app, per system. Mirrors the template's download guide
-# (LabConstrictor/.tools/templates/download_executable_template.md): change both together.
+# How to install an app, per system, for every app. The template's download guide
+# (LabConstrictor/.tools/templates/download_executable_template.md) is a different page: it carries one app's name and
+# download buttons, so it cannot be imported. When the install steps change in the template, change them here too.
 note: Installing takes about 6-8 minutes and you only do it once. A command prompt window opens during installation on Windows; this is normal, do not close it.
 systems:
   - key: windows

@@ -8,7 +8,7 @@ The website for [LabConstrictor](https://github.com/CellMigrationLab/LabConstric
 |---|---|---|
 | Home | what LabConstrictor is, two paths (use / make), featured apps | `data/site.yaml`, `registry/` |
 | Apps | filterable catalogue, one page per app, OS-aware downloads | each app's `labconstrictor-app.yaml` and latest GitHub release |
-| Guides | install and use an app; plugins for napari, Fiji, QuPath; build an app | `data/install.yaml`, `content/guides/`; the template's `.tools/docs` |
+| Guides | install and use an app; plugins for napari, Fiji, QuPath; build an app | `data/install.yaml`, `content/guides/using-apps.md`; each plugin repository's `docs/user-guide.md`; the template's `.tools/docs` |
 | Ecosystem | napari, Fiji, QuPath, template, Tools library | `data/ecosystem.yaml` |
 | Submit your app | how to be listed | `content/submit.md`, `.github/ISSUE_TEMPLATE/submit-app.yml` |
 
@@ -26,6 +26,7 @@ The website for [LabConstrictor](https://github.com/CellMigrationLab/LabConstric
     git clone --depth 1 --branch doc_source https://github.com/CellMigrationLab/LabConstrictor ../LabConstrictor-doc_source
     export GITHUB_TOKEN=...      # optional; avoids the anonymous rate limit
     python scripts/fetch_catalogue.py
+    python scripts/fetch_guides.py                  # the guides kept in the plugin repositories (add --ref BRANCH to preview an unmerged one)
     python scripts/build_site.py --template-dir ../LabConstrictor --doc-source-dir ../LabConstrictor-doc_source
     zensical serve
 
@@ -37,7 +38,7 @@ The website for [LabConstrictor](https://github.com/CellMigrationLab/LabConstric
     schema/          JSON Schemas (published at /schema/): app manifest, registry entry
     data/, content/  hand-written text
     seed/manifests/  drafts of labconstrictor-app.yaml for the six lab apps
-    scripts/         fetch_catalogue.py, build_site.py, submit_app.py, write_sitemap.py, lcsite/
+    scripts/         fetch_catalogue.py, fetch_guides.py, build_site.py, submit_app.py, write_sitemap.py, lcsite/
     overrides/, docs/assets/   theme (adapted from cellmig.org)
     tests/           unit tests
 

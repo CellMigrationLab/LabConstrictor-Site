@@ -7,13 +7,13 @@ This repository is small on purpose. Keep it that way. (Conventions follow the l
 - Hand-written pages: `content/submit.md`, `content/guides/*.md` (listed in `data/guides.yaml`) and `data/*.yaml` (site text, install steps, ecosystem).
 - Which apps are listed: `registry/<owner>__<repo>.yaml`, one pointer file per app. Nothing else about an app is stored here.
 - What an app says about itself: `labconstrictor-app.yaml` in the app's own repository, checked against `schema/labconstrictor-app.schema.json`.
-- Guides come in two tracks. "Build an app" is written in the template repository (`LabConstrictor/.tools/docs`) and imported at build time; fix those there. A template page that is really for users (now `notebook_usage.md`) is placed under "Use an app" with `template: <file>` in `data/guides.yaml`; its text and title stay in the template, and the build stops if the template drops the file. The reasons to build an app (shown above the build guides) are `why_build` in `data/site.yaml`. Guides for using apps and the plugins are `content/guides/`; keep them in step with the plugin READMEs (install commands, menu names, status).
+- Guides come in two tracks. "Build an app" is written in the template repository (`LabConstrictor/.tools/docs`) and imported at build time; fix those there. A template page that is really for users (now `notebook_usage.md`) is placed under "Use an app" with `template: <file>` in `data/guides.yaml`; its text and title stay in the template, and the build stops if the template drops the file. The reasons to build an app (shown above the build guides) are `why_build` in `data/site.yaml`. The guide of each plugin (napari, Fiji, QuPath) and the overview of using apps in image software are `docs/user-guide.md` in the repository they describe (napari-labconstrictor, LabConstrictor-Fiji, LabConstrictor-QuPath, LabConstrictor-Tools): `scripts/fetch_guides.py` downloads them at build time, the title is their first heading, GitHub alerts become admonitions, and links and pictures must be absolute. Fix them there. To add a module, add one `{slug, repo, path}` line to `data/guides.yaml`. Only guides with no other home (`using-apps.md`, `submit.md`) and the generated install guide are written here.
 - The logo and the comic come from the template's `doc_source` branch at build time.
 - `docs/index.md`, `docs/apps/`, `docs/guides/`, `docs/ecosystem.md`, `docs/submit.md`, `docs/llms.txt`, `docs/assets/{icons,shots,docs-img,images}/`, `build/` and `site/` are generated and git-ignored. Fix the source or the generator, never the generated file.
 
 ## Two stages
 
-1. `scripts/fetch_catalogue.py` is the only code that uses the network. It writes `build/snapshot.json` and `build/problems.md`.
+1. `scripts/fetch_catalogue.py` and `scripts/fetch_guides.py` are the only code that uses the network. They write `build/snapshot.json`, `build/problems.md` and `build/sources/`.
 2. `scripts/build_site.py` reads the snapshot and writes pages. It never goes online, so a build is repeatable.
 
 ## Untrusted input
@@ -46,6 +46,7 @@ The one deliberate exception is per-app: an app that cannot be resolved is left 
 
     PYTHONPATH=scripts:tests python -m unittest discover -s tests
     python scripts/fetch_catalogue.py
+    python scripts/fetch_guides.py
     python scripts/build_site.py --template-dir <LabConstrictor checkout> --doc-source-dir <doc_source checkout>
     zensical build --strict
     python scripts/write_sitemap.py && python scripts/check_site.py

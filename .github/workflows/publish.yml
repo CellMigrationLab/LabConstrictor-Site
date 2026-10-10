@@ -56,6 +56,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/fetch_catalogue.py ${{ github.event_name == 'pull_request' && '--strict' || '' }}
 
+      # Guides kept in other repositories (data/guides.yaml: `repo` and `path`): one file each, read from the default branch.
+      - name: Fetch the guides of the other repositories
+        run: python scripts/fetch_guides.py
+
       - name: Report left-out apps
         if: github.event_name == 'schedule'
         env:

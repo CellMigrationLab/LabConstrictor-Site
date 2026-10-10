@@ -2,6 +2,8 @@
 # are imported from LabConstrictor/.tools/docs ("Build an app" track) and never copied here.
 #   file:      hand-written here, in content/guides/ (this repository is the only place it exists)
 #   generated: written from data/install.yaml by scripts/lcsite/guides.py
+#   repo/path: kept in another repository (a user guide next to the code it describes); fetched at build time by
+#              scripts/fetch_guides.py, titled by its first '# Heading'. Adding a module = adding one line here.
 #   template:  a page of the template's docs that is for users, shown here; title and text stay in the template
 #              (the build stops if the template no longer has it)
 sections:
@@ -12,7 +14,7 @@ sections:
       - {template: notebook_usage.md}
   - title: Use apps in your image software
     items:
-      - {slug: image-software, title: How it works, file: image-software.md}
-      - {slug: napari, title: Install the napari plugin, file: napari.md}
-      - {slug: fiji, title: Install the Fiji plugin, file: fiji.md}
-      - {slug: qupath, title: Install the QuPath extension, file: qupath.md}
+      - {slug: image-software, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/user-guide.md}
+      - {slug: napari, repo: CellMigrationLab/napari-labconstrictor, path: docs/user-guide.md}
+      - {slug: fiji, repo: CellMigrationLab/LabConstrictor-Fiji, path: docs/user-guide.md}
+      - {slug: qupath, repo: CellMigrationLab/LabConstrictor-QuPath, path: docs/user-guide.md}
