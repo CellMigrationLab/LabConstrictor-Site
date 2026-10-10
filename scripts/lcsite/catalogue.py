@@ -13,7 +13,7 @@ from pathlib import Path
 
 from .assets import check_image, parse_assets
 from .config import BUILD, MANIFEST_NAME, RESERVED_SLUGS, SNAPSHOT_FORMAT, AppProblem
-from .github import MAX_FILE, GitHub
+from .github import MAX_FILE, GitHub, NotFound
 from .images import check_square
 from .text import slugify
 from .validate import MANIFEST_SCHEMA, check, load_plain_yaml, optional_list
@@ -36,6 +36,9 @@ def read_manifest(gh: GitHub, name: str, branch: str, manifest_dir: Path | None)
             text = (manifest_dir / f"{name.split('/')[1]}.yaml").read_text(encoding="utf-8")
         else:
             text = gh.raw(name, branch, MANIFEST_NAME).decode("utf-8")
+    except NotFound as err:
+        raise AppProblem(f"{name} has no {MANIFEST_NAME} at the top level of its default branch ({branch}), or the repository is private. "
+                         "Add the file (the initialiser form can create it) and try again.") from err
     except (OSError, UnicodeDecodeError) as err:
         raise AppProblem(f"cannot read {MANIFEST_NAME}: {err}") from err
     manifest = load_plain_yaml(text, MANIFEST_NAME)

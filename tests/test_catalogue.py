@@ -4,6 +4,7 @@ import unittest
 
 from lcsite import assets, catalogue, validate
 from lcsite.config import AppProblem
+from lcsite.github import NotFound
 
 OK = {"schema": 1, "name": "Demo App", "summary": "A demo app that does something useful.", "kind": "analysis",
       "distribution": {"installer": True}}
@@ -116,6 +117,20 @@ class ResolveTests(unittest.TestCase):
         snapshot = catalogue.build([ENTRY, twin], FakeGitHub(manifest=MANIFEST))
         self.assertEqual(len(snapshot["apps"]), 1)
         self.assertIn("already used", snapshot["problems"][0])
+
+    def test_a_missing_manifest_says_what_to_add_and_where(self) -> None:
+        """A repository without labconstrictor-app.yaml gets a message that names the file, the branch and the way forward."""
+        class NoManifest(FakeGitHub):
+            """A repository that has no manifest file."""
+
+            def raw(self, name: str, ref: str, path: str, limit: int = 0) -> bytes:
+                """Always 404, as GitHub does for a missing file."""
+                raise NotFound("404")
+
+        with self.assertRaises(AppProblem) as ctx:
+            catalogue.resolve(ENTRY, NoManifest(), None)
+        self.assertIn("labconstrictor-app.yaml", str(ctx.exception))
+        self.assertIn("default branch (main)", str(ctx.exception))
 
 
 if __name__ == "__main__":
