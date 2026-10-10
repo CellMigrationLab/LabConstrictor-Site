@@ -53,26 +53,31 @@
   <div class="md-content lc-content{% if wide %} lc-content--wide{% endif %}" data-md-component="content">
     {% if page.meta and page.meta.guide_nav %}
     <div class="lc-docs">
-      <aside class="lc-docs__nav" aria-label="Guides">
-        {#- Each section is collapsible; the one that holds this page starts open. -#}
-        <p class="lc-docs__track"><a href="{{ (page.meta.guide_track ~ '/') | url }}">{{ page.meta.guide_track_title }}</a></p>
-        {% for section in page.meta.guide_nav if section.track == page.meta.guide_track %}
-        <details class="lc-docs__section"{% if section.items | selectattr("id", "equalto", page.meta.guide_id) | list %} open{% endif %}>
+      <aside class="lc-docs__nav" aria-label="Docs">
+        {#- On phones lc.js folds this menu behind the "Docs menu" summary; each section is collapsible and the one that holds this page starts open. -#}
+        <details class="lc-docs__drawer" open><summary>Docs menu</summary>
+        <p class="lc-docs__home"><a href="{{ 'guides/' | url }}"{% if page.meta.docs_home %} class="is-active" aria-current="page"{% endif %}>All docs</a></p>
+        {% for section in page.meta.guide_nav %}
+        {% if loop.changed(section.track) %}<p class="lc-docs__track"><a href="{{ (section.track ~ '/') | url }}">{{ section.track_title }}</a></p>{% endif %}
+        <details class="lc-docs__section"{% if section.items | selectattr("id", "equalto", page.meta.guide_id) | list or (not page.meta.guide_id and section.track == page.meta.guide_track) %} open{% endif %}>
           <summary>{{ section.title }}</summary>
           <ul>{% for item in section.items %}
             <li><a href="{{ item.path | url }}"{% if item.id == page.meta.guide_id %} class="is-active" aria-current="page"{% endif %}>{{ item.title }}</a></li>
           {% endfor %}</ul>
         </details>
         {% endfor %}
+        </details>
       </aside>
       <article class="md-content__inner md-typeset" id="__skip">
-        <p class="lc-crumb"><a href="{{ (page.meta.guide_track ~ '/') | url }}">&larr; {{ page.meta.guide_track_title }}</a></p>
+        {% if page.meta.guide_track %}<p class="lc-crumb"><a href="{{ (page.meta.guide_track ~ '/') | url }}">&larr; {{ page.meta.guide_track_title }}</a></p>{% endif %}
         {% include "partials/content.html" %}
+        {% if page.meta and page.meta.edit_url %}<p class="lc-edit"><a href="{{ page.meta.edit_url }}" target="_blank" rel="noopener">Edit this page on GitHub</a></p>{% endif %}
       </article>
     </div>
     {% else %}
     <article class="md-content__inner md-typeset" id="__skip">
       {% block content %}{% include "partials/content.html" %}{% endblock %}
+      {% if page.meta and page.meta.edit_url %}<p class="lc-edit"><a href="{{ page.meta.edit_url }}" target="_blank" rel="noopener">Edit this page on GitHub</a></p>{% endif %}
     </article>
     {% endif %}
   </div>
@@ -84,8 +89,10 @@
     <div class="lc-footer__brand"><img src="{{ 'assets/images/logo-64.png' | url }}" alt="" width="42" height="42"><div><strong>LabConstrictor</strong><p>Turn notebooks into installable apps. Open source, MIT licensed.</p></div></div>
     <ul>
       <li><a href="{{ 'apps/' | url }}">Apps</a></li>
+      <li><a href="{{ 'guides/' | url }}">Docs</a></li>
       <li><a href="{{ 'use/' | url }}">Use an app</a></li>
       <li><a href="{{ 'build/' | url }}">Build an app</a></li>
+      <li><a href="{{ 'ecosystem/' | url }}">Ecosystem</a></li>
       <li><a href="{{ 'submit/' | url }}">Submit your app</a></li>
     </ul>
     <ul>

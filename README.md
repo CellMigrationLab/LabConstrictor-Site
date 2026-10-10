@@ -1,52 +1,60 @@
-# LabConstrictor site
+# LabConstrictor website
 
-The website for [LabConstrictor](https://github.com/CellMigrationLab/LabConstrictor): the user guides, and an **App Centre** that lists the apps built with it. Built with [Zensical](https://zensical.org) like the other lab sites and published with GitHub Pages.
+**Live (preview address):** <https://cellmigrationlab.github.io/LabConstrictor-Site/>
+It is not public yet: search engines are told to ignore it and the other LabConstrictor repositories do not link to it. The final address will be `labconstrictor.cellmig.org`.
 
-**Live site:** <https://cellmigrationlab.github.io/LabConstrictor-Site/> (a preview address; the site is not public yet, so it is hidden from search engines and not linked from the other repositories).
+## What it does
 
-| Section | What it is | Where it comes from |
+The site is the front door to [LabConstrictor](https://github.com/CellMigrationLab/LabConstrictor), which turns Jupyter notebooks into desktop apps. It has:
+
+- an **App Centre**: apps built with LabConstrictor, each with a page and a download for every system;
+- **Docs**: how to install and use an app, how to use apps in napari, Fiji and QuPath, and how to build and publish your own;
+- an **Ecosystem** page: the projects around LabConstrictor, each with a link to its GitHub repository;
+- a **Submit** page: how another lab lists its app.
+
+No page is written twice. Each fact lives in the repository it describes, and the site collects them when it rebuilds.
+
+## Where to edit what
+
+Find the thing you want to change; edit it **there**, never in the site's generated pages.
+
+| To change… | Edit | In repository |
 |---|---|---|
-| Home | what LabConstrictor is, two paths (use / make), featured apps | `data/site.yaml`, `registry/` |
-| Apps | filterable catalogue, one page per app, OS-aware downloads | each app's `labconstrictor-app.yaml` and latest GitHub release |
-| Use / Build | two hubs with picture cards: install and use an app, plugins for napari, Fiji, QuPath; build an app | `data/hubs.yaml`, `data/install.yaml`, `content/guides/using-apps.md`; each plugin repository's `docs/user-guide.md`; the template's `.tools/docs` |
-| Ecosystem | napari, Fiji, QuPath, template, initialiser, Tools library | each project's `docs/labconstrictor-project.yaml`; `data/ecosystem.yaml` lists them |
-| Submit your app | how to be listed | `content/submit.md`, `.github/ISSUE_TEMPLATE/submit-app.yml` |
+| A guide for **building** an app (Docs → Build an app) | `.tools/docs/<page>.md`; the order and groups are in `.tools/docs/README.md` | [LabConstrictor](https://github.com/CellMigrationLab/LabConstrictor) |
+| Two user pages that live in the template: *Notebook usage after installation*, *Troubleshooting an installed app* | `.tools/docs/notebook_usage.md`, `.tools/docs/troubleshooting_installed_app.md` | LabConstrictor |
+| The **napari**, **Fiji** or **QuPath** guide | `docs/user-guide.md` | [napari-labconstrictor](https://github.com/CellMigrationLab/napari-labconstrictor), [LabConstrictor-Fiji](https://github.com/CellMigrationLab/LabConstrictor-Fiji), [LabConstrictor-QuPath](https://github.com/CellMigrationLab/LabConstrictor-QuPath) |
+| The overview *Use apps inside napari, Fiji and QuPath* | `docs/user-guide.md` | [LabConstrictor-Tools](https://github.com/CellMigrationLab/LabConstrictor-Tools) |
+| A card on the **Ecosystem** page (name, summary, status) | `docs/labconstrictor-project.yaml` | the project's own repository |
+| What an **app says about itself** (name, summary, downloads, screenshots) | `labconstrictor-app.yaml` | the app's own repository |
+| Which apps are listed; featured on the home page; verified; shown under *Testing and maintenance* | `registry/<owner>__<repo>.yaml` (`featured`, `verified_version`, `section: testing`) | this repository |
+| The picture cards on the **Use** and **Build** pages | `data/hubs.yaml` | this repository |
+| *Open and use an app* | `content/guides/using-apps.md` | this repository |
+| *Install an app* (steps for each system) | `data/install.yaml` | this repository (keep it in step with the template's download guide) |
+| Home page text | `data/site.yaml` | this repository |
+| The **Submit** page | `content/submit.md` | this repository |
+| The **menu** | `nav:` in `mkdocs.yml` | this repository |
+| The footer, page layout, colours | `overrides/`, `docs/assets/stylesheets/lc.css` | this repository |
+| Which projects the Ecosystem page lists | `data/ecosystem.yaml` (one `- repo: owner/name` line each) | this repository |
+| Add another guide kept in a repository | one line in `data/guides.yaml` | this repository |
 
-## How an app gets listed
+To **list an app**, the app's authors use the [submission form](https://github.com/CellMigrationLab/LabConstrictor-Site/issues/new?template=submit-app.yml) (or add a pointer file in `registry/`).
 
-1. The author adds `labconstrictor-app.yaml` to their repository ([schema](schema/labconstrictor-app.schema.json); routes: installer, Colab, pip).
-2. They open the *Submit an app* issue form with their repository address.
-3. `validate-submission.yml` checks it with the same code the build uses, comments the result, and opens a pull request adding `registry/<owner>__<repo>.yaml` (ids only: no version, no description).
-4. A maintainer merges. A daily build reads each app's latest release and manifest. To mark an app **Verified**, add `verified_version` and `verified_on` to its registry file after installing and running that version.
+Files under `docs/` (`index.md`, `apps/`, `guides/`, `use/`, `build/`, `ecosystem.md`, `submit.md`, `llms.txt`, `assets/{icons,shots,docs-img,images,hubs}/`), `build/` and `site/` are **generated and git-ignored**. If you change one by hand, the next build deletes your change.
 
-## Build locally
+## When changes appear
 
-    python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
-    git clone --depth 1 https://github.com/CellMigrationLab/LabConstrictor ../LabConstrictor
-    git clone --depth 1 --branch doc_source https://github.com/CellMigrationLab/LabConstrictor ../LabConstrictor-doc_source
-    export GITHUB_TOKEN=...      # optional; avoids the anonymous rate limit
-    python scripts/fetch_catalogue.py
-    python scripts/fetch_guides.py                  # the guides kept in the plugin repositories (add --ref BRANCH to preview an unmerged one)
-    python scripts/build_site.py --template-dir ../LabConstrictor --doc-source-dir ../LabConstrictor-doc_source
-    zensical serve
+The site rebuilds by itself, so you rarely need to do anything:
 
-`fetch_catalogue.py --manifest-dir seed/manifests` previews the draft manifests in `seed/manifests/` before they are committed to the app repositories (development only).
+- when something is pushed to `main` of this repository (about a minute);
+- every day (so edits in the other repositories, new app releases and new manifests show up within 24 hours);
+- on demand: **Actions → Build and publish site → Run workflow**.
 
-## Layout
+A build that fails leaves the previous site online. A broken or missing guide, picture, project file or manifest stops the build and the error names the file to fix.
 
-    registry/        one pointer file per listed app
-    schema/          JSON Schemas (published at /schema/): app manifest, registry entry
-    data/, content/  hand-written text
-    seed/manifests/  drafts of labconstrictor-app.yaml for the six lab apps
-    scripts/         fetch_catalogue.py, fetch_guides.py, build_site.py, submit_app.py, write_sitemap.py, lcsite/
-    overrides/, docs/assets/   theme (adapted from cellmig.org)
-    tests/           unit tests
+## Going public
 
-## Setting up hosting (one-time)
+In `mkdocs.yml`, `extra: listed: false` keeps the site out of search engines. Set it to `true` when the site launches, and update `site_url` once the domain is ready.
 
-1. Create the repository and push; in *Settings > Pages* choose *Source: GitHub Actions*.
-2. Add the custom domain `labconstrictor.cellmig.org` there, and a `CNAME` record `labconstrictor` pointing to `cellmigrationlab.github.io` where the cellmig.org DNS is managed. Enable *Enforce HTTPS*.
-3. Add the issue label `app-submission`, and allow Actions to create pull requests (*Settings > Actions > General*). Pull requests made with the default `GITHUB_TOKEN` do not start other workflows, so the submission workflow itself runs the full app check before it opens one; use a token or GitHub App for `peter-evans/create-pull-request` if you also want the build to run on them.
-4. Pin the third-party actions (`peter-evans/create-pull-request`, `actions/*`) to commit SHAs before the repository is public.
+## For developers and agents
 
-See [AGENTS.md](AGENTS.md) for the coding rules.
+Read [AGENTS.md](AGENTS.md): how the site is built, the coding rules (they are checked by the tests), and how untrusted input is handled.

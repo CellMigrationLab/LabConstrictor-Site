@@ -2,7 +2,7 @@
 
 import json
 
-from .cards import CHIPS, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, icon, is_verified, release_line, tier_badge
+from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, github_badge, icon, is_verified, release_line, testing_badge, tier_badge
 from .page import Page
 from .validate import optional_list
 from .text import esc, long_date, megabytes, paragraphs, plural
@@ -25,14 +25,23 @@ def filter_bar() -> str:
             '<p class="lc-filter__count" data-lc-count aria-live="polite"></p></form>')
 
 
-def page_catalogue(apps: list[dict]) -> None:
-    """apps/index.md: the filterable grid of every listed app."""
+def grid(apps: list[dict], extra: str = "") -> str:
+    """A grid of app cards (the filter acts on every grid on the page)."""
+    return f'<ul class="lc-grid" data-lc-grid{extra}>\n' + "\n".join(card(a) for a in apps) + "\n</ul>"
+
+
+def page_catalogue(all_apps: list[dict]) -> None:
+    """apps/index.md: the filterable grid of the apps, then the apps for testing and maintenance listed apart."""
+    apps = [a for a in all_apps if a["section"] == "apps"]
+    testing = [a for a in all_apps if a["section"] == "testing"]
     p = Page("apps/index.md", title="Apps", description="Bioimage analysis apps built with LabConstrictor: install them on Windows, macOS or Linux, or open them in Colab.", layout="wide")
-    cards = "\n".join(card(a) for a in apps)
     p.add('<section class="lc-pagehead"><h1>Apps</h1>',
-          f'<p class="lc-lead">{plural(len(apps), "app")} built with LabConstrictor. Install one in a few clicks, or open it in Colab.</p></section>',
-          filter_bar(), f'<ul class="lc-grid" data-lc-grid>\n{cards}\n</ul>',
+          f'<p class="lc-lead">{plural(len(apps), "app")} built with LabConstrictor'
+          + (f', and {len(testing)} for testing and maintenance' if testing else "") + '. Install one in a few clicks, or open it in Colab.</p></section>',
+          filter_bar(), f'<div data-lc-group>{grid(apps)}</div>',
           '<p class="lc-empty" data-lc-empty hidden>No app matches. Clear a filter or search for something broader.</p>',
+          (f'<div data-lc-group class="lc-testing"><h2 class="lc-title">Testing and maintenance</h2><p class="lc-center">Apps that check or '
+           f'maintain LabConstrictor itself, not for analysing your data. Useful to see that your computer works, or what a template can do.</p>{grid(testing)}</div>' if testing else ""),
           f'<p class="lc-small lc-legend">{LEGEND}</p>',
           '<p class="lc-cta"><a class="lc-btn" href="submit/">Add your app</a></p>')
     p.write()
@@ -64,6 +73,8 @@ def get_section(app: dict) -> str:
     colab = "".join(f'<a class="lc-btn lc-btn--ghost" href="{esc(l["url"])}">Open in Colab: {esc(l["label"])}</a>' for l in optional_list(dist, "colab"))
     if colab:
         parts.append(f'<div class="lc-routes">{colab}</div>')
+    if app["release"] and dist.get("installer"):
+        parts.append('<p class="lc-small">Need help installing? See the <a href="guides/install/">install guide</a>.</p>')
     if dist.get("pip"):
         parts.append(f'<div class="lc-code"><code>pip install {esc(dist["pip"])}</code><button type="button" data-copy>Copy</button></div>')
     return "\n".join(parts)
@@ -136,12 +147,13 @@ def jsonld(app: dict) -> str:
 def page_app(app: dict, systems: list[dict]) -> None:
     """apps/<slug>/index.md: everything a visitor needs to decide, install, cite and report a problem."""
     m = app["manifest"]
-    p = Page(f"apps/{app['slug']}/index.md", title=m["name"], description=m["summary"], jsonld=jsonld(app), layout="wide")
-    hosts = [HOSTS[h] for h in optional_list(m, "hosts") if h != "notebook"]
+    p = Page(f"apps/{app['slug']}/index.md", title=m["name"], description=m["summary"], jsonld=jsonld(app), layout="wide",
+             edit_url=f"{app['html_url']}/edit/HEAD/labconstrictor-app.yaml")
+    hosts = [h for h in optional_list(m, "hosts") if h != "notebook"]
     p.add('<p class="lc-crumb"><a href="apps/">&larr; All apps</a></p>',
           f'<header class="lc-apphead">{icon(app, 72)}<div><h1>{esc(m["name"])}</h1>'
           f'<p class="lc-lead">{esc(m["summary"])}</p><p>{tier_badge(app)}{badge(KINDS[m["kind"]])}'
-          f'{"".join(badge(f"Soon in {h}", "host") for h in hosts)}</p></div></header>')
+          f'{"".join(badge(f"Soon in {HOSTS[h]}", "host", HOST_GUIDES[h]) for h in hosts)}{testing_badge(app)}</p><p>{github_badge(app["repo"])}</p></div></header>')
     p.add(get_section(app))
     if m.get("description"):
         p.add('<h2 id="about">About</h2>', paragraphs(m["description"]))

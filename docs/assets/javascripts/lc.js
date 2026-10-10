@@ -70,6 +70,7 @@ function lcInitFilter() {
     cards.forEach((c) => { const ok = lcMatches(c, state); c.hidden = !ok; shown += ok; });
     form.querySelector("[data-lc-count]").textContent = `${shown} of ${cards.length} apps`;
     document.querySelector("[data-lc-empty]").hidden = shown > 0;
+    document.querySelectorAll("[data-lc-group]").forEach((g) => { g.hidden = !g.querySelector(".lc-card:not([hidden])"); });
     const next = new URLSearchParams(Object.entries(fields).map(([k, el]) => [k, el.value.trim()]).filter(([, v]) => v));
     history.replaceState(null, "", next.toString() ? `?${next}` : location.pathname);
   };
@@ -89,6 +90,12 @@ function lcInitCopy() {
   });
 }
 
-function lcInit() { lcInitDownloads(); lcInitFilter(); lcInitCopy(); }
+function lcInit() { lcInitDownloads(); lcInitFilter(); lcInitCopy(); lcInitDrawer(); }
 if (typeof document$ !== "undefined") document$.subscribe(lcInit);
 else document.addEventListener("DOMContentLoaded", lcInit);
+
+/** On phones the docs menu starts folded (it is open in the HTML so that it works without scripts). */
+function lcInitDrawer() {
+  const drawer = document.querySelector(".lc-docs__drawer");
+  if (drawer && window.matchMedia("(max-width: 56rem)").matches) drawer.open = false;
+}

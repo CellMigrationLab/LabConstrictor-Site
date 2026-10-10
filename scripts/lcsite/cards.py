@@ -25,14 +25,32 @@ def is_verified(app: dict) -> bool:
     return bool(app["verified_version"] and release and release["tag"] == app["verified_version"])
 
 
-def badge(text: str, kind: str = "") -> str:
-    """A small pill; `kind` adds a colour class (lc-badge--<kind>)."""
-    return f'<span class="lc-badge{f" lc-badge--{kind}" if kind else ""}">{esc(text)}</span>'
+HOST_GUIDES = {"napari": "guides/napari/", "fiji": "guides/fiji/", "qupath": "guides/qupath/"}   # host key = guide slug; check_site finds a dead one
+
+
+def badge(text: str, kind: str = "", href: str = "") -> str:
+    """A small pill; `kind` adds a colour class (lc-badge--<kind>); with `href` the pill is a link."""
+    cls = f'lc-badge{f" lc-badge--{kind}" if kind else ""}'
+    return f'<a class="{cls}" href="{esc(href)}">{esc(text)}</a>' if href else f'<span class="{cls}">{esc(text)}</span>'
+
+
+GITHUB_MARK = ('<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>')
+
+
+def github_badge(repo: str) -> str:
+    """A small "GitHub owner/name" pill that links straight to the repository."""
+    return (f'<a class="lc-gh" href="https://github.com/{esc(repo)}" title="{esc(repo)} on GitHub">'
+            f'{GITHUB_MARK}<span>{esc(repo.split("/")[1])}</span></a>')
 
 
 def tier_badge(app: dict) -> str:
     """"Verified" only when it applies to the latest release; every other app is "Community"."""
     return badge("Verified", "verified") if is_verified(app) else badge("Community")
+
+
+def testing_badge(app: dict) -> str:
+    """"Testing" for apps that check or maintain LabConstrictor itself (registry `section: testing`); nothing for the others."""
+    return badge("Testing", "testing") if app["section"] == "testing" else ""
 
 
 def route_badges(app: dict) -> str:
@@ -81,5 +99,5 @@ def card(app: dict) -> str:
     return (f'<li class="lc-card" {attrs}><a class="lc-card__main" href="apps/{slug}/">'
             f'<span class="lc-card__head">{icon(app)}<span class="lc-card__title"><strong>{esc(m["name"])}</strong>'
             f'<small>{KINDS[m["kind"]]}</small></span></span><span class="lc-card__text">{esc(m["summary"])}</span>'
-            f'<span class="lc-card__badges">{tier_badge(app)}{route_badges(app)}</span></a>'
+            f'<span class="lc-card__badges">{tier_badge(app)}{testing_badge(app)}{route_badges(app)}</span></a>'
             f'<div class="lc-card__foot"><span>{release_line(app)}</span>{get}</div></li>')

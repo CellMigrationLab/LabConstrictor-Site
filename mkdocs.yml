@@ -5,7 +5,6 @@ site_author: Cell Migration Lab
 site_url: https://cellmigrationlab.github.io/LabConstrictor-Site/
 repo_url: https://github.com/CellMigrationLab/LabConstrictor-Site
 repo_name: CellMigrationLab/LabConstrictor-Site
-edit_uri: edit/main/content/
 copyright: © Cell Migration Lab
 use_directory_urls: true
 
@@ -28,8 +27,7 @@ theme:
 nav:
   - Home: index.md
   - Apps: apps/index.md
-  - Use: use/index.md
-  - Build: build/index.md
+  - Docs: guides/index.md
   - Ecosystem: ecosystem.md
   - Submit your app: submit.md
 

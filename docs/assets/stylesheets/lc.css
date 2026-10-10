@@ -101,6 +101,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-cta { text-align: center; margin: 2.4rem 0; }
 .lc-badge { display: inline-block; margin: 0 .3rem .2rem 0; padding: .04rem .46rem; border-radius: 1rem; background: var(--lc-soft); color: var(--lc-fg); font-size: .6rem; font-weight: 600; letter-spacing: .03em; white-space: nowrap; }
 .lc-badge--verified { background: var(--lc-ok-soft); color: var(--lc-ok); }
+.lc-badge--testing { background: #e9ecef; color: #3b4650; }
 .lc-badge--host { background: var(--lc-orange-soft); color: var(--lc-orange-ink); }
 
 /* ------------------------------------------------------------------ home */
@@ -206,7 +207,10 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-docs__nav { position: sticky; top: 4.2rem; padding-top: 2rem; font-size: .72rem; max-height: calc(100vh - 5rem); overflow: auto; }
 .lc-docs__section { margin: 0 0 .2rem; }
 .lc-docs__track { margin: 1.1rem 0 .2rem; padding-bottom: .25rem; border-bottom: 2px solid var(--lc-accent); font-size: .72rem; font-weight: 700; color: var(--lc-accent-strong); }
-.lc-docs__track { margin: 0 0 .5rem; }
+.lc-docs__home { margin: 0 0 .6rem; font-weight: 600; }
+.lc-docs__home a { color: var(--lc-fg); text-decoration: none; }
+.lc-docs__home a.is-active { color: var(--lc-accent-strong); }
+.lc-docs__track { margin: 1.1rem 0 .3rem; padding-bottom: .25rem; border-bottom: 2px solid var(--lc-accent); font-size: .72rem; font-weight: 700; }
 .lc-docs__track a { color: var(--lc-accent-strong); text-decoration: none; }
 .lc-docs__track a:hover { text-decoration: underline; }
 .lc-guides h3 { margin: 1rem 0 .3rem; font-size: .6rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--lc-muted); }
@@ -274,3 +278,29 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .md-top { background: #fff; color: var(--lc-strong); box-shadow: 0 .16rem .64rem rgba(0,0,0,.12); }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
 @media print { .lc-header, .lc-footer, .lc-filter, .lc-docs__nav, .md-content__button { display: none !important; } }
+
+/* GitHub badge: a small pill that links to a repository. */
+.md-typeset a.lc-gh { display: inline-flex; align-items: center; gap: .35rem; padding: .12rem .6rem .12rem .45rem; border: 1px solid var(--lc-line); border-radius: 1rem; background: #fff; color: var(--lc-fg); font-size: .62rem; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.md-typeset a.lc-gh:hover { border-color: var(--lc-accent); color: var(--lc-accent-strong); }
+.lc-gh svg { flex: none; }
+.lc-testing { margin-top: 2.4rem; padding-top: .4rem; border-top: 1px dashed var(--lc-line); }
+
+/* Docs menu on phones: a folded drawer above the page instead of a long list below it. */
+.lc-docs__drawer > summary { display: none; }
+@media (max-width: 56rem) {
+  .lc-docs__nav { order: -1 !important; border-top: 0 !important; border-bottom: 1px solid var(--lc-line); padding: .4rem 0 .6rem !important; }
+  .lc-docs__drawer > summary { display: block; padding: .5rem .8rem; border: 1px solid var(--lc-line); border-radius: .4rem; font-weight: 600; cursor: pointer; list-style: none; }
+  .lc-docs__drawer > summary::-webkit-details-marker { display: none; }
+  .lc-docs__drawer[open] > summary { margin-bottom: .6rem; }
+}
+a.lc-badge { text-decoration: none; }
+a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
+[dir] .md-typeset .lc-feature__shot > a > img { height: 100%; }
+[dir] .md-typeset .lc-feature__shot--wide > a > img { height: auto; }
+.lc-guides--two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; margin-top: 2.2rem; }
+.lc-guides--two section > h2 { margin-top: 0; }
+@media (max-width: 44rem) { .lc-guides--two { grid-template-columns: 1fr; } }
+.lc-docs__nav .lc-docs__track a { padding: 0; border: 0; }
+
+.lc-edit { margin: 2rem 0 0; font-size: .66rem; }
+.lc-edit a { color: var(--lc-muted); }

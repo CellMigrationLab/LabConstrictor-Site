@@ -62,6 +62,6 @@ def resolve(ecosystem: dict) -> list[dict]:
         for item in tier["items"]:
             data = inline_card(item) if "name" in item else load_project(item["repo"])
             link = data["url"] if "url" in data else f"https://github.com/{item['repo']}"
-            cards.append(dict(data, link=link, guide=slugs[item["repo"]] if item["repo"] in slugs else None))
+            cards.append(dict(data, repo=item["repo"], link=link, guide=slugs[item["repo"]] if item["repo"] in slugs else None))
         tiers.append({"key": tier["key"], "title": tier["title"], "text": tier["text"], "cards": cards})
     return tiers

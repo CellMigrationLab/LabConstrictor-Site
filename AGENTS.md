@@ -1,21 +1,44 @@
 # AGENTS.md
 
-This repository is small on purpose. Keep it that way. (Conventions follow the lab website and the graduate-school site.)
+How this repository works and the rules for changing it. It is small on purpose: keep it that way. (Conventions follow the lab website and the graduate-school site.)
+
+## What the site is
+
+A static site made with Zensical (Material-compatible, `mkdocs.yml`), published to GitHub Pages. Its parts and where each is built:
+
+| Page | Address | Built by |
+|---|---|---|
+| Home | `/` | `pages_site.page_home`, text in `data/site.yaml` |
+| App Centre and one page per app | `/apps/`, `/apps/<slug>/` | `pages_apps`, from the snapshot (`build/snapshot.json`) |
+| Docs (front page) | `/guides/` | `hubs.write_docs_home` |
+| Use / Build pages (picture cards) | `/use/`, `/build/` | `hubs`, from `data/hubs.yaml` |
+| Every guide | `/guides/<slug>/` | `guides` (the sources are below) |
+| Ecosystem | `/ecosystem/` | `pages_site.page_ecosystem`, from `projects` |
+| Submit | `/submit/` | `pages_site.page_submit`, from `content/submit.md` |
+
+Navigation: the top menu is Home, Apps, **Docs**, Ecosystem, Submit your app (`mkdocs.yml` `nav`); the footer is in `overrides/main.html`. Every guide page and the Use/Build pages show the **same docs sidebar** (both tracks, collapsible, the current section open; on phones it folds into a "Docs menu" drawer) and highlight *Docs* in the menu. A guide belongs to a track, **use** or **build**; its crumb and pager stay inside the track.
 
 ## Sources of truth
 
-- Hand-written pages: `content/submit.md`, `content/guides/*.md` (listed in `data/guides.yaml`) and `data/*.yaml` (site text, install steps, ecosystem).
-- Which apps are listed: `registry/<owner>__<repo>.yaml`, one pointer file per app. Nothing else about an app is stored here.
-- What an app says about itself: `labconstrictor-app.yaml` in the app's own repository, checked against `schema/labconstrictor-app.schema.json`.
-- Guides come in two tracks. "Build an app" is written in the template repository (`LabConstrictor/.tools/docs`) and imported at build time; fix those there. A template page that is really for users (`notebook_usage.md`, `troubleshooting_installed_app.md`) is placed under "Use an app" with `template: <file>` in `data/guides.yaml`; its text and title stay in the template, and the build stops if the template drops the file. The two hub pages (`/use/`, `/build/`: picture cards, the reasons to build, the build steps) are `data/hubs.yaml`; every picture there is a file in the template's `doc_source` branch or in another repository (fetched by `fetch_guides.py`) and must have alt text. The guide of each plugin (napari, Fiji, QuPath) and the overview of using apps in image software are `docs/user-guide.md` in the repository they describe (napari-labconstrictor, LabConstrictor-Fiji, LabConstrictor-QuPath, LabConstrictor-Tools): `scripts/fetch_guides.py` downloads them at build time, the title is their first heading, GitHub alerts become admonitions, and links and pictures must be absolute. Fix them there. To add a module, add one `{slug, repo, path}` line to `data/guides.yaml`. Only guides with no other home (`using-apps.md`, `submit.md`) and the generated install guide are written here.
-- The Ecosystem page: each project describes itself (name, summary, status, optional url) in `docs/labconstrictor-project.yaml` in its own repository, checked against `schema/labconstrictor-project.schema.json`; `data/ecosystem.yaml` only lists the repositories and their headings (add a project = add one `- repo: owner/name` line). The template's card is inline there because its repository is copied into every app. Fix a project's card in that project.
-- The logo and the comic come from the template's `doc_source` branch at build time.
-- `docs/index.md`, `docs/apps/`, `docs/guides/`, `docs/use/`, `docs/build/`, `docs/ecosystem.md`, `docs/submit.md`, `docs/llms.txt`, `docs/assets/{icons,shots,docs-img,images,hubs}/`, `build/` and `site/` are generated and git-ignored. Fix the source or the generator, never the generated file.
+Each fact is written in one place. Fix it there, never in a generated file.
+
+- **Guides to build an app (track build)**: the template repository, `.tools/docs` (order and groups: its README), imported at build time. A template page that is really for users is placed in track use with `template: <file>` in `data/guides.yaml` (now `notebook_usage.md` and `troubleshooting_installed_app.md`); the build stops if the template drops it.
+- **Guides kept next to the code they describe**: `docs/user-guide.md` in napari-labconstrictor, LabConstrictor-Fiji, LabConstrictor-QuPath and LabConstrictor-Tools, listed in `data/guides.yaml` as `{slug, repo, path}`. `scripts/fetch_guides.py` downloads them; the title is the first heading; GitHub alerts (`> [!WARNING]`) become admonitions; links and pictures must be absolute. To add a module, add one line.
+- **Menu titles** of template and repository guides are the page's own first heading (without a leading emoji), so a page and its menu entry never disagree.
+- **Ecosystem cards**: each project's `docs/labconstrictor-project.yaml` (checked against `schema/labconstrictor-project.schema.json`); `data/ecosystem.yaml` lists the repositories and headings. The template's card is inline there because its repository is copied into every app. Each card gets a GitHub badge and, when `data/guides.yaml` has a guide for that repository, a Guide link.
+- **Apps**: `registry/<owner>__<repo>.yaml` is a pointer (`repo`, `repo_id`, `owner_id`, `added`) plus optional curation: `featured` (home page), `verified_version`/`verified_on`, `section: testing` (listed apart under "Testing and maintenance", with a Testing badge). Everything an app says about itself is `labconstrictor-app.yaml` in its repository, checked against `schema/labconstrictor-app.schema.json`. Host chips on an app page (Soon in napari/Fiji/QuPath) link to the matching guide.
+- **Use / Build pictures and cards**: `data/hubs.yaml`; every picture is `doc_source:` (the template's `doc_source` branch) or `repo` + `path` (fetched), and needs alt text. A card marked `live_card` shows a real app card.
+- **Hand-written here**: `content/guides/using-apps.md`, `content/submit.md`, `data/install.yaml` (install steps per system; keep it in step with the template's download guide, which cannot be imported because it carries one app's name), `data/site.yaml`.
+- The logo and the comic come from the template's `doc_source` branch.
+- **Generated and git-ignored**: `docs/index.md`, `docs/apps/`, `docs/guides/`, `docs/use/`, `docs/build/`, `docs/ecosystem.md`, `docs/submit.md`, `docs/llms.txt`, `docs/assets/{icons,shots,docs-img,images,hubs}/`, `build/`, `site/`.
+- The site is unlisted while `extra.listed` is `false` in `mkdocs.yml` (noindex on every page, `robots.txt` disallows all, empty sitemap). `site_url` is the address everything follows.
 
 ## Two stages
 
-1. `scripts/fetch_catalogue.py` and `scripts/fetch_guides.py` are the only code that uses the network. They write `build/snapshot.json`, `build/problems.md` and `build/sources/`.
-2. `scripts/build_site.py` reads the snapshot and writes pages. It never goes online, so a build is repeatable.
+1. `scripts/fetch_catalogue.py` and `scripts/fetch_guides.py` are the only code that uses the network. They write `build/snapshot.json` (format number `SNAPSHOT_FORMAT`; bump it when its layout changes), `build/problems.md` and `build/sources/`.
+2. `scripts/build_site.py` reads those and writes pages. It never goes online, so a build is repeatable. Then `zensical build --strict`, `scripts/write_sitemap.py`, `scripts/check_site.py`.
+
+The publish workflow does all of this on every push to `main`, daily, and on demand.
 
 ## Untrusted input
 
@@ -23,31 +46,32 @@ Everything in an app's manifest, its release and its repository is written by so
 
 - Text goes into pages only through `text.esc` (HTML) or `text.one_line` (plain files); the theme prints a front-matter `description` unescaped, so `Page` neutralises its quotes.
 - Manifests are parsed with `validate.load_plain_yaml` (no anchors or aliases) and checked against the schema; downloads are size-capped; redirects to other hosts are refused (`github.py`).
-- Web addresses come from `slugify`, may not be empty or reserved, and a file the guide importer copies must stay inside its source folder.
-- `scripts/check_site.py` runs after the build and fails on dead links, author text that appears unescaped, and missing files.
+- Web addresses come from `slugify`, may not be empty or reserved; a file the guide importer copies must stay inside its source folder; pictures are re-encoded (SVG is refused); app downloads come only from the app's own GitHub release.
+- `scripts/check_site.py` fails on dead links and anchors, author text that appears unescaped, and missing files.
 
 ## No silent fallbacks
 
-If required input is missing, malformed, ambiguous or unsupported, raise a clear error that names the file or app. Do not substitute defaults, accept legacy aliases, skip files that should exist, or catch broad exceptions and continue.
+If required input is missing, malformed, ambiguous or unsupported, raise a clear error that names the file or app. Do not substitute defaults, accept legacy aliases, skip files that should exist, or catch broad exceptions and continue. A guide, picture, project file or schema that cannot be read stops the build; a GitHub outage (`FetchError`) stops the whole fetch (exit 4) so the live site is never rebuilt from a half-empty catalogue.
 
-A GitHub outage (`FetchError`) is not per-app: it stops the whole fetch (exit 4), so the live site is never rebuilt from a half-empty catalogue. `build_site.py` also refuses a snapshot with no apps.
+The one deliberate exception is per-app: an app that cannot be resolved is left out of the site, but it is always named in `build/problems.md`, printed, and (on scheduled builds) opened as an issue. Optional manifest fields may be absent (checked explicitly with `optional_list` or `in`); a broken optional icon becomes a reported warning and a monogram. Template pages the README does not list are reported as a WARNING on every build.
 
-The one deliberate exception is per-app: an app that cannot be resolved is left out of the site, but it is always named in `build/problems.md`, printed, and (on scheduled builds) opened as an issue. Optional manifest fields (icon, screenshots) may be absent; a broken optional icon becomes a reported warning and a monogram.
+## Code rules (enforced by `tests/test_code_rules.py`, so a break fails the tests and the build)
 
-## Code
-
-- Python 3.12, type annotations on every function, a short docstring on every function including nested ones and tests (purpose, input, output, how it fails). No `x or default`, `.get(key, default)` or broad `except` for required data: optional manifest fields are checked explicitly.
-- Functions do one job and stay under about 30 lines. A file that grows past about 300 lines is split by responsibility; none may pass 600.
-- Pure functions for parsing and formatting; network and filesystem work at the edges (`github.py`, `catalogue.py`, `images.py`, `page.py`).
-- `pathlib.Path` for paths; specific exceptions (`AppProblem` for one app's failure, `fail()` to stop the build).
-- Everything from an app's manifest is untrusted text: escape it (`text.esc`), never render it as HTML or Markdown, never download from anywhere but the app's own GitHub release.
-- Preserve public URLs (`/apps/<slug>/`, `/guides/<slug>/`, `/use/`, `/build/`) unless a redirect is added.
+- Python 3.12. **Every function** (including nested ones and tests) has **annotations** on all parameters and the return, and a short **docstring** (purpose, input, output, how it fails).
+- **Contained functions**: one job each, at most **30 lines**. Files at most **300 lines**: split by responsibility; none may pass 600.
+- No `except Exception` or bare `except`; name the exceptions. No `.get(key, default)` and no `x or default` for required data.
+- Pure functions for parsing and formatting; network and filesystem work at the edges (`github.py`, `sources.py`, `catalogue.py`, `images.py`, `page.py`).
+- `pathlib.Path` for paths; specific exceptions (`AppProblem` for one app, `fail()` to stop the build).
+- Every new behaviour gets a test in `tests/`, including its failure case.
+- Escape app-written text (`text.esc`); never render it as HTML or Markdown.
+- Preserve public addresses (`/apps/<slug>/`, `/guides/<slug>/`, `/use/`, `/build/`, `/ecosystem/`, `/submit/`) unless a redirect is added.
 
 ## Before you push
 
     PYTHONPATH=scripts:tests python -m unittest discover -s tests
-    python scripts/fetch_catalogue.py
-    python scripts/fetch_guides.py
+    python scripts/fetch_catalogue.py && python scripts/fetch_guides.py
     python scripts/build_site.py --template-dir <LabConstrictor checkout> --doc-source-dir <doc_source checkout>
     zensical build --strict
     python scripts/write_sitemap.py && python scripts/check_site.py
+
+Changes to other repositories (the template, plugins, projects) go in a pull request there; check out a fresh branch from that repository's `main` with an explicit refspec (`git fetch origin +refs/heads/main:refs/remotes/origin/main`), because a shallow clone's `origin/main` can be stale. Do not push to `main` here before the pull requests the build depends on are merged: the daily build reads those repositories' default branches.

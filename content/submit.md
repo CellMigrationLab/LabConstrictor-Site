@@ -1,6 +1,7 @@
 ---
 title: Submit your app
 description: How to list your LabConstrictor app in the App Centre.
+edit_url: https://github.com/CellMigrationLab/LabConstrictor-Site/edit/main/content/submit.md
 ---
 
 # Submit your app

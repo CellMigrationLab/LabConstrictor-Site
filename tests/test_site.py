@@ -8,7 +8,7 @@ from lcsite import cards, guides, hubs, projects, registry, sources
 from lcsite.config import AppProblem, DATA
 
 APP = {"slug": "demo", "repo": "o/demo", "html_url": "https://github.com/o/demo", "tier": "listed", "verified_version": None,
-       "verified_on": None, "featured": False, "license": "MIT", "icon": None, "screenshots": [],
+       "verified_on": None, "featured": False, "section": "apps", "license": "MIT", "icon": None, "screenshots": [],
        "manifest": {"name": "Demo", "summary": "A demo <b>app</b>", "kind": "utility", "distribution": {"installer": True, "pip": "demo"}},
        "release": {"tag": "1.0.0", "published_at": "2026-10-01T00:00:00Z", "url": "u", "assets": [
            {"name": "x", "os": "windows", "arch": "x86_64", "ext": "exe", "size": 5, "url": "https://x", "primary": True}]}}
@@ -191,3 +191,30 @@ class ProjectTests(unittest.TestCase):
         with mock.patch.object(sources, "read", return_value="name: X\nsummary: short\nstatus: ok\n"), self.assertRaises(SystemExit) as ctx:
             projects.load_project("o/r")
         self.assertIn("o/r/docs/labconstrictor-project.yaml", str(ctx.exception))
+
+
+class NavigationTests(unittest.TestCase):
+    """Menu titles, badges and the testing group behave as documented."""
+
+    def test_menu_title_is_the_pages_own_heading_without_an_emoji(self) -> None:
+        """A template page is titled by its first heading, minus a leading emoji, so page and menu agree."""
+        self.assertEqual(guides.heading_title("# 📋 Before Getting Started\ntext", "x.md"), "Before Getting Started")
+        self.assertEqual(guides.heading_title("# Accept a Pull Request (PR)\n", "x.md"), "Accept a Pull Request (PR)")
+        with self.assertRaises(SystemExit):
+            guides.heading_title("no heading", "x.md")
+
+    def test_badge_is_a_link_only_when_given_an_address(self) -> None:
+        """A badge with an href is an <a>; without one it is a plain <span>."""
+        self.assertIn('<a class="lc-badge lc-badge--host" href="guides/napari/">', cards.badge("Soon in napari", "host", "guides/napari/"))
+        self.assertTrue(cards.badge("Community").startswith("<span"))
+
+    def test_github_badge_names_the_repository_and_links_to_it(self) -> None:
+        """The GitHub pill links to the repository and shows its name."""
+        html = cards.github_badge("o/r-name")
+        self.assertIn('href="https://github.com/o/r-name"', html)
+        self.assertIn("<span>r-name</span>", html)
+
+    def test_only_testing_apps_get_the_testing_badge(self) -> None:
+        """`section: testing` shows a Testing badge; any other app shows none."""
+        self.assertIn("Testing", cards.testing_badge({"section": "testing"}))
+        self.assertEqual(cards.testing_badge({"section": "apps"}), "")

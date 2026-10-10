@@ -8,6 +8,7 @@ pictures live), so it needs no network. Anything that cannot be mapped stops the
 import posixpath
 import re
 import shutil
+import sys
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -80,7 +81,7 @@ def pager(prev: dict | None, nxt: dict | None) -> str:
         if not item:
             return "<span></span>"
         return f'<a class="{cls}" href="../{item["slug"]}/"><span>{label}</span><strong>{esc(item["title"])}</strong></a>'
-    return f'<nav class="lc-pager">{side(prev, "lc-pager__prev", "&larr; Previous")}{side(nxt, "lc-pager__next", "Next &rarr;")}</nav>'
+    return f'<nav class="lc-pager" aria-label="Previous and next guide">{side(prev, "lc-pager__prev", "&larr; Previous")}{side(nxt, "lc-pager__next", "Next &rarr;")}</nav>'
 
 
 TRACKS = {"use": "Use an app", "build": "Build an app"}   # the two audiences; every guide section belongs to one
@@ -96,7 +97,7 @@ def nav_for(sections: list[dict]) -> list[dict]:
 def guide_meta(nav: list[dict], slug: str) -> dict:
     """Front matter that gives a guide its sidebar: the sections, which page this is, and which track it is in."""
     track = next(s["track"] for s in nav if any(g["id"] == slug for g in s["items"]))
-    return {"guide_nav": nav, "guide_id": slug, "guide_track": track, "guide_track_title": TRACKS[track], "menu": f"{track}/"}
+    return {"guide_nav": nav, "guide_id": slug, "guide_track": track, "guide_track_title": TRACKS[track], "menu": "guides/"}
 
 
 def write_install(site_systems: list[dict], note: str, nav: list[dict], tail: str) -> None:
@@ -165,6 +166,26 @@ def write_guide(g: dict, nav: list[dict], tail: str, install: tuple, template: t
         write_own(g, nav, tail)
 
 
+def warn_unlisted(docs_dir: Path, theirs: list[dict], own: list[dict]) -> None:
+    """Print a WARNING for each page in the template's docs that its README does not list (so it is not on the site)."""
+    listed = {g["file"] for s in theirs + own for g in s["items"] if "file" in g} | SKIP | {"README.md"}
+    for name in sorted(p.name for p in docs_dir.glob("*.md") if p.name not in listed):
+        print(f"WARNING: {docs_dir.name}/{name} is not listed in the README of the template's docs, so it is not on the site", file=sys.stderr)
+
+
+def heading_title(text: str, where: str) -> str:
+    """The title of a template page as its sidebar and pager show it: its first heading, without a leading emoji.
+    The page and its menu entry can then never say different things. Stops the build when there is no heading."""
+    return re.sub(r"^[^\w(]+", "", sources.title_of(text, where))
+
+
+def title_template_pages(sections: list[dict], docs_dir: Path) -> None:
+    """Give every page that comes from the template the title of its own first heading (the README's link text only orders and groups)."""
+    for s in sections:
+        for g in (g for g in s["items"] if g["from_template"]):
+            g["title"] = heading_title((docs_dir / g["file"]).read_text(encoding="utf-8"), g["file"])
+
+
 def claim_template_pages(own: list[dict], theirs: list[dict]) -> None:
     """Move into our own sections the template pages they name (`template: file.md`), taking the title from the template.
     A page the template no longer has stops the build: the placement never drifts silently."""
@@ -178,12 +199,9 @@ def claim_template_pages(own: list[dict], theirs: list[dict]) -> None:
             s["items"] = [g for g in s["items"] if g is not page]
 
 
-def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str) -> list[dict]:
-    """Write guides/: our own sections (data/guides.yaml, track "use"), then the template's .tools/docs as track "build".
-    Returns the sidebar sections (title, track, items) for the hub pages."""
-    docs_dir = template_dir / ".tools" / "docs"
-    if not docs_dir.is_dir():
-        fail(f"{docs_dir} not found: pass --template-dir with a checkout of {TEMPLATE_REPO}")
+def read_sections(docs_dir: Path) -> tuple[list[dict], list[dict]]:
+    """Our own sections (data/guides.yaml, track "use") and the template's (its docs README, track "build"), each guide
+    with its slug and where it comes from. Guides kept in other repositories are titled by their first heading."""
     own = load_yaml(DATA / "guides.yaml")["sections"]
     theirs = parse_index((docs_dir / "README.md").read_text(encoding="utf-8"))
     for s in theirs:
@@ -195,6 +213,16 @@ def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str) 
         s["items"] = [dict(g, from_template="template" in g) for g in s["items"]]
         for g in (g for g in s["items"] if "repo" in g):
             g["title"] = sources.title_of(sources.read(g["repo"], g["path"]), f"{g['repo']}/{g['path']}")
+    return own, theirs
+
+
+def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str) -> list[dict]:
+    """Write guides/: our own sections (data/guides.yaml, track "use"), then the template's .tools/docs as track "build".
+    Returns the sidebar sections (title, track, items) for the hub pages."""
+    docs_dir = template_dir / ".tools" / "docs"
+    if not docs_dir.is_dir():
+        fail(f"{docs_dir} not found: pass --template-dir with a checkout of {TEMPLATE_REPO}")
+    own, theirs = read_sections(docs_dir)
     pages = {(g["repo"], g["path"]): g["slug"] for s in own for g in s["items"] if "repo" in g}
     known = {g["file"] for s in theirs for g in s["items"]}
     claim_template_pages(own, theirs)
@@ -202,6 +230,8 @@ def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str) 
     if clash:
         fail(f"guide address used twice (data/guides.yaml and the template): {sorted(clash)}")
     sections = own + [s for s in theirs if s["items"]]
+    title_template_pages(sections, docs_dir)
+    warn_unlisted(docs_dir, theirs, own)
     nav = nav_for(sections)
     for track in TRACKS:
         flat = [g for s in sections if s["track"] == track for g in s["items"]]

@@ -6,7 +6,7 @@ from PIL import Image
 
 from . import sources
 from .cards import card
-from .config import DOCS, fail
+from .config import DOCS, REPO, fail
 from .github import MAX_FILE
 from .guides import TRACKS, guide_lists
 from .images import shrink
@@ -80,7 +80,8 @@ def flow_html(title: str, steps: list[dict]) -> str:
 
 def write_hub(track: str, hub: dict, nav: list[dict], doc_source: Path, apps: list[dict], taken: dict[str, Path]) -> None:
     """<track>/index.md: the introduction, the picture cards, then every guide of the track."""
-    p = Page(f"{track}/index.md", title=hub["title"], description=hub["lead"], layout="wide")
+    p = Page(f"{track}/index.md", title=hub["title"], description=hub["lead"], guide_nav=nav, guide_id="", guide_track=track,
+             guide_track_title=TRACKS[track], menu="guides/", edit_url=f"{REPO}/edit/main/data/hubs.yaml")
     p.add(f'<section class="lc-pagehead"><h1>{esc(hub["title"])}</h1><p class="lc-lead">{esc(hub["lead"])}</p></section>')
     p.add(features_html(hub["cards"], doc_source, apps, taken))
     if "help" in hub:
@@ -88,7 +89,18 @@ def write_hub(track: str, hub: dict, nav: list[dict], doc_source: Path, apps: li
         p.add(f'<p class="lc-help"><strong>{esc(h["title"])}</strong> {esc(h["text"])} <a href="{esc(h["href"])}">{esc(h["link"])} &rarr;</a></p>')
     if "flow" in hub:
         p.add(flow_html(hub["flow_title"], hub["flow"]))
-    p.add(f'<div class="lc-guides"><h2 class="lc-title">Every guide</h2>{guide_lists(nav, track)}</div>')
+    p.write()
+
+
+def write_docs_home(hubs: dict, nav: list[dict]) -> None:
+    """guides/index.md: the front page of the docs (menu entry "Docs"): one card per track, then every guide."""
+    p = Page("guides/index.md", title="Docs", description="Guides for using LabConstrictor apps and for building your own.",
+             guide_nav=nav, guide_id="", docs_home=True, menu="guides/", edit_url=f"{REPO}/edit/main/data/hubs.yaml")
+    cards = "".join(f'<a class="lc-choice{" lc-choice--make" if t == "build" else ""}" href="{t}/"><strong>{esc(hubs[t]["title"])}</strong>'
+                    f'<span>{esc(hubs[t]["lead"])}</span><span class="lc-choice__go">Open &rarr;</span></a>' for t in TRACKS)
+    p.add('<h1>Docs</h1><p class="lc-lead">Use an app someone built, or build your own.</p>',
+          f'<div class="lc-choices">{cards}</div>',
+          '<div class="lc-guides lc-guides--two">' + "".join(f'<section id="all-{t}"><h2>{esc(TRACKS[t])}</h2>{guide_lists(nav, t)}</section>' for t in TRACKS) + "</div>")
     p.write()
 
 
@@ -97,3 +109,4 @@ def write_all(hubs: dict, nav: list[dict], doc_source: Path, apps: list[dict]) -
     taken: dict[str, Path] = {}
     for track in TRACKS:
         write_hub(track, hubs[track], nav, doc_source, apps, taken)
+    write_docs_home(hubs, nav)

@@ -5,6 +5,7 @@
 Fails (exit status 1) and lists every problem when:
   - a link between pages of the site points to a page, file or anchor that does not exist,
   - text written by an app's author appears unescaped in a page (a sign of HTML injection),
+  - an "edit this page" link points at a generated file instead of its source,
   - a file that must exist is missing (sitemap, robots.txt, llms.txt, the schemas).
 Run it after `zensical build` and `write_sitemap.py`.
 """
@@ -102,6 +103,15 @@ def escaping_problems(snapshot: dict) -> list[str]:
     return problems
 
 
+GENERATED_EDIT = re.compile(r"LabConstrictor-Site/edit/[^/]+/docs/")
+
+
+def edit_link_problems(pages: dict[Path, PageParts]) -> list[str]:
+    """One line per "edit this page" link that points into the generated docs/ folder (edits there are lost on the next build)."""
+    return [f"{page.relative_to(SITE)}: edit link {a} points into generated files"
+            for page, parts in pages.items() for a in parts.links if GENERATED_EDIT.search(a)]
+
+
 def missing_files() -> list[str]:
     """One line per required file that is missing from site/."""
     return [f"missing {name}" for name in REQUIRED if not (SITE / name).is_file()]
@@ -114,7 +124,7 @@ def main() -> int:
         return 2
     # The 404 page uses absolute addresses on purpose (it is served from any depth), so it is not link-checked.
     pages = {p.resolve(): parse(p) for p in sorted(SITE.rglob("*.html")) if p.name != "404.html"}
-    problems = missing_files() + link_problems(pages) + escaping_problems(load_json(SNAPSHOT))
+    problems = missing_files() + link_problems(pages) + edit_link_problems(pages) + escaping_problems(load_json(SNAPSHOT))
     for problem in problems:
         print(f"PROBLEM {problem}", file=sys.stderr)
     print(f"check_site: {len(pages)} pages, {len(problems)} problems")

@@ -21,3 +21,8 @@ tiers:
         status: Available
       - repo: CellMigrationLab/LabConstrictor_streamlit
       - repo: CellMigrationLab/LabConstrictor-Tools
+  - key: test
+    title: Test and maintain
+    text: Apps for checking that LabConstrictor works on your computer and in your image software. They are listed apart in the App Centre.
+    items:
+      - repo: CellMigrationLab/LabConstrictor-Playground
