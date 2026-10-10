@@ -56,6 +56,7 @@
       <aside class="lc-docs__nav" aria-label="Guides">
         {#- Each section is collapsible; the one that holds this page starts open. -#}
         {% for section in page.meta.guide_nav %}
+        {% if loop.changed(section.track) %}<p class="lc-docs__track">{{ section.track_title }}</p>{% endif %}
         <details class="lc-docs__section"{% if section.items | selectattr("id", "equalto", page.meta.guide_id) | list %} open{% endif %}>
           <summary>{{ section.title }}</summary>
           <ul>{% for item in section.items %}

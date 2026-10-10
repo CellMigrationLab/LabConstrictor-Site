@@ -82,9 +82,13 @@ def pager(prev: dict | None, nxt: dict | None) -> str:
     return f'<nav class="lc-pager">{side(prev, "lc-pager__prev", "&larr; Previous")}{side(nxt, "lc-pager__next", "Next &rarr;")}</nav>'
 
 
+TRACKS = {"use": "Use an app", "build": "Build an app"}   # the two audiences; every guide section belongs to one
+
+
 def nav_for(sections: list[dict]) -> list[dict]:
-    """The sidebar: every section with its items as title, path and id."""
-    return [{"title": s["title"], "items": [{"title": g["title"], "path": f"guides/{g['slug']}/", "id": g["slug"]} for g in s["items"]]}
+    """The sidebar: every section with its track and its items as title, path and id."""
+    return [{"title": s["title"], "track": s["track"], "track_title": TRACKS[s["track"]],
+             "items": [{"title": g["title"], "path": f"guides/{g['slug']}/", "id": g["slug"]} for g in s["items"]]}
             for s in sections]
 
 
@@ -110,14 +114,25 @@ def write_own(item: dict, nav: list[dict], tail: str) -> None:
     p.write()
 
 
-def write_landing(nav: list[dict]) -> None:
-    """guides/index.md: the two ways in, and every guide listed by section."""
+def track_block(track: str, nav: list[dict], intro: str) -> str:
+    """One audience on the guides page: its heading, an introduction (HTML) and its sections with their guides."""
     lists = "".join(
-        f'<h2>{esc(s["title"])}</h2><ul>' + "".join(f'<li><a href="{i["path"]}">{esc(i["title"])}</a></li>' for i in s["items"]) + "</ul>"
-        for s in nav)
-    p = Page("guides/index.md", title="Guides", description="How to install LabConstrictor apps, use them in napari, Fiji and QuPath, and build your own.", layout="wide")
-    p.add('<section class="lc-pagehead"><h1>Guides</h1><p class="lc-lead">Install an app, use it in your image software, or build your own.</p></section>',
-          f'<div class="lc-guides">{lists}</div>')
+        f'<h3>{esc(s["title"])}</h3><ul>' + "".join(f'<li><a href="{i["path"]}">{esc(i["title"])}</a></li>' for i in s["items"]) + "</ul>"
+        for s in nav if s["track"] == track)
+    return f'<section class="lc-guides__track" id="{track}"><h2>{esc(TRACKS[track])}</h2>{intro}{lists}</section>'
+
+
+def benefits(items: list[dict]) -> str:
+    """"Why build an app": each benefit with a link to the guide that shows it from the user's side."""
+    rows = "".join(f'<li><strong>{esc(b["title"])}</strong> {esc(b["text"])} <a href="{esc(b["href"])}">{esc(b["link"])}</a></li>' for b in items)
+    return f'<p>Why turn a notebook into an app?</p><ul class="lc-benefits">{rows}</ul><p>How to build one:</p>'
+
+
+def write_landing(nav: list[dict], why_build: list[dict]) -> None:
+    """guides/index.md: the guides in two tracks, using an app and building one (which starts with the reasons to build)."""
+    p = Page("guides/index.md", title="Guides", description="How to install and use LabConstrictor apps, use them in napari, Fiji and QuPath, and build your own.", layout="wide")
+    p.add('<section class="lc-pagehead"><h1>Guides</h1><p class="lc-lead">Use an app someone built, or build your own. <a href="#use">Use an app</a> · <a href="#build">Build an app</a></p></section>',
+          '<div class="lc-guides">' + track_block("use", nav, "") + track_block("build", nav, benefits(why_build)) + "</div>")
     p.write()
 
 
@@ -134,29 +149,47 @@ def write_template_guide(g: dict, docs_dir: Path, doc_source: Path, nav: list[di
     p.write()
 
 
-def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str) -> None:
-    """Write guides/: our own guides (data/guides.yaml) first, then the template's .tools/docs as "Build an app"."""
+def claim_template_pages(own: list[dict], theirs: list[dict]) -> None:
+    """Move into our own sections the template pages they name (`template: file.md`), taking the title from the template.
+    A page the template no longer has stops the build: the placement never drifts silently."""
+    by_file = {g["file"]: g for s in theirs for g in s["items"]}
+    for item in (g for s in own for g in s["items"] if "template" in g):
+        page = by_file.get(item["template"])
+        if page is None:
+            fail(f"data/guides.yaml places {item['template']}, which is not in the README of the template's docs")
+        item.update(file=page["file"], title=page["title"], slug=page["slug"])
+        for s in theirs:
+            s["items"] = [g for g in s["items"] if g is not page]
+
+
+def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str, why_build: list[dict]) -> None:
+    """Write guides/: our own sections (data/guides.yaml, track "use"), then the template's .tools/docs as track "build"."""
     docs_dir = template_dir / ".tools" / "docs"
     if not docs_dir.is_dir():
         fail(f"{docs_dir} not found: pass --template-dir with a checkout of {TEMPLATE_REPO}")
     own = load_yaml(DATA / "guides.yaml")["sections"]
     theirs = parse_index((docs_dir / "README.md").read_text(encoding="utf-8"))
     for s in theirs:
+        s["track"] = "build"
         for g in s["items"]:
-            g["slug"] = slug_of(g["file"])
-    sections = own + theirs
-    clash = {g["slug"] for s in own for g in s["items"]} & {g["slug"] for s in theirs for g in s["items"]}
+            g.update(slug=slug_of(g["file"]), from_template=True)
+    for s in own:
+        s["track"] = "use"
+        s["items"] = [dict(g, from_template="template" in g) for g in s["items"]]
+    known = {g["file"] for s in theirs for g in s["items"]}
+    claim_template_pages(own, theirs)
+    clash = {g["slug"] for s in own for g in s["items"] if not g["from_template"]} & {g["slug"] for s in theirs for g in s["items"]}
     if clash:
         fail(f"guide address used twice (data/guides.yaml and the template): {sorted(clash)}")
+    sections = own + [s for s in theirs if s["items"]]
     nav = nav_for(sections)
     flat = [g for s in sections for g in s["items"]]
-    known = {g["file"] for s in theirs for g in s["items"]}
     for i, g in enumerate(flat):
         tail = pager(flat[i - 1] if i else None, flat[i + 1] if i + 1 < len(flat) else None)
         if g.get("generated"):
             write_install(systems, note, nav, tail)
-        elif g in [x for s in own for x in s["items"]]:
-            write_own(g, nav, tail)
-        else:
+        elif g["from_template"]:
             write_template_guide(g, docs_dir, doc_source, nav, known, tail)
-    write_landing(nav)
+        else:
+            write_own(g, nav, tail)
+    write_landing(nav, why_build)

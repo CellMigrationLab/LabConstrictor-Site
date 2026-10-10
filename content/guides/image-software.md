@@ -2,7 +2,7 @@
 
 Some apps declare **tools**: scientific functions with typed inputs. A plugin for your image software turns each tool into a form, runs it, and puts the result back into your software: images become layers or windows, outlines become overlays, points become point ROIs, numbers go to a log or a table.
 
-The tool runs in the app's own Python environment, in a separate process. Your image software never imports the app's packages, so apps with conflicting dependencies can live side by side, and you do not need Python in napari, Fiji or QuPath.
+The tool runs in the app's own Python environment, in a separate process. Your image software never imports the app's packages, so apps with conflicting dependencies can live side by side. Fiji and QuPath need no Python at all; napari is itself a Python program, and its plugin is installed into the environment where napari runs.
 
 The [App Centre](../../apps/index.md) shows which apps work in which software under **Works in**.
 

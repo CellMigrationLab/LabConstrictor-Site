@@ -81,7 +81,7 @@ def main() -> None:
         pages_apps.page_app(app, install["systems"])
     pages_site.page_ecosystem(ecosystem)
     pages_site.page_submit(site, f"{SITE_URL}schema/labconstrictor-app.schema.json")
-    guides.build(args.template_dir, args.doc_source_dir, install["systems"], install["note"])
+    guides.build(args.template_dir, args.doc_source_dir, install["systems"], install["note"], site["why_build"])
     llms.write(site, apps)
     print(f"Generated pages for {len(apps)} apps.")
 

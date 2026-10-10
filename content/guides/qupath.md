@@ -11,7 +11,7 @@ The extension runs the tools of every installed LabConstrictor app from QuPath, 
 
 - QuPath 0.7.
 - At least one LabConstrictor app, [installed](../install/index.md). The installer registers it on your computer.
-- To build the jar: a JDK, as described in the repository's README.
+- To build the jar: JDK 25 (QuPath 0.7 is built with Java 25), as described in the repository's README.
 
 ## Install
 

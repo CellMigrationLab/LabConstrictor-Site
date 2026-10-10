@@ -1,10 +1,15 @@
-# Guides written for this site, in sidebar order. The template's own guides (Build an app) are imported
-# separately from LabConstrictor/.tools/docs. `generated: true` pages are written by scripts/lcsite/guides.py.
+# Guides for people who use apps ("Use an app" track), in sidebar order. The guides for people who build apps
+# are imported from LabConstrictor/.tools/docs ("Build an app" track) and never copied here.
+#   file:      hand-written here, in content/guides/ (this repository is the only place it exists)
+#   generated: written from data/install.yaml by scripts/lcsite/guides.py
+#   template:  a page of the template's docs that is for users, shown here; title and text stay in the template
+#              (the build stops if the template no longer has it)
 sections:
-  - title: Use an app
+  - title: Install and open
     items:
       - {slug: install, title: Install an app, generated: true}
       - {slug: using-apps, title: Open and use an app, file: using-apps.md}
+      - {template: notebook_usage.md}
   - title: Use apps in your image software
     items:
       - {slug: image-software, title: How it works, file: image-software.md}

@@ -205,6 +205,12 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-content:has(.lc-docs) { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); }
 .lc-docs__nav { position: sticky; top: 4.2rem; padding-top: 2rem; font-size: .72rem; max-height: calc(100vh - 5rem); overflow: auto; }
 .lc-docs__section { margin: 0 0 .2rem; }
+.lc-docs__track { margin: 1.1rem 0 .2rem; padding-bottom: .25rem; border-bottom: 2px solid var(--lc-accent); font-size: .72rem; font-weight: 700; color: var(--lc-accent-strong); }
+.lc-docs__track:first-child { margin-top: 0; }
+.lc-guides__track { margin: 0 0 2.2rem; }
+.lc-guides h3 { margin: 1rem 0 .3rem; font-size: .6rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--lc-muted); }
+.lc-benefits { margin: .4rem 0 1rem !important; display: grid; gap: .5rem; }
+.lc-benefits li { padding: .55rem .8rem; border: 1px solid var(--lc-line); border-left: 3px solid var(--lc-orange); border-radius: .4rem; line-height: 1.45; }
 .lc-docs__section summary { display: block; list-style: none; padding: .5rem 0 .3rem; font-size: .6rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--lc-muted); cursor: pointer; }
 .lc-docs__section summary::-webkit-details-marker { display: none; }
 .lc-docs__section summary::before { content: "+"; display: inline-block; width: 1.1em; }

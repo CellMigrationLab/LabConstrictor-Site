@@ -38,7 +38,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
     p.add(f'<section class="lc-hero"><div class="lc-hero__in"><div><h1>{esc(hero["title"])}</h1><p>{esc(hero["text"])}</p>'
           '<div class="lc-choices">'
           + choice("I want to use an app", f"Browse {plural(len(apps), 'app')} for image analysis. Install in a few clicks.", "apps/", "Open the App Centre")
-          + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "guides/", "Read the guides", "lc-choice--make") +
+          + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "guides/#build", "Why and how to build one", "lc-choice--make") +
           '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256"></div></div></section>')
     p.add(comic_figure())
     p.add('<section class="lc-band"><h2 class="lc-title">Featured apps</h2>',
@@ -46,7 +46,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
           '<p class="lc-more"><a href="apps/">See every app</a></p></section>')
     steps = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["text"])}</span></li>' for s in site["steps"])
     p.add(f'<section class="lc-band lc-band--soft"><h2 class="lc-title">How it works</h2><ol class="lc-steps">{steps}</ol>',
-          f'<p class="lc-more"><a href="{esc(site["links"]["template"])}">Start from the template</a> · <a href="guides/">Read the guides</a></p></section>')
+          f'<p class="lc-more"><a href="{esc(site["links"]["template"])}">Start from the template</a> · <a href="guides/#build">Read the guides</a></p></section>')
     p.add('<section class="lc-band"><h2 class="lc-title">Works where you work</h2>',
           '<p class="lc-center">Desktop installers, Google Colab and pip. Apps that declare tools also run inside napari, Fiji and QuPath.</p>',
           '<p class="lc-more"><a href="guides/image-software/">Use apps in your image software</a> · <a href="ecosystem/">Explore the ecosystem</a></p></section>')

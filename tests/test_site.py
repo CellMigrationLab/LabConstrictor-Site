@@ -87,3 +87,21 @@ class RobotsTests(unittest.TestCase):
         text = robots("https://example.org/", True)
         self.assertIn("Allow: /", text)
         self.assertIn("Sitemap: https://example.org/sitemap.xml", text)
+
+
+class ClaimTests(unittest.TestCase):
+    """Template pages that are for users are placed under our own track."""
+
+    def test_claimed_page_moves_and_keeps_its_title(self) -> None:
+        """A page named with `template:` leaves the template's sections and takes the template's title."""
+        own = [{"items": [{"template": "a.md"}]}]
+        theirs = [{"items": [{"file": "a.md", "title": "A page", "slug": "a"}, {"file": "b.md", "title": "B", "slug": "b"}]}]
+        guides.claim_template_pages(own, theirs)
+        self.assertEqual(own[0]["items"][0]["title"], "A page")
+        self.assertEqual([g["file"] for g in theirs[0]["items"]], ["b.md"])
+
+    def test_missing_template_page_stops_the_build(self) -> None:
+        """A placement for a page the template no longer has fails, naming the file."""
+        with self.assertRaises(SystemExit) as ctx:
+            guides.claim_template_pages([{"items": [{"template": "gone.md"}]}], [{"items": []}])
+        self.assertIn("gone.md", str(ctx.exception))
