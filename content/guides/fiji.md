@@ -2,7 +2,9 @@
 
 One Fiji command runs the tools of every installed LabConstrictor app, with a dialog generated from each tool's declaration.
 
-!!! note "Testing phase: no download yet"
+!!! warning "Under heavy construction"
+    This plugin is untested and unlikely to be stable. Expect bugs, missing features and changes without notice. Do not rely on it for work you cannot redo.
+
     There is no ready-made file and no Fiji update site yet. Today the plugin is built from its repository. A ready-made jar and an update site are planned.
 
 ## What you need

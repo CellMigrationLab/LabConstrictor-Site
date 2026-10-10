@@ -6,6 +6,9 @@ The tool runs in the app's own Python environment, in a separate process. Your i
 
 The [App Centre](../../apps/index.md) shows which apps work in which software under **Works in**.
 
+!!! warning "Under heavy construction"
+    The napari, Fiji and QuPath plugins are untested and unlikely to be stable. Expect bugs, missing features and changes without notice.
+
 ## Three steps
 
 1. **Install the app** you want to use ([install guide](../install/index.md)). The installer registers the app on your computer, which is how the plugins find it.

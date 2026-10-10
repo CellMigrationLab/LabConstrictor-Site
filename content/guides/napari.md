@@ -2,7 +2,9 @@
 
 One dock widget shows every installed LabConstrictor app. You pick an app and a tool, and the form is generated from the tool's declaration.
 
-!!! note "Testing phase"
+!!! warning "Under heavy construction"
+    This plugin is untested and unlikely to be stable. Expect bugs, missing features and changes without notice. Do not rely on it for work you cannot redo.
+
     Tested on Linux. Windows and macOS are untested. The plugin is installed from GitHub; it is not on PyPI yet.
 
 ## What you need

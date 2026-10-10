@@ -3,23 +3,23 @@
 tiers:
   - key: hosts
     title: Use apps inside your image software
-    text: Apps can expose tools (typed Python functions) that run in the software you already use.
+    text: Apps can expose tools (typed Python functions) that run in the software you already use. These plugins are untested and under heavy construction.
     items:
       - name: napari
         repo: CellMigrationLab/napari-labconstrictor
         guide: napari
         text: "One dock widget for every installed LabConstrictor app: pick an app and a tool, and the form is generated from the tool's declared schema."
-        status: Install from GitHub
+        status: Experimental
       - name: Fiji
         repo: CellMigrationLab/LabConstrictor-Fiji
         guide: fiji
         text: "Plugins > LabConstrictor > LabConstrictor Tools lists the tools of every installed app and builds a dialog for each."
-        status: Testing phase
+        status: Experimental
       - name: QuPath
         repo: CellMigrationLab/LabConstrictor-QuPath
         guide: qupath
         text: "Extensions > LabConstrictor tools for QuPath 0.7."
-        status: Prototype
+        status: Experimental
   - key: dev
     title: Build and maintain apps
     text: What authors use to make and keep an app.

@@ -2,7 +2,9 @@
 
 The extension runs the tools of every installed LabConstrictor app from QuPath, with a form generated from each tool's declaration.
 
-!!! note "Prototype: no download yet"
+!!! warning "Under heavy construction"
+    This plugin is untested and unlikely to be stable. Expect bugs, missing features and changes without notice. Do not rely on it for work you cannot redo.
+
     For QuPath 0.7. There is no ready-made file yet; the jar is built from its repository.
 
 ## What you need
