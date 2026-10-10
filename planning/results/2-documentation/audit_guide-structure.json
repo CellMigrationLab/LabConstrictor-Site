@@ -1,0 +1,125 @@
+{
+ "dimension": "3. Standard structure of task guides (benchmark section 3)",
+ "already_met": [
+  "CLASSIFICATION (26 pages: 25 in /guides/ + /submit/). Task how-to: install, using-apps, notebook-usage, napari, fiji, qupath, create-repository, template-synchronization, initialise-repository, app-manifest (how-to+reference), external-code-upload, notebook-requirements, notebook-upload, executable-creation, notebook-portability (advice, hybrid), accept-pull-request, workflow-status (how-to+troubleshooting), personal-access-token, submit (site). Explanation: before-getting-started, code-hiding, use-cases, image-software (overview + 3-step how-to). Reference: installer-images (size table, no steps), troubleshooting, troubleshooting-installed-app. Tutorial (learning-by-doing with a result): none; no guide takes a reader from install to a scientific result.",
+  "SCORECARD key: O outcome, P prerequisites, T time, S exact steps, V verification, R troubleshooting link, N next step, Ti title is an action; Y present, p partial, - absent. Owner: TPL = LabConstrictor/.tools/docs (template, Build track unless noted), SITE = labconstrictor-site, TOOLS/NAP/FIJI/QP = the plugin repos' docs/user-guide.md.",
+  "CRITICAL SIX (benchmark s.8 item 2): install [TPL, claimed into Use] O p, P -, T Y ('about 6-8 minutes'), S Y, V -, R Y, N Y (but contradicts pager), Ti Y. initialise-repository [TPL] O p, P Y, T -, S p (one dense paragraph, not numbered), V -, R -, N p, Ti Y. notebook-requirements [TPL] O p, P p, T -, S Y, V -, R -, N -, Ti Y. notebook-upload [TPL] O p, P p, T -, S Y, V Y ('4. Merge and Verify'), R p ('Failure Protocol'), N -, Ti Y. executable-creation [TPL] O p, P p ('Please check before proceeding'), T -, S Y, V p (download from Assets), R -, N Y ('3. After the release'), Ti Y. submit [SITE content/submit.md, not in /guides/] O Y, P Y ('2. Make sure your release is ready'), T -, S Y, V p, R p ('A bot ... tells you what to fix'), N p, Ti Y. Result: 0 of 6 has all of P, V, R, N; time is present in 1 of 6.",
+  "OTHER USE-TRACK HOW-TOS: using-apps [SITE content/guides/using-apps.md] O p, P Y, T -, S p, V p, R Y ('Something went wrong'), N p, Ti Y. notebook-usage [TPL] O p, P p, T -, S p, V p (screenshot only), R -, N - (ends on '---'), Ti Y. napari [NAP], fiji [FIJI], qupath [QP], each: O Y, P Y ('What you need'), T -, S Y (menu paths, pip commands), V -, R Y ('If something does not work'), N -, Ti Y. image-software [TOOLS] O Y, P p, T -, S Y, V Y ('Check that everything works', Playground app), R -, N p, Ti Y.",
+  "OTHER BUILD-TRACK HOW-TOS [all TPL]: create-repository O p, P -, T -, S Y, V p ('ready to go', no visible result), R -, N Y, Ti Y. template-synchronization O Y, P p, T -, S Y (exact field names and secret name), V -, R -, N p, Ti Y. app-manifest O Y, P p, T -, S Y, V p ('The automatic check'), R p, N Y ('Get listed'), Ti Y. external-code-upload O p, P -, T -, S Y, V -, R -, N -, Ti Y. notebook-portability O p, P -, T -, S Y, V p ('6. Test in both environments'), R -, N -, Ti Y. accept-pull-request O p, P -, T -, S Y, V -, R -, N -, Ti Y. workflow-status O p, P -, T -, S Y, V p (status-icon screenshot), R Y ('How to Debug a Failure'), N -, Ti Y. personal-access-token O p, P -, T -, S Y, V -, R -, N p, Ti Y.",
+  "Titles are actions or clear task names in 22 of 22 scored how-to guides (e.g. 'Create your repository', 'Accept a pull request', 'Install the napari plugin'). Exact UI labels are strong where checked: form labels 'Start initialisation', 'Upload/Update notebook', 'Validate submission' exist verbatim in /home/user/LabConstrictor_streamlit/app.py (lines 841, 850, 915); workflow names 'Sync with Template Repository' and 'Check App Centre manifest' exist in src-template/.github/workflows.",
+  "Every guide already has an outcome-bearing opening paragraph enforced by the build: guides.describe()/lead_paragraph fails the build, naming the guide, when there is none (scripts/lcsite/guides.py:96-101). This is the only structural rule enforced today.",
+  "The three plugin guides already share one shape (What you need / Install / Open it / If something does not work) written by one author team, so a convention can reuse those headings instead of inventing new ones.",
+  "Source ownership is already visible in code and rules: each guide's edit_url points to its real source (template .tools/docs/<file>, the plugin repo's docs/user-guide.md, or content/guides/*.md), and AGENTS.md forbids editing generated docs/guides/. A structure check in the site therefore never needs to write guide text."
+ ],
+ "gaps": [
+  {
+   "id": "G1",
+   "requirement": "Section 7 'Guide completeness: 100% of critical how-to guides have prerequisites, expected result, failure route (automated content checklist)' and section 8 item 2 (standardise six critical guides).",
+   "current": "No notion of 'critical' exists: grep -ri critical over scripts/, tests/, data/, AGENTS.md and DESIGN.md finds nothing. guides.py only checks a lead paragraph and a first H1 (describe at guides.py:96, heading_title at :193). Imported guides have no metadata channel (title = first '# ', description = opening paragraph), so chips or front matter cannot be used. guides.py is 258 of 300 allowed lines, so a checker cannot go inside it.",
+   "severity": "major",
+   "proposal": "Proportionate standard = a heading convention, not a rewrite or a template. For guides listed under a new top-level key `critical:` in data/guides.yaml (slugs: install, initialise-repository, notebook-requirements, notebook-upload, executable-creation; plus the /submit/ page checked from content/submit.md), require: (a) a lead paragraph (already enforced); (b) H2 `What you need` (or `Before you start`); (c) H2 `Check that it worked`; (d) H2 `If something does not work` (the plugin guides' existing wording); (e) H2 `Next`. Time is a sentence in the lead paragraph (e.g. 'about 10 minutes of your time, plus 15 minutes of build waiting'), checked by a regex for 'minute' on critical guides only. Implement as a pure function `missing_sections(markdown) -> list[str]` in a new scripts/lcsite/guide_shape.py, called from write_template_guide / write_source_guide / write_own; it calls fail() naming the file and the missing heading (no silent fallback). Add tests/test_guide_shape.py with the failing case. Land it only after the template PR (G2) is merged, because the daily build reads the template's main (AGENTS.md: do not push to main before dependent PRs merge). Optionally extend to the three plugin guides later (they already have 2 of 4 headings).",
+   "repo_and_files": [
+    "labconstrictor-site: data/guides.yaml (add `critical:` list)",
+    "labconstrictor-site: scripts/lcsite/guide_shape.py (new, under 300 lines)",
+    "labconstrictor-site: scripts/lcsite/guides.py (3 call sites)",
+    "labconstrictor-site: tests/test_guide_shape.py (new)",
+    "labconstrictor-site: DESIGN.md (document the headings under the guide pattern)"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "None. Fits 'no silent fallbacks' (hard fail with file name) and the 30-line / 300-file limits only if put in a new module. Site only checks; headings are authored in the owning repo, so no text is written twice. Do not tag the explanation and reference pages critical (section 3 last line)."
+  },
+  {
+   "id": "G2",
+   "requirement": "Components Verification, Troubleshooting and Next step in the six critical guides (section 3 table; section 1 'Did it work?', 'What if something fails?').",
+   "current": "Verification missing in install (no 'you should see the Welcome notebook / app in the Start menu'), initialise-repository (no 'the pull request contains X'), notebook-requirements ('Follow the instructions provided inside the notebook', no expected output; what the Validator prints is unverified), executable-creation (only 'download the installers from its Assets list'). Failure route missing in initialise-repository, notebook-requirements, executable-creation (links only to workflow-status for monitoring; workflow-status has a debug section but executable-creation does not point to it as a failure route), and submit. 'Next' missing in notebook-requirements, notebook-upload, initialise-repository (links to accept-pull-request mid-paragraph), submit. Prerequisites missing in install (no OS versions, no admin rights statement) and weak in notebook-upload/executable-creation (executable-creation never says 'notebooks must already be uploaded and the sync secret set').",
+   "severity": "major",
+   "proposal": "Add to each of the six files the three short sections `Check that it worked` (the concrete expected result: for install the Welcome notebook opens in the browser; for notebook-upload the green status icon and the notebook listed in the Welcome dashboard; for executable-creation the three installers named like `Name-1.0.0-Windows-x86_64.exe` in Assets; for initialise-repository the PR that moves README into .tools/docs), `If something does not work` (one link each: install -> troubleshooting-installed-app, which already exists; the rest -> workflow-status 'How to Debug a Failure' and troubleshooting) and `Next` (the next TASK, see G3), plus `What you need` where absent and a time sentence. Expected outputs must come from a real run of each step; this audit did not run them, so someone must capture them (see unverified).",
+   "repo_and_files": [
+    "LabConstrictor: .tools/docs/install.md",
+    "LabConstrictor: .tools/docs/initialise_repository.md",
+    "LabConstrictor: .tools/docs/notebook_requirements.md",
+    "LabConstrictor: .tools/docs/notebook_upload.md",
+    "LabConstrictor: .tools/docs/executable_creation.md",
+    "labconstrictor-site: content/submit.md"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "None. Text is edited in the owning repo; generated docs/guides/*/index.md must not be touched. Template change needs a template PR merged before the site's G1 check lands."
+  },
+  {
+   "id": "G3",
+   "requirement": "Next step = 'a link to the next relevant TASK, not merely the next document in a list'; Previous/Next follow task order (section 5).",
+   "current": "The pager is generated from flat sidebar order (guides.pager / build loop at guides.py:104 and the `flat` loop in build()), and contradicts the guides' own text: install says 'Next: Use notebooks after installation' (docs/guides/install/index.md 'Next' section) but its pager 'Next' is 'Open and use an app'. executable-creation's own '3. After the release' points to install and app-manifest, while its pager Next is 'Write notebooks that run in both Google Colab and JupyterLab'. app-manifest's text ends 'Get listed -> submit' but its pager goes to 'Upload external code'. A first-time builder is paged through optional pages (installer-images, app-manifest, external-code-upload) before notebook-requirements. notebook-usage, notebook-requirements, notebook-upload, external-code-upload, accept-pull-request and personal-access-token have no Next at all. The Build track never ends at 'test and submit': the last pager in the From-zero section leads into authoring tips.",
+   "severity": "major",
+   "proposal": "Smallest change: make the convention in G1 carry the task order. Define the pager's next link as the FIRST link inside the guide's `## Next` section when that section exists (fall back to sidebar order only for guides that have no Next section, and say so in DESIGN.md); the build fails if that link is not a guide slug. Meanwhile fix the contradictions by hand: install.md Next -> using-apps (or reorder data/guides.yaml so install -> notebook-usage and drop using-apps overlap), executable_creation.md ends with Next -> install, then app-manifest, then /submit/. Also move the optional pages (installer-images, external-code-upload) after the main path in the template README order, or mark them '(optional)' in titles as the README already does for external code.",
+   "repo_and_files": [
+    "labconstrictor-site: scripts/lcsite/guides.py (pager source) or new guide_shape.py helper",
+    "LabConstrictor: .tools/docs/README.md (order of the 'From zero to installed notebooks' list)",
+    "LabConstrictor: .tools/docs/install.md, executable_creation.md, app_manifest.md, notebook_usage.md, notebook_requirements.md, notebook_upload.md (Next sections)",
+    "labconstrictor-site: data/guides.yaml (Use-track order)"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "Pager is generated here, so overriding it is allowed; but a hidden fallback to list order must be explicit and documented (no silent fallback). Template README order is the source of truth for Build order, so reordering belongs in the template, not in the site."
+  },
+  {
+   "id": "G4",
+   "requirement": "Steps with exact labels, paths and copyable commands; critical guide must be followable 'without guessing a missing step' (section 3, one-sentence benchmark).",
+   "current": "initialise-repository is one dense paragraph with the steps inline ('go to ..., click `Yes, get this app back up!`. Next, select `Start initialisation` ... Follow the instructions on the website. After you submit the form, a Pull Request ... is created'), no numbered list. notebook-usage step 2 says stop JupyterLab with 'Ctrl + C or Cmd + C' (on macOS Cmd+C is copy, Ctrl+C is the interrupt; not run on a Mac here, so unverified), step 3 delegates to the code-hiding page, and the text has typos ('finnisehd', 'LabConstrisctor'). troubleshooting-installed-app links 'uninstalling guide' to download_executable.md, which contains no uninstall steps (it is the 'no executable files are available yet' page, and is in SKIP so not on the site). installer-images says images can be supplied 'at any time later' but gives no steps for the later case. notebook-upload step 6 says 'Click Create pull request'; the form's button is '🚀 Create pull request' (app.py:946, 961). accept-pull-request step 1 is headed 'Got to the Pull Requests tab'.",
+   "severity": "major",
+   "proposal": "In the template: turn initialise_repository.md into a numbered list (open form -> wake the app if it shows Zzzz -> Start initialisation under 'Initialise a repository' -> fill in fields -> submit -> open the PR -> accept it), fix the Ctrl+C/Cmd+C line to Ctrl+C on every system (after checking on macOS), remove or replace the dead 'uninstalling guide' link (point to install.md or write the three Settings steps), add 'how to change images later' steps to installer_images.md, and correct the typos. These are the minimum so the six critical guides pass the G1 check with real content.",
+   "repo_and_files": [
+    "LabConstrictor: .tools/docs/initialise_repository.md",
+    "LabConstrictor: .tools/docs/notebook_usage.md",
+    "LabConstrictor: .tools/docs/troubleshooting_installed_app.md",
+    "LabConstrictor: .tools/docs/installer_images.md",
+    "LabConstrictor: .tools/docs/notebook_upload.md",
+    "LabConstrictor: .tools/docs/accept_pull_request.md"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "rule_conflicts": "None."
+  },
+  {
+   "id": "G5",
+   "requirement": "Plugin install guides: 'Check that it worked' and 'Next' (section 3); Galaxy-style known-working environment is a plus.",
+   "current": "napari, Fiji and QuPath guides (docs/guides/{napari,fiji,qupath}/index.md) each have 'What you need', 'Install', 'Open it', 'If something does not work' and good exact paths (Plugins > LabConstrictor tools; pip commands; mvn package), but end on 'Source and issues' with no statement of what success looks like (e.g. 'the widget lists the apps you installed; if the list is empty see doctor') and no Next link (the pager only leads to the sibling plugin guide, which is irrelevant for a reader who chose napari). No time estimate (Fiji/QuPath need a Maven/JDK 25 build, which is the long part). image-software has no failure route.",
+   "severity": "minor",
+   "proposal": "In each repo's docs/user-guide.md add one sentence under 'Open it' that states the expected result and add a closing `## Next` with a link to the Playground 'Check everything' step on the image-software page (and, for authors, the AUTHORING guide). Add a 'Build takes about N minutes' hint to Fiji and QuPath once measured. Add a `## If something does not work` link to image-software or the doctor command. The site needs no change: the importer already takes the guides verbatim.",
+   "repo_and_files": [
+    "napari-labconstrictor: docs/user-guide.md",
+    "LabConstrictor-Fiji: docs/user-guide.md",
+    "LabConstrictor-QuPath: docs/user-guide.md",
+    "LabConstrictor-Tools: docs/user-guide.md"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "rule_conflicts": "None. Edit in the owning repos, never in docs/guides/ here; links must stay absolute (importer rule)."
+  },
+  {
+   "id": "G6",
+   "requirement": "Previous/Next and navigation are generated consistently; no stray navigation from the source (section 5, section 6 'every guide points to its true source').",
+   "current": "template-synchronization renders the template's own footer in addition to the site pager: docs/guides/template-synchronization/index.md ends with a `<div align=\"center\">` block '[<- Create repository] [Documentation home](https://github.com/.../.tools/docs/README.md) [Initialise repository ->]', and site/guides/template-synchronization/index.html contains 'Documentation home' (count 1). Cause: NAV_BLOCK (guides.py:23) requires the capitalised words Previous|Next|Home inside the div, but this footer says 'Documentation home', so the removal in write_template_guide (guides.py:168) misses it. The reader gets two navigations, one leading off-site to GitHub.",
+   "severity": "minor",
+   "proposal": "Make NAV_BLOCK case-insensitive (re.I) or match any `<div align=\"center\">` block that only holds links, and add a regression test next to test_template_footer_navigation_is_removed in tests/test_site.py with the 'Documentation home' wording.",
+   "repo_and_files": [
+    "labconstrictor-site: scripts/lcsite/guides.py (NAV_BLOCK)",
+    "labconstrictor-site: tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "None."
+  }
+ ],
+ "unverified": [
+  "I did not run any critical guide end to end on a clean machine: install steps, the Streamlit initialiser flow, Requirements_Generator/Validator output, the release build and the manifest workflow were read, not executed. Expected-result wording for 'Check that it worked' therefore has to be captured by a person running them. The Windows/macOS/Linux claims in install.md were not tested.",
+  "install.md's 'about 6-8 minutes' and any build/CI duration for executable-creation were not measured; I found no stated build time anywhere in the template docs. Time estimates need a timed run.",
+  "The 'Ctrl + C or Cmd + C' point in notebook-usage rests on general macOS Terminal behaviour, not on a test on a Mac.",
+  "/home/user/LabConstrictor (the checkout named in the task) is stale: it lacks install.md, app_manifest.md, installer_images.md and troubleshooting_installed_app.md. The built site matches /home/user/src-template/.tools/docs, so I read that checkout (and compared the built docs/guides pages against it); the four plugin repo clones are byte-identical to build/sources/ copies (diff -q).",
+  "I read the generated Markdown (docs/guides/*/index.md, lines truncated at 600 characters for display) and only grepped the built HTML; I did not take screenshots or render the pages in Chromium, so the visual appearance of pager, admonitions and sidebar was not judged.",
+  "The personal-access-token guide tells readers to tick 'repo > contents' for a classic token; I did not check whether GitHub's current classic-token UI has a separate 'contents' scope, so that step label is unverified.",
+  "The /submit/ page is hand-written (content/submit.md) and is not in the guide sidebar; whether it should be counted as a Build-track guide for the pager (G3) is a design decision I did not settle.",
+  "I did not check the Welcome notebook or per-app READMEs/own documentation (the apps' 'Using it' pages), which are outside the 25 guides but are where a tutorial-style scientific example would live (benchmark section 4); that belongs to a different dimension."
+ ]
+}

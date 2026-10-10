@@ -1,0 +1,197 @@
+{
+ "dimension": "Provenance and licence of images, fonts and code",
+ "claims_checked": [
+  {
+   "claim": "The website repo has no root LICENSE (audit: 'Website repo had no root LICENSE')",
+   "verdict": "confirmed",
+   "evidence": "/home/user/labconstrictor-site has no LICENSE*, README.md has no licence section (grep), GitHub API repos/CellMigrationLab/LabConstrictor-Site returns license=null and the remote root listing (.github .gitignore AGENTS.md DESIGN.md README.md audit content data docs mkdocs.yml overrides registry requirements.txt schema scripts seed tests) has none. The other 10 CellMigrationLab repos checked declare MIT."
+  },
+  {
+   "claim": "The footer says the project is MIT licensed, which could be read as covering the site",
+   "verdict": "confirmed",
+   "evidence": "overrides/main.html:89 'Turn notebooks into installable apps. Open source, MIT licensed.' sits beside the 'This site on GitHub' link, but the site repo itself declares no licence. No file says how site text or artwork may be reused."
+  },
+  {
+   "claim": "Logo and comic are imported from the template's doc_source branch",
+   "verdict": "confirmed",
+   "evidence": "scripts/build_site.py:46-48 reads LabConstrictor_Logo.png (resized to logo.png 320/256, logo-64.png, favicon.png 48) and comic.png (1800 px wide) from --doc-source-dir. md5 of docs/assets/docs-img/LabConstrictor_Logo.png equals /home/user/src-docsrc/LabConstrictor_Logo.png (42b00ae0...). The site comic is a re-encode of the 4769x1367 original."
+  },
+  {
+   "claim": "Who committed the logo and the comic, and when (audit: creator unnamed)",
+   "verdict": "confirmed",
+   "evidence": "gh api repos/CellMigrationLab/LabConstrictor/commits?sha=doc_source&path=...: LabConstrictor_Logo.png only in a052fc0f, 2026-01-28, author 'Iván Hidalgo' (login IvanHCenalmor), committer GitHub, message 'Add files via upload'. comic.png in 62b59d16 (2026-01-19 14:22Z), e0eb33af (18:10Z) and c92298ab (18:11Z), same author, same message. A web upload says who uploaded, not who drew. The local /home/user/src-docsrc is a shallow clone (1 commit), so the API was needed."
+  },
+  {
+   "claim": "Embedded file metadata names a creator",
+   "verdict": "partly",
+   "evidence": "Pillow: LabConstrictor_Logo.png (256x256) carries only Software='www.inkscape.org' and a dpi value, so it was exported from Inkscape. No author, copyright or licence field. comic.png has only sRGB/gamma/dpi (300 dpi). Neither names a creator."
+  },
+  {
+   "claim": "The doc_source branch declares a licence for its pictures",
+   "verdict": "refuted",
+   "evidence": "git ls-tree origin/doc_source in /home/user/LabConstrictor lists 36 files and no LICENSE, README or credits file. The only licence is the repository-level MIT (Copyright (c) 2025 Cell Migration Lab) on main; MIT is a software licence and does not mention artwork."
+  },
+  {
+   "claim": "Inter and Bricolage Grotesque licence files exist",
+   "verdict": "confirmed",
+   "evidence": "docs/assets/fonts/LICENSE-inter.txt and LICENSE-bricolage.txt (git-tracked, 93 lines each, full SIL OFL 1.1 text; 'Copyright 2016 The Inter Project Authors', 'Copyright 2022 The Bricolage Grotesque Project Authors') ship next to the four woff2 files in site/assets/fonts. lc.css header also says self-hosted under the OFL. Not recorded anywhere: which package or URL the woff2 files were taken from (names look like Fontsource's)."
+  },
+  {
+   "claim": "Logo is legible at ~30 px navigation size",
+   "verdict": "confirmed",
+   "evidence": "Playwright (Chromium) render of http://localhost:8765/ at 1x and 2x (scratchpad provenance/brand_1x.png, brand_2x.png): the img attributes say 30 but the CSS box measures 38x38 px. Green snake and orange notebook are recognisable at 1x; the eye and tongue are lost. At 2x the 64 px source (logo-64.png) is scaled to 76 device px, so it is slightly soft; a 96 px or 128 px source would be sharper."
+  },
+  {
+   "claim": "Hub pictures come from the template doc_source or from LabConstrictor-Tools",
+   "verdict": "confirmed",
+   "evidence": "data/hubs.yaml: Windows_Protected_your_PC.png, Welcome_Notebook.png, Windows_App.png, Customisation_Custom.png, colab_vs_local/colab.png via doc_source; N2_napari_form.png and F2_fiji_form_top.png via CellMigrationLab/LabConstrictor-Tools docs/img/. Seven files in docs/assets/hubs."
+  },
+  {
+   "claim": "The napari and Fiji hub screenshots come from LabConstrictor-Tools",
+   "verdict": "partly",
+   "evidence": "They were added in commit d8cb724c of LabConstrictor-Tools on 2026-10-06 with author name 'Claude', login claude, 'Co-Authored-By: Claude Sonnet 5.5' and a Claude-Session trailer, message 'screenshots from the clean-sandbox test'. They show napari 0.9.2 and Fiji running a test app with synthetic images. I looked at all three: no person name, path or account is visible. The Windows_App.jpg search box shows only generic app names."
+  },
+  {
+   "claim": "The NucleiSky banner is a screenshot with no credit",
+   "verdict": "confirmed",
+   "evidence": "snapshot.json: NucleiSky screenshots [{file shot-1.jpg, caption 'NucleiSky banner.'}] from docs/assets/banner.jpg, shown on the app page by pages_apps.py:202-203 with the caption only. Viewing site/assets/shots/nucleisky-1.jpg (and banner.png at full size) shows the grey four-point Gemini sparkle watermark at the bottom right corner. NucleiSky/app/logo holds Gemini_Generated_Image_*.png/.ico/.icns files. Neither the repo nor the manifest names who made the banner or how. I can say only that it carries Gemini marks."
+  },
+  {
+   "claim": "App icons and screenshots come from the app repositories 'by their authors'",
+   "verdict": "partly",
+   "evidence": "snapshot.json: only 3 of 6 apps give an image. celltrackscolab icon app/logo/CellTracksColab_logo.png (1024x1024; first upload of that logo to the repo was by login guijacquemet on 2023-10-19, Wiki/CellTracksColab_logo.png; app/logo copy added 2026-10-01 by IvanHCenalmor), labconstrictor-demo icon app/logo/logo.png (a slightly different 256x256 Inkscape export of the same snake and notebook design; pixel diff is non-empty), nucleisky screenshot. The other three use a monogram. The manifest schema has no field for an image credit. Commit authors are uploaders, not proven creators."
+  },
+  {
+   "claim": "Each source repository declares a licence that covers the images",
+   "verdict": "partly",
+   "evidence": "GitHub API and LICENSE files: LabConstrictor, NucleiSky, CellTracksColab, LabConstrictor_Demo, -Playground, _streamlit, napari-labconstrictor, -Fiji, -Tools, -VLab4Mic (CellMigrationLab copy via API) all MIT; GuessTheCondition MIT, Copyright 2024 Guillaume Jacquemet. LabConstrictor-QuPath has no LICENSE (clone and API license=null). MIT says nothing about images, and the template's doc_source branch has no licence file at all. 'Covers the images' is therefore not stated."
+  },
+  {
+   "claim": "Third-party logos (napari, Fiji, QuPath, Colab) are credited on the Ecosystem page and in the footer",
+   "verdict": "confirmed",
+   "evidence": "site/ecosystem/index.html: 'The logos of napari, Fiji, QuPath and Google Colab belong to their owners and are shown only to identify them.' Footer (overrides/main.html:102) on every page: 'Logos of other projects and services belong to their owners and are shown only to identify them.' Sources in data/hosts.yaml: napari/napari src/napari/resources/icon.ico, fiji/fiji images/icon.png, qupath/qupath QuPath_128.png, simple-icons/simple-icons icons/googlecolab.svg. Repo licences read from github.com pages: napari BSD-3-Clause, QuPath GPL-3.0, Fiji sidebar GPL-3.0 but README says GPL v2 with exceptions in LICENSES, simple-icons CC0-1.0 with a legal DISCLAIMER.md I could not read. A code licence is not a trademark or logo grant."
+  },
+  {
+   "claim": "The footer 'Cite LabConstrictor' link uses the Zenodo DOI, not the preprint",
+   "verdict": "confirmed",
+   "evidence": "overrides/main.html:100 hardcodes https://doi.org/10.5281/zenodo.20758747. data/site.yaml:15 holds the same value as citation_doi, but grep finds no code or template that reads it, so the DOI is written twice and one copy is dead. Zenodo API: record 20758747 is titled 'LabConstrictor', Software, v0.0.2, 2026-06-19, MIT, creators Iván Hidalgo Cenalmor, Marcela Xiomara Rivera Pineda, Bruno Saraiva, Ricardo Henriques, Guillaume Jacquemet, related identifier arXiv:2603.10704 (describes), concept DOI 10.5281/zenodo.19074199. It is a version DOI."
+  },
+  {
+   "claim": "Preprint title, authors and date as stated in the audit",
+   "verdict": "confirmed",
+   "evidence": "arxiv.org/abs/2603.10704: 'Packaging Jupyter notebooks as installable desktop apps using LabConstrictor', Iván Hidalgo-Cenalmor, Marcela Xiomara Rivera Pineda, Bruno M. Saraiva, Ricardo Henriques, Guillaume Jacquemet; v1 submitted 11 March 2026. The template README lines 66-69 give the same five authors as the recommended citation. I did not check the institution and funding list (another dimension)."
+  }
+ ],
+ "gaps": [
+  {
+   "id": "G1",
+   "requirement": "A licence for the site's own code, and a statement of how its text and artwork may be reused.",
+   "current": "No LICENSE in the site repo (local, and GitHub reports license=null). README has no licence section. The footer on every page says 'Open source, MIT licensed.', which a reader takes to cover the site. The site repo is public. Hand-written text (content/, data/site.yaml) and the generated pages have no stated terms. Third-party code in the output keeps its own notices (site/assets/javascripts/LICENSE from the Zensical bundle, fonts OFL files); zensical 0.0.65 is MIT.",
+   "severity": "major",
+   "proposal": "In CellMigrationLab/LabConstrictor-Site add LICENSE with the MIT text and the same holder line as the other repos ('Copyright (c) 2026 Cell Migration Lab'), once the owners confirm. Add a 'Licence' section to README.md: code MIT; hand-written text and the logo and comic as decided in G2; third-party fonts and logos under their own terms, linking to the new Credits page (G4). Reword the footer line in overrides/main.html to 'The LabConstrictor template is MIT licensed.' so it describes the template, not the site.",
+   "repo_and_files": [
+    "labconstrictor-site: LICENSE (new)",
+    "labconstrictor-site: README.md",
+    "labconstrictor-site: overrides/main.html:89"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "needs_author_decision": "Which licence for the site code (MIT matches the other 10 repos); which licence, if any, for site text; the holder name and year on the licence line. I did not choose these.",
+   "rule_conflicts": "None. A test could assert that LICENSE exists, but nothing requires one."
+  },
+  {
+   "id": "G2",
+   "requirement": "The creator of, and the rights to, the logo and the comic are recorded, and permitted reuse is stated.",
+   "current": "Logo: one upload commit a052fc0f, 2026-01-28, by Iván Hidalgo (IvanHCenalmor), 'Add files via upload'; PNG metadata says Software=www.inkscape.org, no author or licence field. Comic: three upload commits on 2026-01-19 by the same account, no metadata. The doc_source branch has no LICENSE, README or credits file. The site says 'hand-drawn' (lc.css header) but names nobody. The uploader is not shown to be the creator, so I record the creator as unknown. The logo also exists in a slightly different export in LabConstrictor_Demo/app/logo/logo.png (2026-03-11).",
+   "severity": "major",
+   "proposal": "Ask the owners the questions below. Then add one small file at the root of the template's doc_source branch, e.g. CREDITS.yaml, with an entry per file: creator (or 'unknown'), rights holder, licence, source/date and a free-text note. The site reads it at build (GitHub raw fetch in scripts/fetch_guides.py, like other sources), so the credit is written once, in the repository that owns the picture. Until it exists the Credits table (G4) prints 'Not stated' for the logo and comic.",
+   "repo_and_files": [
+    "CellMigrationLab/LabConstrictor, branch doc_source: CREDITS.yaml (new)",
+    "labconstrictor-site: scripts/fetch_guides.py (fetch the file)",
+    "labconstrictor-site: scripts/lcsite/credits.py (new, G4)"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "needs_author_decision": "Questions for the owners. (1) Who drew the logo (snake and notebook) and who drew the comic: one person, several, a tool? Name them only if they agree to be named. (2) Who holds the rights (the person, the Cell Migration Lab, the University of Turku or Abo Akademi)? Was a commission or an employment agreement involved? (3) Under what licence may others reuse them (for example CC BY 4.0, or 'logo not for reuse')? May an app built from the template reuse the logo, given that LabConstrictor_Demo ships it? (4) Was any generative tool used for either picture? Do not assume; the Inkscape metadata proves only the export tool. (5) Is the lettering in the comic a font, and under what licence? (6) Which is the master file of the logo: the doc_source one or the LabConstrictor_Demo copy (they differ)? (7) Is the credit line to show on the site, and with which wording?",
+   "rule_conflicts": "'Nothing written twice' forbids typing the creator into data/site.yaml here; the record must live in the template repository. 'No silent fallbacks': a missing record must show as 'Not stated' and be reported, never hidden."
+  },
+  {
+   "id": "G3",
+   "requirement": "Pictures that show signs of machine generation or third-party origin are credited correctly before they are published.",
+   "current": "The NucleiSky banner is shown on the public app page at /apps/nucleisky/ with the caption 'NucleiSky banner.' and no credit. The image carries the Gemini four-point sparkle watermark at the bottom right, and NucleiSky/app/logo contains files named Gemini_Generated_Image_*. The repo and manifest say nothing about who made it or under what terms. The napari and Fiji hub screenshots were committed by a Claude agent session (LabConstrictor-Tools d8cb724c, 2026-10-06) from a test run; they show third-party software UIs with synthetic data and no personal information. The napari picture is flagged 'a prototype' in hubs.yaml text; the Fiji card says 'soon'.",
+   "severity": "major",
+   "proposal": "Add an optional 'credit' string (max 140 chars, escaped with text.esc) to each item of 'screenshots' and an optional 'icon_credit' in schema/labconstrictor-app.schema.json. pages_apps.py prints it in the figcaption when present. The NucleiSky owners then decide in their own manifest: keep and credit as they see fit, or replace the banner. For the Tools screenshots, state in the Credits table 'screenshot of napari/Fiji, BSD-3 / GPL software, taken during a test of the plugin'. Do not state that anyone drew the banner.",
+   "repo_and_files": [
+    "labconstrictor-site: schema/labconstrictor-app.schema.json",
+    "labconstrictor-site: scripts/lcsite/pages_apps.py:202-203",
+    "CellMigrationLab/NucleiSky: docs/labconstrictor-app.yaml (credit text) or replace docs/assets/banner.jpg"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "needs_author_decision": "Whether the NucleiSky banner and logo were generated with Gemini, by whom, and whether the terms of that tool allow this use; I could not verify Google's terms and say so. Whether to keep the watermark visible, remove the banner from the site, or add a credit line. Whether 'screenshots from a Claude-assisted test run' needs mentioning at all.",
+   "rule_conflicts": "A new manifest field means schema, page generator and a test in tests/ for the present and absent cases. App-authored credit text is untrusted: escape it. Optional means absence is explicit ('in' check), not a default."
+  },
+  {
+   "id": "G4",
+   "requirement": "One place on the site lists every image and font with its source repository, file, declared licence and credit, and it cannot drift from the facts.",
+   "current": "No such page. Only a generic footer sentence about other projects' logos and the Ecosystem note exist. Inventory of the built site (site/assets): images/ 4 files (logo.png, logo-64.png, favicon.png, comic.png: all from doc_source via build_site.py); docs-img/ 23 files (doc_source, template guides: logo, banner, header, installer and Windows/Colab screenshots, three GIFs); hubs/ 7 JPEGs (5 doc_source, 2 LabConstrictor-Tools); icons/ 2 (CellTracksColab, LabConstrictor_Demo repos); shots/ 1 (NucleiSky); hosts/ 4 (napari, Fiji, QuPath icons; Colab SVG reduced from simple-icons); fonts/ 4 woff2 (Inter, Bricolage Grotesque; OFL texts present). Every source path is already known to the build (data/hubs.yaml, data/hosts.yaml, the snapshot, build_site.py), but none of it is shown.",
+   "severity": "major",
+   "proposal": "Add scripts/lcsite/credits.py (about 120 lines, split if it nears 300) and a page /credits/ linked from the footer, built from data the pipeline already has: one row per asset with where it is used, source repo@path, the licence GitHub reports for that repo (fetch_guides.py adds license.spdx_id per source repo to the snapshot; 'none declared' is printed when null, as for LabConstrictor-QuPath), the credit text from the source repo's CREDITS.yaml / manifest field (G2, G3) or the literal 'Not stated', and a fixed row for the fonts reading the shipped LICENSE files. Rows for third-party logos print the owner and 'shown only to identify the program'. Missing credits are listed in build/problems.md as warnings. Add tests for the table, for 'Not stated', and for a repo without a licence; add the page to check_design and the footer.",
+   "repo_and_files": [
+    "labconstrictor-site: scripts/lcsite/credits.py (new)",
+    "labconstrictor-site: scripts/fetch_guides.py and scripts/lcsite/sources.py (record licence per repo)",
+    "labconstrictor-site: scripts/lcsite/hubs.py, hosts.py, pages_apps.py (expose asset records)",
+    "labconstrictor-site: overrides/main.html (footer link)",
+    "labconstrictor-site: tests/test_credits.py (new)",
+    "labconstrictor-site: DESIGN.md (pattern for the credits table)"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "needs_author_decision": "Page title and wording ('Credits' or 'Image credits'); whether the page also carries the people and funding block (that block belongs to the citation dimension and must come from the preprint's verified acknowledgements). Which fonts source URL to record: the repo does not say where the woff2 files came from.",
+   "rule_conflicts": "Fits 'nothing written twice' only if each fact comes from its source repository; do not hand-write a credits table here. 'No silent fallbacks': a missing licence or credit is printed and reported. Functions at most 30 lines, files at most 300 lines. A hard fetch failure for a licence stops the build (FetchError), like other fetches."
+  },
+  {
+   "id": "G5",
+   "requirement": "Every repository whose files the site republishes declares a licence, and the licence is stated to cover pictures where pictures are included.",
+   "current": "LabConstrictor-QuPath has no LICENSE file (clone, and GitHub reports license=null) although the site fetches its docs/user-guide.md and presents the plugin on the Ecosystem page. The template doc_source branch (source of the logo, comic and 23 guide pictures) has no licence or README. The registry points to CellMigrationLab/LabConstrictor-VLab4Mic (MIT via API) while the local clone's origin is HenriquesLab/LabConstrictor-VLab4Mic (also exists, not a fork, license MIT per its LICENSE file); which one is canonical is not stated anywhere I could read. GuessTheCondition's LICENSE is MIT, holder Guillaume Jacquemet, 2024, unlike the Cell Migration Lab holder in the others (fine, but should be intentional).",
+   "severity": "minor",
+   "proposal": "Open pull requests in the owning repositories (not here): add LICENSE to LabConstrictor-QuPath (MIT like its sibling plugins, if the owners agree); add a short README.md to the template's doc_source branch saying that the pictures are illustrations used by the documentation, with the terms chosen in G2. Then check_site can warn when a fetched source repo has no licence (same snapshot field as G4).",
+   "repo_and_files": [
+    "CellMigrationLab/LabConstrictor-QuPath: LICENSE (new)",
+    "CellMigrationLab/LabConstrictor, branch doc_source: README.md (new)"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "needs_author_decision": "Licence choice for LabConstrictor-QuPath and for the doc_source pictures; which of the two VLab4Mic repositories is canonical.",
+   "rule_conflicts": "Changes go through a pull request in each repo (AGENTS.md), and the site must not be pushed to main before they merge if the build depends on them."
+  },
+  {
+   "id": "G6",
+   "requirement": "The navigation logo stays crisp and the footer cite link has one source of truth.",
+   "current": "Logo: the header image is 38x38 CSS px (the width and height attributes say 30) from the 64 px file logo-64.png, so at 2x it is upscaled to 76 device px and looks soft (viewed at 1x and 2x). It is still recognisable as a snake on a notebook at 1x. The doc_source master is 256x256, so a larger derivative is possible without redrawing. Separately, overrides/main.html:100 hardcodes the Zenodo DOI while data/site.yaml:15 has an unused citation_doi.",
+   "severity": "minor",
+   "proposal": "In scripts/build_site.py generate logo-128.png (and make the header and footer images use width 38 and 42 with a srcset 1x/2x, or only use the 128 file). Fix the attribute mismatch (width/height 38 in the template). Make the footer read config/site data instead of the hardcoded DOI, or delete the unused citation_doi key; the choice of which DOI to show belongs to the citation work (the Zenodo record is a version DOI, v0.0.2; its concept DOI is 10.5281/zenodo.19074199).",
+   "repo_and_files": [
+    "labconstrictor-site: scripts/build_site.py:46-48",
+    "labconstrictor-site: overrides/main.html:32,89,100",
+    "labconstrictor-site: data/site.yaml:15"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "needs_author_decision": "Which DOI the footer link should carry (decided with the citation dimension).",
+   "rule_conflicts": "Do not hand-edit generated docs/assets/images files; change the generator. New behaviour needs a test."
+  }
+ ],
+ "unverified": [
+  "Who created the logo and the comic: only upload commits (IvanHCenalmor, 2026-01-19 and 2026-01-28) and Inkscape metadata exist; creator and rights holder are unknown.",
+  "Whether the logo or comic involved any generative tool: no evidence either way; not claimed.",
+  "Terms of use of the Gemini-watermarked NucleiSky banner and logo files: Google's terms were not fetched or verified; who generated them is unknown.",
+  "Whether the MIT licence of the template repo is meant to cover the doc_source pictures: not stated anywhere.",
+  "Trademark and logo-use policies of napari, Fiji, QuPath and Google Colab: github pages state only code licences (BSD-3-Clause, GPL-3.0 / GPLv2 with exceptions, GPL-3.0, CC0-1.0); simple-icons DISCLAIMER.md was not readable; the licence of the individual logo files was not checked. GitHub API access to those four repositories was refused in this session, so licences come from their github.com pages.",
+  "Which source (npm Fontsource or another) the woff2 files came from, and their exact versions; the OFL texts shipped match the two projects' stated copyright lines.",
+  "Which of HenriquesLab/LabConstrictor-VLab4Mic and CellMigrationLab/LabConstrictor-VLab4Mic is the canonical repository.",
+  "Contents of the Gemini-named logo files under NucleiSky/app/logo (not displayed on the site, as the manifest names no icon) were not inspected visually.",
+  "The doc_source and template local clones are shallow; history was read through the GitHub API for the CellMigrationLab repositories, which showed the listed commits for the files named. Renames before those commits were not followed.",
+  "Institutional, funding and CRediT claims of the audit (not in this dimension)."
+ ]
+}
