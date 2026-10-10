@@ -53,20 +53,24 @@ def page_home(site: dict, apps: list[dict]) -> None:
     p.write()
 
 
-def guide_link(item: dict) -> str:
-    """The install-guide footer of an ecosystem card (empty when the project has no guide on this site)."""
-    return f'<div class="lc-card__foot"><a href="guides/{esc(item["guide"])}/">Install guide</a></div>' if item.get("guide") else ""
+def guide_link(card: dict) -> str:
+    """The guide footer of an ecosystem card (empty when the repository has no guide on this site)."""
+    return f'<div class="lc-card__foot"><a href="guides/{esc(card["guide"])}/">Guide</a></div>' if card["guide"] else ""
 
 
-def page_ecosystem(ecosystem: dict) -> None:
-    """ecosystem.md: the projects around LabConstrictor, by tier (data/ecosystem.yaml)."""
+def ecosystem_card(card: dict) -> str:
+    """One project card: its name, summary and status, linked to its repository (or hosted app), with its guide."""
+    return (f'<li class="lc-card lc-card--plain"><a class="lc-card__main" href="{esc(card["link"])}">'
+            f'<span class="lc-card__title"><strong>{esc(card["name"])}</strong></span><span class="lc-card__text">{esc(card["summary"])}</span>'
+            f'<span class="lc-card__badges"><span class="lc-badge">{esc(card["status"])}</span></span></a>{guide_link(card)}</li>')
+
+
+def page_ecosystem(tiers: list[dict]) -> None:
+    """ecosystem.md: the projects around LabConstrictor by tier, resolved from their own repositories (projects.resolve)."""
     p = Page("ecosystem.md", title="Ecosystem", description="Hosts, tools and templates around LabConstrictor.", layout="wide")
     p.add('<section class="lc-pagehead"><h1>Ecosystem</h1><p class="lc-lead">Everything around the apps: where they run and what builds them.</p></section>')
-    for tier in ecosystem["tiers"]:
-        items = "".join(
-            f'<li class="lc-card lc-card--plain"><a class="lc-card__main" href="{esc(i.get("url") or "https://github.com/" + i["repo"])}">'
-            f'<span class="lc-card__title"><strong>{esc(i["name"])}</strong></span><span class="lc-card__text">{esc(i["text"])}</span>'
-            f'<span class="lc-card__badges"><span class="lc-badge">{esc(i["status"])}</span></span></a>{guide_link(i)}</li>' for i in tier["items"])
+    for tier in tiers:
+        items = "".join(ecosystem_card(c) for c in tier["cards"])
         p.add(f'<h2 class="lc-tier" id="{esc(tier["key"])}">{esc(tier["title"])}</h2><p>{esc(tier["text"])}</p><ul class="lc-grid">{items}</ul>')
     p.write()
 

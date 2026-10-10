@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://labconstrictor.cellmig.org/schema/labconstrictor-project.schema.json",
+  "title": "docs/labconstrictor-project.yaml",
+  "description": "How a project around LabConstrictor (a plugin, a library, a web form) describes itself on the LabConstrictor website's Ecosystem page. Kept in the project's own repository at docs/labconstrictor-project.yaml.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "summary", "status"],
+  "properties": {
+    "name": {"type": "string", "minLength": 2, "maxLength": 40, "description": "Display name."},
+    "summary": {"type": "string", "minLength": 20, "maxLength": 300, "description": "One or two plain-text sentences for the card."},
+    "status": {"type": "string", "minLength": 2, "maxLength": 30, "description": "Stage shown as a badge, for example Experimental or Available. Keep it true: the site shows it as written."},
+    "url": {"type": "string", "pattern": "^https://[^\\s]+$", "description": "Where the card links, when it is not the repository (for example a hosted web app)."}
+  }
+}

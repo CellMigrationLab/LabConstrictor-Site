@@ -1,38 +1,23 @@
-# The projects around LabConstrictor, in three tiers. Facts here come from the projects' own
-# READMEs; `status` is shown as a badge. Update it when a project changes stage.
+# The projects around LabConstrictor, in tiers. Each project describes itself (name, summary, status, optional url)
+# in docs/labconstrictor-project.yaml in its own repository (schema/labconstrictor-project.schema.json); this file only
+# says which repositories to list and under which heading. Adding a project = adding one `- repo: owner/name` line.
+# The card links to the project's guide on this site automatically when data/guides.yaml has one for that repository.
+# Exception: the template is copied into every app repository, so its card is written here.
 tiers:
   - key: hosts
     title: Use apps inside your image software
     text: Apps can expose tools (typed Python functions) that run in the software you already use. These plugins are untested and under heavy construction.
     items:
-      - name: napari
-        repo: CellMigrationLab/napari-labconstrictor
-        guide: napari
-        text: "One dock widget for every installed LabConstrictor app: pick an app and a tool, and the form is generated from the tool's declared schema."
-        status: Experimental
-      - name: Fiji
-        repo: CellMigrationLab/LabConstrictor-Fiji
-        guide: fiji
-        text: "Plugins > LabConstrictor > LabConstrictor Tools lists the tools of every installed app and builds a dialog for each."
-        status: Experimental
-      - name: QuPath
-        repo: CellMigrationLab/LabConstrictor-QuPath
-        guide: qupath
-        text: "Extensions > LabConstrictor tools for QuPath 0.7."
-        status: Experimental
+      - repo: CellMigrationLab/napari-labconstrictor
+      - repo: CellMigrationLab/LabConstrictor-Fiji
+      - repo: CellMigrationLab/LabConstrictor-QuPath
   - key: dev
     title: Build and maintain apps
     text: What authors use to make and keep an app.
     items:
-      - name: LabConstrictor template
-        repo: CellMigrationLab/LabConstrictor
+      - repo: CellMigrationLab/LabConstrictor
+        name: LabConstrictor template
         text: The GitHub template that turns notebooks into installers, with automatic template updates.
         status: Available
-      - name: Repository initialiser
-        url: https://labconstrictor-form.streamlit.app
-        text: "A web form that sets up a new app repository and opens a pull request. It sleeps when idle, so the first load can be slow."
-        status: Available
-      - name: LabConstrictor-Tools
-        repo: CellMigrationLab/LabConstrictor-Tools
-        text: "The contract between apps and hosts: declare typed tools once, use them from napari, Fiji, QuPath, notebooks and the command line."
-        status: Install from GitHub
+      - repo: CellMigrationLab/LabConstrictor_streamlit
+      - repo: CellMigrationLab/LabConstrictor-Tools

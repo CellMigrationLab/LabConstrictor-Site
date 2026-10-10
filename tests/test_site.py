@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from lcsite import cards, guides, hubs, registry, sources
+from lcsite import cards, guides, hubs, projects, registry, sources
 from lcsite.config import AppProblem, DATA
 
 APP = {"slug": "demo", "repo": "o/demo", "html_url": "https://github.com/o/demo", "tier": "listed", "verified_version": None,
@@ -168,3 +168,26 @@ class HubTests(unittest.TestCase):
         """Only pictures with repo + path are fetched; doc_source ones come from the checkout."""
         hubs_data = {"use": {"cards": [{"image": {"repo": "o/r", "path": "a.png"}}, {"image": {"doc_source": "b.png"}}, {"live_card": True}]}}
         self.assertEqual([(e["repo"], e["path"]) for e in hubs.image_sources(hubs_data)], [("o/r", "a.png")])
+
+
+class ProjectTests(unittest.TestCase):
+    """The Ecosystem page is built from each project's own file, or the build stops."""
+
+    def test_inline_card_needs_exactly_its_keys(self) -> None:
+        """An inline card (the template) with a missing or extra key fails; a complete one becomes a card."""
+        card = projects.inline_card({"repo": "o/r", "name": "N", "text": "A sentence.", "status": "Available"})
+        self.assertEqual(card, {"name": "N", "summary": "A sentence.", "status": "Available"})
+        with self.assertRaises(SystemExit):
+            projects.inline_card({"repo": "o/r", "name": "N", "text": "x"})
+
+    def test_only_cards_without_inline_text_are_fetched(self) -> None:
+        """The files to download are the project files of the `- repo:` entries, not of inline cards."""
+        eco = {"tiers": [{"items": [{"repo": "o/a"}, {"repo": "o/b", "name": "B", "text": "t", "status": "s"}]}]}
+        self.assertEqual([e["repo"] for e in projects.fetch_entries(eco)], ["o/a"])
+
+    def test_invalid_project_file_names_its_repository(self) -> None:
+        """A project file that breaks the schema stops the build and says which repository to fix."""
+        from unittest import mock
+        with mock.patch.object(sources, "read", return_value="name: X\nsummary: short\nstatus: ok\n"), self.assertRaises(SystemExit) as ctx:
+            projects.load_project("o/r")
+        self.assertIn("o/r/docs/labconstrictor-project.yaml", str(ctx.exception))
