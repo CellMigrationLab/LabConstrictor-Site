@@ -328,3 +328,5 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 
 /* The hidden attribute always wins (the filter hides cards and groups with it; a component's own display rule must not undo it). */
 [hidden] { display: none !important; }
+.md-typeset .lc-hero__also { margin: .3rem 0 1.4rem; font-size: .78rem; line-height: 2; color: var(--lc-fg); }
+.lc-hero__also .lc-gh, .lc-center .lc-gh { margin: 0 .05rem; }

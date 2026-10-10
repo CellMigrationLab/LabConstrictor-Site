@@ -2,7 +2,7 @@
 
 from . import hosts
 from .cards import card, github_badge
-from .config import CONTENT, DOCS, REPO
+from .config import CONTENT, DOCS, REPO, fail
 from .page import Page
 from .text import esc, plural
 
@@ -38,12 +38,21 @@ def program_pills() -> str:
     return ", ".join(pills[:-1]) + " and " + pills[-1]
 
 
+def hero_also(hero: dict) -> str:
+    """The second line of the hero: the programs apps can also work in, with their pills where `{programs}` stands (the rest is escaped text)."""
+    before, marker, after = hero["also"].partition("{programs}")
+    if not marker:
+        fail("data/site.yaml: hero.also must contain {programs}")
+    return f"{esc(before)}{program_pills()}{esc(after)}"
+
+
 def page_home(site: dict, apps: list[dict]) -> None:
     """index.md: hero with the logo, the two paths (use / make), the comic, featured apps, how it works, where apps run."""
     hero = site["hero"]
     featured = [a for a in apps if a["featured"]]
     p = Page("index.md", title="LabConstrictor", head_title=f"{site['name']}: {hero['title']}", description=hero["text"], template="home.html")
     p.add(f'<section class="lc-hero"><div class="lc-hero__in"><div><h1>{esc(hero["title"])}</h1><p>{esc(hero["text"])}</p>'
+          f'<p class="lc-hero__also">{hero_also(hero)}</p>'
           '<div class="lc-choices">'
           + choice("I want to find an app", f"Browse {plural(len(apps), 'app')} for image analysis. Install in a few clicks.", "apps/", "Open the App Centre")
           + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "build/", "Why and how to build one", "lc-choice--make") +
