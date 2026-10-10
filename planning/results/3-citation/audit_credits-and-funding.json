@@ -1,0 +1,239 @@
+{
+ "dimension": "PEOPLE, INSTITUTIONS, FUNDING, AUTHORSHIP (read-only verification of the audit; nothing was edited, committed or pushed)",
+ "claims_checked": [
+  {
+   "claim": "Preprint title, DOI and date: 'Packaging Jupyter notebooks as installable desktop apps using LabConstrictor', arXiv March 2026, DOI 10.48550/arXiv.2603.10704",
+   "verdict": "confirmed",
+   "evidence": "https://arxiv.org/abs/2603.10704: submitted 11 Mar 2026, one version (v1), primary class cs.SE (also q-bio.QM), comments '2 figures', no journal-ref. PDF licence line 'This work is licensed under CC BY 4.0'. The abs page was fetched through a cache of up to 15 minutes, so a later v2 or journal version is not excluded."
+  },
+  {
+   "claim": "The five authors, in this order: Hidalgo-Cenalmor, Rivera Pineda, Saraiva, Henriques, Jacquemet",
+   "verdict": "confirmed",
+   "evidence": "arXiv abs page and PDF byline (/tmp/claude-0/.../scratchpad/people/paper.txt lines 3-4): 'Iván Hidalgo-Cenalmor1,2, Marcela Xiomara Rivera Pineda1,2,3, Bruno M. Saraiva4, Ricardo Henriques4,5, and Guillaume Jacquemet1,2,3,6'. The audit writes 'Ivan' without the accent; the paper has 'Iván'. The PDF also has 'Correspondence: (G. Jacquemet)' (the e-mail did not survive text extraction, so none is quoted)."
+  },
+  {
+   "claim": "Preprint documents the affiliations 'Abo Akademi University, Turku Bioscience Centre, ITQB NOVA, UCL'",
+   "verdict": "partly",
+   "evidence": "PDF page 1 prints six affiliations: (1) Turku Bioscience Centre, University of Turku and Åbo Akademi University, Turku, FI; (2) Faculty of Science and Engineering, Cell Biology, Åbo Akademi University, Turku, FI; (3) InFLAMES Research Flagship Centre, University of Turku, Turku, FI; (4) Instituto de Tecnologia Química e Biológica António Xavier, Universidade Nova de Lisboa, Oeiras, Portugal; (5) UCL Laboratory for Molecular Cell Biology, University College London, London, United Kingdom; (6) Foundation for the Finnish Cancer Institute, Tukholmankatu 8, Helsinki, FI. Per author: Hidalgo-Cenalmor 1,2; Rivera Pineda 1,2,3; Saraiva 4; Henriques 4,5; Jacquemet 1,2,3,6. The audit omits the University of Turku, InFLAMES and the Finnish Cancer Institute foundation. 'ITQB NOVA' is not the printed form."
+  },
+  {
+   "claim": "The preprint 'documents collaboration' between the institutions and uses the lab name",
+   "verdict": "partly",
+   "evidence": "The paper has no collaboration statement; the link between institutions is only the author affiliations. 'Cell Migration Lab' does not occur anywhere in the PDF (grep for 'cell migration', 'cellmig' finds only the GitHub paths github.com/CellMigrationLab/LabConstrictor and .../LabConstrictor_Demo)."
+  },
+  {
+   "claim": "Funding: Research Council of Finland, Sigrid Juselius Foundation, Cancer Society of Finland, Solutions for Health, InFLAMES, ERC, EIC, EMBO, Chan Zuckerberg Initiative 'and others'",
+   "verdict": "partly",
+   "evidence": "The PDF ACKNOWLEDGEMENTS (verbatim text is in gap G6) names all of those, and also three the audit leaves under 'others': the Finnish Doctoral Program Network in Artificial Intelligence (AI-DOC, VN/3137/2024-OKM-6), the Finnish Cancer Institute (K. Albin Johansson Professorship, to G.J.) and the 'la Caixa' Foundation (HR25-00453, to R.H.). Every grant is tied to one person (to G.J., to R.H., I.H.C., or R.H. and G.J.). 'This study received funding from...' is a statement about the study, not about the website or the apps."
+  },
+  {
+   "claim": "Author-contribution paragraph names G.J., I.H.-C. and M.R.; Saraiva and Henriques roles are not specified",
+   "verdict": "confirmed",
+   "evidence": "PDF 'AUTHOR CONTRIBUTIONS': 'G.J.and I.H.-C. conceived the study in its initial form; I.H.-C. developed the LabConstrictor framework with input from G.J.; G.J. and M.R. provided critical feedback, testing, and guidance; G.J. acquired funding; G.J.and I.H.-C. wrote the manuscript with input from all authors.' B.M.S. and R.H. do not appear. There is also a CC BY 4.0 notice, an MIT code-availability statement and 'The authors declare that they have no competing or financial interests.'"
+  },
+  {
+   "claim": "The paper credits Ivan Hidalgo-Cenalmor with framework development",
+   "verdict": "confirmed",
+   "evidence": "Same paragraph: 'I.H.-C. developed the LabConstrictor framework with input from G.J.' This is the paper's own wording; it does not say the five authors developed it together."
+  },
+  {
+   "claim": "The LabConstrictor README gives the preprint as the recommended citation",
+   "verdict": "confirmed",
+   "evidence": "/home/user/LabConstrictor/README.md line 66 '## ✍️ Citation': 'If you use LabConstrictor in your research, please cite the project...: Iván Hidalgo-Cenalmor, Marcela Xiomara Rivera Pineda, Bruno M. Saraiva, Ricardo Henriques, and Guillaume Jacquemet. Packaging Jupyter notebooks ... arXiv preprint 2026 DOI: https://doi.org/10.48550/arXiv.2603.10704'. Line 2 also carries a Zenodo DOI badge (10.5281/zenodo.20758747) with no explanation of the difference."
+  },
+  {
+   "claim": "The site footer 'Cite LabConstrictor' link points to 10.5281/zenodo.20758747",
+   "verdict": "confirmed",
+   "evidence": "overrides/main.html:100 (hard-coded) and the built footer at http://localhost:8765/. data/site.yaml:15 holds the same DOI as links.citation_doi, but no code reads that key (grep over scripts/, overrides/, tests/), so the DOI is written twice and one copy is dead."
+  },
+  {
+   "claim": "Zenodo record creator metadata (auditor: 'not inspected')",
+   "verdict": "confirmed",
+   "evidence": "https://zenodo.org/api/records/20758747: title 'LabConstrictor', Software, version 0.0.2, 2026-06-19, MIT, five creators in preprint order, related identifier arXiv:2603.10704 'describes', no funding listed, concept DOI 10.5281/zenodo.19074199. The affiliations there differ from the preprint: Hidalgo Cenalmor = Instituto Gulbenkian de Ciência; Rivera Pineda = Euro-BioImaging ERIC; Saraiva = 'Molecular Structural and Cellular Microbiology'; Henriques = Universidade Nova de Lisboa; Jacquemet = Åbo Akademi University. Two sources give different affiliations for four of the five authors."
+  },
+  {
+   "claim": "The site ends with 'A project of the Cell Migration Lab'",
+   "verdict": "confirmed",
+   "evidence": "overrides/main.html:102 (built footer identical), linked to https://cellmig.org/. Also <meta name=\"author\" content=\"Cell Migration Lab\"> (mkdocs.yml:3 site_author)."
+  },
+  {
+   "claim": "The site shows '(c) Cell Migration Lab'",
+   "verdict": "refuted",
+   "evidence": "mkdocs.yml:8 sets 'copyright: © Cell Migration Lab', but the footer block in overrides/main.html does not print config.copyright, and a scan of all 38 built pages finds no copyright line. The org name is written in main.html, mkdocs.yml (twice) and data/site.yaml (org, org_url: both unused by any code)."
+  },
+  {
+   "claim": "Who is the copyright holder in the repositories' LICENSE files?",
+   "verdict": "confirmed",
+   "evidence": "Checked 13 repos on disk. 10 say 'MIT License / Copyright (c) <2025 or 2026> Cell Migration Lab': LabConstrictor (2025), CellTracksColab, LabConstrictor-VLab4Mic, LabConstrictor_Demo, LabConstrictor-Playground, LabConstrictor_streamlit (all 2025), NucleiSky, napari-labconstrictor, LabConstrictor-Fiji, LabConstrictor-Tools (all 2026). GuessTheCondition: 'Copyright (c) 2024 Guillaume Jacquemet'. No LICENSE file: labconstrictor-site and LabConstrictor-QuPath. For comparison the lab website /home/user/website/LICENSE says 'Copyright (c) 2026 Guillaume Jacquemet'. 'Cell Migration Lab' is a research group name, not a named legal person; the paper never uses it. Whether it is the legal holder is not answerable from the files."
+  },
+  {
+   "claim": "The website repo had no root LICENSE",
+   "verdict": "confirmed",
+   "evidence": "No LICENSE in /home/user/labconstrictor-site; GitHub API repos/CellMigrationLab/labconstrictor-site returns name 'LabConstrictor-Site', license null. LabConstrictor-QuPath also returns license null."
+  },
+  {
+   "claim": "'Cell Migration Lab' is the Jacquemet group at Åbo Akademi University and Turku Bioscience Centre (needed to judge the footer wording)",
+   "verdict": "confirmed",
+   "evidence": "The lab's own site source, /home/user/website/mkdocs.yml:2 'The Cell Migration Lab (Jacquemet lab) ... Åbo Akademi University and Turku Bioscience Centre, Turku, Finland' and :10 'copyright: © Cell Migration Lab · Åbo Akademi University & Turku Bioscience Centre'; data/site.yaml affiliations (ÅAU = parent, Turku Bioscience Centre and InFLAMES = member, Finnish Cancer Institute = affiliation of the group leader, not of the lab); data/software.yaml lists LabConstrictor among the lab's software."
+  },
+  {
+   "claim": "The site does not show the authors, institutions or funding anywhere",
+   "verdict": "confirmed",
+   "evidence": "Text-only scan of all 38 built pages in /home/user/labconstrictor-site/site: 0 pages contain Hidalgo, Jacquemet, Henriques, Saraiva, Rivera Pineda, arXiv, preprint, Åbo Akademi, Turku, ITQB, University College London, funding, funded or Acknowledg."
+  },
+  {
+   "claim": "App pages name the people behind each app",
+   "verdict": "refuted",
+   "evidence": "build/snapshot.json: none of the 6 listed manifests has an `authors` key (keys: categories, description, distribution, doi (2 apps), hosts, icon, kind, license, name, summary, ...). The schema supports authors[{name, orcid}] and pages_apps.details_list (lines 150-151) prints them only when present; 0 of 6 built app pages contain 'Authors'."
+  },
+  {
+   "claim": "The listed VLab4Mic app belongs to the Cell Migration Lab (implied by the GitHub pill and footer)",
+   "verdict": "refuted",
+   "evidence": "gh api: CellMigrationLab/LabConstrictor-VLab4Mic is a FORK (parent HenriquesLab/LabConstrictor-VLab4Mic), created 2026-10-07, latest release 0.1.5 on 2026-10-08 by a Cell Migration Lab account. Upstream HenriquesLab repo: created 2026-06-04, latest release 0.1.3 (2026-06-04) by another account, and no labconstrictor-app.yaml (the fork has it). The site's registry/CellMigrationLab__LabConstrictor-VLab4Mic.yaml points at the fork; the built app page shows only the fork's GitHub pill and a 'Website' link to vlab4mic.henriqueslab.org, no author and no Henriques lab. The template's use_cases.md links HenriquesLab/LabConstrictor-VLab4Mic as the app's repository."
+  },
+  {
+   "claim": "The template and apps share one LICENSE line, so a LICENSE in an app repo says little about who made the app (inference)",
+   "verdict": "partly",
+   "evidence": "AGENTS.md:28 states the template repository 'is copied into every app repository'. The upstream HenriquesLab/LabConstrictor-VLab4Mic (a Henriques lab repo) also carries 'Copyright (c) 2025 Cell Migration Lab'. That is consistent with an inherited line, but it is an inference; no primary source states the intent."
+  },
+  {
+   "claim": "Cancer Society of Finland (preprint) and the lab site's 'Finnish Cancer Foundation / Cancer Foundation Finland' are the same funder",
+   "verdict": "partly",
+   "evidence": "The preprint says 'Cancer Society of Finland (Syöpäjärjestöt; to G.J.)'. /home/user/website/data/site.yaml lists 'Finnish Cancer Foundation', name 'Cancer Foundation Finland', url syopasaatio.fi. Web search (syopajarjestot.fi, syopasaatio.fi) describes two separate bodies that work together; their legal separation was not confirmed. The lab site's funder list (Wellcome, IMMENs, ...) is a different, current list and must not be reused for the preprint's acknowledgements."
+  },
+  {
+   "claim": "The preprint's InFLAMES decision numbers are correctly printed",
+   "verdict": "unverifiable",
+   "evidence": "The PDF and the arXiv HTML (https://arxiv.org/html/2603.10704v1) both print 'decision numbers: 337530, 337531, 357910, and 35791'. The last number has five digits, the others six: it looks truncated or a typo, but no primary source gives the right value."
+  },
+  {
+   "claim": "Authorship of the logo (green snake / orange notebook) and the three-panel comic",
+   "verdict": "unverifiable",
+   "evidence": "The template's doc_source branch has comic.png and LabConstrictor_Logo.png but no credit, licence or README file (git ls-tree). git log shows only that a GitHub user uploaded them ('Add files via upload', 2026-01-19/28): that identifies the uploader, not the creator. Creator and rights are therefore unknown and are not named here."
+  },
+  {
+   "claim": "henriqueslab.org describes LabConstrictor as the Henriques lab's work",
+   "verdict": "partly",
+   "evidence": "https://henriqueslab.org/pages/labconstrictor (read through a summarising fetch): listed under the Henriques lab, 'ITQB NOVA - UCL', credits only 'Hidalgo-Cenalmor et al. arXiv 2026' with the DOI, names no funding, and notes the code lives in the CellMigrationLab organisation. The lab's attitude to 'A project of the Cell Migration Lab' is not stated."
+  }
+ ],
+ "gaps": [
+  {
+   "id": "G1",
+   "requirement": "Name the five authors, their institutions and the funding reported by the preprint on the site, on one compact page linked from the footer, using only facts that the preprint supports.",
+   "current": "0 of 38 built pages mention any author, institution, 'arXiv', 'preprint' or funding. The only attribution is the footer line 'A project of the Cell Migration Lab' (overrides/main.html:102). No page or generator exists for credits (pages_site.py has home, ecosystem and submit only).",
+   "severity": "major",
+   "proposal": "Site repo, smallest change. (1) New hand-written data/credits.yaml with four parts: `source` (arxiv id 2603.10704, doi 10.48550/arXiv.2603.10704, version v1, checked_on date); `authors` in preprint order, each with affiliation ids; `affiliations` (id + the six texts exactly as printed); `acknowledgements` (the verbatim paragraph, see G6). (2) New scripts/lcsite/pages_credits.py (about 60 lines, functions <=30 lines, annotated, docstrings), `page_credits(credits, template_dir) -> None`, called from scripts/build_site.py and tests/test_credits.py (five authors in order; unknown affiliation id fails; malformed file fails; text is escaped). (3) DESIGN.md first: add a 'Credits page' pattern (authors as a list, institutions as a numbered list, acknowledgement as lc-small text). (4) Page /credits/: h1 'People and credits'; description 'The five authors of the LabConstrictor preprint, their institutions, and the funding the preprint reports.'; lead 'LabConstrictor is described in a preprint by these five authors. Names, affiliations and acknowledgements below are copied from it.'; h2 Authors: 'Iván Hidalgo-Cenalmor (1, 2), Marcela Xiomara Rivera Pineda (1, 2, 3), Bruno M. Saraiva (4), Ricardo Henriques (4, 5), Guillaume Jacquemet (1, 2, 3, 6)' with 'Correspondence: G. Jacquemet' as printed; h2 Institutions: the six numbered lines from the preprint, introduced by 'Affiliations as printed in the preprint (arXiv v1, 11 March 2026).'; h2 Funding and acknowledgements: the verbatim paragraph; a text link 'Read the preprint' to https://arxiv.org/abs/2603.10704; a pointer to the citation block built by the citation dimension. Edit link points to data/credits.yaml. Text only: no logos, no ORCIDs, no per-person roles, no artwork credit. (5) Reachability and menu: footer link gives 1 click from home; check_site.py needs exactly one current top-menu entry, so give the page `menu=\"ecosystem/\"` (or add a nav entry; owner's choice). (6) Add one line to scripts/lcsite/llms.py and the new file to AGENTS.md 'Hand-written here'.",
+   "repo_and_files": [
+    "labconstrictor-site: data/credits.yaml (new)",
+    "labconstrictor-site: scripts/lcsite/pages_credits.py (new)",
+    "labconstrictor-site: scripts/build_site.py",
+    "labconstrictor-site: overrides/main.html",
+    "labconstrictor-site: DESIGN.md",
+    "labconstrictor-site: AGENTS.md",
+    "labconstrictor-site: tests/test_credits.py (new)",
+    "labconstrictor-site: scripts/lcsite/llms.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "needs_author_decision": "Whether the five authors agree to be listed with their institutions on the site; whether to show the preprint's affiliations (March 2026) or current ones; whether the preprint's contribution paragraph should be shown at all (it names only G.J., I.H.-C. and M.R.; the proposal links the preprint instead of copying it); whether institution logos are wanted (owners' rights, none proposed); whether the page sits under Ecosystem or gets its own menu entry.",
+   "rule_conflicts": "AGENTS.md 'each fact written in one place': the facts are the preprint's, outside our repos, so data/credits.yaml is a verbatim copy with `source` and `checked_on`, and G3 adds a check. DESIGN.md requires the pattern to be added before the page. check_site.py demands one current menu entry (hence menu=). New data file must be added to the AGENTS.md sources list. No silent fallbacks: a missing affiliation id or empty list must call fail() naming data/credits.yaml."
+  },
+  {
+   "id": "G2",
+   "requirement": "The footer attribution should be accurate, show collaborative authorship without a long footer, and not claim a copyright that nobody has decided.",
+   "current": "overrides/main.html:102: 'A project of the Cell Migration Lab', no institutions, no link to authors. Accuracy: supported by the GitHub organisation (CellMigrationLab/LabConstrictor), the 'Copyright (c) 2025 Cell Migration Lab' line in the template LICENSE, the lab website's software list, and the repo README; but the preprint never names the Cell Migration Lab and its five authors sit in Finland, Portugal and the UK, and its own contribution paragraph says I.H.-C. developed the framework, so 'developed by <institutions>' would overstate. No © line is rendered (mkdocs.yml:8 'copyright: © Cell Migration Lab' is never printed). The org name is typed in 5 places (main.html, mkdocs.yml site_author and copyright, data/site.yaml org and org_url; the last two are read by no code).",
+   "severity": "major",
+   "proposal": "Keep 'A project of' (it is true of hosting and of the LICENSE line) and add facts that the preprint and the lab's own site support, with one link: replace the lc-footer__by paragraph in overrides/main.html with: 'A project of the Cell Migration Lab (Åbo Akademi University and Turku Bioscience Centre), with co-authors at ITQB NOVA and UCL. <a href=\"credits/\">People and credits</a>. Logos of other projects and services belong to their owners and are shown only to identify them.' ('Cell Migration Lab (Åbo Akademi University and Turku Bioscience Centre)' is the lab's own wording in /home/user/website/mkdocs.yml:10; 'co-authors at ITQB NOVA and UCL' is the printed affiliations of Saraiva and Henriques.) Do not use 'developed by'. Do not add a © line. Delete the dead data/site.yaml `org` and `org_url` and the unrendered mkdocs.yml `copyright:` (or make the footer read one of them), so the name has a single owner.",
+   "repo_and_files": [
+    "labconstrictor-site: overrides/main.html",
+    "labconstrictor-site: data/site.yaml",
+    "labconstrictor-site: mkdocs.yml"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "needs_author_decision": "Whether all five authors (in particular the Henriques lab, ITQB NOVA and UCL side) are content with 'A project of the Cell Migration Lab'; whether the institution names belong in the footer or only on /credits/; whether 'co-authors at ITQB NOVA and UCL' is the wording they want.",
+   "rule_conflicts": "Footer is hand-written layout (README: 'footer ... overrides/'), allowed. Dead data (org, org_url, citation_doi) conflicts with 'nothing written twice'. check_design.py rules on links: the new link is an internal text link (no new tab); the program/GitHub pill rules are not touched."
+  },
+  {
+   "id": "G3",
+   "requirement": "Keep the people, institution and funding facts in one place each, and keep the preprint, the template README, the Zenodo record and the site from drifting apart.",
+   "current": "Four places carry author facts today: the preprint, the template README Citation (reference only), the Zenodo record (5 creators in order but different affiliations for 4 of 5 authors, version 0.0.2 of 2026-06-19) and, after G1, the site. There is no check between them: the footer DOI is hard-coded (main.html:100) while data/site.yaml:15 `citation_doi` is unused.",
+   "severity": "major",
+   "proposal": "Decide one home per fact. (a) The preprint reference (authors in order, title, arXiv DOI) stays where it is, in the template README '## Citation'; the site does not copy it. (b) Affiliations and acknowledgements live only in labconstrictor-site data/credits.yaml, never in the template README: the template is copied into every app repository (AGENTS.md:28), so funding text there would be inherited by other people's apps; precedent: the template's Ecosystem card is kept inline in the site for the same reason. (c) The Zenodo record is archive metadata, not a source for the site. Sync, offline: pages_credits reads <--template-dir>/README.md (already an argument of build_site.py) and calls fail() naming both files unless the README Citation contains credits.yaml's DOI and the five author names in the same order; the check passes today, so it can land before any template change. Optional, in the network stage only (fetch_catalogue.py, FetchError rule): compare arXiv metadata for 2603.10704 with credits.yaml `source` and the author order, and report a build problem if the version or order changed. The page prints 'Checked against the preprint on <checked_on>'. In the template, one PR adds a line to the README Citation: 'People, institutions and funding: <site>/credits/'. Replace the hard-coded DOI in main.html by a value read from data (G6 of the citation dimension decides which DOI).",
+   "repo_and_files": [
+    "labconstrictor-site: scripts/lcsite/pages_credits.py",
+    "labconstrictor-site: scripts/fetch_catalogue.py (optional arXiv check)",
+    "labconstrictor-site: data/site.yaml",
+    "labconstrictor-site: overrides/main.html",
+    "LabConstrictor: README.md (one line, separate pull request)",
+    "Zenodo record 10.5281/zenodo.20758747 (authors' deposit, creators/affiliations)"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "needs_author_decision": "Which affiliations are correct for the Zenodo creators (the record and the preprint disagree for four authors); whether the template README may link to the site's credits page; who updates credits.yaml when a v2 or journal version appears.",
+   "rule_conflicts": "AGENTS.md: network only in fetch_*.py (so the arXiv check goes there); 'Changes to other repositories go in a pull request there' and 'do not push to main here before PRs the build depends on are merged' (the README check depends only on text already in the template). No silent fallbacks: the check must fail loudly, not skip when README is missing."
+  },
+  {
+   "id": "G4",
+   "requirement": "Credit the people and institutions behind each listed app, and do not present another lab's app as the Cell Migration Lab's.",
+   "current": "0 of 6 manifests declare `authors`, so no app page names anyone. VLab4Mic is listed from the fork CellMigrationLab/LabConstrictor-VLab4Mic (created 2026-10-07; release 0.1.5 published 2026-10-08) of HenriquesLab/LabConstrictor-VLab4Mic (latest release 0.1.3, no manifest); its page shows only the fork's GitHub pill and a website link to vlab4mic.henriqueslab.org, with no authors, no institution and no statement that it is a fork. The template's use_cases.md points to the HenriquesLab repo as that app's repository.",
+   "severity": "major",
+   "proposal": "No site code change is needed for the authors row (pages_apps.details_list prints `authors` when the manifest has it). In each app's own repository, add `authors:` to labconstrictor-app.yaml, copying the names from the app's own published reference or README (NucleiSky and CellTracksColab READMEs list their authors; the app owners copy them, the site must not). For VLab4Mic, the app owners decide between (a) pointing registry/CellMigrationLab__LabConstrictor-VLab4Mic.yaml to the upstream HenriquesLab repo after the manifest and the 0.1.5 installers exist there, or (b) keeping the fork and saying so in the manifest `description` ('Installers built from HenriquesLab/LabConstrictor-VLab4Mic') plus `authors`. Until then the credits page and footer say nothing about app authorship, only about LabConstrictor.",
+   "repo_and_files": [
+    "NucleiSky: labconstrictor-app.yaml",
+    "CellTracksColab: labconstrictor-app.yaml",
+    "LabConstrictor-VLab4Mic (CellMigrationLab fork and HenriquesLab upstream): labconstrictor-app.yaml, README.md",
+    "labconstrictor-site: registry/CellMigrationLab__LabConstrictor-VLab4Mic.yaml (only if the pointer moves)"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "needs_author_decision": "Whether the Henriques lab agreed to the fork and its installers under the Cell Migration Lab name; which repository should be listed; the exact author lists for each app; whether authors want ORCIDs shown.",
+   "rule_conflicts": "AGENTS.md: everything an app says about itself is its manifest, never written on the site; app text is untrusted and escaped (text.esc, already done for authors). Submit page says the registry stores the numeric repo id and pauses a listing when the owner changes, so a pointer move needs a maintainer re-check."
+  },
+  {
+   "id": "G5",
+   "requirement": "The licence and copyright statements across the project should name a holder the authors have actually chosen, and every public repository the site links to should carry a licence.",
+   "current": "10 of 13 repos on disk name 'Cell Migration Lab' (a group, not a named legal person; absent from the preprint); GuessTheCondition names 'Guillaume Jacquemet' (2024); the lab website names 'Guillaume Jacquemet'; labconstrictor-site (linked as 'This site on GitHub') and LabConstrictor-QuPath have no LICENSE (GitHub API license: null). The footer says 'Open source, MIT licensed' (true for the template and the preprint's code-availability statement, not for this site repo).",
+   "severity": "minor",
+   "proposal": "After the authors decide the holder wording: add a LICENSE to labconstrictor-site and to LabConstrictor-QuPath; change the template LICENSE only if the holder changes (new apps inherit it; existing apps keep theirs). Until then print no © line on the site (see G2). If the site's text and pictures should have different terms from the code, copy the lab website's pattern (content/licensing.md and a per-image rights ledger with `rights: unknown` allowed) rather than inventing wording.",
+   "repo_and_files": [
+    "labconstrictor-site: LICENSE (new)",
+    "LabConstrictor-QuPath: LICENSE (new)",
+    "LabConstrictor: LICENSE (only if the holder changes)",
+    "labconstrictor-site: mkdocs.yml (the unrendered copyright line)"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "needs_author_decision": "Who the copyright holder is (the authors, their universities, or the group by name) under their employers' IP rules; the licence for the site code and for the site's text and images; whether LICENSE files in apps should keep the template's line.",
+   "rule_conflicts": "None with AGENTS.md beyond 'changes to other repositories go in a pull request there'. Legal ownership cannot be settled from repository files; no wording is proposed for it."
+  },
+  {
+   "id": "G6",
+   "requirement": "Show a funding paragraph on the site that is copied from the preprint's verified acknowledgements, without implying more than the preprint says, and leave grant-specific acknowledgement rules to the authors.",
+   "current": "No funding text on the site. The preprint's acknowledgement is printed with a probable typo in the InFLAMES decision numbers ('357910, and 35791') and inconsistent initials ('I.H.C.' in the paragraph, 'I.H.-C.' elsewhere). All grants are tied to named persons and say 'This study received funding...'.",
+   "severity": "minor",
+   "proposal": "Put the paragraph in data/credits.yaml `acknowledgements` exactly as printed (curly apostrophe in 'Union’s', straight quotes around \"la Caixa\" kept) and show it on /credits/ under 'Funding and acknowledgements', introduced by 'Copied from the Acknowledgements of the preprint (arXiv v1, 11 March 2026). It reports funding of the study, not of this website or of the listed apps.' Verbatim text: 'I.H.C. is funded by the Finnish Doctoral Program Network in Artificial Intelligence, AI-DOC (decision number VN/3137/2024-OKM-6). This study received funding from the Research Council of Finland (338537, 371287, and 374180 to G.J.), the Sigrid Juselius Foundation (to G.J.), the Cancer Society of Finland (Syöpäjärjestöt; to G.J.), and the Solutions for Health strategic funding for Åbo Akademi University (to G.J.). Additionally, this research was supported by the InFLAMES Flagships Programme of the Research Council of Finland (decision numbers: 337530, 337531, 357910, and 35791). G.J. is supported by the Finnish Cancer Institute (K. Albin Johansson Professorship). This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation programme (grant agreement No. 101001332 to R.H.). This project also received funding from the European Union through the Horizon Europe EIC Pathfinder Open program (RT-SuperES, grant agreement No. 101099654 to R.H.). Funded by the European Union. However, the views and opinions expressed are those of the authors only. They do not necessarily reflect those of the European Union or the granting authority. Neither the European Union nor the granting authority can be held responsible for them. This work was supported by a European Molecular Biology Organization (EMBO) installation grant (EMBO-2020-IG-4734 to R.H.). Further support was provided by a Chan Zuckerberg Initiative Essential Open Source Software for Science grant (EOSS6-0000000260 to R.H. and G.J.). The project has also received funding from the \"la Caixa\" Foundation under the project code HR25-00453 (to R.H.).' Keep the EU disclaimer sentences attached to the EU grants. Do not paraphrase, do not add logos or amounts, and do not use the lab website's funder list (it differs: Wellcome, IMMENs, 'Cancer Foundation Finland'). Leave the last InFLAMES number as printed until the authors confirm it, with the list flagged in the pull request. A pointer to the preprint is the fallback if the authors prefer not to host the grant numbers.",
+   "repo_and_files": [
+    "labconstrictor-site: data/credits.yaml",
+    "labconstrictor-site: scripts/lcsite/pages_credits.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "needs_author_decision": "Whether each funder wants a website mention and in what wording or form (EU emblem and disclaimer rules for ERC and EIC grants, CZI EOSS, EMBO, la Caixa, Research Council of Finland and the decision-number format); the correct final InFLAMES number; whether grants held by individuals should appear on a project-wide page; whether the Cancer Society of Finland (as printed) or another Finnish cancer funder is meant.",
+   "rule_conflicts": "Author-controlled exposure: funders and grants are shown only after the authors approve; verbatim copy conflicts with nothing in AGENTS.md but must be escaped through text.esc when rendered."
+  }
+ ],
+ "unverified": [
+  "Whether arXiv now has a v2 or a journal version of the preprint (the abs page showed v1 only, fetched through a cache of up to 15 minutes on 2026-10-10).",
+  "The correct last InFLAMES decision number: both the PDF and the arXiv HTML print '35791'.",
+  "Whether any funder (ERC/EIC, Chan Zuckerberg Initiative EOSS, EMBO, la Caixa, Research Council of Finland, Sigrid Juselius, Cancer Society of Finland, Finnish Cancer Institute) requires specific website wording, logos or disclaimers: no funder rules were checked.",
+  "The five authors' current affiliations: the Zenodo record (19 Jun 2026) differs from the preprint (11 Mar 2026) for four authors, and no primary source says which is current.",
+  "Who is the legal copyright holder in law: only the LICENSE texts were read; university IP policies were not.",
+  "Whether the Henriques lab authorised the Cell Migration Lab fork of VLab4Mic and its installers, and whether fork release 0.1.5 differs from upstream (upstream is at 0.1.3).",
+  "Whether the Cancer Society of Finland (Syöpäjärjestöt) and Cancer Foundation Finland (Syöpäsäätiö) are legally distinct: search results describe two cooperating bodies, but no registry source was read.",
+  "Authorship and rights of the logo and the comic: no credit or licence file exists in doc_source; creator is unknown.",
+  "The content of https://henriqueslab.org/pages/labconstrictor was read through a summarising fetch, not as raw text.",
+  "No rendering check of the footer or of the proposed page in Chromium was made; the footer was verified from template and built HTML source."
+ ]
+}

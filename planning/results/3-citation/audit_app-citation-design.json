@@ -1,0 +1,253 @@
+{
+ "dimension": "Design of the 'How to cite' section and its source (mechanism comparison, rendering, migration, effect on the other repositories)",
+ "claims_checked": [
+  {
+   "claim": "The site footer 'Cite LabConstrictor' link points to the Zenodo DOI 10.5281/zenodo.20758747, not to the preprint",
+   "verdict": "confirmed",
+   "evidence": "/home/user/labconstrictor-site/overrides/main.html:100 and built site/index.html (one doi.org link: https://doi.org/10.5281/zenodo.20758747). The arXiv ID 2603.10704 appears nowhere in site/, docs/, content/ or data/ (grep)."
+  },
+  {
+   "claim": "The same DOI is written twice in the site repo",
+   "verdict": "confirmed",
+   "evidence": "data/site.yaml:15 (links.citation_doi) is read by no script or template (grep over scripts/, overrides/, tests/); the footer hard-codes the same DOI at overrides/main.html:100."
+  },
+  {
+   "claim": "Preprint 'Packaging Jupyter notebooks as installable desktop apps using LabConstrictor', 5 authors, arXiv March 2026, DOI 10.48550/arXiv.2603.10704",
+   "verdict": "confirmed",
+   "evidence": "arXiv API https://export.arxiv.org/api/query?id_list=2603.10704: published 2026-03-11, authors Ivan Hidalgo-Cenalmor, Marcela Xiomara Rivera Pineda, Bruno M. Saraiva, Ricardo Henriques, Guillaume Jacquemet, categories cs.SE and q-bio.QM, no journal_ref and no journal DOI. PDF header 'arXiv:2603.10704v1 [cs.SE] 11 Mar 2026'. https://doi.org/10.48550/arXiv.2603.10704 resolves (DataCite)."
+  },
+  {
+   "claim": "The LabConstrictor README gives the preprint as the recommended citation",
+   "verdict": "confirmed",
+   "evidence": "/home/user/LabConstrictor/README.md:66-69 ('If you use LabConstrictor in your research, please cite the project ... arXiv preprint 2026 DOI: https://doi.org/10.48550/arXiv.2603.10704'). Its top badge (line 2) points to Zenodo 10.5281/zenodo.20758747. The preprint PDF itself has no 'how to cite' sentence and no Zenodo mention (pdftotext grep)."
+  },
+  {
+   "claim": "Zenodo 10.5281/zenodo.20758747 is a software record titled LabConstrictor (auditor: creators not inspected)",
+   "verdict": "confirmed",
+   "evidence": "https://zenodo.org/api/records/20758747: resource_type software, title LabConstrictor, version 0.0.2, published 2026-06-19, creators = the same five authors with ORCIDs and affiliations (spelled 'Hidalgo Cenalmor, Ivan' and 'Rivera Pineda, Marcela Xiomara'), related identifier arXiv:2603.10704 relation 'describes'. It is a VERSION DOI: conceptdoi is 10.5281/zenodo.19074199 (also resolves). The template has no GitHub releases or tags (gh api repos/CellMigrationLab/LabConstrictor/releases returns [] and /tags returns nothing) and .template_sync/manifest.yaml says template_version 0.1.15."
+  },
+  {
+   "claim": "NucleiSky: Hidalgo-Cenalmor et al., Journal of Cell Science (2026), DOI 10.1242/jcs.265152, about multimodal microscopy registration",
+   "verdict": "confirmed",
+   "evidence": "Crossref via https://doi.org/10.1242/jcs.265152 (Accept: application/vnd.citationstyles.csl+json): journal-article, Journal of Cell Science, article-number jcs.265152, first published online 2026-08-14, 8 authors. Exact title: 'NucleiSky enables cross-scale multimodal registration of microscopy data using nuclei constellations' (the auditor's wording is a paraphrase, not the title). /home/user/NucleiSky/README.md:124-150 agrees."
+  },
+  {
+   "claim": "CellTracksColab: Gomez-de-Mariscal et al., PLOS Biology (2024), DOI 10.1371/journal.pbio.3002740",
+   "verdict": "confirmed",
+   "evidence": "Crossref CSL JSON: PLOS Biology 22(8) e3002740, published online 2024-08-08, 7 authors (first 'Gomez-de-Mariscal' with an accent: Gomez-de-Mariscal, Estibaliz). Title 'CellTracksColab is a platform that enables compilation, analysis, and exploration of cell tracking data'. /home/user/CellTracksColab/README.md:304-310 agrees."
+  },
+  {
+   "claim": "VLab4Mic: Martinez et al., bioRxiv (2026), 'predicting structural resolvability in super-resolution microscopy', DOI 10.64898/2026.06.02.729521",
+   "verdict": "partly",
+   "evidence": "Crossref: type posted-content, posted 2026-06-04, publisher openRxiv, 8 authors (Martinez, Damian first). Real title: 'VLab4Mic: prediction of structural resolvability in super-resolution microscopy' (not 'predicting'). The name 'bioRxiv' as venue comes from the authors' own README BibTeX (/home/user/LabConstrictor-VLab4Mic/README.md:58-73), not from the Crossref record (which has no container-title)."
+  },
+  {
+   "claim": "All three upstream projects provide citation information (so the problem is surfacing it)",
+   "verdict": "confirmed",
+   "evidence": "READMEs of NucleiSky (prose + BibTeX), CellTracksColab (prose reference) and LabConstrictor-VLab4Mic (BibTeX) each have a Citation section; three different formats. GuessTheCondition, LabConstrictor_Demo and LabConstrictor-Playground READMEs have none (grep cite/doi/zenodo)."
+  },
+  {
+   "claim": "The site puts a citation in Details only when the manifest has `doi`, as a DOI link not a reference, in the last section",
+   "verdict": "confirmed",
+   "evidence": "scripts/lcsite/pages_apps.py:152-153 (row 'Cite' only if m.get('doi')); order in page_app (lines 199-207) and in built pages: get, about, use, downloads, install, details. site/apps/nucleisky and celltrackscolab have a 'Cite' row with a bare doi link; site/apps/labconstrictor-vlab4mic and guessthecondition have none (VLab4Mic is a simulation app with a preprint)."
+  },
+  {
+   "claim": "Only 2 listed apps carry a `doi` and none carries `authors`",
+   "verdict": "confirmed",
+   "evidence": "build/snapshot.json (6 apps): CellTracksColab doi 10.1371/journal.pbio.3002740, NucleiSky doi 10.1242/jcs.265152; no manifest has `authors`. Live manifests on the default branches (gh api repos/CellMigrationLab/NucleiSky/contents/labconstrictor-app.yaml) match."
+  },
+  {
+   "claim": "No app repository and not the template has a CITATION.cff or .zenodo.json (auditor proposes adding them)",
+   "verdict": "confirmed",
+   "evidence": "gh api repos/CellMigrationLab/{LabConstrictor,NucleiSky,CellTracksColab,LabConstrictor-VLab4Mic,GuessTheCondition,LabConstrictor_Demo,LabConstrictor-Playground}/contents lists none; git ls-tree over every local branch of the clones lists none either. The NucleiSky update to the published article was a README-only commit (f4e0fe1 'Update citation to published JCS article')."
+  },
+  {
+   "claim": "GitHub shows 'Cite this repository' (APA and BibTeX) from a root CITATION.cff and honours preferred-citation",
+   "verdict": "confirmed",
+   "evidence": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-citation-files: file in the repository root on the default branch; 'We currently support APA and BibTeX'; preferred-citation override with type: article gives an @article entry."
+  },
+  {
+   "claim": "CITATION.cff (CFF 1.2.0) fields: required keys, preferred-citation, status values, orcid and doi forms",
+   "verdict": "confirmed",
+   "evidence": "Official schema https://raw.githubusercontent.com/citation-file-format/citation-file-format/1.2.0/schema.json: top-level required authors, cff-version, message, title; preferred-citation is a reference (required authors, title, type); reference has journal, volume, issue, start, end, year, month, doi, status (abstract, advance-online, in-preparation, in-press, preprint, submitted); person orcid must be the full URL https://orcid.org/...; doi pattern ^10\\.\\d{4,9}(\\.\\d+)?/[A-Za-z0-9:/_;\\-\\.\\(\\)\\[\\]\\\\]+$ (stricter than the manifest's ^10\\.\\d{4,9}/\\S+$)."
+  },
+  {
+   "claim": "FORCE11 Software Citation Principles ask for version-specific identification",
+   "verdict": "confirmed",
+   "evidence": "https://www.force11.org/software-citation-principles: 'Specificity: Software citations should facilitate identification of, and access to, the specific version of software that was used'; Unique Identification principle also quoted there. Paper: Smith, Katz, Niemeyer, PeerJ Computer Science 2016, DOI 10.7717/peerj-cs.86 (Crossref). The auditor's three keywords are a fair paraphrase."
+  },
+  {
+   "claim": "Zenodo: .zenodo.json can fix creators; relation to CITATION.cff",
+   "verdict": "partly",
+   "evidence": "https://help.zenodo.org/docs/github/describe-software/citation-file/: Zenodo 'implements a subset of the CITATION.cff schema' and, if .zenodo.json exists, 'will only use the .zenodo.json metadata and ignore the CITATION.cff entirely'. Not stated on that page: creators/funding/related-works coverage of .zenodo.json, and what Zenodo does with no metadata file. Observation: the NucleiSky 0.1.1 record (https://zenodo.org/api/records/21238020, concept 10.5281/zenodo.21071484) lists creators 'Ivan Hidalgo' and 'guijacquemet', and the repo has no CITATION.cff or .zenodo.json; cause not documented."
+  },
+  {
+   "claim": "Option (c) DOI content negotiation is clean enough to be the display source",
+   "verdict": "refuted",
+   "evidence": "Run on 2026-10-10 against https://doi.org/<doi>: (1) it redirects across hosts (to api.crossref.org/v1/works/.../transform and data.crosscite.org), which scripts/lcsite/github.py SameHostRedirects refuses; (2) bioRxiv APA text has no venue at all and its BibTeX has no journal and a mangled key 'Mart_nez_2026'; (3) DataCite APA text for arXiv contains HTML ('&amp;', '<i>...</i>'); (4) registry name parsing differs from the authors' own: arXiv/DataCite gives family 'Pineda', given 'Marcela Xiomara Rivera', Zenodo (author-supplied) 'Rivera Pineda, Marcela Xiomara'. Crossref's content-negotiation page (https://www.crossref.org/documentation/retrieve-metadata/content-negotiation/) lists the formats but no rate limits."
+  },
+  {
+   "claim": "Option (b) is feasible with the existing loader and a small subset schema",
+   "verdict": "confirmed",
+   "evidence": "Scratch prototype in /tmp/claude-0/-home-user/a3a6ac4f-1857-5992-b7c5-06332778d500/scratchpad/cite/proto (not in any repo): CITATION.cff drafts for NucleiSky, CellTracksColab and VLab4Mic built only from the registry records above validate against the OFFICIAL CFF 1.2.0 schema and against a 15-line subset schema placed in $defs/citationFile of the SAME manifest schema file (validated with a {'$ref': '#/$defs/citationFile', '$defs': ...} wrapper, jsonschema 4.26); a 15-line APA-style formatter reproduces Crossref's APA authors+year+title character for character for all three. Bad input (type: book, braces in title, missing doi) gives clear per-path errors."
+  },
+  {
+   "claim": "The existing safe-YAML loader is usable for CITATION.cff, with one trap",
+   "verdict": "confirmed",
+   "evidence": "Ran scripts/lcsite/validate.load_plain_yaml: aliases raise AppProblem; but 'date-released: 2026-07-07' becomes datetime.date and 'version: 1.2' a float, so date-* keys must not be read or copied into the JSON snapshot (use the integer `year`)."
+  },
+  {
+   "claim": "The manifest schema exists in three copies, synchronised by hand",
+   "verdict": "confirmed",
+   "evidence": "diff shows origin/main:.tools/schema/labconstrictor-app.schema.json in the template and /home/user/LabConstrictor_streamlit/schemas/labconstrictor-app.schema.json byte-identical to /home/user/labconstrictor-site/schema/labconstrictor-app.schema.json. LabConstrictor_streamlit/schemas/README.md: 'copy it here and into the template (.tools/schema/)'."
+  },
+  {
+   "claim": "The template's checker is schema-driven and migration-tied",
+   "verdict": "confirmed",
+   "evidence": "origin/main:.tools/python/check_app_manifest.py: validates against the vendored schema; referenced_paths() returns only icon and screenshots for the file-exists check; exit 0 with a warning when the manifest is missing. .template_sync/migrations/v0_1_14_to_v0_1_15.py copies MANAGED_FILES (schema, checker, app_manifest.md, workflow) from .template_sync/resources/v0_1_14_to_v0_1_15/; the next change needs v0_1_15_to_v0_1_16."
+  },
+  {
+   "claim": "The template repository is copied into every app (so a root CITATION.cff there would be inherited)",
+   "verdict": "confirmed",
+   "evidence": "AGENTS.md:28 ('The template's card is inline there because its repository is copied into every app'); data/ecosystem.yaml comment. The initialiser (LabConstrictor_streamlit/app.py:660-690) moves and rewrites only README.md; it has no handling of any other root file."
+  },
+  {
+   "claim": "The copy button pattern: lc.js copies the first <code> in the button's parent and resets the label to 'Copy'",
+   "verdict": "confirmed",
+   "evidence": "docs/assets/javascripts/lc.js:83-92 (lcInitCopy); pages_apps.py:104 is the only user. A button labelled 'Copy reference' would read 'Copy' after the first click unless lc.js restores its own label."
+  },
+  {
+   "claim": "DESIGN.md button and link rules allow Copy buttons and a 'Read paper' link",
+   "verdict": "confirmed",
+   "evidence": "DESIGN.md:36-41 (a <button> only acts in the page; small ghost for in-page actions such as Copy; at most one filled button outside download tiles) and DESIGN.md:28-32 (action link lc-go for a destination at the end of a block). scripts/check_design.py button_problems allows <button> only with data-copy/data-lc-reset and class lc-btn; GENERIC_LINK_TEXT does not contain 'Read the paper'."
+  },
+  {
+   "claim": "The escaped-text check covers citation text",
+   "verdict": "refuted",
+   "evidence": "scripts/check_site.py author_strings() scans json.dumps(app['manifest']) only; text stored in a new app['citation'] would not be checked unless the function is extended."
+  },
+  {
+   "claim": "Preprint author contributions and affiliations (auditor's credits claims, secondary to this dimension)",
+   "verdict": "partly",
+   "evidence": "PDF text (pdftotext of https://arxiv.org/pdf/2603.10704): 'I.H.-C. developed the LabConstrictor framework with input from G.J.; G.J. and M.R. provided critical feedback, testing, and guidance; G.J. acquired funding' - Saraiva and Henriques are not named in that paragraph (as the auditor says). Affiliations include Turku Bioscience Centre, Abo Akademi, InFLAMES, ITQB NOVA, UCL and the Foundation for the Finnish Cancer Institute. Funding list not checked in full."
+  }
+ ],
+ "gaps": [
+  {
+   "id": "CITE-1 mechanism: manifest switch plus CITATION.cff subset",
+   "requirement": "A 'how to cite' source that stays in each app repository (nothing written twice), is author-controlled, shows a formatted reference rather than a bare DOI, can say 'no publication yet' explicitly, and needs the network only in the snapshot step.",
+   "current": "Only the optional `doi` (schema/labconstrictor-app.schema.json:36) rendered as a bare link in the last section. Per app the citation already lives in up to three places (README prose or BibTeX, manifest `doi`, a Zenodo record), and no repo has a CITATION.cff. COMPARISON. (a) manifest `citation` block: least code and the template checker validates it for free, but it retypes what the README, Zenodo and (per the auditor's own step 6) a CITATION.cff already carry, so it would be the fourth copy, and it feeds neither GitHub's 'Cite this repository' nor Zenodo. (c) DOI content negotiation at snapshot time: no retyped data and the registry record is the safest source for papers, but verified problems: cross-host redirects (needs a second HTTP client with an allowlist), per-agency output differences (bioRxiv text without venue, DataCite text with HTML, mangled BibTeX key), registry name parsing that disagrees with the authors' own (Pineda vs Rivera Pineda), no way to say 'no publication' or carry a software archive DOI or version, a DOI minted before the paper is live would presumably 404 and under no-silent-fallbacks unlist the app (not tested), a registry outage must stop the whole fetch (exit 4, like a GitHub outage) which adds a new way for the daily build to fail, and the author cannot correct what is displayed. (b) site reads the app's own CITATION.cff: one standard file per repo that GitHub, Zenodo (subset) and Zotero also read, so the auditor's step 6 and step 2 become the same task; only GitHub is contacted (already the only network host); parsed with load_plain_yaml.",
+   "severity": "blocker",
+   "proposal": "RECOMMEND (b), in its smallest form. 1) Manifest, one new optional key, named for merging with the benchmark audit: `citation: cff | none` (enum). `cff` = show the preferred-citation of the repository's root CITATION.cff; `none` = the authors list no publication. No other manifest key is added, so any 'publication', 'references' or 'how_to_cite' key proposed elsewhere should be dropped in favour of this one. `doi` stays valid and keeps its meaning (DOI of the work to cite) but gets `deprecated: true`; `doi` together with `citation` is an error (schema `not: {required: [doi, citation]}` for editors, plus an explicit AppProblem in catalogue because jsonschema's own message for `not` dumps the whole manifest, verified). 2) catalogue.resolve (catalogue.py:91-108) gets one call `read_citation(gh, name, branch, manifest)`: when citation == cff, gh.raw(name, branch, 'CITATION.cff') on the same default branch as the manifest (100 KB cap, GitHub host only), load_plain_yaml (aliases refused), then validate against `$defs/citationFile` placed INSIDE schema/labconstrictor-app.schema.json (no new schema file, so no fourth copy to sync; validator = Draft202012Validator({'$ref': '#/$defs/citationFile', '$defs': schema['$defs']}), tested). 3) Subset (everything else in the file is ignored and never copied, so emails, addresses, contact and references are never stored or shown): top-level cff-version const '1.2.0', title, authors (CFF-required), optional doi (software archive, same DOI pattern as the manifest), and REQUIRED preferred-citation with: type const 'article' (preprints use status), title 1-300 chars, journal 1-100, year integer 1900-2100 (date-published and date-released are NOT read: PyYAML turns them into datetime.date), doi (existing pattern), authors 1-100 of {family-names, given-names, optional name-particle, name-suffix} or {name}, optional volume, issue, start, end, month 1-12, status in {preprint, in-press, advance-online}; title and journal reject { } \\ and control characters. A software-only CITATION.cff (no preferred-citation) is rejected with 'use citation: none' until the authors decide how to show software year and version. 4) Snapshot gets app['citation'] = {state: paper|none|doi-only|undeclared, reference: whitelisted dict or null, software_doi: str or null}; bump SNAPSHOT_FORMAT 2 to 3 (config.py:18). 5) Failure behaviour, no new hosts: missing or invalid file, alias, oversize, wrong type -> AppProblem naming CITATION.cff (app left out, named in build/problems.md, shown as a failed check at submission); GitHub outage -> existing FetchError exit 4; the offline build reads only the snapshot. 6) Crossref/DataCite is not in the build. Optional later: a warning-only lint in submit_app.py comparing title and year (never authors) of the CFF against the registry.",
+   "repo_and_files": [
+    "labconstrictor-site: schema/labconstrictor-app.schema.json",
+    "labconstrictor-site: scripts/lcsite/catalogue.py (resolve, new read_citation and whitelist helpers)",
+    "labconstrictor-site: scripts/lcsite/validate.py (check_citation_file)",
+    "labconstrictor-site: scripts/lcsite/config.py (SNAPSHOT_FORMAT)",
+    "labconstrictor-site: tests/test_catalogue.py and new tests/test_citation.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "needs_author_decision": "Maintainers confirm (b) over (a) and the enum name `citation` (the benchmark audit's fields must not use the same key); whether a software-only CITATION.cff should later be shown.",
+   "rule_conflicts": "Vendored schema copies already break 'nothing written twice' by design (streamlit schemas/README.md); this design adds no new file to that list by using $defs. Keeping `doi` vs 'do not accept legacy aliases' (AGENTS.md:60): `doi` is not an alias (own meaning, valid alone, marked deprecated, reported by a warning), and removal date is a maintainers' call. Optional CFF keys must be tested with `in`, never .get(key, default) (AGENTS.md:68). Functions must stay at most 30 lines: split read_citation, whitelist_reference, whitelist_person."
+  },
+  {
+   "id": "CITE-2 rendering: section, states, version, copy buttons",
+   "requirement": "A 'How to cite' section close to 'Using it' with authors, title, venue, year, DOI, Read paper, Copy reference and Copy BibTeX; the app's version visible separately; 'no publication' stated explicitly; escaped; consistent with DESIGN.md.",
+   "current": "Cite is a Details row (pages_apps.py:152-153) with no reference, no copy and no version relation; pages for apps without a doi say nothing. lc.js copy handler resets any button label to 'Copy' (lc.js:83-92) and copies only the first <code> of the parent.",
+   "severity": "major",
+   "proposal": "New module scripts/lcsite/citation.py (pure functions, under 300 lines): reference_text(ref) in one house style, APA-like (prototype output matches Crossref APA for authors, year and title for NucleiSky, CellTracksColab, VLab4Mic; initials from given-names, 'Family, I., ..., & Family, I. (2026). Title. Journal, volume(issue), start. https://doi.org/DOI'); bibtex(ref) (@article, key = slugify(first family)+year+first title word, escape & % $ # _ because braces and backslashes are refused by the schema); section(app) and block(ref, heading, id) returning escaped HTML (every value through text.esc). PLACEMENT in page_app: p.add(citation.section(app)) right after using_section and before downloads_table; h2 id='cite' 'How to cite'; delete the Cite row from details_list. STATES (explicit, never silent): paper (citation: cff): lead 'If you use {name} in your research, the authors ask you to cite this article:' ('this preprint:' when status is preprint; the wording attributes the request to the authors); reference in <p class='lc-ref' id='cite-ref'>; two ghost small buttons 'Copy reference' and 'Copy BibTeX' (data-copy); action link lc-go 'Read the paper' or 'Read the preprint' to https://doi.org/{quoted doi} (a link navigates, buttons only copy: DESIGN.md:38); BibTeX shown in <details><summary>BibTeX</summary><code id='cite-bib'>. none (citation: none): 'The authors list no publication for {name} yet. If you use it, name the app and its version and link its repository' with the GitHub pill; no copy button. doi-only (legacy doi, no citation): 'The authors give this DOI: doi:... ' with an action link 'Open doi:...' plus a build WARNING 'add CITATION.cff and citation: cff'. undeclared (neither): 'The authors have not said how to cite this app.' plus a build WARNING (this is the 'Not stated' pattern already used for License). VERSION, always separate and never taken from the CFF: a line 'Version {release tag}, released {date}. Cite the version you ran; all versions are on the GitHub releases page.' built from release['tag'] and published_at (omitted for apps with no release); if the CFF has a top-level doi, add 'Software archive: doi:...' (neutral label, the site cannot know whether it is a concept or version DOI). lc.js: restore each button's own label after 'Copied' and let a button name its source with data-copy-from=<id> (about 4 lines); lc.css: .lc-ref as normal-font prose, BibTeX monospace and wrapping; DESIGN.md: add a 'Citation block' pattern in the same pull request (DESIGN.md:4 says no pattern, add it first); check_site.author_strings: scan app['citation'] as well as app['manifest'] so unescaped citation text fails the build. Optional S follow-up: schema.org `citation` in jsonld(app).",
+   "repo_and_files": [
+    "labconstrictor-site: scripts/lcsite/citation.py (new)",
+    "labconstrictor-site: scripts/lcsite/pages_apps.py (page_app, details_list)",
+    "labconstrictor-site: docs/assets/javascripts/lc.js (lcInitCopy)",
+    "labconstrictor-site: docs/assets/stylesheets/lc.css",
+    "labconstrictor-site: DESIGN.md",
+    "labconstrictor-site: scripts/check_site.py (author_strings)",
+    "labconstrictor-site: tests/test_citation.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "needs_author_decision": "Wording of the lead sentences and of the 'no publication' sentence; house reference style (APA-like proposed) versus the journals' own.",
+   "rule_conflicts": "DESIGN.md: a page has at most one filled button (none used), a card has no button (not a card), outside links open in a new tab (automatic via page.py). Escape app-written text, never render it as HTML or Markdown (AGENTS.md:71): the CFF `message` and `abstract` are therefore never shown. pages_apps.py is 208 lines, the new code lives in citation.py to stay under 300."
+  },
+  {
+   "id": "CITE-3 LabConstrictor itself: block, footer, duplicate DOI",
+   "requirement": "The recommended LabConstrictor citation (the 5-author preprint) is visible to visitors, distinct from the archived software record, and written once.",
+   "current": "The preprint is shown nowhere on the site. The footer links the Zenodo version DOI 10.5281/zenodo.20758747, which is version 0.0.2 of concept 10.5281/zenodo.19074199 (template_version is 0.1.15, no GitHub releases or tags), and the same DOI is also in the unused data/site.yaml:15.",
+   "severity": "major",
+   "proposal": "Source: inline in data/site.yaml (hand-written site data), NOT a root CITATION.cff in the template, because the template is copied into every app (AGENTS.md:28) and the initialiser only rewrites README.md, so every new app would inherit a CITATION.cff presenting the LabConstrictor preprint as the app's citation; the ecosystem card for the template is already inline for the same reason. Shape: `citation: {paper: <same fields as a CFF preferred-citation, validated by the same $defs/reference>, software_doi: <DOI>}` replacing the dead links.citation_doi. Facts verified for the paper entry: title 'Packaging Jupyter notebooks as installable desktop apps using LabConstrictor', status preprint, journal arXiv, year 2026, doi 10.48550/arXiv.2603.10704, author order Hidalgo-Cenalmor, Rivera Pineda, Saraiva, Henriques, Jacquemet (name spellings: see CITE-6). Render with the same citation.block(): a band with id='cite' and h2 'Cite LabConstrictor' on the home page (pages_site.page_home), lead taken from the template README ('If you use LabConstrictor in your research, please cite the project'), reference, Copy reference, Copy BibTeX, 'Read the preprint'; below it a lc-small line 'Software archive: doi:...' (separate from the paper) and a text link 'Using an app for your results? Each app page has a How to cite section' to apps/. Footer: replace the hard-coded DOI link in overrides/main.html:100 by an internal link to the home #cite (label 'Cite LabConstrictor' unchanged; an in-site link opens in the same tab and check_site validates the anchor); delete links.citation_doi. No new page, so the 3-click reachability rule is unaffected. Add a unit test that data/site.yaml's paper entry passes the reference schema.",
+   "repo_and_files": [
+    "labconstrictor-site: data/site.yaml",
+    "labconstrictor-site: scripts/lcsite/pages_site.py (page_home)",
+    "labconstrictor-site: overrides/main.html (footer line 100)",
+    "labconstrictor-site: tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "needs_author_decision": "Which DOI is the 'software archive': concept 10.5281/zenodo.19074199 (all versions) or the 0.0.2 version DOI now in the footer; whether the home block should say apps built with LabConstrictor also cite the preprint (the README says 'if you use LabConstrictor in your research, please cite the project'; the auditor's rule 'app results -> cite the app, discussing LabConstrictor -> cite the preprint' is the auditor's, not the authors' stated policy).",
+   "rule_conflicts": "The template's README holds the same citation as prose, so this one item is written twice (README and data/site.yaml); accepted by the existing precedent of the inline template card (AGENTS.md:28) and to be listed in AGENTS.md 'Sources of truth'. A hand-written site.yaml entry is allowed (AGENTS.md:32)."
+  },
+  {
+   "id": "CITE-4 other repositories: template, initialiser, apps",
+   "requirement": "The new manifest key and CITATION.cff are checked where authors work, and every listed app declares its citation, without breaking apps that exist today.",
+   "current": "Template origin/main has a vendored schema copy, check_app_manifest.py (existence check only for icon and screenshots), docs/app_manifest.md and migration resources up to v0_1_14_to_v0_1_15; LabConstrictor_streamlit has another schema copy and a form that writes labconstrictor-app.yaml; none of the six apps has a citation declaration or a CITATION.cff.",
+   "severity": "major",
+   "proposal": "TEMPLATE (CellMigrationLab/LabConstrictor, PR from a fresh branch off origin/main): copy the new schema into .tools/schema/ via a new migration v0_1_15_to_v0_1_16 (same MANAGED_FILES pattern as v0_1_14_to_v0_1_15, resources folder, manifest.yaml entry, version bump); extend .tools/python/check_app_manifest.py by about 15 lines: when manifest citation == 'cff', add 'CITATION.cff' to the files-exist check and validate it against $defs/citationFile (annotation file=CITATION.cff) so a typo is caught in the app's own pull request instead of unlisting the app at the next daily site build; .tools/docs/app_manifest.md gets a 'How to cite' section with the `citation` key and a CITATION.cff example (it is a site guide and migration-tied: wording must pass check_design generic-link rules, see KNOWN_EXCEPTIONS). Do not add a root CITATION.cff to the template (inherited by every app, see CITE-3). INITIALISER (CellMigrationLab/LabConstrictor_streamlit): copy the schema into schemas/; in manifest_form._text_fields add one required selectbox with no default, 'Does your app have a paper or preprint?': 'No publication yet' writes citation: none; 'Yes, I will add a CITATION.cff' writes no citation key and the PR note (pr_note) tells the author to add the file and then `citation: cff`; the site warns until they do; tests in tests/test_app_manifest.py and test_manifest_form.py. APP REPOS (authors commit; the site must not write there): NucleiSky and CellTracksColab: add CITATION.cff with a preferred-citation, set citation: cff and delete doi; VLab4Mic: add CITATION.cff and citation: cff (it has no doi key today); GuessTheCondition, LabConstrictor_Demo, LabConstrictor-Playground: citation: none. A draft preferred-citation that passes both the official CFF 1.2.0 schema and the proposed subset, using only registry-verified data (NucleiSky): type article; title 'NucleiSky enables cross-scale multimodal registration of microscopy data using nuclei constellations'; journal Journal of Cell Science; year 2026; month 8; start jcs.265152; doi 10.1242/jcs.265152; authors Hidalgo-Cenalmor Ivan, Olguin-Olguin Adan, Prieto Carolina, Ahnlide Johannes Kumra, Nordenfelt Pontus, Henriques Ricardo, Del Rosario Mario, Jacquemet Guillaume (with their accents; Crossref order). The top-level title/authors/message/doi of each file are the authors' to write (the standard requires them).",
+   "repo_and_files": [
+    "CellMigrationLab/LabConstrictor: .tools/schema/labconstrictor-app.schema.json, .tools/python/check_app_manifest.py, .tools/docs/app_manifest.md, .template_sync/migrations/v0_1_15_to_v0_1_16.py, .template_sync/resources/v0_1_15_to_v0_1_16/, .template_sync/manifest.yaml",
+    "CellMigrationLab/LabConstrictor_streamlit: schemas/labconstrictor-app.schema.json, app_manifest.py, manifest_form.py, tests/",
+    "CellMigrationLab/NucleiSky, CellTracksColab, LabConstrictor-VLab4Mic: CITATION.cff and labconstrictor-app.yaml",
+    "CellMigrationLab/GuessTheCondition, LabConstrictor_Demo, LabConstrictor-Playground: labconstrictor-app.yaml",
+    "labconstrictor-site: content/submit.md (example manifest and a short How to cite paragraph)"
+   ],
+   "effort": "L",
+   "needs_other_repo": true,
+   "needs_author_decision": "Authors of each app write their own CITATION.cff (top-level software authors are not stated in any source I could check); the template maintainers schedule the migration and the version number.",
+   "rule_conflicts": "AGENTS.md:84: changes to other repositories go in pull requests there, and the site's daily build reads their default branches, so the site change must not be pushed to main before those PRs merge (otherwise `citation: cff` apps fail). The app_manifest.md wording is migration-tied. A three-way schema copy remains (documented in streamlit schemas/README.md)."
+  },
+  {
+   "id": "CITE-5 gating, phasing and tests",
+   "requirement": "Missing or malformed citation information is reported, never silent; new submissions must declare; existing listed apps are not unlisted by the rollout.",
+   "current": "submit_app.check (submit_app.py:47-59) reuses catalogue.resolve and prints warnings; the daily build lists per-app warnings in build/problems.md (the icon case). Nothing today distinguishes 'no publication' from 'forgot'.",
+   "severity": "major",
+   "proposal": "Phase 1 (site ships first): `citation` optional; apps with neither `citation` nor `doi` get state undeclared plus a catalogue warning ('declare citation: cff or citation: none'); apps with only `doi` get state doi-only plus a warning ('add CITATION.cff'); both are reported in build/problems.md and the daily issue (AGENTS.md:62 allows reported warnings for optional fields). submit_app.check adds two hard failures for NEW submissions only: no `citation` -> 'declare citation: cff or citation: none'; `doi` alone -> 'doi is deprecated: use citation: cff'. Phase 2 (maintainers pick the date once the six apps are migrated): add 'citation' to the schema `required` list in the three schema copies and delete the doi-only and undeclared states. Tests (tests/test_citation.py, each with a failure case, annotations and docstrings per AGENTS.md:66): the three verified drafts parse and render; citation: cff with no file -> AppProblem naming CITATION.cff; alias in the file -> AppProblem; type: book, braces in title, missing doi, year as string -> AppProblem; doi plus citation -> AppProblem; <script> and quotes in title/author/journal come out escaped in HTML and in the copy text; unknown CFF keys (email, contact) never reach the snapshot; version line uses the release tag and ignores CFF version; no-release app omits it; none, doi-only and undeclared states each render their sentence and (for the last two) a warning; SNAPSHOT_FORMAT mismatch stops the build; build_site never opens a socket (existing offline rule).",
+   "repo_and_files": [
+    "labconstrictor-site: scripts/submit_app.py (check)",
+    "labconstrictor-site: scripts/lcsite/catalogue.py (warnings)",
+    "labconstrictor-site: tests/test_citation.py, tests/test_catalogue.py",
+    "labconstrictor-site: scripts/check_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "needs_author_decision": "Date to flip `citation` from optional to required.",
+   "rule_conflicts": "Two reported degraded states (doi-only, undeclared) are the only places the design is not strict; they are warnings visible in problems.md and the daily issue, not silent defaults, and exist so the six listed apps are not unlisted during migration."
+  },
+  {
+   "id": "CITE-6 primary-source inconsistencies the authors must settle before CITATION.cff files are written",
+   "requirement": "Never invent or normalise bibliographic data: every name, title and DOI that goes into a CITATION.cff or data/site.yaml must match what the authors want cited.",
+   "current": "Primary sources disagree: (1) 'Hidalgo-Cenalmor' (arXiv, Crossref JCS record, NucleiSky BibTeX) versus 'Hidalgo Cenalmor' (Zenodo LabConstrictor creators, NucleiSky README prose line). (2) 'Rivera Pineda' as family name (Zenodo, README) versus arXiv/DataCite family 'Pineda' and given 'Marcela Xiomara Rivera'. (3) The footer DOI is a version DOI (0.0.2) while the template is 0.1.15 and has no releases. (4) The NucleiSky Zenodo records list creators 'Ivan Hidalgo' and 'guijacquemet'. (5) The auditor's paraphrased titles differ from the registry titles (VLab4Mic 'prediction of', not 'predicting').",
+   "severity": "major",
+   "proposal": "Before anything is committed, the authors decide: one canonical spelling of each author name for all CFF files and site data (write family-names/given-names exactly, e.g. family-names 'Rivera Pineda' if that is the authors' choice, even though arXiv parsed it differently); the software-archive DOI for the LabConstrictor block (concept or version); for each app the top-level CFF authors (software) and whether the Zenodo concept DOI goes in the top-level doi; whether to add .zenodo.json or rely on CITATION.cff for the next Zenodo release of NucleiSky (Zenodo ignores CITATION.cff when .zenodo.json exists). Use registry titles verbatim (quoted in the claims above), never the audit text. When a preprint becomes a journal article the app's preferred-citation must be updated by its authors; the site does not follow DOI relations.",
+   "repo_and_files": [
+    "CellMigrationLab/NucleiSky, CellTracksColab, LabConstrictor-VLab4Mic: future CITATION.cff",
+    "labconstrictor-site: data/site.yaml (LabConstrictor block)"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "needs_author_decision": "All of the above: name spellings, DOI choice, software authors, .zenodo.json versus CITATION.cff, and the citation policy sentence for apps versus the framework.",
+   "rule_conflicts": "none"
+  }
+ ],
+ "unverified": [
+  "Numeric rate limits of doi.org, Crossref and DataCite: the Crossref content-negotiation page states none; irrelevant to the recommended option (b), which adds no registry call.",
+  "Behaviour of a DOI that is minted before the paper is live (assumed to 404 at doi.org); reasoning only, not tested.",
+  "Whether GitHub's Ruby CITATION.cff parser renders every field of the proposed drafts: the docs show a preferred-citation type: article example, and the drafts validate against the official CFF 1.2.0 JSON schema, but GitHub's UI was not run.",
+  "Whether Zenodo's GitHub integration fills creators from CITATION.cff in practice, and why the NucleiSky Zenodo creators are 'Ivan Hidalgo' and 'guijacquemet' (docs say only that a subset of CITATION.cff is implemented and that .zenodo.json takes precedence).",
+  "Whether a journal version of the LabConstrictor preprint exists: arXiv has no journal_ref or DOI field and one Crossref title query found nothing, but absence cannot be proven.",
+  "That GitHub's 'Use this template' copies a root CITATION.cff into new repositories: inferred from AGENTS.md:28 (the template repository is copied into every app), GitHub's own documentation was not fetched.",
+  "Open pull requests or unpushed work in other repositories that may already add CITATION.cff: only default branches (gh api) and the local clones were checked.",
+  "Visual result: nothing was built or screenshotted (read-only task); the HTML structure above is a design, the Playwright preview was not used for the new section.",
+  "The auditor's credits and funding statements beyond the author-contributions paragraph and affiliations (funder list in the preprint was only partly read); outside this dimension."
+ ]
+}

@@ -1,0 +1,170 @@
+{
+ "sound_ideas": [
+  "Keep the two tracks and let Diataxis shape content inside them. Verified at diataxis.fr/how-to-use-diataxis: 'Getting started with Diataxis does not require you to think about dividing up your documentation into four sections' and creating empty structures is called horrible. The site already has this shape (data/hubs.yaml, data/guides.yaml), so no work is needed.",
+  "Outcome-first lead sentence on task guides. The site already uses a guide's opening paragraph as its meta description (DESIGN.md 'Description'; guides.describe -> text.lead_paragraph), so a good outcome sentence improves search snippets at no cost. Change it in the guide's source: LabConstrictor/.tools/docs/{install,initialise_repository,notebook_upload,notebook_requirements,executable_creation}.md and labconstrictor-site/content/submit.md.",
+  "Show 'did it work' right after a critical step, as sentences, not as a mandatory heading. Google's procedures page says 'State the action first and the result second ... in the same paragraph'; napari's install page has 'Checking it worked'. Real gap: install.md says nothing about what success looks like on any OS. Change it in LabConstrictor/.tools/docs/install.md.",
+  "'Next' must mean the next task, and the benchmark is right that it does not now. Verified in site/guides: install.md's own '## Next' links to notebook-usage, while the generated pager on the same page says 'Next -> Open and use an app'. Build chain from the built pagers: executable-creation -> notebook-portability -> code-hiding -> use-cases -> accept-pull-request -> workflow-status -> troubleshooting -> personal-access-token (end). Use chain: troubleshooting-installed-app -> image-software (the experimental plugins). Order lives in labconstrictor-site/data/guides.yaml (Use), LabConstrictor/.tools/docs/README.md (Build) and scripts/lcsite/guides.py pager().",
+  "Symptom-worded troubleshooting is the highest-value item. I ran the benchmark's nine queries in the built site's search (Playwright, localhost:8765). Zero results: 'Mac cannot open app', 'put my notebook online', 'GitHub build failed', 'app not showing in napari' (also 'macOS cannot open'). Good: 'Windows protected your PC' (install guide), 'JupyterLab does not start' (the ASN.1 heading, by luck), 'requirements.yaml', 'how to run a notebook', 'use inside Fiji'. Search needs every word to match: 'mac' gives 32 results, 'macOS cannot open' gives none because install.md says 'refuses to open it'. Fix at the source by writing the symptom in the reader's words, ideally the exact dialog text, in LabConstrictor/.tools/docs/install.md, troubleshooting_installed_app.md and troubleshooting.md.",
+  "Docs home should have an immediate troubleshooting link. Verified missing: docs/guides/index.md has none. The Use hub has one (data/hubs.yaml use.help) and the Build hub has none. Caveat: there are two audiences (troubleshooting_installed_app.md and troubleshooting.md), so one link is not enough. Change data/hubs.yaml and hubs.write_docs_home in labconstrictor-site.",
+  "The scientific example is owned by the app repository, not the template. This matches the standing rules. It is feasible: NucleiSky/docs has data_preparation, workflow, qc and limitations.md, plus a synthetic-data helper (nucleisky2d.demo_utils.generate_random_crop). The App Centre manifest already has `quickstart` (up to 6 steps) and `docs_url`, and 0 of the 6 listed apps set either (checked in build/snapshot.json). The cheapest step is for each app repo to fill those fields in its own labconstrictor-app.yaml.",
+  "The 'Do not build' list fits AGENTS.md ('small on purpose'). No AI chatbot, no version selector, no video for every interaction.",
+  "Estimated time, only where useful. install.md already says 'about 6-8 minutes'. The build track has no time for the release step, and the CI wait there is the unknown that matters (LabConstrictor/.tools/docs/executable_creation.md). GTN only requires time_estimation as a single field, so this is as much as GTN asks for.",
+  "Screenshot and GIF hygiene (Google: crop; no images of text, code or terminal output; no animated GIF, use MP4). Five GIFs total 17.99 MB of the 21 MB in docs/assets/docs-img: Accept_PR 5.3, GitHub_Access_Token 3.3, Synchronisation_Token_Creation 3.4, Synchronisation_Secret_Creation 1.4, Upload_src 4.6 MB. Three show GitHub's own UI, which the lab does not control. template_synchronization.md already replaces part of that with a prefilled deep link to settings/personal-access-tokens/new?...; do more of it.",
+  "Already met, so do not spend effort: zero internal broken links or anchors (check_site: 38 pages, 0 problems; check_design: 0 problems); every guide has an 'Edit this page on GitHub' link to its true source (install.md, napari user-guide.md, using-apps.md, create_repository.md checked); 0 images without alt across all 25 guide pages; no page-level horizontal scroll on any of the 25 guides at 390 px (one wide table on installer-images stays inside its container); two tracks; PR builds already run tests, check_site and check_design and upload a 14-day site-preview artifact (publish.yml); the app page already links to the install guide (NucleiSky page: 'Need help installing? See the install guide').",
+  "Per-release review as a zero-code checklist in the repositories the lab owns. No pull_request_template or CODEOWNERS exists in the template, the three plugin repos, LabConstrictor-Tools or the site (find found none). Add a docs checkbox to LabConstrictor/.github/pull_request_template.md and a one-line CODEOWNERS in each repo. Ownership then stays in each repo, nothing is written twice, and nothing goes on the site."
+ ],
+ "wrong_or_overreaching": [
+  {
+   "item": "A standard template (audience chips, estimated time, tested version, Before/Instructions/Check/If it fails/Next) applied to 'every guide'",
+   "why": "The benchmark itself limits this to task-based guides (section 3 last line) and names six: install, initialise, notebook upload, requirements, release creation, submit. Those are five files in LabConstrictor/.tools/docs plus content/submit.md, so two repositories. Reading it as 'all 25 guides' is the overreach. A crude heading-only count over the 25 built guides shows prerequisite headings in 6, verification in 2, failure routes in 5, 'Next' in 1 (not read end to end). The three plugin guides already share the shape 'What you need / Install / Open it / If something does not work', written by one author, so a formal template adds little there. Imported guides have no metadata channel: title = first '# ' line, description = opening paragraph, links must be absolute. Chips, time and version therefore have nowhere to live without inventing a convention."
+  },
+  {
+   "item": "Tested-version stamps on every guide",
+   "why": "Neither the benchmark's own exemplars do this: QuPath states 'This page hosts the documentation for QuPath 0.7.x' once on its landing page, and napari's install page states its Python range and current release with no per-guide stamps. The app-level stamp already exists and expires by itself: verified_version in registry/*.yaml is compared with the latest release tag (cards.py:26), and submit.md says a newer release is shown as Community until re-checked. A hand-typed stamp in Markdown is a second copy of a version, goes stale silently, and travels with the template docs, which are copied into all 6 app repos. If a stamp is wanted it must be generated at build time (template_version is in LabConstrictor/.template_sync/manifest.yaml, currently 0.1.15) and only where compatibility matters. 'Tested on Linux. Windows and macOS are untested' in the napari user-guide is already the honest form."
+  },
+  {
+   "item": "PR previews for repositories that do not build the site",
+   "why": "Badly sized. (1) The imported guides are 29-40 lines (napari 38, Fiji 40, QuPath 37, Tools 29). (2) scripts/fetch_guides.py --ref applies ONE ref to every repository it reads, including napari/napari, fiji/fiji, qupath/qupath and simple-icons for logos (hosts.logo_sources). A PR branch exists in one repo, so sources.fetch would fail() on the 404 of the others. This is from reading the code; I did not run it. (3) GitHub Pages has no per-PR hosting; the site's own PR build gives a zip artifact, not a URL. (4) Read the Docs PR previews build the repository the docs live in, which does not map to a site assembled from 8 repositories. Right-sized alternatives: a per-repo ref map for the fetch step, or just a small pre-merge contract check (H1 present, absolute links, opening paragraph) in each guide repo."
+  },
+  {
+   "item": "A reproducible example with sample data in every app repository",
+   "why": "Kind-dependent and author-controlled. The 6 listed apps are 2 analysis, 1 simulation (VLab4Mic builds virtual samples, so there is no input data), 2 utility, 1 training. Only the 3 featured apps (CellTracksColab, VLab4Mic, NucleiSky) have any claim, and only two take input data. Existing patterns avoid shipping data: GuessTheCondition/lc_tests/make_fixtures.py generates fixtures, Playground has lc_tests/fixtures/data/*.tif, NucleiSky has a synthetic crop generator. GTN keeps data on Zenodo (zenodo_link, optional), not in the tutorial repo. It must never go in the template, which is copied into every app repo. Right size: optional for Community; required only for the Verified tier, which already means a maintainer installed and ran the app (content/submit.md)."
+  },
+  {
+   "item": "Priority 1: two 'fully tested' first-time tutorials, with tutorial (a) 'install an app -> analysis result' as generic docs",
+   "why": "Self-contradictory with the benchmark's own section 4: the result is app-specific, so (a) cannot be a generic site page. LabConstrictor_Demo's Image_Preview notebook (4 cells: upload an image, show it) could serve both tutorials (a) and (b) as one shared reference notebook, but it is not a scientific result. Tutorial (b) cannot be automated end to end: it goes through GitHub's UI, a Streamlit Community Cloud form that sleeps ('Zzzz ... Yes, get this app back up!', initialise_repository.md) and a fine-grained token with three permissions (template_synchronization.md, default expiry 365 days). A link checker gets HTTP 200 from a sleeping Streamlit app, so only a scripted human walk-through per template release catches it. My estimate is 1-2 hours; I did not measure it."
+  },
+  {
+   "item": "Section 7 targets used as gates: '>=4 of 5 testers' and 'each advertised installation route exercised on each platform'",
+   "why": "4 of 5 successes has an exact 95% interval of 28.4% to 99.5% (computed), so it is a pilot for finding failures, not a pass mark. Platform testing is partly automatable and the lab already does it: LabConstrictor-Tools/.github/workflows/smoke_install.yml builds and silently installs on ubuntu, macos-15, macos-15-intel and windows. That same file says 'Intel Macs are not supported (llvmlite and PyTorch no longer ship macOS x86_64 wheels): informational only', while install.md tells Intel Mac users to download the Intel installer. So the platform matrix is a per-app fact (the app page already derives its tiles from release assets), not something the generic guide can state. SmartScreen and Gatekeeper dialogs cannot be tested in CI."
+  },
+  {
+   "item": "'Search should understand the problem' (symptom and non-programmer phrasing)",
+   "why": "The theme's search is a client-side index needing every query word to match, with no synonyms (verified above). Semantic matching is the AI-assistant territory the benchmark's own 'do not build' list excludes. The achievable version is wording at source plus a short symptom list; the lab knows roughly 8 symptoms (Windows warning, Gatekeeper, uninstall leftover, ASN.1 certificate error, three sync-token errors, workflow failure). A site-side synonym table would hide the content gap and be a second copy. Also note the pager text is indexed: the 'workflow failed' result snippet shows '<- PreviousCheck the status of GitHub workflowsNext ->Generate a GitHub personal access token', so a page matches words of its neighbours' titles."
+  },
+  {
+   "item": "Troubleshooting 'avoid terms like TLS, environments, manifests' combined with 'based on visible error messages'",
+   "why": "They collide when the visible message contains the jargon. Heading text should be the verbatim error or dialog text plus the plain symptom; the jargon belongs in the explanation underneath. The current heading 'JupyterLab does not start because Windows reports an ASN.1 certificate error' is symptom-first. Whether users literally see 'ASN.1' is unverified. The body then opens with 'TLS-resilient launcher ... Tornado ... pip-system-certs' (LabConstrictor/.tools/docs/troubleshooting_installed_app.md), which is the real jargon problem."
+  },
+  {
+   "item": "A symptom catalogue for 'GitHub build failed'",
+   "why": "The template already ships the recovery path: on a failed workflow it makes an error-log artifact 'already formatted as a prompt' to paste into an AI tool (workflow_status.md section 2). Pip and conda failures cannot be enumerated by hand. The right doc is a short 'my release failed' page that points at that artifact. The benchmark does not mention it."
+  },
+  {
+   "item": "Section 5 Track B journey omits template synchronisation yet says it should appear 'exactly when relevant'",
+   "why": "The template docs call it a required one-time step before initialising (initialise_repository.md: 'make sure you have completed the one-time automatic template synchronization setup'). It costs a token with three permissions and a repo secret, and it is the main source of the token-expiry troubleshooting entries. Moving it out of the first-success path may be right, but that is a product decision for the template maintainers; the benchmark neither argues it nor checks that a first release works without it (unverified)."
+  },
+  {
+   "item": "Completeness checklist as a build gate ('100% of critical guides have prerequisites, expected result, failure route')",
+   "why": "A failing gate lets a heading rename in napari-labconstrictor stop the Pages deploy for everyone, with the daily-build issue opened in the site repo, not the repo that was edited. The precedent in AGENTS.md is a WARNING (unlisted template pages) and a problems.md report. The critical list must be author-controlled (for example a flag in data/guides.yaml), and heading matching is brittle. New code means a new module in scripts/lcsite/ plus tests with failure cases, because guides.py is already 258 of 300 lines."
+  },
+  {
+   "item": "'Visitor repeatedly opening troubleshooting pages may signal failure' (section 7)",
+   "why": "The site has no analytics (nothing found in mkdocs.yml or overrides) and is unlisted (extra.listed: false). Measuring this means adding tracking, for a small lab, which is out of scale. Use app-repo issues and the observed tester sessions instead."
+  }
+ ],
+ "conflicts_with_project_rules": [
+  {
+   "item": "Typing tested versions, time estimates or 'Tested on' lines into guide Markdown",
+   "rule": "Nothing written twice (AGENTS 'Sources of truth'). The version already lives in the release tag, verified_version, template_version in .template_sync/manifest.yaml, and the CI matrix. The template docs are also copied into all 6 app repos, which would carry false stamps."
+  },
+  {
+   "item": "Per-guide metadata (audience chips, estimated time, tested version) in imported guides",
+   "rule": "The imported-guide contract (sources.py, AGENTS 'Guides kept next to the code'): title is the first '# ' heading, links and pictures must be absolute, guides are read on GitHub as well as the site. There is no front-matter channel. Chips are also a new badge role, and DESIGN.md says to add the pattern to DESIGN.md first (current badge roles: green tier or route, grey Testing, orange program, white link)."
+  },
+  {
+   "item": "Site-injected 'Check that it worked', 'If something fails', 'Next' blocks or a synonym table in data/*.yaml",
+   "rule": "Source of truth in each repo and nothing written twice. The 'Edit this page on GitHub' link would then point to a file that does not contain the text. The benchmark's per-guide 'Next' section also collides with the existing generated pager in guides.py (two different 'Next' on install, verified)."
+  },
+  {
+   "item": "Completeness lint that fails the build, or one that silently passes when a guide lacks a section",
+   "rule": "No silent fallbacks: fail loudly, naming the file. But AGENTS' only tolerated non-fatal pattern is a reported WARNING or problems.md entry, so a lint must be a report with an explicit, author-controlled list of critical guides, not a hidden default."
+  },
+  {
+   "item": "Requiring example data or a scientific example for listing an app",
+   "rule": "Author-controlled exposure and the tiers in content/submit.md (Community = automatic checks only; everything an app says about itself lives in its labconstrictor-app.yaml). Only the maintainer-curated Verified tier (registry verified_version) can carry extra requirements."
+  },
+  {
+   "item": "Replacing GIFs by MP4/WebM",
+   "rule": "DESIGN.md 'Images': 'Formats: PNG, JPEG, GIF'. The pictures live on the template's doc_source branch and guides.copy_images copies bytes as is. DESIGN.md must be amended first, then images/copy_images/finish_site and a test updated."
+  },
+  {
+   "item": "Any new site-side checks (links to external hosts, completeness, stamps, task-order pager)",
+   "rule": "Code rules: each function at most 30 lines, annotations and docstrings, files at most 300 lines (guides.py is 258, check_design.py 201, check_site.py 187), tests including the failure case. The 'files <=300 lines' rule is for code, not for docs pages; the benchmark has no length limit for guides either. Each new check therefore costs a new module."
+  },
+  {
+   "item": "A per-guide 'owner' field kept in the site's data/guides.yaml",
+   "rule": "Source of truth in each repo: ownership belongs in each repository (CODEOWNERS), not in a second list on the site."
+  },
+  {
+   "item": "Single external-link checker in the deploy path",
+   "rule": "Two-stage build: build_site.py never goes online so a build is repeatable. 182 unique external URLs exist (119 github.com); checking them belongs in fetch or a scheduled report (issue), not in the deploy gate or build_site.py."
+  }
+ ],
+ "claims_to_verify": [
+  {
+   "claim": "Diataxis favours incremental improvement and does not require four top-level sections",
+   "verdict": "TRUE. diataxis.fr/how-to-use-diataxis: 'it discourages planning and top-down workflows, preferring instead small, responsive iterations'; 'Getting started with Diataxis does not require you to think about dividing up your documentation into four sections'; 'every step in the right direction is worth publishing immediately'; creating empty structures is called horrible."
+  },
+  {
+   "claim": "Diataxis supports one standard structure (prerequisites, verification, troubleshooting) inside every how-to guide",
+   "verdict": "NOT SUPPORTED. The how-to page prescribes no required sections ('should start and end in some reasonable, meaningful place'; 'no digression, explanation, teaching'; 'practical usability is more helpful than completeness'). The tutorials page says 'A tutorial is not the place for explanation', which cuts against the benchmark's section 4 asking tutorials for biological interpretation and limitations. Put those in a linked explanation page, as NucleiSky does with docs/limitations.md and qc.md."
+  },
+  {
+   "claim": "Diataxis guidance on multiple audiences and complex hierarchies",
+   "verdict": "UNVERIFIED. diataxis.fr/complex-hierarchies returned 404 to fetch; only a search summary was seen, not quoted."
+  },
+  {
+   "claim": "Google style guide on images: cropped screenshots, discourage images of code and text, better alternatives to GIF",
+   "verdict": "TRUE. developers.google.com/style/images: 'Crop screenshots to show the relevant information' (also future-proofs against UI change); 'Don't use images of text, code samples, or terminal output. Use actual text.'; 'don't use animated GIF. Instead, use a more resource-efficient format (such as MP4)'; alt text 155 characters or less. NOT in Google: any statement that screenshots go stale, so the benchmark's 'review screenshots per release' is its own rule."
+  },
+  {
+   "claim": "Microsoft/Google procedural-writing guidance (precise, executable steps)",
+   "verdict": "TRUE and narrower than implied. Microsoft: numbered list, one instruction per step, where to act before the action, imperative verb, 'Don't overwhelm customers with too many steps'. Google procedures: imperative first sentence, one action per step, 'Optional:' prefix, result stated after the action in the same paragraph. Neither mandates a separate verification or troubleshooting section."
+  },
+  {
+   "claim": "The Good Docs Project provides templates for quickstarts, procedures, references and troubleshooting",
+   "verdict": "MOSTLY TRUE. Of its 25 templates the relevant ones are Quickstart, How-to, Tutorial, Troubleshooting, Reference, Installation guide, Concept, Release notes and Contact support; there is no 'procedure' template (it is How-to). The benchmark's section-3 'standard' is NOT a Good Docs template. The How-to template is Overview, Before you begin (optional), Steps, See also, with no verify, troubleshooting or next section. Quickstart is Overview, Before you begin, Install, Steps, Next steps, and it explicitly advises avoiding error scenarios. The separate Troubleshooting template (symptoms, causes, fixes) does support priority 3."
+  },
+  {
+   "claim": "W3C: text alternatives convey function or information",
+   "verdict": "TRUE. W3C WAI images tutorial: 'describe the information or function represented by them'; decorative images get alt=\"\"; images of text carry the same words; complex images need a complete text equivalent. DESIGN.md is stricter (empty alt only for logos and icons with the name beside them), which is fine. WCAG 2.2 AA itself was not fetched (unverified)."
+  },
+  {
+   "claim": "Read the Docs offers PR previews and a version banner, and non-stable versions are identifiable",
+   "verdict": "TRUE but not transferable. docs.readthedocs.com: a version is built for each opened PR on the connected repository; a PR notification can appear on previews (off by default for new projects, Settings > Addons > Notifications); the non-stable warning appears only when a stable version exists and versions come from tags or branches. The LabConstrictor site has a single 'main' version assembled from 8 repositories, so there is nothing to put a banner on."
+  },
+  {
+   "claim": "Galaxy Training Network tutorial metadata: time estimation, objectives, requirements",
+   "verdict": "PARTLY OVERSTATED. GTN's tutorial schema marks only layout, title, contributions and time_estimation as required; objectives, requirements, questions, key_points, zenodo_link ('link on Zenodo to the input data for the tutorial') and level are optional. GTN also includes translations/lang, and a 'tested' contributor role. It works because it is one monorepo with schema validation and CI. The metadata tutorial URL I first tried returned 404, so the schema page was used."
+  },
+  {
+   "claim": "QuPath docs are a model: task-based entry points for installation problems, first steps",
+   "verdict": "PARTLY TRUE. qupath.readthedocs.io/en/stable has a 'Can't install QuPath?' quick link to Installation and sections Introduction, Getting started, Tutorials, Concepts, Scripting, Deep learning, Advanced, Reference. Troubleshooting has no section of its own (FAQs sit under Reference). The version is stated once as text ('This page hosts the documentation for QuPath 0.7.x'), with no selector."
+  },
+  {
+   "claim": "napari installation docs are a model",
+   "verdict": "TRUE for a 'Checking it worked' heading and an explicit Python range (3.11-3.14, napari 0.9.2 current at fetch time). FALSE for per-OS sections or per-guide stamps (none) or an on-page troubleshooting section (none). The first URL was only a redirect to getting_started/installation.html. Local note: napari-labconstrictor's user-guide says 'Python 3.10 or newer' (matches pyproject requires-python >=3.10) and its CI matrix runs only Python 3.11; I did not check what napari's current requirement means for that claim."
+  },
+  {
+   "claim": "Benchmark's project facts: a visitor from an app's download page should reach install instructions; Docs home should have an immediate troubleshooting link",
+   "verdict": "Download page: already true on the site (NucleiSky app page links to ../../guides/install/ and ../../guides/notebook-usage/). Docs home troubleshooting link: not present (docs/guides/index.md); only the Use hub has one."
+  },
+  {
+   "claim": "Nielsen's five-tester guidance and WCAG 2.2 AA specifics",
+   "verdict": "NOT FETCHED. Stated from general knowledge only; I did not run axe or a screen reader, so the benchmark's accessibility target is unverified against the site beyond alt text, heading order (check_design) and the 390 px overflow test."
+  }
+ ],
+ "missing_from_benchmark": [
+  "Every app repo carries its own stale copy of the Build docs. All 6 cloned app repos have .tools/docs with 16-19 pages, differing from LabConstrictor origin/main, none containing install.md or app_manifest.md. Recorded template_version: 0.1.14 in NucleiSky, CellTracksColab, GuessTheCondition and Playground; 0.1.13 in LabConstrictor_Demo; 0.1.3 in LabConstrictor-VLab4Mic; template main is 0.1.15. NucleiSky/.tools/docs/notebook_upload.md says 'Select **Go to update flow**' where the current doc and LabConstrictor_streamlit/app.py:850 say 'Upload/Update notebook'. A reader on GitHub sees the stale copy, not the site's guide. The benchmark's 'true source file', 'tested version' and 'per-release review' all ignore these N+1 copies. A one-line 'this copy may be out of date, current guide is at <site>' banner in LabConstrictor/.tools/docs/README.md would travel through template sync.",
+  "Docs at the point of use. The Welcome notebook is the first and only screen every app user sees, and LabConstrictor/.tools/templates/Welcome_template.ipynb has 0 occurrences of 'issues', 'Report', 'help' or 'documentation'. The benchmark rates 'Where can I get help' High but never mentions the in-app surface. One help line there (template repo) propagates through template sync. This is also the only documentation guaranteed present when the machine is offline; the apps run offline (before_getting_started.md 'Offline Usage'), the site does not. Full offline docs are low priority.",
+  "Stable addresses for links coming from shipped software. The Welcome notebook hard-codes https://github.com/CellMigrationLab/LabConstrictor/blob/main/.tools/docs/personal_access_token.md, and installed apps live for years. Renaming a template doc breaks links in the wild. data/redirects.yaml only covers the site's own addresses (AGENTS 'Moved addresses'). Also relevant: troubleshooting_installed_app.md links the 'uninstalling guide' to template blob/main/.tools/docs/download_executable.md on GitHub, because that page is in SKIP, and the external-link blind spot hides it.",
+  "Triage screenshots by who controls the UI and how fast it moves. GitHub and OS dialogs (Use_Template.png, Windows_Protected_your_PC.png, the three token and secret GIFs) drift without notice; the lab's own UI (Welcome notebook, installer images) does not. The benchmark says 'review screenshots' uniformly. Prefer deep links and text (as template_synchronization.md already does) over GIFs of third-party UIs. Screenshots are in the template's doc_source branch, checked for existence only (guides.copy_images), not for currency.",
+  "Feedback to authors of imported guides. A contract break in napari-labconstrictor, LabConstrictor-Fiji, LabConstrictor-QuPath or LabConstrictor-Tools (relative link, no H1, GitHub alert syntax) surfaces only in the site's daily build as an issue in the site repo (publish.yml 'notify'), after the guide was merged. The benchmark calls for previews and testing 'especially for imported guides' but proposes no mechanism, and the existing --ref switch cannot do it for one repo's branch (see wrong_or_overreaching).",
+  "Hand-written duplicates the Reference row would add to. The same example manifest is written in labconstrictor-site/content/submit.md and in LabConstrictor/.tools/docs/app_manifest.md, next to schema/labconstrictor-app.schema.json, which already has per-field descriptions. A Reference page of manifest fields should be generated from the schema in the site repo rather than becoming a third hand-written copy.",
+  "Recovery from build failures already exists as an AI-ready log artifact (workflow_status.md section 2); the benchmark neither credits nor integrates it.",
+  "Dependency health of the Build critical path: the initialiser is a Streamlit Community Cloud app that sleeps; Colab links (8 on the site); GitHub UI. A link checker returns 200 for a sleeping Streamlit app, so only a scripted walk-through detects it.",
+  "Translation and language. Nothing is said. The site is lang='en' only (DESIGN.md). English-only plus plain words is the proportionate stance for a small lab; GTN's translations/lang support exists but sits on a community monorepo. Say so explicitly rather than leave it open.",
+  "Search-index hygiene: the generated pager text is indexed with every guide's text (visible in the 'workflow failed' snippet), which adds false matches for symptom searches. Any search work should start by excluding the pager from the index (site layout, labconstrictor-site/overrides)."
+ ]
+}
