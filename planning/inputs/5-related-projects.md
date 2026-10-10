@@ -1,0 +1,20 @@
+# Related projects and alternative approaches (user-supplied proposal; claims UNVERIFIED, to be checked)
+
+Proposed new website section "Related projects and alternative approaches": acknowledge other open-source efforts on reproducibility and software distribution, explain how their approaches differ, help researchers choose. Emphasis on complementary approaches, not competitors.
+
+Intro: Making scientific software easy to install, share and reproduce is a challenge for many groups. Several open-source projects address it with different approaches: desktop applications, Docker containers, cloud notebooks. LabConstrictor focuses on turning Jupyter notebooks into installable desktop applications with their own software environments. Others may suit containerised computation, remote execution, cloud collaboration or browser-based interfaces.
+
+| Project | Approach | When it may be useful |
+|---|---|---|
+| DL4MicEverywhere (github.com/HenriquesLab/DL4MicEverywhere) | Packages deep-learning microscopy environments using Docker containers, with a graphical launcher and support for local and remote computing, including HPC | Computationally demanding microscopy workflows across different machines and GPU environments |
+| repo2docker (repo2docker.readthedocs.io) and Binder (mybinder.org) | Build reproducible container environments from repositories and make notebooks available through an online Jupyter interface | Sharing reproducible notebooks that collaborators launch in a browser without local installation |
+| Voila (voila.readthedocs.io) | Turns Jupyter notebooks into interactive web applications, hiding code and exposing widgets | A browser-based scientific interface hosted on a server |
+| JupyterLab Desktop (github.com/jupyterlab/jupyterlab-desktop) | A desktop application for working with JupyterLab and Python environments | Researchers who want a convenient local notebook environment rather than a separately packaged app per workflow |
+
+Other microscopy initiatives: ZeroCostDL4Mic (github.com/HenriquesLab/ZeroCostDL4Mic): interactive Google Colab notebooks for deep-learning microscopy, reducing local installation and dedicated compute. BiaPy (github.com/BiaPyX/BiaPy): deep-learning bioimage analysis workflows with several execution options incl. GUIs and containers; unlike LabConstrictor primarily an image-analysis framework, not a general tool for packaging existing notebooks.
+
+Choosing an approach: installable desktop application: LabConstrictor; reproducible containerised microscopy workflows incl. HPC: DL4MicEverywhere; shareable cloud-hosted notebook environment: Binder and repo2docker; interactive application in a browser: Voila; general local Jupyter environment: JupyterLab Desktop. Not mutually exclusive: a scientific Python package can support a notebook distributed with LabConstrictor while also offering workflows through cloud or container environments.
+
+Further reading: Hidalgo-Cenalmor et al. (2024) DL4MicEverywhere: deep learning for microscopy made flexible, shareable and reproducible. Nature Methods 21, 925-927, DOI 10.1038/s41592-024-02295-6. LabConstrictor: "Packaging Jupyter notebooks as installable desktop apps using LabConstrictor", DOI 10.48550/arXiv.2603.10704.
+
+Implementation recommendation: keep DL4MicEverywhere, repo2docker/Binder, Voila and JupyterLab Desktop as the four main comparisons; ZeroCostDL4Mic and BiaPy as secondary examples, not presented as general notebook-packaging alternatives. Location: new section at the bottom of the Ecosystem page, clearly separated from LabConstrictor components. Design: compact entries with project name, one-sentence description and direct link; no elaborate cards or logos. Implementation: descriptions in a small local file such as data/related-projects.yaml, not requiring external projects to provide a LabConstrictor manifest. Maintenance: link to original repositories and publications; avoid volatile claims about popularity, performance or superiority. Key message: LabConstrictor and DL4MicEverywhere solve overlapping distribution problems through different technologies, without claiming one is universally better.
