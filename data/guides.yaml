@@ -12,6 +12,7 @@ sections:
       - {slug: install, title: Install an app, generated: true}
       - {slug: using-apps, title: Open and use an app, file: using-apps.md}
       - {template: notebook_usage.md}
+      - {template: troubleshooting_installed_app.md}
   - title: Use apps in your image software
     items:
       - {slug: image-software, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/user-guide.md}

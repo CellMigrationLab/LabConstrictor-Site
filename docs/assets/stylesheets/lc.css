@@ -206,11 +206,31 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-docs__nav { position: sticky; top: 4.2rem; padding-top: 2rem; font-size: .72rem; max-height: calc(100vh - 5rem); overflow: auto; }
 .lc-docs__section { margin: 0 0 .2rem; }
 .lc-docs__track { margin: 1.1rem 0 .2rem; padding-bottom: .25rem; border-bottom: 2px solid var(--lc-accent); font-size: .72rem; font-weight: 700; color: var(--lc-accent-strong); }
-.lc-docs__track:first-child { margin-top: 0; }
-.lc-guides__track { margin: 0 0 2.2rem; }
+.lc-docs__track { margin: 0 0 .5rem; }
+.lc-docs__track a { color: var(--lc-accent-strong); text-decoration: none; }
+.lc-docs__track a:hover { text-decoration: underline; }
 .lc-guides h3 { margin: 1rem 0 .3rem; font-size: .6rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--lc-muted); }
-.lc-benefits { margin: .4rem 0 1rem !important; display: grid; gap: .5rem; }
-.lc-benefits li { padding: .55rem .8rem; border: 1px solid var(--lc-line); border-left: 3px solid var(--lc-orange); border-radius: .4rem; line-height: 1.45; }
+/* Hub pages (/use/, /build/): a grid of cards, each with a picture of the real thing. */
+[dir] .md-typeset ul.lc-features { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr)); gap: 1.3rem; list-style: none; margin: 1.6rem 0 2.4rem; padding: 0; }
+[dir] .md-typeset ul.lc-features > li { margin: 0; }
+.lc-feature { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--lc-line); border-radius: .6rem; background: #fff; transition: box-shadow .15s, transform .15s; }
+.lc-feature:hover { box-shadow: 0 .6rem 1.6rem rgba(16, 33, 26, .12); transform: translateY(-2px); }
+.md-typeset .lc-feature__shot { display: flex; align-items: flex-start; justify-content: center; height: 13rem; overflow: hidden; border-bottom: 1px solid var(--lc-line); background: var(--lc-soft); }
+.lc-feature__shot > a { display: block; width: 100%; height: 100%; }
+.lc-feature__shot > a > img { display: block; width: 100%; height: 100%; margin: 0; object-fit: cover; object-position: top left; }
+..lc-feature__live { width: 100%; }
+[dir] .md-typeset .lc-feature__live { display: block; margin: 0; padding: .9rem; list-style: none; }
+.lc-feature__shot--wide > a > img { height: auto; max-height: 100%; align-self: center; object-fit: contain; }
+.lc-feature__shot--wide { align-items: center; padding: 0 .8rem; }
+.lc-help { padding: .8rem 1rem; border-left: 3px solid var(--lc-orange); background: var(--lc-orange-soft); border-radius: .3rem; }
+.lc-feature__body { display: flex; flex-direction: column; gap: .3rem; padding: 1rem 1.1rem 1.1rem; }
+.lc-feature__body strong { font-family: var(--lc-display); font-size: 1.02rem; color: var(--lc-strong); line-height: 1.25; }
+.lc-feature__body span { color: var(--lc-fg); line-height: 1.5; font-size: .78rem; }
+.lc-feature__body a { margin-top: auto; padding-top: .3rem; font-weight: 600; font-size: .72rem; color: var(--lc-accent-strong); text-decoration: none; }
+.lc-feature__body a:hover { text-decoration: underline; }
+[dir] .md-typeset ol.lc-steps--flow { grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); margin: 1rem 0 2.4rem; }
+.lc-steps--flow a { margin-top: .2rem; font-weight: 600; font-size: .72rem; color: var(--lc-accent-strong); text-decoration: none; }
+.lc-guides .lc-title { margin-top: 0; }
 .lc-docs__section summary { display: block; list-style: none; padding: .5rem 0 .3rem; font-size: .6rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--lc-muted); cursor: pointer; }
 .lc-docs__section summary::-webkit-details-marker { display: none; }
 .lc-docs__section summary::before { content: "+"; display: inline-block; width: 1.1em; }

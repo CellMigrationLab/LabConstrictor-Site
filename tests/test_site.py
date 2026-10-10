@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from lcsite import cards, guides, registry, sources
+from lcsite import cards, guides, hubs, registry, sources
 from lcsite.config import AppProblem, DATA
 
 APP = {"slug": "demo", "repo": "o/demo", "html_url": "https://github.com/o/demo", "tier": "listed", "verified_version": None,
@@ -139,3 +139,32 @@ class SourceGuideTests(unittest.TestCase):
         self.assertEqual(sources.title_of("intro\n# The title\n## Part", "x"), "The title")
         with self.assertRaises(SystemExit):
             sources.title_of("no heading here", "x")
+
+
+class HubTests(unittest.TestCase):
+    """Pictures on the hub pages are checked, not guessed."""
+
+    def test_picture_needs_exactly_one_source(self) -> None:
+        """A picture with both or neither of doc_source and repo stops the build."""
+        for spec in ({}, {"doc_source": "a.png", "repo": "o/r", "path": "p.png"}):
+            with self.assertRaises(SystemExit):
+                hubs.source_file(spec, Path("."))
+
+    def test_missing_picture_stops_the_build(self) -> None:
+        """A named picture that is not in the checkout fails, naming the path."""
+        with tempfile.TemporaryDirectory() as tmp, self.assertRaises(SystemExit) as ctx:
+            hubs.source_file({"doc_source": "nope.png"}, Path(tmp))
+        self.assertIn("nope.png", str(ctx.exception))
+
+    def test_picture_without_alt_text_stops_the_build(self) -> None:
+        """Every picture needs alt text."""
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "a.png").write_bytes(b"x")
+            with self.assertRaises(SystemExit) as ctx:
+                hubs.prepare_image({"doc_source": "a.png"}, Path(tmp), None, {})
+        self.assertIn("alt", str(ctx.exception))
+
+    def test_pictures_kept_elsewhere_are_listed_for_fetching(self) -> None:
+        """Only pictures with repo + path are fetched; doc_source ones come from the checkout."""
+        hubs_data = {"use": {"cards": [{"image": {"repo": "o/r", "path": "a.png"}}, {"image": {"doc_source": "b.png"}}, {"live_card": True}]}}
+        self.assertEqual([(e["repo"], e["path"]) for e in hubs.image_sources(hubs_data)], [("o/r", "a.png")])

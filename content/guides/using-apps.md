@@ -21,5 +21,5 @@ Every app page has a **Using it** section. It links to the app's documentation, 
 ## Something went wrong
 
 - Check the [install guide](../install/index.md): Windows and macOS warn about installers that are not code-signed yet, and both have a way to continue.
-- The [troubleshooting guide](../troubleshooting/index.md) covers known problems, such as an app that still shows in Windows' list after uninstalling and a certificate error that stops JupyterLab starting.
+- The [troubleshooting guide](../troubleshooting-installed-app/index.md) covers known problems, such as an app that still shows in Windows' list after uninstalling and a certificate error that stops JupyterLab starting.
 - Open an issue in the app's repository (linked as **Report a problem** on its page).

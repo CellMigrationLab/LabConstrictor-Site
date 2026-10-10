@@ -19,26 +19,3 @@ steps:
     text: One GitHub Release builds installers for Windows, macOS (Apple Silicon and Intel) and Linux.
   - title: Share it
     text: Users download and install in a few clicks. Add your app to this centre so others can find it.
-# Shown on the guides page, above the guides for building an app: why build one. Each links to the guide that shows
-# the benefit from the user's side. Keep every claim true of what the template builds today.
-why_build:
-  - title: Your users need only a download.
-    text: One GitHub release builds installers for Windows, macOS and Linux; no Python, pip or terminal.
-    link: How users install
-    href: guides/install/
-  - title: It feels like an app, not a script.
-    text: It opens in the browser with a Welcome notebook that lists your notebooks.
-    link: What users see
-    href: guides/using-apps/
-  - title: The same notebooks run in Colab.
-    text: Write them once and let people try them in the browser first.
-    link: Notebooks for Colab and JupyterLab
-    href: guides/notebook-portability/
-  - title: Others can find it.
-    text: List it in the App Centre, with a download for each system and a page of its own.
-    link: Submit your app
-    href: submit/
-  - title: It can reach napari, Fiji and QuPath (soon).
-    text: Apps that declare tools will run inside those programs. These plugins are still experimental.
-    link: How it works
-    href: guides/image-software/

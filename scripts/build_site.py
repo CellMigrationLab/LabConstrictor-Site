@@ -19,7 +19,7 @@ import argparse
 import shutil
 from pathlib import Path
 
-from lcsite import guides, llms, pages_apps, pages_site
+from lcsite import guides, hubs, llms, pages_apps, pages_site
 from lcsite.config import BUILD, DATA, DOCS, GENERATED, SITE_URL, SNAPSHOT, SNAPSHOT_FORMAT, fail, load_json, load_yaml
 from lcsite.images import ICON_PX, SHOT_PX, shrink
 
@@ -81,7 +81,8 @@ def main() -> None:
         pages_apps.page_app(app, install["systems"])
     pages_site.page_ecosystem(ecosystem)
     pages_site.page_submit(site, f"{SITE_URL}schema/labconstrictor-app.schema.json")
-    guides.build(args.template_dir, args.doc_source_dir, install["systems"], install["note"], site["why_build"])
+    nav = guides.build(args.template_dir, args.doc_source_dir, install["systems"], install["note"])
+    hubs.write_all(load_yaml(DATA / "hubs.yaml"), nav, args.doc_source_dir, apps)
     llms.write(site, apps)
     print(f"Generated pages for {len(apps)} apps.")
 

@@ -27,10 +27,11 @@ def local_path(repo: str, path: str) -> Path:
 
 
 def fetch(entries: list[dict], github: GitHub, ref: str) -> None:
-    """Download every guide to build/sources/. A missing file stops with its repository and path (never skipped)."""
+    """Download every entry ({repo, path, limit}: a guide or a picture) to build/sources/. A missing file stops with its
+    repository and path (never skipped)."""
     for e in entries:
         try:
-            data = github.raw(e["repo"], ref, e["path"])
+            data = github.raw(e["repo"], ref, e["path"], e["limit"])
         except NotFound:
             fail(f"data/guides.yaml lists {e['path']} in {e['repo']} at {ref}, which does not exist: add it there first")
         target = local_path(e["repo"], e["path"])

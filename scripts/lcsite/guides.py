@@ -93,13 +93,19 @@ def nav_for(sections: list[dict]) -> list[dict]:
             for s in sections]
 
 
+def guide_meta(nav: list[dict], slug: str) -> dict:
+    """Front matter that gives a guide its sidebar: the sections, which page this is, and which track it is in."""
+    track = next(s["track"] for s in nav if any(g["id"] == slug for g in s["items"]))
+    return {"guide_nav": nav, "guide_id": slug, "guide_track": track, "guide_track_title": TRACKS[track], "menu": f"{track}/"}
+
+
 def write_install(site_systems: list[dict], note: str, nav: list[dict], tail: str) -> None:
     """guides/install/index.md: how to install an app on each system (data/install.yaml)."""
     body = ["# Install an app", "", note, ""]
     for s in site_systems:
         body += [f"## {s['title']}", ""] + [f"{i}. {step}" for i, step in enumerate(s["steps"], 1)] + [""]
     body += ["Something went wrong? Open an issue in the app's repository, linked from its page in the [App Centre](../../apps/index.md).", ""]
-    p = Page("guides/install/index.md", title="Install an app", guide_nav=nav, guide_id="install")
+    p = Page("guides/install/index.md", title="Install an app", **guide_meta(nav, "install"))
     p.add("\n".join(body), "", tail)
     p.write()
 
@@ -109,32 +115,17 @@ def write_own(item: dict, nav: list[dict], tail: str) -> None:
     src = CONTENT / "guides" / item["file"]
     if not src.is_file():
         fail(f"data/guides.yaml lists {item['file']}, which is not in content/guides/")
-    p = Page(f"guides/{item['slug']}/index.md", guide_nav=nav, guide_id=item["slug"],
+    p = Page(f"guides/{item['slug']}/index.md", **guide_meta(nav, item["slug"]),
              edit_url=f"{REPO}/edit/main/content/guides/{item['file']}")
     p.add(src.read_text(encoding="utf-8").strip(), "", tail)
     p.write()
 
 
-def track_block(track: str, nav: list[dict], intro: str) -> str:
-    """One audience on the guides page: its heading, an introduction (HTML) and its sections with their guides."""
-    lists = "".join(
+def guide_lists(nav: list[dict], track: str) -> str:
+    """The sections of one track with a link to each guide (HTML for a hub page)."""
+    return "".join(
         f'<h3>{esc(s["title"])}</h3><ul>' + "".join(f'<li><a href="{i["path"]}">{esc(i["title"])}</a></li>' for i in s["items"]) + "</ul>"
         for s in nav if s["track"] == track)
-    return f'<section class="lc-guides__track" id="{track}"><h2>{esc(TRACKS[track])}</h2>{intro}{lists}</section>'
-
-
-def benefits(items: list[dict]) -> str:
-    """"Why build an app": each benefit with a link to the guide that shows it from the user's side."""
-    rows = "".join(f'<li><strong>{esc(b["title"])}</strong> {esc(b["text"])} <a href="{esc(b["href"])}">{esc(b["link"])}</a></li>' for b in items)
-    return f'<p>Why turn a notebook into an app?</p><ul class="lc-benefits">{rows}</ul><p>How to build one:</p>'
-
-
-def write_landing(nav: list[dict], why_build: list[dict]) -> None:
-    """guides/index.md: the guides in two tracks, using an app and building one (which starts with the reasons to build)."""
-    p = Page("guides/index.md", title="Guides", description="How to install and use LabConstrictor apps, use them in napari, Fiji and QuPath, and build your own.", layout="wide")
-    p.add('<section class="lc-pagehead"><h1>Guides</h1><p class="lc-lead">Use an app someone built, or build your own. <a href="#use">Use an app</a> · <a href="#build">Build an app</a></p></section>',
-          '<div class="lc-guides">' + track_block("use", nav, "") + track_block("build", nav, benefits(why_build)) + "</div>")
-    p.write()
 
 
 def write_source_guide(g: dict, nav: list[dict], tail: str, pages: dict[tuple[str, str], str]) -> None:
@@ -143,7 +134,7 @@ def write_source_guide(g: dict, nav: list[dict], tail: str, pages: dict[tuple[st
     text = sources.read(g["repo"], g["path"])
     sources.check_links(text, where)
     text = sources.admonitions(sources.site_links(text, pages))
-    p = Page(f"guides/{g['slug']}/index.md", guide_nav=nav, guide_id=g["slug"],
+    p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]),
              edit_url=f"https://github.com/{g['repo']}/edit/main/{g['path']}")
     p.add(text.strip(), "", tail)
     p.write()
@@ -157,9 +148,21 @@ def write_template_guide(g: dict, docs_dir: Path, doc_source: Path, nav: list[di
     text = NAV_BLOCK.sub("", src.read_text(encoding="utf-8"))
     text = copy_images(rewrite_links(text, known), doc_source, g["file"])
     edit = f"https://github.com/{TEMPLATE_REPO}/edit/main/.tools/docs/{g['file']}"
-    p = Page(f"guides/{g['slug']}/index.md", guide_nav=nav, guide_id=g["slug"], edit_url=edit)
+    p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]), edit_url=edit)
     p.add(text.strip(), "", tail)
     p.write()
+
+
+def write_guide(g: dict, nav: list[dict], tail: str, install: tuple, template: tuple, pages: dict[tuple[str, str], str]) -> None:
+    """Write one guide from wherever it lives: generated, the template, another repository or this repository."""
+    if g.get("generated"):
+        write_install(install[0], install[1], nav, tail)
+    elif g["from_template"]:
+        write_template_guide(g, template[0], template[1], nav, template[2], tail)
+    elif "repo" in g:
+        write_source_guide(g, nav, tail, pages)
+    else:
+        write_own(g, nav, tail)
 
 
 def claim_template_pages(own: list[dict], theirs: list[dict]) -> None:
@@ -175,8 +178,9 @@ def claim_template_pages(own: list[dict], theirs: list[dict]) -> None:
             s["items"] = [g for g in s["items"] if g is not page]
 
 
-def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str, why_build: list[dict]) -> None:
-    """Write guides/: our own sections (data/guides.yaml, track "use"), then the template's .tools/docs as track "build"."""
+def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str) -> list[dict]:
+    """Write guides/: our own sections (data/guides.yaml, track "use"), then the template's .tools/docs as track "build".
+    Returns the sidebar sections (title, track, items) for the hub pages."""
     docs_dir = template_dir / ".tools" / "docs"
     if not docs_dir.is_dir():
         fail(f"{docs_dir} not found: pass --template-dir with a checkout of {TEMPLATE_REPO}")
@@ -199,15 +203,9 @@ def build(template_dir: Path, doc_source: Path, systems: list[dict], note: str, 
         fail(f"guide address used twice (data/guides.yaml and the template): {sorted(clash)}")
     sections = own + [s for s in theirs if s["items"]]
     nav = nav_for(sections)
-    flat = [g for s in sections for g in s["items"]]
-    for i, g in enumerate(flat):
-        tail = pager(flat[i - 1] if i else None, flat[i + 1] if i + 1 < len(flat) else None)
-        if g.get("generated"):
-            write_install(systems, note, nav, tail)
-        elif g["from_template"]:
-            write_template_guide(g, docs_dir, doc_source, nav, known, tail)
-        elif "repo" in g:
-            write_source_guide(g, nav, tail, pages)
-        else:
-            write_own(g, nav, tail)
-    write_landing(nav, why_build)
+    for track in TRACKS:
+        flat = [g for s in sections if s["track"] == track for g in s["items"]]
+        for i, g in enumerate(flat):
+            tail = pager(flat[i - 1] if i else None, flat[i + 1] if i + 1 < len(flat) else None)
+            write_guide(g, nav, tail, (systems, note), (docs_dir, doc_source, known), pages)
+    return nav

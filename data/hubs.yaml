@@ -1,0 +1,76 @@
+# The two hub pages: /use/ (people who use apps) and /build/ (people who make them).
+# Every picture is `doc_source: <file in the template's doc_source branch>` or `repo` + `path` (a file kept in
+# another repository, fetched by scripts/fetch_guides.py). Every picture needs an `alt`. Keep each claim true of
+# what the template builds today; the guides they link to are the proof.
+use:
+  title: Use an app
+  lead: Install an app on your computer, open it, and, if you work in napari, Fiji or QuPath, run its tools there.
+  cards:
+    - title: Install it
+      text: Download the installer for your system. It takes a few minutes and you only do it once. Windows may warn about an unsigned installer; the guide shows the two clicks that get past it.
+      href: guides/install/
+      link: Install an app
+      image: {doc_source: Windows_Protected_your_PC.png}
+      alt: The two Windows "protected your PC" dialogs, with More info and then Run anyway marked in red.
+    - title: Open it and work
+      text: The app opens in your browser with a Welcome notebook that lists its notebooks. Pick one and follow the instructions written in it.
+      href: guides/using-apps/
+      link: Open and use an app
+      image: {doc_source: Welcome_Notebook.png}
+      alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks and an orange Open the Notebook button.
+    - title: Use it in your image software (soon)
+      text: Apps that declare tools will run inside napari, Fiji and QuPath. These plugins are experimental.
+      href: guides/image-software/
+      link: How it works
+      image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/N2_napari_form.png}
+      alt: napari with the LabConstrictor dock widget open, showing a form generated from a tool's declaration.
+  help:
+    title: Something went wrong?
+    text: Known problems and their fixes, such as an app that still shows in Windows' list after uninstalling.
+    href: guides/troubleshooting-installed-app/
+    link: Troubleshooting an installed app
+build:
+  title: Build an app
+  lead: Turn your Jupyter notebooks into an app that anyone can install with a download. You write notebooks; LabConstrictor builds the installers.
+  cards:
+    - title: Your users need only a download
+      text: One GitHub release builds installers for Windows, macOS and Linux. No Python, pip or terminal.
+      href: guides/install/
+      link: How users install
+      image: {doc_source: Windows_App.png}
+      alt: A Windows Start menu search that finds the installed app next to its Open and Pin to Start actions.
+    - title: It feels like an app, not a script
+      text: It opens in the browser with a Welcome notebook, and you can hide the code cells so users see only the interface.
+      href: guides/code-hiding/
+      link: Hide code cells
+      image: {doc_source: Welcome_Notebook.png}
+      alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks and an orange Open the Notebook button.
+    - title: It carries your logo
+      text: Put your own logo, banner and header images in the installer and the desktop app.
+      href: guides/installer-images/
+      link: Customise the installer images
+      image: {doc_source: Customisation_Custom.png}
+      alt: The installer with a custom logo, banner and header, each labelled.
+    - title: The same notebooks run in Colab
+      text: Write them once and let people try them in the browser first.
+      href: guides/notebook-portability/
+      link: Notebooks for Colab and JupyterLab
+      image: {doc_source: colab_vs_local/colab.png}
+      alt: A notebook form in Google Colab with a model chooser and a Hide code button.
+    - title: Others can find it
+      text: List it in the App Centre, with a download for each system and a page of its own.
+      href: submit/
+      link: Submit your app
+      live_card: true
+    - title: It can reach napari, Fiji and QuPath (soon)
+      text: Apps that declare tools will run inside those programs. These plugins are experimental.
+      href: guides/image-software/
+      link: How it works
+      image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/F2_fiji_form_top.png}
+      alt: Fiji with a dialog generated from a tool's declaration, next to an image of bright spots.
+  flow_title: How it works
+  flow:
+    - {title: Create your repository, text: From the template, with one click., href: guides/create-repository/, link: Create a repository}
+    - {title: Add your notebooks, text: Upload them and generate their requirements., href: guides/notebook-upload/, link: Upload your notebooks}
+    - {title: Publish a release, text: One release builds the installers., href: guides/executable-creation/, link: Create installers}
+    - {title: Share it, text: List it in the App Centre so others can find it., href: submit/, link: Submit your app}

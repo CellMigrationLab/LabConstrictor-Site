@@ -28,7 +28,8 @@ theme:
 nav:
   - Home: index.md
   - Apps: apps/index.md
-  - Guides: guides/index.md
+  - Use: use/index.md
+  - Build: build/index.md
   - Ecosystem: ecosystem.md
   - Submit your app: submit.md
 

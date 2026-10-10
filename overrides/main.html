@@ -55,8 +55,8 @@
     <div class="lc-docs">
       <aside class="lc-docs__nav" aria-label="Guides">
         {#- Each section is collapsible; the one that holds this page starts open. -#}
-        {% for section in page.meta.guide_nav %}
-        {% if loop.changed(section.track) %}<p class="lc-docs__track">{{ section.track_title }}</p>{% endif %}
+        <p class="lc-docs__track"><a href="{{ (page.meta.guide_track ~ '/') | url }}">{{ page.meta.guide_track_title }}</a></p>
+        {% for section in page.meta.guide_nav if section.track == page.meta.guide_track %}
         <details class="lc-docs__section"{% if section.items | selectattr("id", "equalto", page.meta.guide_id) | list %} open{% endif %}>
           <summary>{{ section.title }}</summary>
           <ul>{% for item in section.items %}
@@ -66,7 +66,7 @@
         {% endfor %}
       </aside>
       <article class="md-content__inner md-typeset" id="__skip">
-        <p class="lc-crumb"><a href="{{ 'guides/' | url }}">&larr; All guides</a></p>
+        <p class="lc-crumb"><a href="{{ (page.meta.guide_track ~ '/') | url }}">&larr; {{ page.meta.guide_track_title }}</a></p>
         {% include "partials/content.html" %}
       </article>
     </div>
@@ -84,7 +84,8 @@
     <div class="lc-footer__brand"><img src="{{ 'assets/images/logo-64.png' | url }}" alt="" width="42" height="42"><div><strong>LabConstrictor</strong><p>Turn notebooks into installable apps. Open source, MIT licensed.</p></div></div>
     <ul>
       <li><a href="{{ 'apps/' | url }}">Apps</a></li>
-      <li><a href="{{ 'guides/' | url }}">Guides</a></li>
+      <li><a href="{{ 'use/' | url }}">Use an app</a></li>
+      <li><a href="{{ 'build/' | url }}">Build an app</a></li>
       <li><a href="{{ 'submit/' | url }}">Submit your app</a></li>
     </ul>
     <ul>
