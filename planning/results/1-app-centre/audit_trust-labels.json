@@ -1,0 +1,142 @@
+{
+ "dimension": "Scientific trust and status labels (benchmark section 3): availability, development status, compatibility, verification, scientific validation",
+ "already_met": [
+  "Tiers are defined and the definitions are honest about security. LEGEND (scripts/lcsite/pages_apps.py:12-14), rendered under the grid on /apps/, says 'Neither label is a security audit: download only from an owner you trust.' content/submit.md:46-49 ('What the labels mean') repeats the two tiers. This meets the benchmark rule of no claim about installer safety.",
+  "The Community claim matches what the code checks. check_identity (catalogue.py:22-27: same repo and owner id, public, not archived), schema validation of the manifest (catalogue.py:44-45), installers only from the app's own release (assets.py:25-27 raises AppProblem otherwise) and at least one installer when the manifest promises them (catalogue.py:59-60). The site makes no claim of scientific correctness anywhere: grep of the built /apps/ and /submit/ pages finds no 'validated' or 'scientific' wording.",
+  "Verification is tied to one release and expires. cards.is_verified (cards.py:23-26) is true only when verified_version equals the latest release tag (tests/test_site.py:52-56), and the date is shown ('Verified for 0.1.5 on 9 October 2026', rendered offline with VLab4Mic data). Nothing is wrongly labelled today: none of the six registry/*.yaml files has verified_version, so all six show Community.",
+  "Version and release date are exact and visible: 'v0.1.1 · 7 July 2026' on the card (cards.py:101-104), 'Latest release' in Details, 'Version 0.1.1, released 7 July 2026' with a link to the GitHub release above the downloads table. A system the release lacks shows 'No installer in this release.' instead of being hidden (pages_apps.py:65).",
+  "Licence has no silent default. It shows the author-declared SPDX id or the one GitHub detected, else the explicit text 'Not stated' (catalogue.py:86-88, pages_apps.py:145). A DOI appears only when the author gives one, is pattern-checked in the schema (line 36) and links to doi.org. Crossref confirms the two DOIs in the manifests (CellTracksColab 10.1371/journal.pbio.3002740, NucleiSky 10.1242/jcs.265152) are journal articles whose titles are about those apps.",
+  "The plugin integrations are described honestly where they live. Each plugin repo's docs/labconstrictor-project.yaml has status: Experimental, the Ecosystem page says 'These plugins are untested and under heavy construction', and the guides open with 'Under heavy construction. This plugin is untested and unlikely to be stable' (napari guide: 'Tested on Linux. Windows and macOS are untested ... not on PyPI yet'). The wording is correct and author-owned; the problem is only that app pages do not use it (gap 3).",
+  "Testing and maintenance apps are separated from scientific apps with an explanatory paragraph (pages_apps.py:47-48), as the benchmark asks. The Windows tile and install guide do tell users to expect a warning ('If Windows warns you, choose More info, then Run anyway', pages_apps.py:67; the using-apps guide says the installers are 'not code-signed yet'). No ratings, download counts or rankings exist."
+ ],
+ "gaps": [
+  {
+   "id": "trust-1-platform-claims",
+   "requirement": "Compatibility must be separate from availability: offer only the systems the authors say are supported (benchmark section 3 'Compatibility', section 2C 'avoid wrong installers', section 4 'Supported OS/host integrations: Required where claimed', P0 'compatibility claims accurate').",
+   "current": "App pages build one tile per OS from whatever installers the release contains (cards.py:107-117 downloads(); pages_apps.py:54-68), so a file in the release counts as proof of support. The manifest schema has no field for supported systems (schema/labconstrictor-app.schema.json, additionalProperties false at line 7, so authors cannot add one). The authors' own READMEs on CellMigrationLab main say Intel Macs are unsupported. GuessTheCondition README:49: 'Apple-silicon Macs are supported; Intel Macs are not.' LabConstrictor-Playground README:32: '(Windows, Apple Silicon Mac, Linux; Intel Macs are not supported)'. LabConstrictor-VLab4Mic README step 1: '(M1 or newer; Intel Macs are not supported)'. The built pages /apps/guessthecondition/, /apps/labconstrictor-playground/ and /apps/labconstrictor-vlab4mic/ each show an 'Intel 179/179/180 MB · .pkg' download button with the hint 'Not sure? ... Intel, or M1 and later', and list the Intel .pkg and .sh in 'All downloads'. JSON-LD also hard-codes \"operatingSystem\": \"Windows, macOS, Linux\" for every app with installer: true (pages_apps.py:184-185). I did not test whether the Intel pkg runs on an Intel Mac; I rely on the authors' statements.",
+   "severity": "blocker",
+   "proposal": "Add an optional manifest field `platforms`, a list from windows-x86_64, macos-arm64, macos-x86_64, linux-x86_64, described as 'systems you support'. When it is given, os_tile shows no button for an unlisted system but the line 'Intel Macs: not supported by this app's authors.' (generic form '<system>: not supported by this app's authors.'), downloads_table drops those files, and jsonld derives operatingSystem from the systems actually offered. When it is absent, print once under the tiles 'Supported systems: not stated by the authors. These are the files in the release.' (explicit, like License 'Not stated'). Then GuessTheCondition, Playground and VLab4Mic add `platforms: [windows-x86_64, macos-arm64, linux-x86_64]`. Add tests for the present, absent and unsupported-with-asset cases.",
+   "files": [
+    "schema/labconstrictor-app.schema.json",
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "tests/test_site.py",
+    "content/submit.md",
+    "(other repos) labconstrictor-app.yaml of GuessTheCondition, LabConstrictor-Playground, LabConstrictor-VLab4Mic; template guide 'Describe your app for the App Centre'; LabConstrictor_streamlit initialiser form"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "none. Authors choose to expose `platforms` (author-controlled). Absence is displayed, not defaulted, which satisfies 'no silent fallbacks'. The three apps' manifests must be edited in their own repos, not here."
+  },
+  {
+   "id": "trust-2-verification-meaning",
+   "requirement": "Separate listing checks, maintainer testing and scientific validation: 'Community: automatic checks, no claim about scientific correctness or installer safety'; 'Maintainer-tested: link the statement to a specific version, tested OS and date'; a published paper or a green badge must not read as validation (benchmark section 3, P1).",
+   "current": "Registry entries carry only verified_version and verified_on (schema/registry-entry.schema.json:13-14; verified_on is not even required with verified_version). The page prints 'Verified for 0.1.5 on 9 October 2026' (rendered offline): no OS or architecture, no tester, no statement of what 'ran' means, and 'a maintainer' could be the app's or the site's. The only procedure text is the schema description, LEGEND (pages_apps.py:12-14) and submit.md:49; no checklist exists. No page says the labels make no claim about scientific correctness or about running on your system. The word 'Verified' in a success-green chip (cards.py:49, lc.css:103) invites an over-read as validated. The tier is dormant: no registry file has verified_version, so every card says Community and the label discriminates nothing. The explanation is far from the label: the legend is small text below the grid and the Testing section (pages_apps.py:49), the header chip is a bare `<span class=\"lc-badge\">Community</span>` with no link or title (pages_apps.py:197), and the only in-page explanation is the last 'Status' row (pages_apps.py:143-145). 'Community' shares class and colour with the route chips 'Desktop' and 'Colab' (cards.py:49 vs 86; screenshot apps.png), so trust and availability look alike. A superseded verification is erased: with 0.1.4 verified and 0.1.5 latest the row says 'Community listing: not verified by a maintainer' (rendered offline). The two definitions are written twice and already differ (LEGEND 'downloads straight from GitHub' vs submit.md:48 'downloads served from your GitHub release').",
+   "severity": "major",
+   "proposal": "Map of the five concepts: Availability = existing Desktop/Colab/pip chips (unchanged). Development status = manifest `status` (gap 4). Compatibility = manifest `platforms` (gap 1) plus plugin status (gap 3). Verification = registry `tested`. Scientific validation = typed reference (gap 6). For verification: (a) replace verified_version/verified_on with one optional registry object `tested: {version, date, systems: [windows-x86_64, ...], by: <github login>}`, all four required together (dependentRequired). It is the site maintainers' own claim, so the registry is the right source of truth. (b) Rename the chip 'Verified' to 'Install tested' and 'Community' to 'Community listing', with a distinct outlined style. Details row 'Listing': 'Community listing. Public repository, valid manifest and installers from the app's own GitHub release, checked automatically at every site build. It says nothing about whether the results are correct, whether the installers are safe, or whether the app runs on your system.' Details row 'Install tested': 'v0.1.5 on Windows 11 and macOS 14 (Apple Silicon), 9 October 2026, by <login>. The installer was installed and the app opened. This says nothing about the scientific results.' For a superseded test: 'Last install-tested: v0.1.4 on ..., 1 September 2026 (not the current release).' The maintainers must confirm what they actually do, and the sentence must match it. (c) Write the definitions once, as a visitor-facing section 'How to read the labels' in content/guides/using-apps.md. Make LEGEND a one-line pointer, make submit.md link to it, and link the header chip to it. Rename the 'Status' row to 'Listing'.",
+   "files": [
+    "schema/registry-entry.schema.json",
+    "scripts/lcsite/catalogue.py",
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "docs/assets/stylesheets/lc.css",
+    "content/guides/using-apps.md",
+    "content/submit.md",
+    "DESIGN.md",
+    "README.md",
+    "AGENTS.md",
+    "tests/test_site.py",
+    "registry/"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "DESIGN.md:49 says 'green = tier or route (Community, Verified, Desktop, Colab)'; it must change in the same PR (AGENTS.md: add the pattern to DESIGN.md first). AGENTS.md:29 and README.md:29 name verified_version/verified_on and must be updated. The registry migration is free because no entry uses the fields. Verification is correctly the site's claim, not author-controlled, so no principle conflict."
+  },
+  {
+   "id": "trust-3-host-maturity",
+   "requirement": "napari/Fiji/QuPath: 'genuinely usable now, experimental, or merely planned?'; 'Experimental integration: distinguish actual experimental functionality from functionality still planned'; which host versions were tested (benchmark section 2C and 3, P1).",
+   "current": "Every non-notebook value of manifest `hosts` renders as 'Soon in X': host_badge (cards.py:68-71, app-page header, links to our guide) and host_chip (cards.py:62-65). On cards the chip is a 31 px logo only; the words 'Soon in napari' live only in a title attribute and an sr-only span (measured at a 390 px touch viewport: no visible text), so a card reads as 'works in napari'. The hero says 'Soon, apps can also work inside napari, Fiji and QuPath.' (data/site.yaml:8) but the home page says 'Apps that declare tools also run inside napari, Fiji and QuPath.' (pages_site.py:65). The App Centre filter is labelled 'Works in' (pages_apps.py:27) and the Details row 'Works in' (pages_apps.py:146-147) shows the host pills with no qualifier. /apps/labconstrictor-vlab4mic/ makes three claims on one page: header 'Soon in napari / Soon in Fiji', About 'Two of its tools also run in Napari and Fiji.' (author-written; the CellMigrationLab VLab4Mic repo has src/vlab4mic_lc_tools and a napari/Fiji how-to), and Details 'Works in napari Fiji'. The truth sits in the plugin repos and is already fetched for the Ecosystem page. docs/labconstrictor-project.yaml says status: Experimental for napari, Fiji and QuPath. The guides say 'Under heavy construction ... untested', 'Tested on Linux. Windows and macOS are untested', 'not on PyPI yet', Fiji 'no ready-made file and no Fiji update site yet', QuPath 'For QuPath 0.7'. So the plugins are installable from GitHub today and experimental, but the label says 'Soon' (planned) while the cards imply 'works'.",
+   "severity": "major",
+   "proposal": "Derive the label from the plugin's own status instead of the fixed word 'Soon': data/hosts.yaml already maps host to plugin repo, and the status is in docs/labconstrictor-project.yaml, so the text flips to 'Available' by itself when the plugin does. Header badge: 'napari: experimental' (a pill to the guide, as now). Card: replace logo-only chips with one chip per distinct status showing the logos and the word, for example '[napari][Fiji] Experimental'. Filter label 'Works in' becomes 'Also in'. Details row 'Works in' becomes 'Also in (plugins)' with pills 'napari (experimental)'. Hero: 'Experimental plugins also let apps run in napari, Fiji and QuPath.' Home line: 'Experimental plugins let apps that declare tools run inside napari, Fiji and QuPath.' No new manifest field is needed. An author who wants to say more writes it in `description`.",
+   "files": [
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/hosts.py",
+    "scripts/lcsite/projects.py",
+    "data/site.yaml",
+    "scripts/lcsite/pages_site.py",
+    "DESIGN.md",
+    "tests/test_site.py",
+    "tests/test_design.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "DESIGN.md:45 says card host chips are logo-only with the name for screen readers, and DESIGN.md:49 names 'Soon in napari' as the orange badge. Both must change in the same PR. It follows 'each repo is the source of truth for its own content' (the plugin's status). A failed or invalid status read must stop the build (no silent fallback)."
+  },
+  {
+   "id": "trust-4-development-status",
+   "requirement": "Development status (stable, experimental, under development, discontinued) as its own field and label; 'Development status and known limitations: Required' in the submission benchmark; a precise answer to 'Is it reliable?' (benchmark section 1 Essential, section 3, section 4, P1).",
+   "current": "The app manifest has no development-status field (schema/labconstrictor-app.schema.json properties: schema, name, summary, description, quickstart, kind, hosts, distribution, authors, license, categories, doi, homepage, docs_url, icon, screenshots). Plugin projects have a status vocabulary (schema/labconstrictor-project.schema.json: Experimental, Available, Install from GitHub, Deprecated) but apps do not. The only maturity cues for an app are the version number and the grey 'Testing' chip (cards.py:74-76). 'Testing' means 'checks or maintains LabConstrictor itself' (registry section: testing), but a chip beside 'Community' ('Community Testing Desktop' on LabConstrictor Demo and Playground, /apps/ screenshot) reads as 'in testing / beta'; the explaining paragraph is only above the section. GuessTheCondition appears as an ordinary Community app at 'v0.0.0 · 7 October 2026' with no statement of maturity. The app-page row called 'Status' actually holds the listing tier (pages_apps.py:145), which blocks the natural name for this concept. An archived repo is silently unlisted (check_identity, catalogue.py:26-27); the site has no way to show 'discontinued'.",
+   "severity": "major",
+   "proposal": "Add an optional manifest field `status` with the values stable, experimental, in-development, discontinued. Details row 'Development status', and a chip on the card and header for every value except stable. Wording: 'Experimental: works, but may change. Check results yourself.'; 'In development: not ready for research use.'; 'Discontinued: no longer maintained.'; 'Stable: maintained and intended for research use.' When the field is absent, the row reads 'Development status: not stated by the authors' (same explicit pattern as License 'Not stated', pages_apps.py:145), and scripts/submit_app.py adds a warning line like the icon warning. Rename the grey chip 'Testing' to 'Not for analysis' (title 'Checks or demonstrates LabConstrictor itself'); the section heading 'Testing and maintenance' stays. Rename the row 'Status' to 'Listing' (see gap 2). Decision for the owners: the benchmark says 'Required'. Making it required now would delist all six apps until each adds it (AppProblem, named in build/problems.md). Recommended: optional now with the explicit 'not stated' text, required in a later schema version.",
+   "files": [
+    "schema/labconstrictor-app.schema.json",
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/submit_app.py",
+    "content/submit.md",
+    "DESIGN.md",
+    "tests/test_site.py",
+    "(other repos) template guide 'Describe your app for the App Centre'; LabConstrictor_streamlit initialiser form; each app's labconstrictor-app.yaml"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "none with author-controlled (the author states the status). Tension between 'Required' in the benchmark and the 'no silent fallbacks' rule, which would delist apps; the explicit 'not stated' display is the compatible route. DESIGN.md:49 ('grey = Testing') needs updating."
+  },
+  {
+   "id": "trust-5-colab-data-handling",
+   "requirement": "'Does my data stay on my computer?': a small factual local-versus-cloud disclosure when Colab is offered; Colab 'what happens to uploaded data, internet and account requirements'; 'Colab route where actually available, clearly distinguished from desktop' (benchmark section 1, section 2C, section 3 Privacy).",
+   "current": "The built site has no sentence on this. A grep of the built pages for 'Google Drive', 'stays on your computer', 'uploaded' and 'privacy' finds only the author-facing build guide /guides/notebook-portability/ and an unrelated macOS 'Privacy & Security' install step. The app page shows the heading 'Notebooks to open in your browser' and an 'Open in Colab' button per notebook (pages_apps.py:88-90). /guides/using-apps/ ('Use it without installing') says only 'Many apps also run in Google Colab.' No Google-account requirement is stated. I read the five notebooks the manifests list, on CellMigrationLab main (CellTracksColab TrackMate and TrackMate (plate), NucleiSky 2D and 3D, GuessTheCondition): every one calls drive.mount('/content/gdrive'). So each asks to connect the user's Google Drive and processes data on Google's servers. CellTracksColab's README says so in a table ('Your data: Uploaded to your Google Drive ... / Stays on your computer'), but none of this reaches the site. Separately, the 'Colab' route chip only means the author listed a URL matching ^https://colab.research.google.com/ (schema link.url); catalogue.py never checks the notebook exists, and the Community definition does not cover it.",
+   "severity": "major",
+   "proposal": "Add one site-owned generic sentence under the notebook list (a fact about Colab, true for every app, so not a second app description): 'Colab runs on Google's servers and needs a Google account. Data you open there leaves your computer; many notebooks also connect to your Google Drive, so check the notebook's first cell. The desktop app runs on your computer. What happens to your data' (the last words link to a new section 'Colab and your data' in content/guides/using-apps.md, written once, which says the same in two more sentences and points to each app's README for details). Optional S addition at fetch time: when a Colab link is a /github/<o>/<r>/blob/<ref>/<path> address, confirm via the GitHub contents API that the file exists, else AppProblem naming the app. Then 'Colab' is a checked availability claim.",
+   "files": [
+    "scripts/lcsite/pages_apps.py",
+    "content/guides/using-apps.md",
+    "scripts/lcsite/catalogue.py",
+    "tests/test_notebooks.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "none. using-apps.md is listed in AGENTS.md as hand-written here. Keep the statement generic (Colab/Google behaviour) so the site does not become a second maintained description of each app's data flow."
+  },
+  {
+   "id": "trust-6-reference-and-licence",
+   "requirement": "Scientific validation as its own concept: 'Published method: provide the reference, but do not represent publication as certification'; 'A published paper does not mean the latest release was tested on every OS'; FAIR clarity of licence, version identification and citation (benchmark section 3, section 1 'Can I use and cite it').",
+   "current": "Details prints 'Cite  doi:10.1242/jcs.265152' (pages_apps.py:152-153) with no type, title, journal or date. The schema describes `doi` as 'DOI of the paper or archive to cite' (schema line 36), so a reader cannot tell a journal article from a preprint or a software archive. Crossref shows the problem. CellTracksColab's DOI is a PLOS Biology article of 8 Aug 2024, shown beside installer v1.1.0 released 1 Oct 2026. NucleiSky's is a JCS article of 14 Aug 2026, while its README also cites a Zenodo software DOI (10.5281/zenodo.21071484) that the single field cannot carry. VLab4Mic's reference is a bioRxiv preprint (10.64898/2026.06.02.729521, Crossref type 'posted-content'); its manifest has no doi, and if the authors add one the page would print the same bare 'Cite doi:...' as for a peer-reviewed article. Licence: the manifest `license` overrides GitHub's detected licence with no cross-check (catalogue.py:103); submit.md:36 tells authors the repo 'has a license' but nothing enforces it (absence just shows 'Not stated'); the row does not say it covers the app's code and not the packages bundled in the installer. JSON-LD tags every app, including Playground and Demo, applicationCategory 'ScientificApplication' (pages_apps.py:181).",
+   "severity": "minor",
+   "proposal": "At fetch time (catalogue.py is already the only network code) resolve the DOI via Crossref, or doi.org content negotiation for Zenodo, and store type, title, container and year. Render 'Reference: <title>, <journal>, <year> (journal article | preprint, not peer reviewed | software archive) doi:...' in place of the bare 'Cite'. An unresolvable DOI raises AppProblem and the app is named in problems.md. Add one fixed line, written once in 'How to read the labels' and linked from the row: 'A publication describes the method. It does not mean this release was tested.' Licence: if the manifest SPDX id and GitHub's detected id differ (and GitHub detected one), raise AppProblem like check_identity. Rename the row 'License of the app's code'. The S alternative if Crossref is unwanted: relabel 'Cite' to 'Reference' and add `doi_kind: article | preprint | software` to the manifest. Drop the blanket applicationCategory for section: testing apps.",
+   "files": [
+    "scripts/lcsite/catalogue.py",
+    "scripts/lcsite/pages_apps.py",
+    "schema/labconstrictor-app.schema.json",
+    "content/guides/using-apps.md",
+    "tests/test_catalogue.py",
+    "tests/test_site.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "none. Crossref is the source of truth for reference metadata, so there is no second description. Network access stays in the fetch stage ('Two stages' in AGENTS.md). Failures must be explicit (AppProblem), not skipped."
+  }
+ ],
+ "unverified": [
+  "Whether any maintainer has ever run the 'installed and ran' check, and what exactly it consists of: no app is verified, and the repo has no checklist. The proposed wording 'The installer was installed and the app opened' must be confirmed by the maintainers.",
+  "Whether the Intel macOS installers of GuessTheCondition, Playground and VLab4Mic actually fail on an Intel Mac. I rely only on the authors' README statements (read from CellMigrationLab main via the GitHub API).",
+  "What data the desktop apps send over the network. I did not audit app code. VLab4Mic's README says the installer 'downloads and sets up Python and VLab4Mic' at install time, and Playground checks the internet connection. So the generic sentence in gap 5 deliberately says only that the desktop app runs on your computer.",
+  "Whether the Colab links open and run on Colab. I only confirmed that the listed notebook files exist in the repositories and call drive.mount; I did not open them on Colab.",
+  "The hover-only title on card host chips was judged from the markup and a 390 px touch-emulated viewport (chip width 31 px, no visible text); I did not test with a real touch device or screen reader.",
+  "Crossref was reachable from this sandbox. I did not test whether the daily build runner can reach it, which matters for the gap 6 proposal.",
+  "Where the VLab4Mic manifest in build/snapshot.json came from. My local clone of VLab4Mic is the stale HenriquesLab remote with no manifest; the live CellMigrationLab/LabConstrictor-VLab4Mic main does have labconstrictor-app.yaml (hosts: notebook, napari, fiji) and src/vlab4mic_lc_tools, read via the GitHub API. So the VLab4Mic napari/Fiji claim is author-written and plausible. I did not run its tools in napari or Fiji.",
+  "Rendering of the proposed wording at 12 px chip size and on phones. I did not prototype it.",
+  "Mobile and keyboard behaviour of the legend and the linked header chip (proposed) was not tested; screenshots were taken at 1280 px and one 390 px page load."
+ ]
+}

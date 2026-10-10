@@ -1,0 +1,131 @@
+{
+ "dimension": "APP CENTRE: FINDING AND COMPARING (benchmark section 2A)",
+ "already_met": [
+  "Whole card is one link to /apps/<slug>/ with no nested button (cards.py:131-135, DESIGN.md Cards). Verified by keyboard: Tab order is Search, Kind, Get it as, Works in, Clear filters, then one stop per card; focus outline is 2px solid (computed 'rgb(16,33,26) solid 2px', lc.css:40).",
+  "Result count updates on every keystroke or select change and sits in an aria-live=polite region (pages_apps.py:28, lc.js:71). Observed 'tracking' -> '1 of 6 apps', 'colab' route -> '3 of 6 apps'.",
+  "'Clear filters' resets search and all three selects and rewrites the URL to /apps/ (probe: after reset '6 of 6 apps', url http://localhost:8765/apps/). Filter state is in the address and survives opening an app and pressing Back (probe: back at /apps/?q=tracking&route=colab, search 'tracking', route 'colab', '1 of 6 apps').",
+  "An empty state exists and shows (visible after kind=Segmentation and after q='microscope simulation'); the 'Testing and maintenance' group hides itself when it has no match (lc.js:73, observed hidden=true).",
+  "Testing and maintenance apps are kept apart from scientific apps: own h2 and explanatory paragraph, grey Testing badge, curated by registry 'section: testing' (pages_apps.py:47-48, cards.py:74-76); the lead says '4 apps built with LabConstrictor, and 2 for testing and maintenance'.",
+  "Works without JavaScript for browsing: with JS disabled the filter form stays hidden (pages_apps.py:25 'hidden'), so no dead control is shown, all 6 cards render in the two static groups and each is a plain link (first card href http://localhost:8765/apps/celltrackscolab/). Screenshot: scratchpad/appcentre/nojs.png.",
+  "Route filter agrees with the card badges: route=colab returns CellTracksColab, Guess the Condition, NucleiSky (3, the three with a Colab badge); route=pip returns NucleiSky only (matches its pip badge); installer returns 6.",
+  "Cards carry name, one-sentence plain summary, kind, tier, route badges (Desktop, Colab, pip), version and release date (cards.py:126-135). Summaries are task-first, e.g. 'Align microscopy images in 2D and 3D by matching the geometry of nuclei...', 'A virtual lab to simulate fluorescence microscopy images...'. Two of six apps have real icons; four use a monogram tile (cards.py:94-98).",
+  "Search is case- and diacritic-insensitive (lc.js:5 lcFold) and indexes name, summary, description and categories (cards.py:120-123). Single-word biological terms work: tracking, track, tracks, nuclei, registration, align, simulation, simulate, TrackMate, blind, blinding, 3D, 2D, fluorescence, 'cell tracking', 'experimental design', 'ROI' all return the expected app (probe in scratchpad/appcentre/search.js).",
+  "Benchmark examples against the real six: 'cell tracking' and 'tracking' -> CellTracksColab; 'nuclei' -> NucleiSky; 'registration' -> NucleiSky; 'simulation' -> VLab4Mic. 'segmentation' and 'nuclei segmentation' correctly return nothing, because no listed app segments.",
+  "Phone (390 px): no horizontal overflow (scrollWidth minus clientWidth = -15), filter stacks into two columns, selects 40 px tall, search 45 px; filter labels and count 5.30:1, card footer 5.71:1, badges 9.73:1 (all above 4.5:1). 'Clear filters' is 96x25 px, just above the 24x24 minimum. Controls have visible labels; the form has role=search.",
+  "None of the excluded features are present: no ratings, download counts, popularity ranking, recommendations or sort controls; order is alphabetical by name.",
+  "The filter is small, in-page and needs no search infrastructure (about 30 lines of lc.js); the site-wide Zensical search is a separate docs search (it returned guide and Submit-page fragments for 'segmentation', and nothing for 'nuclei registration')."
+ ],
+ "gaps": [
+  {
+   "id": "AC-1",
+   "requirement": "Filters prioritise 'What do you want to do?'; cards show the primary task; categories such as Cell tracking, Segmentation, Image restoration, Simulation, Image analysis; fewer, more meaningful filters.",
+   "current": "There is no task filter. The only task-like control is Kind, a closed enum (schema:18, cards.py:7) that mixes task (analysis, segmentation, simulation) with purpose (game, training, utility). On the cards (cards.py:133 prints KINDS[kind]) CellTracksColab and NucleiSky are both 'ANALYSIS', Guess the Condition (blinded test) and Playground (GPU diagnostics) are both 'UTILITY', and the Demo is 'TRAINING'. The Kind select offers Segmentation and Game, which have 0 apps (probe: 'kind=segmentation: 0 of 6 apps' with the empty message). The real task words (manifest categories: 'cell tracking', 'registration', 'microscopy simulation', 'experimental design') are optional free text, shown only as plain 'Topics' at the bottom of the app page (pages_apps.py:150-151) and as hidden search text (cards.py:123). The same concept is spelled two ways in the real manifests: VLab4Mic 'experiment design' versus Guess the Condition 'experimental design'; 'TrackMate' (a tool), 'example' and 'testing' sit beside real tasks. Answer to the vocabulary question: make ONE field a controlled vocabulary, not 'categories'.",
+   "severity": "major",
+   "proposal": "Add a single required `task` to the manifest schema (enum, about 7 values: tracking, segmentation, registration, restoration, simulation, analysis, experimental design; one line each in data/tasks.yaml for the label and, for search, synonyms) and use it in place of `kind` (no alias, per AGENTS.md). Show the task label on the card where Kind is now, and build the first filter, labelled 'What do you want to do?', only from tasks that have at least one listed app (today: Cell tracking, Image registration, Simulation, Experimental design; no dead Segmentation or Game). Testing apps (registry section: testing) are exempt by an explicit rule that raises an AppProblem naming the app if a non-testing app lacks `task`. Keep `categories` free but as search keywords (see AC-6). Extending the vocabulary is a one-line PR to the schema when a new lab needs a new task. (Claim that napari hub also uses a controlled category list is from memory, unverified.)",
+   "files": [
+    "schema/labconstrictor-app.schema.json",
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/llms.py",
+    "data/tasks.yaml (new)",
+    "content/submit.md",
+    "DESIGN.md",
+    "AGENTS.md",
+    "tests/test_catalogue.py"
+   ],
+   "effort": "L",
+   "needs_other_repo": true,
+   "rule_conflicts": "No conflict with the author-controlled principle: the author picks the task, the site never infers one (so no 'first category' guess). 'No legacy aliases' means a one-shot cutover: add `task` to the six manifests in their repositories first and do not push to main here until those PRs merge (AGENTS.md:84). DESIGN.md Cards and AGENTS.md must be updated in the same PR, and data/tasks.yaml must be listed in AGENTS.md 'Sources of truth' and hold only vocabulary labels and synonyms, never app text, so it is not a second description of an app."
+  },
+  {
+   "id": "AC-2",
+   "requirement": "Search matches app names, descriptions, biological tasks and common synonyms, not just exact names; usability test: find an app for cell tracking or nuclei segmentation within 30 seconds.",
+   "current": "lcMatches (lc.js:52-56) tests the WHOLE query string as one substring of data-search, and data-search (cards.py:120-123) contains only name, summary, description and categories, not the kind, route or host labels. Observed with the real six: 'microscope simulation' -> 0 (VLab4Mic is the obvious answer; its category is 'microscopy simulation'), 'simulate microscope' -> 0, 'nuclei registration' -> 0, 'image registration' -> 0, 'track analysis' -> 0, 'tracking cell' -> 0 while 'cell tracking' -> 1. Visible labels are not searchable: card says ANALYSIS but 'analysis' returns only CellTracksColab, not NucleiSky; 'colab' returns only CellTracksColab (name match) though 3 apps have the Colab badge; 'pip' -> 0 although NucleiSky has the pip badge; 'desktop' -> 2 of the 6 that carry the Desktop badge; 'napari' -> 2 apps while Works in = napari -> 3. No stemming or synonyms: 'nucleus' 0, 'register' 0, 'alignment' 0, 'cell migration' 0, 'migration' 0 (the lab's own field word appears in no manifest). Whole-string substring also gives noise: 'lab' -> 4 apps (LabConstrictor in names), 'test' -> Guess the Condition. No test covers search_text or the matcher (grep of tests/ finds none).",
+   "severity": "major",
+   "proposal": "Three small changes. (1) lc.js: split the folded query on whitespace and require every token to occur in data-search (AND). (2) cards.search_text: also append the kind or task label, the route labels (Desktop, Colab, pip) and the host names. (3) After AC-1, append the task's synonyms from data/tasks.yaml (registration: align, alignment, register; tracking: track, migration, motility; segmentation: segment, mask; simulation: simulate, virtual microscope) so 'nucleus' style misses are fixed once per task, not per app. An offline replay of (1)+(2) over build/snapshot.json (scratchpad/appcentre/sim.js) turns these into hits: 'microscope simulation' -> VLab4Mic, 'nuclei registration' -> NucleiSky, 'image registration' -> NucleiSky, 'track analysis' and 'tracking cell' -> CellTracksColab, 'simulate microscope' -> VLab4Mic, 'analysis' -> CellTracksColab + NucleiSky, 'colab' -> 3 apps, 'pip' -> NucleiSky. It still misses nucleus, alignment, cell migration (needs the synonyms) and correctly misses segmentation. Add a Python test for search_text (the failing case: an app whose kind label is not in its text).",
+   "files": [
+    "docs/assets/javascripts/lc.js",
+    "scripts/lcsite/cards.py",
+    "tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "none. Synonyms live at vocabulary level (see AC-1), not per app, so no second manually maintained app description; keep search_text a pure function of the manifest (AGENTS.md code rules)."
+  },
+  {
+   "id": "AC-3",
+   "requirement": "Compatibility with napari, Fiji and QuPath must be unambiguous: genuinely usable now, experimental or merely planned; filters should be predictable and not create false expectations.",
+   "current": "Three labels disagree about the same fact. Card and app-header chips say 'Soon in napari' / 'Soon in Fiji' (cards.py:64-65, 70-71; observed on /apps/labconstrictor-vlab4mic/ header: 'Soon in napari, Soon in Fiji'). The App Centre filter is labelled 'Works in' (pages_apps.py:27) and returns 3 apps for napari (Guess the Condition, VLab4Mic, Playground). The same app page's Details row says 'Works in: napari, Fiji' (pages_apps.py:146-147). The site's own Ecosystem page shows the three host plugins as 'Experimental' (3 matches in site/ecosystem/index.html; napari-labconstrictor/docs/labconstrictor-project.yaml:5 'status: Experimental') and /guides/napari/ gives an install path ('Pick an app, pick a tool... press Run'), so 'Soon' is hard-coded rather than read from that status. The 'Notebook' option matches 6 of 6 apps (no-op); QuPath matches only the Playground, a testing app. On cards the host chip is a logo with the words only in title/sr-only (cards.py:64), so a sighted visitor sees two unlabelled logos.",
+   "severity": "major",
+   "proposal": "Remove the 'Works in' select from the filter (and with it the no-op Notebook option): with every integration experimental and 3 apps involved it does not answer a decision question; hosts stay searchable via search_text (AC-2). Use one function for the host wording on chip, header badge and Details row, and derive it from the host plugin's published status (data/hosts.yaml 'plugin' -> its labconstrictor-project.yaml status: Experimental -> 'Experimental in napari'; Available -> 'In napari'), raising an error that names the host if the status is missing. Whether the tools really work today for these apps is unverified (I did not run napari or Fiji); Guess the Condition's README says the installer registers its tools for napari and Fiji.",
+   "files": [
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/hosts.py",
+    "docs/assets/javascripts/lc.js",
+    "DESIGN.md",
+    "AGENTS.md"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "AGENTS.md:29 and DESIGN.md:49 name 'Soon in napari' as the deliberate convention, so both must be changed in the same PR. Deriving the wording from the plugin's own status follows 'each repo is the source of truth'; no author-controlled conflict (`hosts` stays the author's declaration)."
+  },
+  {
+   "id": "AC-4",
+   "requirement": "'How do you want to run it?' as the second filter; predictable filters; fewest meaningful filters.",
+   "current": "The route select is labelled 'Get it as' with Desktop, Colab, pip (pages_apps.py:27, cards.py:10). Desktop returns 6 of 6 (no-op, every listed app has an installer), pip returns 1 (NucleiSky), the only discriminating value is Colab (3). All three selects are built from the full enums, not from data (pages_apps.py:17-20), so dead options appear (Kind: Segmentation, Game; Works in: Notebook, QuPath) and options show no counts. Today there are three selects plus search (four controls) for six apps.",
+   "severity": "minor",
+   "proposal": "End state is search plus two selects. Rename the route select 'How do you want to run it?' with Any / On my computer (Windows, macOS, Linux) / In the browser (Colab); keep pip as a card badge and an advanced route on the app page, not a filter value. Make select() take the values present among the listed apps and print counts in the option text ('In the browser (Colab) (3)'), so no option can return 0. Together with AC-1 and AC-3: 'What do you want to do?' + 'How do you want to run it?' + search.",
+   "files": [
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/cards.py",
+    "docs/assets/javascripts/lc.js",
+    "tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "none (DESIGN.md Interactions only says the filter updates as you type and keeps state in the address). Must stay JS-only enhancement: the form is hidden without JS (pages_apps.py:25), which is the benchmark-compliant behaviour."
+  },
+  {
+   "id": "AC-5",
+   "requirement": "Result count: update immediately and be consistent; clear way to reset; helpful empty state; predictable filters.",
+   "current": "The count denominator counts both grids (lc.js:62 cards = all .lc-card, lc.js:71): on load it reads '6 of 6 apps' while the lead says '4 apps built with LabConstrictor, and 2 for testing and maintenance' (pages_apps.py:44); audit/navigation-audit.md:U7 records this as FIXED but it is still observable. The empty state is a fixed string (pages_apps.py:46: 'No app matches. Clear a filter or search for something broader.'): it does not echo the query or filters, has no reset control beside it (the button is in the form above) and, for a task nobody covers (Segmentation, 'nuclei segmentation'), does not say that no app is listed yet or point to /submit/; the only 'Add your app' button is below the legend. A bad deep link is silently repaired: '/apps/?kind=bogus' shows 6 of 6 and the URL is rewritten to /apps/ (lc.js:66 `params.get(key) || ''`, probe output 'bad kind deeplink: 6 of 6 apps \"\"'). Empty-state announcement to a screen reader is unverified (only the count is aria-live).",
+   "severity": "minor",
+   "proposal": "Count the main grid only and say so: 'Showing 3 of 4 apps' plus ', 1 more for testing and maintenance' only when that group has matches. Make the empty paragraph name what is active ('No app matches \"microscope simulation\" with these filters.') and include a Clear filters control and an action link 'Missing an app for this task? Add yours' to submit/ (a link, per DESIGN.md Buttons). Ignore an unknown query value explicitly instead of via `|| ''`, or show it in the empty state.",
+   "files": [
+    "docs/assets/javascripts/lc.js",
+    "scripts/lcsite/pages_apps.py",
+    "tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "DESIGN.md Buttons: the reset in the empty state must be the existing small ghost clear-filters button or a link; one filled button per page rule is unaffected."
+  },
+  {
+   "id": "AC-6",
+   "requirement": "Authors expose what helps scientists choose: scientific task or category is required in a submission; categories should be consistent terms people can search or click.",
+   "current": "`categories` is the only place authors can state a biological task, but nothing tells them so: schema:35 has no description (`kind` at schema:18 does), content/submit.md:20 lists the kind values and never mentions `categories`, and neither scripts/submit_app.py nor .github/ISSUE_TEMPLATE/submit-app.yml checks or asks for it (grep finds no 'categor'). It is optional and free: real values are 'cell tracking, TrackMate', 'registration, ROI matching', 'microscopy simulation, experiment design', 'experimental design, blinding', 'example', 'diagnostics, testing' (grain ranges from task to tool to purpose, and 'experiment design' versus 'experimental design' cannot be one facet). On the app page they are plain text under 'Topics' at the bottom (pages_apps.py:150-151), not links, so a visitor on NucleiSky cannot go to 'other apps for registration'.",
+   "severity": "minor",
+   "proposal": "Keep `categories` free (it carries synonyms and methods such as TrackMate that a closed list would lose) but document it as search keywords: add a schema description ('Words a scientist would search for: synonyms, methods, tools. Not shown on cards.'), add `categories: [cell tracking, TrackMate]` plus one sentence to the submit.md sample, and make Topics text links to apps/?q=<term> (they land on the unfiltered list without JS, which is harmless). Only the single `task` field (AC-1) becomes a controlled vocabulary.",
+   "files": [
+    "schema/labconstrictor-app.schema.json",
+    "content/submit.md",
+    "scripts/lcsite/pages_apps.py",
+    "tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "none; consistent with author-controlled (authors still choose what they expose). A Topics link must follow the DESIGN.md text-link rule (underlined, says where it goes)."
+  }
+ ],
+ "unverified": [
+  "Browser coverage: everything was run in Chromium 1194 (Playwright 1.56.1) only; Safari and Firefox behaviour of lcFold (\\p{M} regex), type=search and the filter was not tested.",
+  "Screen-reader behaviour was not tested with a real screen reader; aria-live on the count and the absence of a role on the empty paragraph are read from the markup and the DOM only.",
+  "No first-time-user timing was done, so the '30 seconds' usability test is judged from what the search returns, not measured with people; INP/LCP/CLS of the filter were not measured.",
+  "Whether the napari and Fiji tools genuinely work today for VLab4Mic, Guess the Condition and Playground was not tested (host software not run). I only compared the site's own labels: cards 'Soon in', filter 'Works in', Ecosystem 'Experimental', and the Guess the Condition README, which says its installer registers napari and Fiji tools.",
+  "Zensical instant-navigation re-initialisation was only checked via browser Back (state restored); forward navigation from another page to /apps/?q=... was checked by direct load only.",
+  "The site-wide header search (Zensical) was sampled for 6 queries by screenshot; 'microscope simulation' returned 1 result (a VLab4Mic section of the use-cases page, not the app page), 'cell tracking' 7 results, 'segmentation' 2 Submit-page fragments, 'nuclei registration' none. Its index covers app pages (site/search.json has apps/<slug>/ entries) but I did not test it further.",
+  "The statement that napari hub uses a controlled category vocabulary is from memory and was not checked.",
+  "The offline replay of tokenised AND search (scratchpad/appcentre/sim.js) uses the snapshot's manifest fields and approximates cards.search_text; it has not been run through the real lc.js."
+ ]
+}

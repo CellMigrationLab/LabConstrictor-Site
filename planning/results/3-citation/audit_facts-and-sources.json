@@ -1,0 +1,246 @@
+{
+ "dimension": "Bibliographic facts: the four publications, the Zenodo record 10.5281/zenodo.20758747, what each repository recommends citing, and the data needed to render an app reference",
+ "claims_checked": [
+  {
+   "claim": "LabConstrictor preprint: title, five authors in order, venue, year, DOI (the audit's 'Packaging Jupyter notebooks as installable desktop apps using LabConstrictor', Hidalgo-Cenalmor, Rivera Pineda, Saraiva, Henriques, Jacquemet; arXiv March 2026; 10.48550/arXiv.2603.10704). Record needed for a reference.",
+   "verdict": "confirmed",
+   "evidence": "arXiv API https://export.arxiv.org/api/query?id_list=2603.10704, https://arxiv.org/abs/2603.10704 (WebFetch) and DataCite https://api.datacite.org/dois/10.48550/arXiv.2603.10704, plus the v1 PDF text. Exact title: 'Packaging Jupyter notebooks as installable desktop apps using LabConstrictor'. Authors in order: Iván Hidalgo-Cenalmor; Marcela Xiomara Rivera Pineda; Bruno M. Saraiva; Ricardo Henriques; Guillaume Jacquemet. arXiv:2603.10704, primary cs.SE, also q-bio.QM; only version v1, submitted 2026-03-11T12:23:36Z by G. Jacquemet; no journal reference, no published version found (web search also found none); comment '2 figures'; CC BY 4.0. It IS a preprint. DOI registered at DataCite: 10.48550/arXiv.2603.10704 (DataCite stores it lower-case, same DOI). Minor audit difference: the audit writes 'Ivan' without the accent; every primary record has 'Iván'."
+  },
+  {
+   "claim": "The LabConstrictor README recommends the arXiv preprint as the citation, and the preprint documents contributions, institutions and funding.",
+   "verdict": "confirmed",
+   "evidence": "/home/user/LabConstrictor/README.md lines 66-69 (identical to raw main on GitHub): 'If you use LabConstrictor in your research, please cite the project...: Iván Hidalgo-Cenalmor, Marcela Xiomara Rivera Pineda, Bruno M. Saraiva, Ricardo Henriques, and Guillaume Jacquemet. Packaging Jupyter notebooks ... using LabConstrictor. arXiv preprint 2026 DOI: https://doi.org/10.48550/arXiv.2603.10704'. The README line 2 also carries a Zenodo badge for the version DOI 10.5281/zenodo.20758747. Preprint PDF (arxiv.org/pdf/2603.10704v1) has Author contributions, Acknowledgements, Code availability (GitHub CellMigrationLab/LabConstrictor, MIT)."
+  },
+  {
+   "claim": "Institutions named in the preprint: Abo Akademi University, Turku Bioscience Centre, ITQB NOVA, UCL (and others).",
+   "verdict": "confirmed",
+   "evidence": "Preprint v1 PDF affiliation list: 1 Turku Bioscience Centre, University of Turku and Åbo Akademi University; 2 Faculty of Science and Engineering, Cell Biology, Åbo Akademi University; 3 InFLAMES Research Flagship Centre, University of Turku; 4 Instituto de Tecnologia Química e Biológica António Xavier, Universidade Nova de Lisboa, Oeiras; 5 UCL Laboratory for Molecular Cell Biology, University College London; 6 Foundation for the Finnish Cancer Institute, Helsinki. Mapping: Hidalgo-Cenalmor 1,2; Rivera Pineda 1,2,3; Saraiva 4; Henriques 4,5; Jacquemet 1,2,3,6. Correspondence: G. Jacquemet."
+  },
+  {
+   "claim": "Funders named in the preprint: Research Council of Finland, Sigrid Juselius Foundation, Cancer Society of Finland, Solutions for Health, InFLAMES, ERC, EIC, EMBO, Chan Zuckerberg Initiative and others.",
+   "verdict": "confirmed",
+   "evidence": "Preprint Acknowledgements: AI-DOC (VN/3137/2024-OKM-6, I.H.-C.); Research Council of Finland 338537, 371287, 374180 (G.J.); Sigrid Juselius Foundation; Cancer Society of Finland (Syöpäjärjestöt); Solutions for Health strategic funding for Åbo Akademi University; InFLAMES Flagships Programme 337530, 337531, 357910, 35791; Finnish Cancer Institute (K. Albin Johansson Professorship); ERC Horizon 2020 grant 101001332 (R.H.); Horizon Europe EIC Pathfinder RT-SuperES 101099654 (R.H.); EMBO installation grant EMBO-2020-IG-4734 (R.H.); CZI EOSS6-0000000260 (R.H. and G.J.); 'la Caixa' Foundation HR25-00453 (R.H.). 'Others' = AI-DOC, Finnish Cancer Institute, la Caixa. Grant-specific wording must be copied from the paper, not paraphrased."
+  },
+  {
+   "claim": "The preprint's author-contribution paragraph names G.J., I.H.-C. and M.R. only; Saraiva's and Henriques' roles are not specified.",
+   "verdict": "confirmed",
+   "evidence": "Preprint PDF text: 'G.J. and I.H.-C. conceived the study in its initial form; I.H.-C. developed the LabConstrictor framework with input from G.J.; G.J. and M.R. provided critical feedback, testing, and guidance; G.J. acquired funding; G.J. and I.H.-C. wrote the manuscript with input from all authors.' B.M.S. and R.H. are not named individually. The paper uses initials; 'M.R.' is presumably Marcela Rivera (inference from initials only). Competing interests: none declared."
+  },
+  {
+   "claim": "The site footer's 'Cite LabConstrictor' link points to 10.5281/zenodo.20758747, not the preprint.",
+   "verdict": "confirmed",
+   "evidence": "/home/user/labconstrictor-site/overrides/main.html:100 hard-codes https://doi.org/10.5281/zenodo.20758747. data/site.yaml:15 has links.citation_doi with the same value, but a repository-wide grep finds no code reading citation_doi (the DOI is written twice and the data key is dead). The string 'arxiv' occurs nowhere in the site source, content, or built /home/user/labconstrictor-site/site/. Footer text (main.html:102): 'A project of the Cell Migration Lab'; mkdocs.yml:8 copyright '© Cell Migration Lab' (both claims in the audit confirmed)."
+  },
+  {
+   "claim": "Zenodo 10.5281/zenodo.20758747: title, creators, version, concept vs version DOI, related identifiers (the audit says creator metadata was not inspected).",
+   "verdict": "confirmed",
+   "evidence": "Zenodo API https://zenodo.org/api/records/20758747 and DataCite. It is a VERSION DOI, not the concept DOI: conceptdoi 10.5281/zenodo.19074199 (conceptrecid 19074199); this record is version 0.0.2, is_last true, published 2026-06-19; the earlier version is 10.5281/zenodo.19074200 (0.0.1, 2026-03-17). The concept DOI resolves (doi.org CSL) to the latest version's metadata. Title 'LabConstrictor'; resource type Software; MIT; description 'LabConstrictor is a GitHub template for packaging Jupyter notebooks as installable desktop applications...'; keywords Jupyter Notebook, Reproducibility, Software Packaging, User-Friendly, Desktop App; code:codeRepository https://github.com/CellMigrationLab/LabConstrictor; one file 'LabConstrictor 0.0.2.zip' (103083 bytes). Creators in order: Hidalgo Cenalmor, Iván (ORCID 0009-0000-8923-568X, Instituto Gulbenkian de Ciência); Rivera Pineda, Marcela Xiomara (0009-0000-9838-9533, Euro-BioImaging ERIC); Saraiva, Bruno (0000-0002-9151-5477, 'Molecular Structural and Cellular Microbiology'); Henriques, Ricardo (0000-0002-2043-5234, Universidade Nova de Lisboa; DataCite also lists Instituto Gulbenkian de Ciência); Jacquemet, Guillaume (0000-0002-9286-920X, Åbo Akademi University; DataCite also lists University of Turku). Same five people, same order as the preprint; affiliations differ from the preprint's; no funding references."
+  },
+  {
+   "claim": "Zenodo's relationship to the preprint (audit: 'relationship to the preprint' to be verified).",
+   "verdict": "partly",
+   "evidence": "Zenodo related_identifiers (both versions and the concept record): relation 'describes', identifier arXiv:2603.10704, type publication. 'Describes' says this software record describes the paper; the direction that matches reality (the paper describes the software) is DataCite 'IsDescribedBy'. The link to the preprint exists, but the relation type appears reversed (my reading of the DataCite relationType semantics; the authors should confirm)."
+  },
+  {
+   "claim": "The Zenodo archive is a faithful, current archive of the template (implied by the footer calling it 'Cite LabConstrictor').",
+   "verdict": "refuted",
+   "evidence": "The downloaded zip (zenodo.org/api/records/20758747/files/...) contains .template_sync/manifest.yaml with template_version 0.1.4 (zip dated 2026-06-19), while raw main of CellMigrationLab/LabConstrictor is template_version 0.1.15 (checked 2026-10-10). The Zenodo version label '0.0.2' is not the template's numbering. The GitHub repo has no releases and no tags (api.github.com releases and tags return []). File name 'LabConstrictor 0.0.2.zip' and the absence of an isSupplementTo GitHub URL contrast with NucleiSky's GitHub-integration records ('CellMigrationLab/NucleiSky-0.1.1.zip', isSupplementTo github tree URL), so this record looks like a manual upload (inference)."
+  },
+  {
+   "claim": "NucleiSky: Hidalgo-Cenalmor et al., Journal of Cell Science (2026), DOI 10.1242/jcs.265152. Record needed for a reference.",
+   "verdict": "confirmed",
+   "evidence": "Crossref https://api.crossref.org/works/10.1242/jcs.265152 and journal page https://journals.biologists.com/jcs/article/doi/10.1242/jcs.265152/372571/NucleiSky-enables-cross-scale-multimodal. Exact title: 'NucleiSky enables cross-scale multimodal registration of microscopy data using nuclei constellations' (the audit's 'multimodal microscopy registration' is a paraphrase, not the title). Eight authors in order: Iván Hidalgo-Cenalmor; Adán Olguín-Olguín; Carolina Prieto; Johannes Kumra Ahnlide; Pontus Nordenfelt; Ricardo Henriques; Mario Del Rosario; Guillaume Jacquemet (corresponding). Journal of Cell Science, publisher The Company of Biologists, published online 2026-08-14, article number jcs.265152, NO volume/issue/pages. Article type Tools and Resources. Status on the journal page: ACCEPTED MANUSCRIPT (received 29 Jun 2026, accepted 09 Aug 2026; Crossref license content-version 'am'), so volume/issue may be added later. CC BY 4.0. Journal's own citation: 'J Cell Sci 2026; jcs.265152. doi: https://doi.org/10.1242/jcs.265152'. Peer-reviewed article, not a preprint; a bioRxiv preprint of the same title exists (10.64898/2026.06.29.735028, posted 2026-06-29, Crossref; its record has Iván Hidalgo as given name and Cenalmor as family name, a wrong split)."
+  },
+  {
+   "claim": "CellTracksColab: Gomez-de-Mariscal et al., PLOS Biology (2024), 'compilation, analysis and exploration of tracking data', DOI 10.1371/journal.pbio.3002740. Record needed for a reference.",
+   "verdict": "confirmed",
+   "evidence": "Crossref https://api.crossref.org/works/10.1371/journal.pbio.3002740 and https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.3002740. Exact title: 'CellTracksColab is a platform that enables compilation, analysis, and exploration of cell tracking data' (the audit's wording drops 'cell'). Seven authors in order: Estibaliz Gómez-de-Mariscal; Hanna Grobe; Joanna W. Pylvänäinen; Laura Xénard; Ricardo Henriques; Jean-Yves Tinevez; Guillaume Jacquemet. PLOS Biology 22(8): e3002740, published 2024-08-08, article type Methods and Resources, CC BY 4.0. Not a preprint. Crossref shows a 'new_version' update dated 2024-08-20 (the page offers Version 1 uncorrected proof and Version 2), no correction notice. PLOS style: 'PLoS Biol 22(8): e3002740'."
+  },
+  {
+   "claim": "VLab4Mic: Martinez et al., bioRxiv (2026), 'predicting structural resolvability in super-resolution microscopy', DOI 10.64898/2026.06.02.729521. Record needed for a reference.",
+   "verdict": "partly",
+   "evidence": "Crossref https://api.crossref.org/works/10.64898/2026.06.02.729521 and bioRxiv API https://api.biorxiv.org/details/biorxiv/10.64898/2026.06.02.729521. Authorship, venue, year and DOI confirmed. Exact title: 'VLab4Mic: prediction of structural resolvability in super-resolution microscopy' (the audit's 'predicting ...' drops the 'VLab4Mic:' prefix and changes the wording). The surname is Martínez (accented). Eight authors in order: Damián Martínez; Bruno M. Saraiva; Tayla Shakespeare; Mark Bates; Dylan M. Owen; Christophe Leterrier; Mario Del Rosario; Ricardo Henriques (corresponding author Ricardo Henriques). It IS a preprint: Crossref type posted-content / subtype preprint, institution bioRxiv, publisher openRxiv, category Bioinformatics, type 'new results', CC BY 4.0. Four versions: v1 2026-06-04, v2 06-09, v3 06-16, v4 07-09. bioRxiv pubs API: 'no articles found for published version' (checked 2026-10-10), and a web search found no journal version. The DOI prefix 10.64898 is the new bioRxiv/openRxiv prefix and resolves via doi.org (Crossref RA). Crossref 'accepted 2026-07-09' equals the v4 date; it is not evidence of journal acceptance."
+  },
+  {
+   "claim": "Each upstream project provides its own citation information in its README (the audit: 'All three upstream projects provide citation information').",
+   "verdict": "confirmed",
+   "evidence": "NucleiSky/README.md lines 124-148: full reference plus BibTeX for the JCS article (prose spells 'Iván Hidalgo Cenalmor' without hyphen, BibTeX 'Hidalgo-Cenalmor'; BibTeX month 08, no volume). CellTracksColab/README.md lines 304-310: reference for the PLOS Biology paper, 'Published August 8, 2024'. LabConstrictor-VLab4Mic/README.md 'Citation' (also in the CellMigrationLab fork and upstream HenriquesLab/VLab4Mic): BibTeX @article martinez_2026_vlab4mic for the bioRxiv preprint, with url .../729521v1 (pinned to v1 although v4 exists), authors identical to Crossref. All README files on disk are byte-identical to raw main (VLab4Mic: HenriquesLab main; the CellMigrationLab fork differs, see G6). None of the seven repositories has a CITATION.cff, .zenodo.json or codemeta.json on its default branch (GitHub contents API returned 404 for each with repo access confirmed; HenriquesLab/VLab4Mic raw CITATION.cff 404)."
+  },
+  {
+   "claim": "GuessTheCondition, LabConstrictor_Demo and LabConstrictor-Playground have no publication.",
+   "verdict": "partly",
+   "evidence": "No publication, DOI, arXiv, bioRxiv, Zenodo, 'cite' or 'preprint' text in any of the three repositories outside .git and .tools (grep), and no `doi` in their labconstrictor-app.yaml on main nor in build/snapshot.json. So none was found, but absence cannot be proven. GuessTheCondition README says it merges a former Napari plugin and a Colab notebook (CellMigrationLab/napari-guess-the-condition and jupyter-guess-the-condition); those two repositories are not reachable from this session, so whether they carry a citation is unverifiable. Credit lines that do exist: GuessTheCondition README 'MIT. Created by Guillaume Jacquemet and the Cell Migration Lab. Built with LabConstrictor.' and LICENSE 'Copyright (c) 2024 Guillaume Jacquemet'; Demo and Playground LICENSE 'Copyright (c) 2025 Cell Migration Lab'."
+  },
+  {
+   "claim": "The site generator shows a citation only when the manifest has a `doi`, as a bare DOI link, in Details after downloads and usage; the field is optional.",
+   "verdict": "confirmed",
+   "evidence": "scripts/lcsite/pages_apps.py:152-153 (details_list): rows.append((\"Cite\", f'<a href=\"https://doi.org/...\">doi:...</a>')) only `if m.get(\"doi\")`. schema/labconstrictor-app.schema.json line 36: `doi` optional, description 'DOI of the paper or archive to cite' (paper and archive conflated). Built pages (site/apps/*/index.html): NucleiSky 'Cite | doi:10.1242/jcs.265152', CellTracksColab 'Cite | doi:10.1371/journal.pbio.3002740', no Cite row at all for VLab4Mic, Guess the Condition, LabConstrictor Demo, LabConstrictor Playground. Section order on every app page: get, about, use, downloads, install, details. Real data: only NucleiSky and CellTracksColab manifests carry `doi`. The JSON-LD (jsonld) has no citation or author property."
+  },
+  {
+   "claim": "The VLab4Mic app page has no citation because its manifest lacks `doi`, although the repository recommends citing the bioRxiv preprint.",
+   "verdict": "confirmed",
+   "evidence": "raw labconstrictor-app.yaml of CellMigrationLab/LabConstrictor-VLab4Mic main has no `doi` (keys: schema, name, summary, description, kind, hosts, distribution, license, categories, homepage). Its README (same repo) carries the BibTeX with doi 10.64898/2026.06.02.729521. Built page shows no Cite row."
+  },
+  {
+   "claim": "Citation rule proposed by the audit (app results -> cite the app's paper; LabConstrictor itself -> cite the preprint; software archive for a specific release) and the FORCE11 Software Citation Principles.",
+   "verdict": "partly",
+   "evidence": "The rule is consistent with what the repositories themselves say (READMEs above). FORCE11: the paper exists, verified via Crossref: Smith AM, Katz DS, Niemeyer KE, FORCE11 Software Citation Working Group, 'Software citation principles', PeerJ Computer Science 2:e86, 2016, doi 10.7717/peerj-cs.86. The text of the individual principles could not be fetched (peerj.com returned 403, force11.org returned an empty page), so I do not quote them; the audit's paraphrase ('attribution to the appropriate software, persistent identifiers, identification of the version used') is unverified wording."
+  },
+  {
+   "claim": "GitHub shows 'Cite this repository' with APA and BibTeX when CITATION.cff exists; Zenodo's .zenodo.json can set creators, related works and funding.",
+   "verdict": "partly",
+   "evidence": "GitHub docs (docs.github.com .../about-citation-files): CITATION.cff on the default branch adds 'Cite this repository', 'We currently support APA and BibTeX', and a `preferred-citation` field lets the prompt point to a paper instead of the software. Zenodo docs (help.zenodo.org/docs/github/describe-software/): if both exist, only .zenodo.json is used for GitHub release archiving and CITATION.cff is ignored; the page did not confirm which fields (creators, related identifiers, funding) each file can carry. Neither file is read for a manual upload, and the template repo has no GitHub releases, so for LabConstrictor the Zenodo metadata would have to be edited in Zenodo or the GitHub-Zenodo integration enabled with releases."
+  },
+  {
+   "claim": "The NucleiSky Zenodo software record (README badge 10.5281/zenodo.21071484) is a usable citation target (not in the audit; found while reading the README).",
+   "verdict": "refuted",
+   "evidence": "10.5281/zenodo.21071484 is a concept DOI (Zenodo API conceptdoi). Versions: 0.1.0 'Preprint version' 10.5281/zenodo.21073504 (2026-06-30) and 0.1.1 10.5281/zenodo.21238020 (2026-07-07, latest). Auto-generated metadata: title 'CellMigrationLab/NucleiSky: 0.1.1 - LabConstrictor fixes', creators 'Iván Hidalgo' (Åbo Akademi University) and 'guijacquemet' (a GitHub username), no ORCIDs, MIT, isSupplementTo https://github.com/CellMigrationLab/NucleiSky/tree/0.1.1. It is not a citation to copy as is. The JCS article is the correct primary citation (matches the manifest and README)."
+  },
+  {
+   "claim": "Name forms are consistent across the primary records (matters for an automatically built reference).",
+   "verdict": "refuted",
+   "evidence": "ORCID public API: 0009-0000-9838-9533 = given 'Marcela Xiomara', family 'Rivera Pineda'; 0009-0000-8923-568X = given 'Iván', family 'Hidalgo Cenalmor', credit name 'Iván Hidalgo-Cenalmor'. arXiv/DataCite/doi.org CSL split the arXiv preprint as family 'Pineda', given 'Marcela Xiomara Rivera' (so initials would read 'M. X. R. Pineda'); Zenodo uses 'Rivera Pineda, Marcela Xiomara' and 'Hidalgo Cenalmor, Iván'; JCS Crossref 'Iván' + 'Hidalgo-Cenalmor'; bioRxiv NucleiSky Crossref 'Iván Hidalgo' + 'Cenalmor'; NucleiSky README prose 'Iván Hidalgo Cenalmor'. Safe display: full names exactly as in the registered record, in order, no initials."
+  },
+  {
+   "claim": "Machine access for building a reference: Crossref and DataCite metadata can be retrieved for all four DOIs plus Zenodo.",
+   "verdict": "partly",
+   "evidence": "doi.org/doiRA: 10.1242/jcs.265152, 10.1371/journal.pbio.3002740 and 10.64898/2026.06.02.729521 are Crossref; 10.48550/arXiv.2603.10704 and 10.5281/zenodo.* are DataCite. DataCite REST returns 404 for the bioRxiv DOI; Crossref returns 404 for the arXiv and Zenodo DOIs. doi.org content negotiation (Accept: application/vnd.citationstyles.csl+json) worked for 5 of 6 DOIs on first try and returned HTTP 429 once for the JCS DOI (Crossref REST worked), so a build needs retry or a Crossref fallback by RA, failing loudly. CSL differences: the arXiv CSL has type 'article' with publisher 'arXiv' and no container (no explicit preprint flag; DataCite resourceTypeGeneral is 'Preprint'); the bioRxiv CSL has type 'posted-content', empty container-title, institution 'bioRxiv', publisher 'openRxiv', subtype 'preprint'; the JCS record has container 'Journal of Cell Science' and article number but no volume."
+  },
+  {
+   "claim": "Preprint is not displayed on the home page; app citations sit near the bottom of each app page.",
+   "verdict": "confirmed",
+   "evidence": "No 'arxiv' in /home/user/labconstrictor-site (source, content, docs, built site/). pages_site.page_home (pages_site.py:46-67) has no citation or publication band; the only citation entry anywhere is the footer Zenodo link. App page h2 order: get, about, use, downloads, install, details; the Cite row is the 5th-6th row of Details."
+  },
+  {
+   "claim": "Website repo had no root LICENSE (outside this dimension; checked only because it is one command).",
+   "verdict": "confirmed",
+   "evidence": "ls /home/user/labconstrictor-site/LICENSE* -> no such file (repo root lists AGENTS.md DESIGN.md README.md audit build content data docs mkdocs.yml overrides previews registry requirements.txt schema scripts seed site tests)."
+  },
+  {
+   "claim": "Local clone /home/user/LabConstrictor-VLab4Mic reflects the app the site lists.",
+   "verdict": "refuted",
+   "evidence": "The clone's origin is HenriquesLab/LabConstrictor-VLab4Mic (id 1259176246, last push 2026-06-09, tags to 0.1.3, no labconstrictor-app.yaml). The site registry (registry/CellMigrationLab__LabConstrictor-VLab4Mic.yaml, repo_id 1408322411) lists CellMigrationLab/LabConstrictor-VLab4Mic, a fork of it created 2026-10-07 with release 0.1.5, a longer README (how-to sections), and a manifest. Anything later read from the local clone for VLab4Mic is stale; use the fork on GitHub."
+  }
+ ],
+ "gaps": [
+  {
+   "id": "G1",
+   "requirement": "A visitor can see which paper to cite for LabConstrictor itself (the 5-author arXiv preprint, which the template README recommends) and, separately labelled, the software archive for a specific release.",
+   "current": "Footer 'Cite LabConstrictor' (overrides/main.html:100) hard-codes https://doi.org/10.5281/zenodo.20758747, the Zenodo VERSION DOI for 'LabConstrictor 0.0.2' (2026-06-19), whose zip is template 0.1.4 while the template is now 0.1.15; the template repo has no release or tag. data/site.yaml:15 `citation_doi` is the same value but is read by nothing (written twice). 'arxiv' appears nowhere in the site. Home page (pages_site.page_home) has no publication or citation band.",
+   "severity": "major",
+   "proposal": "1) In the template repo add a CITATION.cff whose preferred-citation is the preprint (facts: authors in order Iván Hidalgo-Cenalmor, Marcela Xiomara Rivera Pineda, Bruno M. Saraiva, Ricardo Henriques, Guillaume Jacquemet; title 'Packaging Jupyter notebooks as installable desktop apps using LabConstrictor'; arXiv:2603.10704, 2026, preprint; DOI 10.48550/arXiv.2603.10704) and lists the software DOI separately; the template README Citation section stays the human text. 2) scripts/fetch_guides.py (or fetch_catalogue.py) downloads it into build/sources and the snapshot; a new small module scripts/lcsite/citations.py renders the reference through text.esc. 3) pages_site.page_home gets a short 'Publication and citation' band: reference, 'Read the preprint' (action link to the arXiv DOI) and 'Software archive' (separate link, labelled version or latest). 4) main.html footer: two entries ('Cite the paper' to the arXiv DOI, 'Software archive' to Zenodo) fed from site data, and delete or use `links.citation_doi` so the DOI exists once. Interim if the template change waits: a `citation:` block in data/site.yaml with a comment that it mirrors the template README (it is a second copy, so keep it temporary).",
+   "repo_and_files": [
+    "LabConstrictor/CITATION.cff (new)",
+    "LabConstrictor/README.md (Citation section, optionally add the archive line)",
+    "labconstrictor-site/overrides/main.html",
+    "labconstrictor-site/data/site.yaml",
+    "labconstrictor-site/scripts/lcsite/pages_site.py",
+    "labconstrictor-site/scripts/lcsite/citations.py (new)",
+    "labconstrictor-site/scripts/fetch_guides.py or fetch_catalogue.py",
+    "labconstrictor-site/tests/"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "needs_author_decision": "Which Zenodo DOI to show: the concept DOI 10.5281/zenodo.19074199 (always the latest archive) or the version DOI 10.5281/zenodo.20758747 (v0.0.2, template 0.1.4 snapshot); whether to publish a newer Zenodo version first; the wording of the paper-versus-software rule shown to visitors.",
+   "rule_conflicts": "A hand-written copy in data/site.yaml conflicts with 'nothing written twice' (template README is the source of truth); only fetch_* scripts may use the network, so the CITATION.cff download must live there; new functions need annotations, docstrings, <=30 lines; no silent fallback: a missing or unparsable CITATION.cff must stop the build with a message naming the file."
+  },
+  {
+   "id": "G2",
+   "requirement": "Every app page shows 'How to cite this app' near 'Using it': the app's scientific reference (authors, title, venue, year, DOI, copy button) when one exists, an explicit 'no publication' statement when none exists, and the app version separate for reproducibility.",
+   "current": "details_list (pages_apps.py:152-153) emits only 'Cite | doi:...' as a bare link, only if the optional `doi` is set, inside Details after Downloads and Install. Two of six listed apps have a DOI (NucleiSky, CellTracksColab). VLab4Mic has none in its manifest (the CellMigrationLab fork's labconstrictor-app.yaml) although its README recommends the bioRxiv preprint. Guess the Condition, LabConstrictor Demo and LabConstrictor Playground show nothing, with no statement either way. Schema `doi` is described as 'paper or archive', so paper and software cannot be told apart.",
+   "severity": "major",
+   "proposal": "1) App repos: add `doi: 10.64898/2026.06.02.729521` to labconstrictor-app.yaml in CellMigrationLab/LabConstrictor-VLab4Mic (the only data fix needed for the three real publications; NucleiSky and CellTracksColab already have theirs). 2) Schema: make `doi` mean the publication to cite (rewrite its description) and add an explicit marker for apps without one (for example `publication: none`); on a scientific app (kind other than training or utility) neither field present -> a named warning in build/problems.md, not silent. 3) Fetch: scripts/lcsite/citations.py (called from catalogue.py in the fetch stage) resolves each manifest DOI by registration agency (doi.org/doiRA, then Crossref REST for Crossref DOIs, DataCite REST for DataCite DOIs) into the snapshot as {kind: article|preprint|software, authors: [full display names in record order], title, venue, year, volume, issue, article_number, doi, url}; bump SNAPSHOT_FORMAT to 3; unresolved DOI -> AppProblem naming the app. 4) Page: new cite_block(app) in pages_apps.py (or citations.py, since pages_apps.py is 208 of 300 lines) placed after using_section and before downloads: heading 'How to cite', one-line reference, 'Read the paper' action link, 'Copy reference' as a small ghost button, the preprint flag for preprints, and 'Version used: <release tag>' separate from the paper. Apps without a publication: 'No publication yet. Cite LabConstrictor if you discuss the packaging' with a link to G1. Add schema.org `citation` to jsonld. Facts for the reference (all verified): NucleiSky = JCS 2026, jcs.265152, accepted manuscript, no volume; CellTracksColab = PLOS Biology 22(8): e3002740, 2024-08-08; VLab4Mic = bioRxiv preprint, first posted 2026-06-04 (latest v4 2026-07-09), DOI 10.64898/2026.06.02.729521; full author lists are in the claims above.",
+   "repo_and_files": [
+    "CellMigrationLab/LabConstrictor-VLab4Mic/labconstrictor-app.yaml",
+    "labconstrictor-site/schema/labconstrictor-app.schema.json",
+    "labconstrictor-site/scripts/lcsite/citations.py (new)",
+    "labconstrictor-site/scripts/lcsite/catalogue.py",
+    "labconstrictor-site/scripts/lcsite/config.py (SNAPSHOT_FORMAT)",
+    "labconstrictor-site/scripts/lcsite/pages_apps.py",
+    "labconstrictor-site/DESIGN.md (add the pattern first)",
+    "labconstrictor-site/scripts/check_design.py",
+    "labconstrictor-site/tests/"
+   ],
+   "effort": "L",
+   "needs_other_repo": true,
+   "needs_author_decision": "For Guess the Condition, LabConstrictor Demo and LabConstrictor Playground: confirm 'no publication' or name the paper to cite (the predecessor repos napari-guess-the-condition and jupyter-guess-the-condition could not be checked). Whether VLab4Mic should be cited as the bioRxiv preprint until a journal version exists (it is the only version I found).",
+   "rule_conflicts": "DESIGN.md has no 'cite block' pattern: it must be added first. A card or block has at most one filled button, so 'Copy reference' must be the small ghost button. Network only in fetch scripts. Registry text is third party: titles can carry markup, so everything goes through text.esc. No `.get(key, default)` for required CSL fields: preprints legitimately lack container-title, so branch explicitly on kind."
+  },
+  {
+   "id": "G3",
+   "requirement": "The Zenodo record that the site links to must carry correct and consistent metadata and say how it relates to the preprint.",
+   "current": "10.5281/zenodo.20758747 is version 0.0.2 (concept 10.5281/zenodo.19074199), a manually uploaded snapshot of template 0.1.4 (main is 0.1.15; no GitHub releases or tags). Related identifier is 'describes arXiv:2603.10704', the reverse of what a software record should say ('is described by'). Creator names and affiliations differ from the preprint and from ORCID: 'Hidalgo Cenalmor' (ORCID credit name 'Iván Hidalgo-Cenalmor'), Hidalgo Cenalmor at Instituto Gulbenkian de Ciência (preprint: Turku Bioscience Centre and Åbo Akademi), Rivera Pineda at Euro-BioImaging ERIC (preprint: Turku), Saraiva at 'Molecular Structural and Cellular Microbiology' (a group name; preprint: ITQB NOVA). No funding recorded, though the preprint lists many grants.",
+   "severity": "major",
+   "proposal": "Authors-side, not the site repo: publish a new Zenodo version (or edit the record) with the related identifier relation set to 'is described by' for arXiv:2603.10704, creators and affiliations as the authors want them cited (order is already identical to the preprint), the current template version, and funding from the preprint's acknowledgements. To make it repeatable, either create GitHub releases in the template and add a .zenodo.json (Zenodo uses only .zenodo.json when both files exist) with a CITATION.cff beside it for GitHub, or keep editing in the Zenodo form. The site then links the concept DOI or the chosen version DOI as in G1. The site repo only changes if the chosen DOI changes.",
+   "repo_and_files": [
+    "Zenodo record 10.5281/zenodo.19074199 (web form)",
+    "LabConstrictor/.zenodo.json (new, if the GitHub integration is used)",
+    "LabConstrictor/CITATION.cff (new)"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "needs_author_decision": "Everything: creator name spelling and order, affiliations, whether to credit anyone beyond the five preprint authors, funding wording, concept versus version DOI, and whether to switch to GitHub-release archiving. I did not supply or alter any of these values.",
+   "rule_conflicts": "None in the site repo; the Zenodo record is external data owned by its depositor."
+  },
+  {
+   "id": "G4",
+   "requirement": "A reference built automatically from a DOI must not misprint authors, venue or status.",
+   "current": "Primary records disagree on name splitting (ORCID says family 'Rivera Pineda' while the arXiv-derived record says family 'Pineda'; bioRxiv NucleiSky splits 'Iván Hidalgo' / 'Cenalmor'). Preprint status is not uniformly flagged: arXiv CSL is type 'article' with no container; bioRxiv CSL has an empty container-title and the server name only in Crossref `institution`. The NucleiSky JCS record is an accepted manuscript with no volume/issue. doi.org answered 429 once during testing.",
+   "severity": "major",
+   "proposal": "In scripts/lcsite/citations.py (G2) normalise as follows: authors are kept as full display strings 'Given Family' in registered order and never reduced to initials, so a wrong given/family split cannot change the printed text; do not generate BibTeX or APA from the arXiv split without author confirmation (offer 'Copy reference' as plain text first); kind = 'preprint' when Crossref subtype is 'preprint' or DataCite resourceTypeGeneral is 'Preprint', 'software' for DataCite Software, else 'article'; venue = container-title for articles, Crossref institution.name for bioRxiv ('bioRxiv'), publisher for arXiv ('arXiv'); print volume/issue only when present, otherwise the article number alone; retry with backoff on 429 and stop the build loudly on any other failure; escape every field with text.esc and strip markup from titles. Add tests with the six records fetched above as fixtures, including the Rivera Pineda, bioRxiv-no-container and JCS-no-volume cases.",
+   "repo_and_files": [
+    "labconstrictor-site/scripts/lcsite/citations.py (new)",
+    "labconstrictor-site/tests/test_citations.py (new)",
+    "labconstrictor-site/scripts/lcsite/text.py (reuse esc)"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "needs_author_decision": "Whether authors prefer 'Hidalgo-Cenalmor' (arXiv, JCS, ORCID credit name) or 'Hidalgo Cenalmor' (ORCID family name, Zenodo, NucleiSky README prose), and the family name of the arXiv author 'Marcela Xiomara Rivera Pineda' for any BibTeX or CITATION.cff (ORCID says 'Rivera Pineda').",
+   "rule_conflicts": "Required fields via explicit branches, no defaults; file and function size limits (a separate module keeps pages_apps.py under 300 lines); only fetch-stage code touches the network."
+  },
+  {
+   "id": "G5",
+   "requirement": "Each scientific app repository states its own recommended citation in a machine-readable form that the site and GitHub can both use.",
+   "current": "None of the seven repositories has CITATION.cff, .zenodo.json or codemeta.json on main. Citation text exists only in READMEs (NucleiSky, CellTracksColab, VLab4Mic, template). VLab4Mic's BibTeX url is pinned to .../729521v1 although v4 exists; NucleiSky's README prose spells 'Iván Hidalgo Cenalmor' while its BibTeX uses 'Hidalgo-Cenalmor'; NucleiSky's Zenodo concept record 10.5281/zenodo.21071484 has auto-generated creators 'Iván Hidalgo' and 'guijacquemet' and the title 'CellMigrationLab/NucleiSky: 0.1.1 - LabConstrictor fixes'.",
+   "severity": "minor",
+   "proposal": "Add a CITATION.cff per scientific app with `preferred-citation` set to the verified publication (the records in the claims above are the only data to use) and, where a software DOI exists, the concept DOI in `doi`; for NucleiSky also add .zenodo.json with proper creators so future Zenodo releases stop using 'guijacquemet'. Change the VLab4Mic README URL to the version-less DOI link https://doi.org/10.64898/2026.06.02.729521. The site then needs no extra work: G2 already resolves the manifest `doi`.",
+   "repo_and_files": [
+    "NucleiSky/CITATION.cff and .zenodo.json (new), README.md",
+    "CellTracksColab/CITATION.cff (new)",
+    "LabConstrictor-VLab4Mic/CITATION.cff (new), README.md",
+    "LabConstrictor/CITATION.cff (new, see G1)"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "needs_author_decision": "Author lists and name forms for each CITATION.cff, whether a software DOI should be cited next to the paper for NucleiSky (README badge) and for which version, and who owns the VLab4Mic file (see G6).",
+   "rule_conflicts": "A CITATION.cff beside README text is a second copy inside the app repo; keep the README to a one-line pointer or accept the duplicate as a GitHub feature. The site must not copy these files by hand."
+  },
+  {
+   "id": "G6",
+   "requirement": "The cited paper's credit must follow the publication, not the repository owner, and the site must read the intended VLab4Mic repository.",
+   "current": "The site lists CellMigrationLab/LabConstrictor-VLab4Mic (a fork created 2026-10-07 of HenriquesLab/LabConstrictor-VLab4Mic; release 0.1.5). The on-disk clone is the upstream (stale: no manifest, tags to 0.1.3). The cited paper's authors are Martínez, Saraiva, Shakespeare, Bates, Owen, Leterrier, Del Rosario, Henriques; both repositories' LICENSE read 'Copyright (c) 2025 Cell Migration Lab' (template-inherited text); the site shows 'Community listing' and the footer 'A project of the Cell Migration Lab' but no statement of who made VLab4Mic.",
+   "severity": "minor",
+   "proposal": "Treat as an authors question first: confirm which VLab4Mic repository is canonical for the listing (registry/CellMigrationLab__LabConstrictor-VLab4Mic.yaml) and who holds the copyright line in its LICENSE. On the site, make the G2 cite block the place where credit appears (the paper's authors) and avoid wording that implies the listing owner wrote the science. Later audit steps must read the GitHub fork, not /home/user/LabConstrictor-VLab4Mic.",
+   "repo_and_files": [
+    "labconstrictor-site/registry/CellMigrationLab__LabConstrictor-VLab4Mic.yaml",
+    "CellMigrationLab/LabConstrictor-VLab4Mic/LICENSE",
+    "labconstrictor-site/scripts/lcsite/pages_apps.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "needs_author_decision": "Canonical repository for the VLab4Mic listing; the LICENSE copyright holder and year; whether the app page should name the paper's authors or the maintaining lab as the app's credit.",
+   "rule_conflicts": "Rights and credit statements are the authors' to make; the site must not state them on its own."
+  }
+ ],
+ "unverified": [
+  "Whether the predecessor repositories CellMigrationLab/napari-guess-the-condition and jupyter-guess-the-condition carry a citation (not reachable from this session); so 'Guess the Condition has no publication' is only 'none found'.",
+  "The wording of the FORCE11 Software Citation Principles (PeerJ returned 403, force11.org returned an empty page); only the paper's existence and bibliographic data were checked, via Crossref.",
+  "Whether the NucleiSky JCS article will receive volume/issue/pages: the journal page (fetched 2026-10-10 through WebFetch's summarising model; Crossref agrees on the no-volume and 'am' status) shows only the accepted manuscript.",
+  "Whether the LabConstrictor Zenodo record is a manual upload (inferred from the file name, the missing GitHub isSupplementTo link, and the template repo having no releases) and whether the GitHub-Zenodo integration is enabled for the template.",
+  "Which fields .zenodo.json and CITATION.cff can set in Zenodo (the Zenodo help page checked did not enumerate creators, related identifiers or funding); only the precedence rule was confirmed.",
+  "That 'M.R.' in the preprint's author-contribution paragraph is Marcela Xiomara Rivera Pineda (inferred from initials; no other co-author has those initials).",
+  "The bioRxiv HTML page for VLab4Mic returned HTTP 429, so its 'how to cite' text was not read; the bioRxiv API, Crossref and the README BibTeX were used instead. Whether HenriquesLab/VLab4Mic (upstream) has a CITATION file: raw main CITATION.cff returned 404 but the API denied access to the repo.",
+  "Whether CellTracksColab, VLab4Mic, GuessTheCondition, Demo or Playground have their own Zenodo software DOIs: no README mentions one and I did not search Zenodo for them.",
+  "The audit's findings on the logo, comic, hub screenshots, fonts and funding paragraph for the site are outside this dimension and were not checked (only the LICENSE absence was confirmed)."
+ ]
+}

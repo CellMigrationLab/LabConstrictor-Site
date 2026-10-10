@@ -1,0 +1,133 @@
+{
+ "dimension": "Downloads and run routes (benchmark 2C and the privacy/Colab part of section 3)",
+ "already_met": [
+  "Download links, sizes, version and date are derived, not hand-written. assets.py:7-31 parses installer names from the release's own assets, takes `size` and `browser_download_url` from the API, and refuses any URL outside github.com/<repo>/releases/download/<tag>/. I compared the NucleiSky 0.1.1 asset list from `gh api` with the snapshot: names and byte sizes are identical (e.g. Windows .exe 317528492). The tag and `published_at` come from the release (catalogue.py:49-61). A manifest that promises installers with no release or no matching assets drops the app and names it in build/problems.md.",
+  "All three systems always show a tile. An absent installer reads \"No installer in this release.\" (pages_apps.py:64-65) and is never hidden. Detection only reorders tiles and adds a 'Your system' label (lc.js:34-36); it never removes an alternative. Download links are plain <a href> in the static HTML, so the Get section works without JS. A full 'All downloads' table with every asset (.msi, macOS .sh included), size and direct link sits at pages_apps.py:123-131.",
+  "macOS has an explicit chip choice. Two buttons are named by chip, 'Apple Silicon (M1 or later)' and 'Intel' (cards.py:14, pages_apps.py:56), and the tile has a 'how to check' hint (pages_apps.py:66). I ran lc.js in Chromium against 18 simulated browser setups (UA, navigator.platform and userAgentData overridden): Apple Silicon and Intel Mac with Chrome, Mac with Safari, Mac with Firefox, Mac with rejected client hints, Mac with empty architecture, Windows x64, Windows ARM, Windows with Firefox, Linux x64, Linux ARM, Linux with Firefox, iPhone, iPad, Android, Chromebook, FreeBSD. On a Mac, when the chip cannot be read (Safari, Firefox, rejected or empty hints) both chip buttons stay equally ghost-styled and nothing is recommended. When it can be read, the right chip is filled and moved first (arm -> arm64, x86 -> x86_64). The macOS chip choice therefore never silently picks the wrong architecture. Gap 1 covers the case where the chip is correct but the app does not support it.",
+  "Colab rows only show notebooks the author lists in `distribution.colab`, each with 'Open in Colab' (Colab logo plus name) and 'View on GitHub' (pages_apps.py:80-90). The cards carry a separate Colab route badge, so Colab is visibly a different route from Desktop on the App Centre.",
+  "The sources of truth are right. All six repos have labconstrictor-app.yaml on their default branch (`gh api`), and the live copies are identical to build/snapshot.json for hosts and distribution. The `hosts` claims are backed by shipped tool declarations: VLab4Mic's construct.yaml lists src/vlab4mic_lc_tools, and GuessTheCondition and Playground have *_lc_tools packages. The site's local clones in /home/user are stale and lack most manifests, so I checked READMEs and manifests against live GitHub.",
+  "The Windows install route is explained, one click away. The tile hint 'If Windows warns you, choose More info, then Run anyway.' (pages_apps.py:67) links through 'Need help installing?' to /guides/install/. That page, imported from the template, says 'The installers are not code-signed yet', says to download only from the app's own GitHub release, shows the SmartScreen picture, and covers macOS 'Open Anyway' and Linux `bash <file>`. The content exists and is single-sourced. Gap 2 is about surfacing it next to the buttons.",
+  "Touch targets and contrast pass by measurement in Chromium. Download buttons are 340x68 px, 'Open in Colab' 127x31, Copy 57x25 (24 px minimum met). The size line on the filled button (white at 0.85 opacity on #1c5f1c) works out to about 6:1 by my own calculation from computed styles; I did not run a contrast tool."
+ ],
+ "gaps": [
+  {
+   "id": "D1",
+   "requirement": "C: avoid wrong installers; macOS 'explicit Apple Silicon/Intel choice'. P0 'downloads and compatibility claims accurate'. Supported OS/architecture must come from the author ('Supported OS ... required where claimed').",
+   "current": "The site offers every release asset, so it presents an Intel Mac installer for three apps whose own README says Intel is not supported. GuessTheCondition README line 49: 'Apple-silicon Macs are supported; Intel Macs are not.' Playground README line 32: '(Windows, Apple Silicon Mac, Linux; Intel Macs are not supported)'. VLab4Mic README line 47: '.pkg for a Mac with an Apple chip (M1 or newer; Intel Macs are not supported)'. I read all three from live GitHub. The template workflow still builds `macos-15-intel`, so the release has MacOSX-x86_64.pkg. The built pages /apps/guessthecondition/, /apps/labconstrictor-playground/ and /apps/labconstrictor-vlab4mic/ each show an 'Intel' button (e.g. 'Intel 179 MB .pkg'). For an Intel Mac in Chromium, lc.js:38-45 fills that Intel button and moves it first, so the page actively recommends the unsupported download. The cause is structural: the manifest schema has only `installer: const true` (schema line 28) and no field for supported systems, and cards.downloads() (cards.py:107-117) lists every `primary` asset. The home text (data/site.yaml:20) also says 'macOS (Apple Silicon and Intel)'.",
+   "severity": "blocker",
+   "proposal": "Add an optional author-controlled `platforms` list to the manifest (windows-x86_64, macos-arm64, macos-x86_64, linux-x86_64). When present, downloads() offers only those and the Mac tile says in one line 'Intel Macs: not supported by this app'. A listed platform missing from the release raises AppProblem (like catalogue.read_release). When the field is absent, offer all assets and say 'The author does not list supported systems' (explicit, not silent). Show the same filter in the 'All downloads' table, or mark unlisted rows 'not supported by the author'. Add tests for presence, absence and a listed-but-missing platform. Then the three apps add one line to their manifests, and ideally the initialiser form and template skip the Intel build when unsupported.",
+   "files": [
+    "schema/labconstrictor-app.schema.json",
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/catalogue.py",
+    "content/submit.md",
+    "tests/test_site.py",
+    "tests/test_catalogue.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "None. This follows 'authors expose only what they choose' and 'no second manually maintained description' (the claim lives in the app's manifest, not in a site override). The absent-field case must be an explicit `in` check with visible wording (AGENTS.md no-silent-fallbacks). Update submit.md and the schema docs in the same change."
+  },
+  {
+   "id": "D2",
+   "requirement": "B7/C: 'Version, release date, download size and verification status accompany the actual download'. Windows: architecture support and unsigned-installer warning. macOS: security warnings and where the app appears. Linux: architecture, terminal, prerequisites. Verification tied to version, OS and date.",
+   "current": "The Get it block (between id=\"get\" and 'Notebooks to open in your browser') shows only 'Windows installer / 303 MB · .exe'. Version and date appear only in 'All downloads' near the bottom (pages_apps.py:128, 'Version 0.1.1, released 7 July 2026') and in Details (release_line). The verification state is only the 'Community' badge in the header plus the Details row (pages_apps.py:143-144). Architecture is never stated in words for Windows or Linux: SYSTEM_LABELS maps ('windows','x86_64') to plain 'Windows', and the 'x86_64' text exists only in file names and in lc.js's ARM-only message. Windows hint (pages_apps.py:67): 'If Windows warns you, choose More info, then Run anyway.' This tells the visitor to click through a security warning without saying the installer is unsigned or which address to trust, and the 'Check where it comes from' text is only on /guides/install/. The macOS tile (pages_apps.py:66) has the chip hint but nothing on the macOS 'Open Anyway' step or where the app appears (that is under 'Using it', line 116). The Linux tile says 'Run it with: bash <file name>' with no 'needs a terminal', no 'x86_64 only', no prerequisites. The .msi and macOS .sh appear only in the table, with no note on who needs them. `megabytes()` (text.py) divides by 2**20, so 317,528,492 bytes shows as '303 MB', where Finder shows 317.5 MB. A 'Verified' status names a version and date (cards.is_verified, registry schema `verified_version`/`verified_on`) but no tested OS, which section 3 requires.",
+   "severity": "major",
+   "proposal": "Directly under the 'Get it' h2, add one line built from existing helpers: release_line(app) ('v0.1.1 · 7 July 2026'), the tier badge, and 'Files come from github.com/<repo>/releases' (repo from app['repo']). Derive a short architecture phrase on each tile from the asset's arch, e.g. 'Windows 64-bit (Intel/AMD)'. Expand the Windows hint to say the installers are not code-signed, to run only files from that address, and link to /guides/install/ (do not restate the steps). Add a macOS line pointing to the same guide's 'Open Anyway' step and 'opens from Applications'. Add 'needs a terminal' to the Linux line. Relabel the size unit as MiB or divide by 10**6. Optionally add `verified_systems` to the registry entry and print it in the Status row.",
+   "files": [
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/text.py",
+    "schema/registry-entry.schema.json",
+    "tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "The tile hints are site-owned by design (AGENTS.md:31 'OS tile's short hint lines are in pages_apps.os_tile'), so editing them is fine. The unsigned explanation must link to the template's install.md and stay short, to avoid a second description. Keep one filled button per tile and at most one filled button outside tiles (DESIGN.md:40). Functions must stay <=30 lines, so put the new facts line in its own function."
+  },
+  {
+   "id": "D3",
+   "requirement": "C: 'Google Colab: opens in the browser, no local installation, what happens to uploaded data, internet and account requirements'. 'pip: clearly labelled advanced route; exact package/install command.' Section 3 privacy: 'a small factual disclosure when cloud execution is available'. Priority: High when relevant.",
+   "current": "The Colab block is a bare heading 'Notebooks to open in your browser' and rows of 'Open in Colab' / 'View on GitHub' buttons. It says nothing about a Google account, internet, where the code runs, or what happens to data. I searched every app page, content/guides/using-apps.md, content/submit.md and the home page: no sentence on this exists. The only line is using-apps.md:15, 'Use it without installing'. The authors' own material shows data handling matters here. CellTracksColab README line 102: Colab 'Your data: Uploaded to your Google Drive, which the notebook connects to' vs desktop 'Stays on your computer'. GuessTheCondition README line 53: 'the notebook ... mounts your Google Drive'. The NucleiSky 2D notebook cell calls `drive.mount('/content/gdrive')`. The manifest schema has no field to carry this. The pip command is printed bare (pages_apps.py:103-104) directly under the Colab list, with no heading, no 'advanced' label, no Python requirement and no version. PyPI `nucleisky` (pypi.org/pypi/nucleisky/json) has a single release, 0.0.1 (uploaded 2026-06-30), described as 'Constellation-based point-set registration utilities' with `requires_python >=3.12`. The page's version is the GitHub release 0.1.1, and NucleiSky's README itself says to use `nucleisky[all]` for segmentation. So the command installs a library, at a different version, than the app the page describes.",
+   "severity": "major",
+   "proposal": "Split 'Get it' into three labelled routes: Desktop, 'Try in your browser (Google Colab)', and 'Advanced: Python package'. Under Colab add one generic, service-level sentence that is true of every Colab notebook: 'Runs on Google's servers; you need internet and a Google account. Files you upload or connect (for example from Google Drive) leave your computer. The desktop app runs on your computer.' Optionally add an author-written `data_note` (<=200 chars, plain text, escaped) to `distribution.colab` entries for facts like 'mounts your Google Drive'. For pip, label it advanced and show the exact command plus the PyPI version and `requires_python`, read from pypi.org JSON in the fetch stage and stored in the snapshot (bump SNAPSHOT_FORMAT). Add a test that a Colab route always renders the disclosure.",
+   "files": [
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/catalogue.py",
+    "scripts/lcsite/github.py",
+    "schema/labconstrictor-app.schema.json",
+    "content/submit.md",
+    "DESIGN.md",
+    "tests/test_notebooks.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "A site-wide sentence about the Colab service is not a per-app description, so it is consistent with 'no second manually maintained description'. App-specific facts (Drive mount, GPU) must come from an optional manifest field, never a site override. The PyPI fetch belongs only in the fetch stage, with named exceptions. github.py currently refuses other hosts, so a PyPI client is a new, explicit edge function. Update DESIGN.md (route blocks) in the same change."
+  },
+  {
+   "id": "D4",
+   "requirement": "C: 'napari/Fiji/QuPath: genuinely usable now, experimental, or merely planned? What else must be installed? Which host versions have been tested?' Section 3: 'Experimental integration: distinguish actual experimental functionality from functionality still planned.'",
+   "current": "The maturity wording is hard-coded and identical for every host. cards.py:64-71 renders 'Soon in {host}' for every host in the manifest (also the card tooltip and screen-reader text). The built pages /apps/guessthecondition/ and /apps/labconstrictor-vlab4mic/ show 'Soon in napari' and 'Soon in Fiji'; /apps/labconstrictor-playground/ also shows 'Soon in QuPath'. The same page's Details row 'Works in' (pages_apps.py:146-147, 170-173) shows napari and Fiji pills with no maturity, and the App Centre filter 'Works in: napari' returns apps whose cards say 'Soon'. The real states differ. All three plugins' own docs/labconstrictor-project.yaml say `status: Experimental`. The napari guide: 'Under heavy construction... Tested on Linux. Windows and macOS are untested... installed from GitHub; not on PyPI.' Fiji guide: 'no ready-made file and no Fiji update site yet. Today the plugin is built from its repository' (needs Java and Maven). QuPath guide: 'For QuPath 0.7... the jar is built from its repository' (JDK 25). The apps' own READMEs present the tools as working now (GuessTheCondition: 'registers five tools ... napari ... Fiji'). So one word, 'Soon', is hand-written and covers three different, non-planned states. The Ecosystem page already says 'untested and under heavy construction', so the site contradicts itself. The status is already fetched at build time (projects.load_project, hosts.yaml `plugin`) but not used on app pages.",
+   "severity": "major",
+   "proposal": "Derive the chip text from the plugin's own `status` through hosts.yaml `plugin` -> projects.load_project(...)['status'], so it reads 'Experimental in napari' (or Available, Install from GitHub, Deprecated). Link it to the guide as now. Add a short factual line on the app page, or in the Works in row, taken from the guide's first paragraph rather than retyped: 'Requires the app installed plus the napari plugin; tested on Linux only.' Do not claim per-app host testing, which no source provides. If tested host versions are wanted (QuPath 0.7, napari/Python 3.10+), add an optional `tested_with` string to labconstrictor-project.schema.json and have the plugin repos fill it. Change the home hero (data/site.yaml:8) consistently.",
+   "files": [
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/hosts.py",
+    "scripts/lcsite/projects.py",
+    "schema/labconstrictor-project.schema.json",
+    "data/site.yaml",
+    "DESIGN.md",
+    "AGENTS.md",
+    "tests/test_site.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "DESIGN.md:32 and :49 and AGENTS.md:29 name 'Soon in napari' as the pattern, so DESIGN.md must be changed first in the same PR (DESIGN.md:4). It fits 'each repo is source of truth for its own content', because maturity comes from the plugin's own file. Per-app host testing must stay unclaimed (author-controlled). Adding `tested_with` is a change in the three plugin repos."
+  },
+  {
+   "id": "D5",
+   "requirement": "C: 'The main action should match the visitor's OS without concealing alternatives. A system-detection failure must not silently recommend the wrong architecture.' Linux/Windows 'supported architecture'.",
+   "current": "Findings from the 18-case run (and lc.js read line by line). (a) iPad Safari with its default desktop-class UA (Macintosh, platform MacIntel, maxTouchPoints 5): lcSystem() (lc.js:9-16) returns 'macos', the macOS tile moves first with the 'YOUR SYSTEM' label. The `/android|iphone|ipad|cros/` test at line 10 misses iPadOS 13+, so an iPad is silently treated as a Mac. (b) iPhone, Android, Chromebook and unknown (FreeBSD) return null: nothing is marked, and the page shows three desktop installers equally with no 'installers are for a computer' line and no pointer to Colab. (c) lc.js:46 on Windows ARM or Linux ARM (Chromium client hint 'arm') overwrites the tile's last `.lc-small`, which is the hint: it replaced 'If Windows warns you, choose More info, then Run anyway.' and 'Run it with: bash <file name>' with 'Only 64-bit Intel/AMD (x86_64) installers exist; this device looks like ARM.' The unsigned-warning and run instructions disappear for exactly those users, the x86_64 button stays filled, and the text does not say whether it will run (Windows 11 on ARM emulates x64; Linux ARM cannot). That sentence is hard-coded, not derived from the release. (d) assets.py:7-8 accepts `arm64` for every OS, but cards.downloads() does `SYSTEM_LABELS[(os, arch)]` (cards.py:115) with only four keys. I reproduced it: a release with Foo-1.0.0-Linux-arm64.sh gives `KeyError ('linux', 'arm64')`, a bare KeyError rather than AppProblem, so one app's new ARM build would stop the whole site build. os_button names non-Mac buttons by system only (pages_apps.py:56), so an arm64 and an x86_64 Linux button would both read 'Linux installer'. (e) No test covers lc.js detection (tests/ is Python only).",
+   "severity": "minor",
+   "proposal": "Treat MacIntel with maxTouchPoints > 1 as null. When system is null, add one line to the grid: 'Installers are for Windows, macOS and Linux computers', plus 'or open in Colab' when the app has Colab. Do not overwrite the hint on ARM: append a second line, and derive its text from the assets ('this release has x86_64 only'). Replace the KeyError with an AppProblem naming the app and unsupported arch, or extend SYSTEM_LABELS and name buttons by arch whenever a system has more than one. Extract lcSystem(ua, platform, uaData) as a pure function and cover it with a small node --test or Python-run table of the 18 cases above.",
+   "files": [
+    "docs/assets/javascripts/lc.js",
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/assets.py",
+    "tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "None. It supports AGENTS.md 'no silent fallbacks' (the arm64 KeyError should become a named AppProblem) and 'every new behaviour gets a test'. lc.js is outside the Python code rules but should stay small and annotated."
+  },
+  {
+   "id": "D6",
+   "requirement": "5 'Content integrity: automatically check ... GitHub release assets, version metadata and manifest validity'; C 'Colab ... where actually available'; pip 'exact package'.",
+   "current": "Installers are pinned to the app's own release (assets.py:14-16, 26-28). Colab and pip claims get no such check. The Colab schema pattern only requires the host `^https://colab\\.research\\.google\\.com/` (schema line 54). I ran validate.check() on manifests with four URLs, and all four were ACCEPTED: a notebook in someone else's repo (`/github/someoneelse/otherrepo/blob/main/x.ipynb`), a Drive notebook (`/drive/...`), a nonexistent path in the app's own repo, and a URL with a query string. catalogue.resolve (catalogue.py:91-108) never compares the Colab owner/repo to the app or checks the file exists, and check_site.py checks only internal links. The page would show 'Open in Colab' with the Colab logo, and a 'View on GitHub' link to another repo, under the app's name. The `pip` field (schema line 30) is checked only for a name pattern; whether the PyPI project exists is never checked. The 5 live Colab links and the NucleiSky package do resolve today (I checked the paths in the cloned repos and PyPI), so this is a missing guard, not a current error.",
+   "severity": "minor",
+   "proposal": "In the fetch stage, for each `distribution.colab` link, parse owner/repo/branch/path with COLAB_FILE (pages_apps.py:71). Require owner/repo to equal the app's repo (case-insensitive) and fetch the path with the existing gh.raw, raising AppProblem naming the app and link otherwise. Refuse `/drive/` links, or show them without a GitHub link and flag them as 'not in the app's repository'. Check the PyPI project exists, in the same stage as the D3 fetch. Add tests for foreign repo, missing path and Drive link.",
+   "files": [
+    "scripts/lcsite/catalogue.py",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/github.py",
+    "schema/labconstrictor-app.schema.json",
+    "tests/test_catalogue.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "Consistent with AGENTS.md ('app downloads come only from the app's own GitHub release', 'no silent fallbacks'). A check that rejects a link is a per-app AppProblem, as designed. Any network read belongs only in the fetch stage (catalogue.py/github.py), never in build_site.py."
+  }
+ ],
+ "unverified": [
+  "Whether the Intel macOS installers of GuessTheCondition, Playground and VLab4Mic actually fail. I relied on the apps' own READMEs saying Intel is unsupported; I did not download or run any installer.",
+  "Chromium under Rosetta on Apple Silicon. A translated x64 Chrome probably reports architecture 'x86', which would highlight the Intel button on an Apple Silicon Mac. I had no Mac to test.",
+  "All 18 detection cases were simulated in headless Chromium by overriding navigator.userAgent, navigator.platform, navigator.maxTouchPoints and navigator.userAgentData. I did not run real Safari, Firefox, iPadOS or Android browsers. The iPad finding rests on iPadOS 13+ sending a Macintosh UA with platform 'MacIntel', which I know from browser behaviour, not from a device here.",
+  "Whether the macOS .pkg or the Windows .exe is code-signed or notarised. I relied on the template's install.md ('not code-signed yet'). Windows 11 ARM x64 emulation and the exact Gatekeeper dialogs are not tested. The release carries no checksum files (7 assets listed for NucleiSky 0.1.1), so source verification rests on the GitHub URL alone.",
+  "Colab data handling: I read the NucleiSky 2D notebook source (a possibly stale local clone) and the live READMEs of CellTracksColab and GuessTheCondition. I did not open any notebook in Colab, and did not read NucleiSky 3D, GuessTheCondition or CellTracksColab notebook code. 'Mounts your Google Drive' is therefore verified for NucleiSky 2D and stated by two READMEs, not for every notebook.",
+  "The PyPI facts (nucleisky 0.0.1, uploaded 2026-06-30, requires_python >=3.12) were read from pypi.org on 2026-10-10 and may change. I did not install the package.",
+  "I audited the preview server at localhost:8765 and the built site/ tree, not the live published site. Keyboard operation and focus order of the tiles after lc.js reorders them were not tested, and the reordering may add layout shift on slow loads. Contrast was calculated from computed styles, not with a tool across all states."
+ ]
+}

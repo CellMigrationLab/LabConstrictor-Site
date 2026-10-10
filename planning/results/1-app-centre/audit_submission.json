@@ -1,0 +1,144 @@
+{
+ "dimension": "Submission by external labs (benchmark section 4)",
+ "already_met": [
+  "App name and plain-language summary (row 1): schema/labconstrictor-app.schema.json:8 requires schema, name, summary, kind, distribution; name 2-60 chars, summary 20-200 chars. Ran the site's validate.check: a 4-field manifest passes, and a manifest missing summary and kind fails with \"(top level): 'summary' is a required property; ... 'kind' ...\". Every error is listed at once, none is defaulted, and an invalid manifest leaves the app out and names it in build/problems.md.",
+  "Coarse scientific category (row 2, partly): `kind` is required (enum analysis, segmentation, simulation, game, training, utility) and feeds the App Centre filter; `categories` (free text, max 6) is present in all 6 real manifests and is searched (cards.search_text).",
+  "Working distribution route (row 5), installer part: catalogue.read_release raises AppProblem when the manifest promises installers but the repo has no release or no installer assets; assets.parse_asset refuses downloads not served from that repo's own release tag; Colab URLs are pattern-restricted to colab.research.google.com; the author chooses which notebooks are shown (distribution.colab).",
+  "Supported OS (row 9, OS part): the site claims only what the release contains. cards.downloads builds one tile per system from real assets, and a missing system shows \"No installer in this release.\" (pages_apps.os_tile), so no OS is claimed without a file. Size, version and release date also come from the release.",
+  "Source repository (row 6, partly): the registry stores a pointer plus numeric repo_id and owner_id; catalogue.check_identity refuses a changed owner, a private or an archived repo.",
+  "DOI/publication (row 11): optional `doi`, pattern-checked (^10\\.\\d{4,9}/\\S+$) and shown as \"Cite doi:...\" (pages_apps.details_list). Verified on /apps/nucleisky/. `authors` with ORCID and `homepage` are also optional and shown when given.",
+  "Single source of truth: all 6 apps now have labconstrictor-app.yaml on their default branch (checked with gh api). The committed snapshot matches those remote files, not seed/manifests (only icon lines differ), so the site does not hold a second copy at build time.",
+  "The submission bot and the build share one check path: scripts/submit_app.py calls catalogue.resolve, so a manifest cannot pass the form and fail the build. The issue text goes through an environment variable and the submitted repo is never checked out or run.",
+  "Authoring-side validation exists: LabConstrictor_streamlit/app_manifest.render refuses to write an invalid manifest, and the template's .tools/python/check_app_manifest.py (template 0.1.15) validates the schema and checks that the icon and screenshot files exist. It never blocks installer builds. content/submit.md's example manifest validates against the current schema (I checked it)."
+ ],
+ "gaps": [
+  {
+   "id": "S1",
+   "requirement": "Section 4 table as a rule: Required rows enforced, 'strongly enforced' rows enforced or visibly missing, with no second description. One tiered rule is needed: hard-required for any listing, required for a visible 'complete' status, and optional.",
+   "current": "Only 5 fields are required (schema/labconstrictor-app.schema.json:8). submit_app.check returns \"All checks passed\" for any valid manifest, so a 4-field manifest is accepted. The bot's only warnings come from a bad icon (catalogue.read_icon). The app page silently omits absent sections (pages_apps.py: `if m.get(\"description\")`, `if m.get(\"quickstart\")`, docs link falls back to the README), except License, which prints \"Not stated\". The Submit page \"What the labels mean\" only explains Community and Verified. I prototyped the tier-2 schema against the 6 real remote manifests. All 6 pass tier 1. Of the 4 non-testing apps, 0 pass tier 2 (7 gaps for NucleiSky and CellTracksColab, 8 for GuessTheCondition, 9 for VLab4Mic). Playground and Demo are section: testing and exempt.",
+   "severity": "blocker",
+   "proposal": "TIER 1 LISTED (hard: bot shows a cross, build leaves the app out and names it in build/problems.md; all 6 pass today). The existing 5 required fields. Repo public, not archived, same ids. License resolved from the manifest or GitHub, otherwise AppProblem instead of \"Not stated\" (all 6 are MIT). Every claimed route verified (see S5). Maintainer = the repository owner, derived and shown as \"Maintained by <owner> on GitHub\"; no new field, so author-controlled still holds.\nTIER 2 COMPLETE (shown as \"Description complete\"; applies only to section: apps, not Testing): categories>=1, inputs, outputs, limitations (S2), quickstart>=1, >=1 screenshot with shows=interface or result (S3), support (docs_url, or issues enabled) (S3), status, requirements.gpu, and an `integrations` entry for each napari/fiji/qupath host claimed (S4).\nTIER 3 OPTIONAL (shown when given): doi, authors, homepage, icon, description, example_data, integrations.tested_with.\nMECHANISM: define tier 2 as data in a second file, schema/labconstrictor-app.complete.schema.json (required lists plus `contains` for screenshots and `if hosts contains napari/fiji/qupath then required integrations`), and evaluate it with one pure function `completeness.gaps(manifest, repo_facts) -> list[str]` in a new module (<=30 lines, built on Draft202012Validator.iter_errors, no `.get(k, default)`). The bot, the build and the template check all run the same file. Keep the vendored hard schema unchanged for fields the initialiser does not yet collect; otherwise manifest_form.submission_errors blocks every new repo.\nGATES: the submission bot requires tier 2 (hard) for NEW non-testing submissions, which meets 'required for a public scientific-app listing'. The daily build never delists a registered app for a tier-2 gap; it lists the gaps in a separate \"Incomplete listings\" section of problems.md, one line per app, without opening issues. The 6 existing apps are therefore not delisted, and the site is still unlisted (extra.listed: false) so owners have time to fill in.\nINDICATOR: a Details row \"Description: Complete\" or \"Missing: inputs, outputs, ...\" with a link to the Submit field list, plus \"Not stated by the authors\" rows for Works with and Produces. No card badge and no score next to Community/Verified, because benchmark section 3 says metadata must not be mistaken for validation and section 6 excludes rankings. Wording: \"Description complete\" never \"Verified\" or \"Quality\". Also add a Submit-page field table split into the three tiers, and a test that the Submit example validates against the schema.",
+   "files": [
+    "/home/user/labconstrictor-site/schema/labconstrictor-app.complete.schema.json (new)",
+    "/home/user/labconstrictor-site/scripts/lcsite/completeness.py (new)",
+    "/home/user/labconstrictor-site/scripts/lcsite/catalogue.py",
+    "/home/user/labconstrictor-site/scripts/lcsite/pages_apps.py",
+    "/home/user/labconstrictor-site/scripts/lcsite/config.py",
+    "/home/user/labconstrictor-site/scripts/submit_app.py",
+    "/home/user/labconstrictor-site/.github/workflows/validate-submission.yml",
+    "/home/user/labconstrictor-site/content/submit.md",
+    "/home/user/labconstrictor-site/DESIGN.md",
+    "/home/user/labconstrictor-site/tests/test_catalogue.py"
+   ],
+   "effort": "L",
+   "needs_other_repo": true,
+   "rule_conflicts": "No conflict with the standing rules if done as above. DESIGN.md needs a pattern for the new Details row before it is built (\"find its type; if none, add it first\"). New code goes in new modules (pages_apps.py is 208/300 lines), functions <=30 lines, annotated, with failure-case tests. Gaps are reported, never defaulted. The benchmark contradicts itself: section 4 says example data is 'strongly recommended' and screenshot 'required for a public listing', while section 7 P0 says make examples a 'listing requirement'. The proposal follows section 4 (example_data optional, first-run steps required via quickstart), and the entry gate makes the screenshot rule real for new apps."
+  },
+  {
+   "id": "S2",
+   "requirement": "Input data and expected output (required for analysis apps), known limitations (required), and example/test data (strongly recommended), stored in the app repo and feeding the site.",
+   "current": "The manifest has no field for any of them, and `additionalProperties: false` (schema line 9) stops authors from adding one. The only route is the optional free-text `description`, and none of the 6 states input formats or dimensionality. The information already exists in the repos. NucleiSky/docs/limitations.md says Z-stacks or time series \"will raise a strict validation error\" for the 2D workflow, and the README links docs/exports.md and docs/limitations.md. GuessTheCondition/README.md lines 29-34 specify the TIFF folder layout. CellTracksColab/README.md has a table of required file formats (CSV or XML). None of it reaches the app page. page_app (pages_apps.py) goes name, summary, badges, Get it, About. There is no Works with / Produces block, and cards.search_text indexes only name, summary, description and categories.",
+   "severity": "blocker",
+   "proposal": "Add optional `inputs`, `outputs` and `limitations`: arrays of 1-6 plain-text strings of 5-200 chars each, the same shape as `quickstart` (so one renderer and one test pattern). Add optional `example_data`, a list of {label, https url} that points at the author's own data (the site hosts nothing). Render \"Works with\" and \"Produces\" rows in the decision area directly under the header and before Get it, showing \"Not stated by the authors\" when absent in tier 2. Add a \"Limitations\" h2 after Using it and an Example data link inside Using it. Add inputs, outputs and limitations to search_text (P1 search by task). The 6x200 character cap and the link to docs_url are what stop this becoming a second README. Tier 2 requires inputs, outputs and limitations, and example_data stays optional (absence shown as \"No example data listed\"). Put the new rendering in a new module, e.g. pages_fit.py.",
+   "files": [
+    "/home/user/labconstrictor-site/schema/labconstrictor-app.schema.json",
+    "/home/user/labconstrictor-site/scripts/lcsite/pages_fit.py (new)",
+    "/home/user/labconstrictor-site/scripts/lcsite/pages_apps.py",
+    "/home/user/labconstrictor-site/scripts/lcsite/cards.py",
+    "/home/user/labconstrictor-site/DESIGN.md",
+    "/home/user/LabConstrictor_streamlit/manifest_form.py",
+    "/home/user/LabConstrictor_streamlit/app_manifest.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "None. Consistent with \"each repo is the source of truth\" because the fields live in the app repo. Fields are short statements, not README copies. Author-controlled holds because all are optional until tier 2 and nothing personal is required. Needs a DESIGN.md pattern first (a facts row in the app header). Optional fields are checked explicitly with `in` or optional_list, never `.get(k, default)`."
+  },
+  {
+   "id": "S3",
+   "requirement": "One real screenshot (required for a public scientific listing), short first-use instructions (required), documentation and support link (required).",
+   "current": "All three are optional in the schema: `screenshots`, `quickstart`, `docs_url`. Real data: 0/6 have quickstart, 0/6 have docs_url, and 1/6 has a screenshot. That one is NucleiSky's banner (caption \"NucleiSky banner.\", path docs/assets/banner.jpg), even though the repo holds real results in docs/assets/2D_QC.jpg and 3D_QC.jpg. A picture cannot say what it shows. The built page renders `alt=\"\"` (verified on /apps/nucleisky/: `<img class=\"lc-shot__img\" ... alt=\"\">`), although the schema says \"captions double as alt text\" and DESIGN.md Images requires a description in alt for product screenshots. The page also substitutes site-written text for missing author input. pages_apps.using_section always prints the generic \"After installing, open the app from your Start Menu or Applications folder. Its Welcome notebook lists what it can do\", which reads as first-run guidance but is not app-specific. The docs link falls back to \"README on GitHub\". \"Report a problem\" is built unconditionally as html_url + \"/issues\" (details_list), while GitHub's API reports has_issues=false for LabConstrictor-VLab4Mic. catalogue never reads has_issues.",
+   "severity": "major",
+   "proposal": "(a) Add an optional `shows` enum (interface, input, result) to each screenshot item. Tier 2 needs >=1 with interface or result; a banner may stay but does not count, so NucleiSky is honestly 'screenshot missing' until it adds 2D_QC.jpg. Render alt from the caption (fixes the alt=\"\" rule break). (b) Record repo[\"has_issues\"] in the snapshot (bump SNAPSHOT_FORMAT 2 to 3). Render \"Report a problem\" only when true, otherwise \"No issue tracker listed\" plus a support gap in tier 2 (docs_url or issues). VLab4Mic stays listed and shows the gap, so it is not delisted. (c) When quickstart is absent, print \"The authors have not written first-run steps yet.\" before the generic line and label that line as generic. The generic text must not stand in for a required field. (d) Template check: for tier-2 gaps print ::warning annotations, not errors.",
+   "files": [
+    "/home/user/labconstrictor-site/schema/labconstrictor-app.schema.json",
+    "/home/user/labconstrictor-site/scripts/lcsite/pages_apps.py",
+    "/home/user/labconstrictor-site/scripts/lcsite/catalogue.py",
+    "/home/user/labconstrictor-site/scripts/lcsite/config.py",
+    "/home/user/labconstrictor-site/scripts/check_design.py",
+    "/home/user/src-template/.tools/python/check_app_manifest.py",
+    "/home/user/src-template/.tools/docs/app_manifest.md"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "None; (a) restores the DESIGN.md Images rule. The generic using-it paragraph is currently a silent substitute for missing input, which sits uneasily with \"no silent fallbacks\", so label it rather than drop it. Rendering \"Not stated\" for an absent optional field follows the existing License precedent."
+  },
+  {
+   "id": "S4",
+   "requirement": "Development status and known limitations (required), supported host integrations (required where claimed, with maturity: usable now, experimental or planned, and tested host versions), hardware or cloud requirements (required when nontrivial), plus the local-versus-cloud disclosure.",
+   "current": "There is no `status` field. The page's \"Status\" row (pages_apps.details_list) shows the verification tier (\"Community listing: not verified by a maintainer...\"), which mixes development status with verification (benchmark section 3 asks to keep them apart). GuessTheCondition's latest release is v0.0.0 with nothing saying it is under development. `hosts` is a bare enum list, and every non-notebook host renders as \"Soon in napari/Fiji/QuPath\" from hard-coded text (cards.host_badge and host_chip). That claim is made by the site, not the author, and the author cannot say experimental or available or give a tested version. 3 of 6 apps claim hosts (GuessTheCondition, VLab4Mic, Playground, which also claims QuPath). There is no hardware or cloud field. NucleiSky/README.md line 53 says core matching runs on CPU and GPU is optional, and the page is silent. The Colab route says nothing about where uploaded data goes (the Notebooks block shows only Open in Colab and View on GitHub).",
+   "severity": "major",
+   "proposal": "Add optional `status` (enum stable, experimental, in-development, discontinued). Rename the current Details row \"Status\" to \"Verification\" and add a \"Development status\" row. Add optional `integrations`: a list of {host (napari, fiji or qupath), status (planned, experimental or available), tested_with (<=60 chars), note}. Badge text follows status, and \"Soon in\" is used only for planned. A host listed in `hosts` with no integration entry shows \"Listed by the authors, status not stated\" instead of the site inventing \"Soon\". A site-side cross-check raises AppProblem if an integration names a host missing from `hosts`. Add optional `requirements: {gpu: none|optional|required, notes: [<=3 strings]}`. Absence reads \"Not stated\" and an explicit value is shown. Put the local-versus-cloud line in data/hosts.yaml and render it per route, in site words, about the route (Desktop: runs on your computer; Colab: the files you open are handled by Google's servers), so no author claim is needed. Tier 2 requires status, requirements.gpu and integrations for each claimed host.",
+   "files": [
+    "/home/user/labconstrictor-site/schema/labconstrictor-app.schema.json",
+    "/home/user/labconstrictor-site/scripts/lcsite/cards.py",
+    "/home/user/labconstrictor-site/scripts/lcsite/pages_apps.py",
+    "/home/user/labconstrictor-site/data/hosts.yaml",
+    "/home/user/labconstrictor-site/data/site.yaml",
+    "/home/user/labconstrictor-site/DESIGN.md",
+    "/home/user/LabConstrictor_streamlit/manifest_form.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "The status vocabulary differs from schema/labconstrictor-project.schema.json (Experimental, Available, Install from GitHub, Deprecated). Pick one set or document the mapping, since the Ecosystem page and the App Centre will show both. Badge colours stay within the DESIGN.md Badges rule (orange = a program). \"Author-controlled\": only declared hosts are shown; nothing is inferred from the repository."
+  },
+  {
+   "id": "S5",
+   "requirement": "Working distribution route (required) and \"public, has a license\" as stated on the Submit page: promises on the Submit page must be checks the bot actually runs.",
+   "current": "content/submit.md step 2 says \"Your repository is public and has a license\", but license is not checked. catalogue.repo_license returns None and the page prints \"Not stated\" (pages_apps.details_list). Only the installer route is verified. The Colab notebook's existence is not checked (all 5 listed notebooks exist today; I checked via gh api) and neither is the pip name. get_section prints `pip install <name>` for any string that matches the pattern. The package is not tied to the repo, which is a supply-chain risk for a command shown as exact, even though PyPI's project_urls for `nucleisky` do point to the repo, so the check is feasible. The version is not shown either. The NucleiSky page says \"Latest release v0.1.1 · 7 July 2026\" next to `pip install nucleisky`, while PyPI's only release is 0.0.1 (pypi.org/pypi/nucleisky/json; NucleiSky/pyproject.toml:8 is 0.0.1). Bot messages quote raw regexes for pattern errors (verified: \"'a.svg' does not match '^(?!/)(?!.*\\\\.\\\\.)...'\") and `installer: false` yields \"True was expected\".",
+   "severity": "major",
+   "proposal": "In catalogue.resolve add a `check_routes` step (network at the fetch edge only). Colab: confirm the notebook path exists in the repo, otherwise AppProblem naming the label. pip: one GET to PyPI JSON through a new edge module (pypi.py with a fixed host and a size cap); require project_urls or home_page to mention the repo (case-insensitive), otherwise AppProblem; show the PyPI version beside the pip command and add a reported warning, not an unlisting, when it differs from the release tag. License resolving to None becomes AppProblem(\"no license ... add a LICENSE file\"). Improve validate.describe to append the field's schema `description` when a pattern or const error fires. All 6 apps pass these checks today (Colab 5/5, nucleisky, MIT 6/6).",
+   "files": [
+    "/home/user/labconstrictor-site/scripts/lcsite/catalogue.py",
+    "/home/user/labconstrictor-site/scripts/lcsite/pypi.py (new)",
+    "/home/user/labconstrictor-site/scripts/lcsite/validate.py",
+    "/home/user/labconstrictor-site/scripts/lcsite/pages_apps.py",
+    "/home/user/labconstrictor-site/AGENTS.md",
+    "/home/user/labconstrictor-site/tests/test_catalogue.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "AGENTS.md says app downloads come only from the app's own GitHub release and that fetch_* scripts are the only network users. PyPI is a new host, so add it to AGENTS.md (Untrusted input) and keep the call in a fetch-time edge module with a size cap and no redirects to other hosts (as github.py does). A dead route raises AppProblem, consistent with \"manifest promises installers but no release\". Using the schema's `description` text in errors needs `in`, not `.get(k, default)`."
+  },
+  {
+   "id": "S6",
+   "requirement": "\"An external author should not have to learn how the website is generated\": the same fields must be collectable in the initialiser, checked in the author's repo, and stay in step with the site schema.",
+   "current": "The initialiser form asks only summary, kind, hosts (default notebook) and description (LabConstrictor_streamlit/manifest_form.py:_text_fields). The whole manifest can be declined (`describe_app` checkbox) and `distribution: {installer: True}` is hard-coded (app_manifest.build_manifest). The template check treats a missing manifest as a warning that passes (check_app_manifest.py docstring, exit 0). The schema exists in four hand-copied places: site schema/ (authority), LabConstrictor_streamlit/schemas/, template .tools/schema/, and .template_sync/resources/v0_1_14_to_v0_1_15/.tools/schema/. They are byte-identical today (diff) but kept only by README notes (\"copy it here\"). Remote state (gh api): only LabConstrictor_Demo is at template 0.1.15 with the check script. NucleiSky, CellTracksColab, GuessTheCondition, VLab4Mic and Playground are at 0.1.14 without it. The $id, initialiser SCHEMA_URL and template docs point at labconstrictor.cellmig.org, which is not live (site_url is cellmigrationlab.github.io/LabConstrictor-Site/). With `additionalProperties: false`, any new field makes an outdated vendored schema reject manifests that use it. seed/manifests/ in the site repo is a second hand-kept copy of all 6 manifests that has already drifted (e.g. icon lines in GuessTheCondition, VLab4Mic and Playground that the real repo files lack).",
+   "severity": "major",
+   "proposal": "REQUIRES CHANGES IN OTHER REPOS, in this order. (1) Site: ship the new optional fields in labconstrictor-app.schema.json plus the complete schema (S1-S4) and S5, so the authority accepts them first. (2) Template LabConstrictor: new migration v0_1_15_to_v0_1_16 with resources/v0_1_15_to_v0_1_16/ replacing the four managed files (.tools/schema/*, a new complete schema copy, check_app_manifest.py, app_manifest.md; the workflow only if it changes) and an entry in .template_sync/manifest.yaml. The check script prints ::error for tier-1 problems and ::warning for tier-2 gaps (replace `manifest.get(\"screenshots\", [])`), and it never blocks installers. The 5 apps at 0.1.14 get it through their next template sync PR; Demo already has 0.1.15 and needs the new one. (3) Initialiser LabConstrictor_streamlit: add form fields for categories, inputs, outputs, limitations, 1-6 first-run steps, status, gpu and per-host integration status; extend build_manifest and update its tests. Keep the decline checkbox but say \"without this file the app cannot be listed\". Screenshots cannot be collected at initialisation, so the template check does the nagging. Copy the schemas. (4) In this repo, delete seed/manifests/ or mark it dev-only, and add a test that a copy of the schema in a sibling checkout matches (skipped when absent), or a CI job in each copy-holding repo that diffs against the published schema once the domain is live. Do not add tier-2 required keys to the vendored hard schema until the initialiser collects them: manifest_form.submission_errors would block every new repo. Order matters: between steps 1 and 2 an author who uses a new field gets a failing (non-blocking) check from the old vendored schema.",
+   "files": [
+    "/home/user/LabConstrictor_streamlit/manifest_form.py",
+    "/home/user/LabConstrictor_streamlit/app_manifest.py",
+    "/home/user/LabConstrictor_streamlit/schemas/labconstrictor-app.schema.json",
+    "/home/user/LabConstrictor_streamlit/tests/test_app_manifest.py",
+    "/home/user/src-template/.template_sync/migrations/v0_1_14_to_v0_1_15.py",
+    "/home/user/src-template/.template_sync/manifest.yaml",
+    "/home/user/src-template/.tools/python/check_app_manifest.py",
+    "/home/user/src-template/.tools/docs/app_manifest.md",
+    "/home/user/src-template/.tools/schema/README.md",
+    "/home/user/labconstrictor-site/seed/manifests",
+    "/home/user/labconstrictor-site/tests/test_catalogue.py"
+   ],
+   "effort": "L",
+   "needs_other_repo": true,
+   "rule_conflicts": "seed/manifests/ conflicts with \"no second manually maintained description\": it is a copy of the apps' own files and has drifted. The four-copy schema is the same kind of duplication, tolerated only because the site is the stated authority, so keep the copies mechanical. Changes to other repos go in pull requests there, not here (AGENTS.md \"Before you push\"). Template migrations must not touch labconstrictor-app.yaml, which belongs to the app (as the 0.1.15 migration states)."
+  }
+ ],
+ "unverified": [
+  "I did not open the live GitHub Issues page of LabConstrictor-VLab4Mic in a browser. The API says has_issues=false, but curl through the proxy returned HTTP 200 titled \"Issues · ...\", so I cannot say whether visitors reach a working issue form. S3 rests on the API flag.",
+  "The tier-2 `complete` schema was prototyped only in the scratchpad (sub/complete.schema.json, t3.py) against the 6 remote manifests. It was not wired into the site, so the gap counts (7, 7, 8, 9) are from that prototype and depend on the exact required list proposed.",
+  "I read the initialiser (Streamlit) and template sync code but did not run the Streamlit UI, the template sync workflow or the submission workflow on GitHub Actions. The migration ordering, VLab4Mic's migration chain (remote is 0.1.14; the local clone in /home/user is stale at 0.1.3) and the \"old vendored schema rejects new fields\" effect are inferred from the code and from additionalProperties:false, and the validator rejection of an unknown field (`inputs`) was verified only with the site's own schema.",
+  "I did not test whether the labconstrictor.cellmig.org schema URL resolves from the internet. The README says the domain is not live yet, so the claim that editor hints point nowhere is inferred from that, and from site_url being cellmigrationlab.github.io/LabConstrictor-Site/.",
+  "The local clone /home/user/LabConstrictor is at template 0.1.14 and lacks the check. The 0.1.15 files were read from /home/user/src-template, whose origin/main contains them (also confirmed by gh api).",
+  "I did not assess other dimensions (accessibility, performance, filter UX, mobile). The 'real first-run example' acceptance test is covered here only through quickstart and example_data fields, not by running any app."
+ ]
+}

@@ -1,0 +1,128 @@
+{
+ "dimension": "USABILITY ACCEPTANCE TESTS (benchmark section 5, 8-task table), played as a first-time biologist with Playwright/Chromium against http://localhost:8765/. Scripts: /tmp/claude-0/-home-user/a3a6ac4f-1857-5992-b7c5-06332778d500/scratchpad/usab/*.js. Screenshots: .../scratchpad/usab/shots/. Verdicts: T1 PASS (cell tracking), partial for nuclei segmentation; T2 FAIL; T3 PASS; T4 PARTIAL (instructions findable, source not verifiable from the page); T5 FAIL; T6 FAIL; T7 PARTIAL (Report 6/6, Cite 2/6); T8 PARTIAL (no overflow, targets fine, but mobile menu focus order breaks keyboard use).",
+ "already_met": [
+  "T1 Find a cell-tracking app: PASS. Path: / -> click 'Open the App Centre' -> type 'cell tracking' in Search -> one card, 'CellTracksColab' (count '1 of 6 apps', address becomes /apps/?q=cell+tracking) -> click card. 3 actions, about 3 s scripted. Deciding text: card summary 'Compile, visualise and analyse cell tracking data...' and Topics 'cell tracking, TrackMate'. Also works: 'tracking', 'track', 'TrackMate'. 'Clear filters' returns '6 of 6 apps'. The desktop header search also puts CellTracksColab first of 7 results for 'cell tracking' (shots/t1-global-search.png). Shots: t1-appcentre.png, t1-search-cell-tracking.png, t1-celltracks-page.png.",
+  "T1 nuclei: typing 'nuclei' gives NucleiSky in one step, and the page is honest that it is registration, not segmentation ('registration, ROI matching'). No app in the catalogue is a segmenter, so the empty state for 'nuclei segmentation' is truthful (shots/t1-search-nuclei-segmentation.png). Catalogue works without JS: with JavaScript disabled the filter form stays hidden and all 6 cards are visible and linked (shots/t1-nojs-appcentre.png).",
+  "T3 Install NucleiSky on a Mac: PASS, chip choice needs no guessing. Path: / -> 'Open the App Centre' -> NucleiSky card -> macOS tile (3 clicks incl. the download). I emulated real Chrome client hints through CDP Emulation.setUserAgentOverride (UA 'Intel Mac OS X' on both chips): architecture=arm gives the macOS tile first with 'YOUR SYSTEM', 'Apple Silicon (M1 or later) 183 MB . .pkg' filled and 'Intel 189 MB . .pkg' outlined; architecture=x86 gives the reverse; a Safari/Firefox-like Mac (no navigator.userAgentData, platform MacIntel) gives two equal outlined buttons and nothing is recommended. In every case the hint 'Not sure? Apple menu, About This Mac: Intel, or M1 and later (Apple Silicon).' is shown. Each button is named by chip, size and format. The .pkg links return a 302 to objects.githubusercontent.com. /guides/install/#macos adds how to read Chip or Processor, 'Open Anyway' in System Settings, and 'Launch the app from your Applications folder'. Without JS all four buttons are present (Windows, Apple Silicon, Intel, Linux). Shots: t3-applesilicon-chrome-fold.png, t3-intel-chrome-fold.png, t3-mac-safari-nohints-fold.png, t3-nojs-fold.png.",
+  "T4 locate instructions: from the Windows tile ('If Windows warns you, choose More info, then Run anyway.') one click on 'install guide' lands on /guides/install/. That page holds 'The installers are not code-signed yet, so your system will warn you', 'Check where it comes from', the quoted 'Windows protected your PC' > 'More info' > 'Run anyway' steps, and a #windows anchor (h2 at y=492). The page's Details row says 'Community listing: not verified by a maintainer, and not a security audit', and the App Centre legend says 'download only from an owner you trust'. The 'All downloads' block says 'Files come straight from the app's GitHub release' with a link to the release. (Shots: t4-windows-app-page.png, t4-install-guide-landing.png.)",
+  "T7 Report a problem: present on 6 of 6 app pages as 'Report a problem' in Details > Links, each pointing to the correct repository's /issues (e.g. https://github.com/CellMigrationLab/NucleiSky/issues). Cite: NucleiSky shows 'doi:10.1242/jcs.265152' and CellTracksColab 'doi:10.1371/journal.pbio.3002740', both linked to doi.org. The site footer also has 'Cite LabConstrictor' (Zenodo DOI).",
+  "T8 Phone, keyboard only: no horizontal overflow at 390 and 320 px on /, /apps/, /apps/nucleisky/, /apps/celltrackscolab/, /guides/install/ and /submit/ (scrollWidth equals clientWidth). A first download button is reached in 7 Tab presses on /apps/nucleisky/ (Skip to content, brand, Menu, '<- All apps', GitHub pill, Windows installer, Apple Silicon); every Tab stop tested showed a focus ring; download buttons are 316x68 px. Every target under 24 px (inline links, file-name links in the downloads table, 'Report a problem' at 128x20) passes WCAG 2.5.8 by the spacing exception, except three at phone widths on /guides/install/ ('<- Use an app', 'App Centre', a docs-list link). Closed menu and closed Docs drawer links are not tab stops; Enter and Space open the menu and Escape closes it. The filter on /apps/ is keyboard-complete (Search, Kind, Get it as, Works in, Clear filters, then cards). Shots: t8-nucleisky-focus-download.png, t8-apps-filter-focus.png, t8-menu-open-apps.png.",
+  "Colab and pip routes are clearly separated from the desktop route on the NucleiSky page ('Notebooks to open in your browser' with '2D app' and '3D app', each 'Open in Colab' plus 'View on GitHub'; 'pip install nucleisky' with Copy). The 'Get it' block is above the fold at 1280x900 on every app page (shots/t3-*-fold.png)."
+ ],
+ "gaps": [
+  {
+   "id": "UAT-T2-inputs-outputs-limits",
+   "requirement": "T2 'Decide whether an app supports a particular image type' passes only if input/output requirements are identifiable without opening GitHub (section 1 Essential rows 'Will it work with my images or data?' and 'What will I get out of it?'; section 4 inputs, outputs, limitations, example data; P0).",
+   "current": "FAIL on all 6 apps. Path: /apps/nucleisky/ for a biologist with a Z-stack: reads the summary 'Align microscopy images in 2D and 3D...' and About ('calibrated similarity transform', 'landmark constellations'), then finds nothing more. I searched every app page's text for TIFF, OME, CSV, input, output, mask, table, plot, limitation, requirement, example, Works with, Produces: no app page has any of them (hits for 'format' and 'report' are only the downloads-table header and 'Report a problem'; the one 'Produces' hit is in LabConstrictor Demo's description). The facts exist only in the app repositories. NucleiSky docs/2D/data_preparation.md says the 2D pipeline 'strictly requires 2D arrays... Any non-2D stack layout (Z, Y, X)... raises a ValueError', README 'Golden Rule 1' says missing or wrong pixel size makes alignment fail, and docs/exports.md names the outputs (transform JSON, aligned_on_full_px.tif, overlay PNG). CellTracksColab README says 'Required File Format: CSV or XML files' (TrackMate) and 'does not yet support track merging or splitting', and links test datasets on Zenodo. None of this reaches the site because schema/labconstrictor-app.schema.json has no inputs/outputs/limitations/example-data field (properties: name, summary, description, quickstart, kind, hosts, distribution, authors, license, categories, doi, homepage, docs_url, icon, screenshots), and pages_apps.page_app (lines 189-208) renders only description. Only 1 of 6 apps has any screenshot, and it is a repo banner ('NucleiSky banner.', alt=\"\"), not an interface or result image (shots/t2-nucleisky-full.png, t2-celltrackscolab-full.png, t2-vlab4mic-full.png).",
+   "severity": "blocker",
+   "proposal": "Add three optional manifest fields, each a short array of plain-text strings with a length cap: `inputs` (data types, dimensionality, required metadata such as pixel size), `outputs`, `limitations` (maximum 4 items, 140 characters each, same style as `quickstart`). Render them in page_app right after the badges and before 'Get it' as 'Works with', 'Produces', 'Limits'. When a field is absent show an explicit 'Not stated by the authors' line (same convention as License: 'Not stated'), so a visitor can tell 'not given' from 'not shown'. Index the three fields in cards.search_text so 'TIFF' or 'Z-stack' find apps. Then the app authors fill them from their own docs: NucleiSky from docs/2D/data_preparation.md and docs/limitations.md, CellTracksColab from the README format table. Update the schema copy in the template (src-template/.tools/schema), the initialiser form schema and the template's app-manifest guide so new apps are asked for them.",
+   "files": [
+    "schema/labconstrictor-app.schema.json",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/validate.py",
+    "tests/test_catalogue.py",
+    "tests/test_site.py",
+    "DESIGN.md"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "No conflict with author-controlled: authors expose only what they choose, and the page says so visibly. The benchmark's 'strongly enforced for analysis apps' would conflict with that principle, so do not make the fields required; show 'Not stated by the authors' instead. Keep text through text.esc. A new page block needs a pattern in DESIGN.md first. The new fields are manifest fields, so no second description is kept here."
+  },
+  {
+   "id": "UAT-T6-first-run-example",
+   "requirement": "T6 'Start an app for the first time': instructions lead to an actual runnable first example (section 1 'How do I get started?': prominent action followed by a short first-run guide; section 4 'Short first-use instructions' Required, 'Example/test data' strongly recommended; P0 'each app gets a real first-run example').",
+   "current": "FAIL. Path (CellTracksColab, desktop persona): /apps/celltrackscolab/ -> 'Using it' -> click 'notebook usage guide' (1 click) -> /guides/notebook-usage/. The only text is 'After installing, open the app from your Start Menu or Applications folder. Its Welcome notebook lists what it can do; the notebook usage guide shows how to work with it.' then 'Read more: README on GitHub.' The guide covers launching, the terminal and 'Open the Notebook' and never mentions an example, sample data, dataset or tutorial (regex check false). /guides/using-apps/ says outright: 'What an app does, and what its notebooks expect, is described there, not on this site.' The manifest already supports `quickstart` (schema lines 14-16; pages_apps.using_section lines 113-114 render an <ol>), but 0 of 6 snapshot manifests set it (no <ol> under #use on any page). Example data exist but are not surfaced: CellTracksColab README links test datasets on Zenodo (records 8420011 and 8413510) and says the notebook 'offers one'; for NucleiSky I found no ready-made example dataset (README/docs/2D/workflow.md point to the user's own data; not exhaustively checked). The template's notebook_usage.md also has typos shown on the site: 'finnisehd', 'LabConstrictor' misspelt as 'LabConstrisctor', 'is normal for keeping your Jupyter Lab session'. Shots: t6-celltracks-using-it.png, t6-notebook-usage-guide.png.",
+   "severity": "major",
+   "proposal": "(1) Add an optional manifest field `example_data` ({label, https url}; for example the Zenodo test dataset) and render it in Using it as 'Try it with example data'. (2) When `quickstart` is absent, say so in the 'Using it' section ('The authors have not listed first-run steps. Open the Welcome notebook and choose ...') instead of a generic paragraph that implies there is something to follow. (3) Make 'quickstart' a visible checklist item in the submission form and in the template's app-manifest guide, and have the submission check (scripts/submit_app.py) report 'no quickstart' as a warning. (4) Fix the three typos in the template's .tools/docs/notebook_usage.md.",
+   "files": [
+    "schema/labconstrictor-app.schema.json",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/submit_app.py",
+    "content/submit.md",
+    ".github/ISSUE_TEMPLATE/submit-app.yml",
+    "tests/test_site.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "None. The site must not write the first-run steps itself (no second description); they come from each app's manifest. Template doc typos are fixed in the template repository by pull request, never in the generated page."
+  },
+  {
+   "id": "UAT-T5-host-status-contradiction",
+   "requirement": "T5 'Find an app usable in napari': current functionality and experimental status unambiguous (section 1 'Can I use it inside napari, Fiji or QuPath?' maturity per integration; section 2C 'genuinely usable now, experimental, or merely planned? Which host versions have been tested?'; section 3 'Experimental integration: distinguish actual experimental functionality from functionality still planned'; P0).",
+   "current": "FAIL: the same page says three different things. Path: Apps -> 'Works in' = napari (3 of 6: Guess the Condition, VLab4Mic, LabConstrictor Playground; every one carries 'Soon in napari') -> VLab4Mic card -> 4 clicks to the guide via the badge. On /apps/labconstrictor-vlab4mic/: header badge 'Soon in napari', 'Soon in Fiji' (future); About (author text) 'Two of its tools also run in Napari and Fiji.' (present); Details row 'Works in: napari Fiji' (present, program pills). The filter is labelled 'WORKS IN' but returns only 'Soon' apps (shots/t5-filter-napari.png, t5-vlab4mic-top.png). The home page has both 'Soon, apps can also work inside napari, Fiji and QuPath.' (data/site.yaml:8) and 'Apps that declare tools also run inside napari, Fiji and QuPath.' (pages_site.py:65). /guides/napari/ says 'Under heavy construction... untested and unlikely to be stable... Tested on Linux. Windows and macOS are untested', and also '(the apps that work in napari are listed in the App Centre)', which the App Centre then labels 'Soon' (shots/t5-napari-guide-top.png). The guide /guides/image-software/ says 'Each plugin's own guide says what stage it is at.' Which two VLab4Mic tools work is not named anywhere on the app page. Cause: the manifest `hosts` is a flat list (schema lines 19-22) and cards.host_chip / host_badge (cards.py:62-71) hard-code the word 'Soon' for every host, so the site cannot express 'experimental now', 'planned' or 'tested on'.",
+   "severity": "major",
+   "proposal": "Replace the flat `hosts` list by a per-host entry the author controls, for example `hosts: [notebook, {name: napari, status: experimental|planned, tools: [tool names], tested: 'napari 0.5, Linux'}]` (keep the plain strings valid as 'planned'). Render the badge from status ('Experimental in napari' or 'Planned for napari'), fill the Details row 'Works in' from the same status, and have the 'Works in' filter label say 'Works in (including experimental)' or split it. Until the field exists, make the three site-owned strings agree: rename the filter 'Planned or working in', make the Details row read 'Planned: napari, Fiji', and change data/site.yaml:8 and pages_site.py:65 so the home page does not say both 'Soon' and 'also run'. Update the AGENTS.md/DESIGN.md lines that name the 'Soon in' chip.",
+   "files": [
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/pages_site.py",
+    "data/site.yaml",
+    "schema/labconstrictor-app.schema.json",
+    "DESIGN.md",
+    "AGENTS.md",
+    "tests/test_site.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "Today's hard-coded 'Soon' follows DESIGN.md (orange badge 'Soon in napari') and AGENTS.md, so the change must be made in those files in the same pull request. The status stays author-declared (author-controlled principle); the site must not infer 'works' from the presence of a tools declaration. Author About text such as VLab4Mic's 'also run in Napari and Fiji' can only be fixed in that app's manifest."
+  },
+  {
+   "id": "UAT-T4-unsigned-and-source",
+   "requirement": "T4 'Understand an unsigned Windows installer': visitor can verify the source and locate the exact installation instructions (section 2C 'unsigned-installer warning, launch instructions'; section 3 'Community: no claim about installer safety'; section 1 'who maintains it').",
+   "current": "PARTIAL. Instructions are one click away, but the page itself never says the installer is unsigned and the source cannot be checked as the guide asks. Path (Windows UA): /apps/nucleisky/ -> Windows tile -> hint 'If Windows warns you, choose More info, then Run anyway.' The article text has 0 hits for 'unsigned', 'code-sign', 'SmartScreen', 'Windows protected', 'checksum', 'SHA'; the tile tells the user to bypass a warning without saying why. 'Need help installing? See the install guide' links to ../../guides/install/ with no fragment, although #windows, #macos and #linux exist (h2 id=windows at y=492), so the user lands on page top and scrolls (shots/t4-install-guide-landing.png). The guide's 'Check where it comes from' tells the user to check that the address starts with https://github.com/ 'followed by the app's owner and repository, as shown on the app's page', but the app page never shows the owner: the GitHub pill's text is only 'NucleiSky' (title attribute 'CellMigrationLab/NucleiSky on GitHub', hover only), and the visible article text contains no 'CellMigrationLab' (also false for VLab4Mic, CellTracksColab). The download button's URL is not visible. None of the 6 manifests lists `authors`, so no page names a maintainer. The macOS tile has no unsigned or Gatekeeper warning at all, although the guide describes 'Open Anyway' and a Mac user will meet it right after downloading. The Windows installer is a ~300 MB .exe with no checksum on the page.",
+   "severity": "major",
+   "proposal": "In pages_apps.os_tile, add one visible line per tile that names the fact and the source: Windows 'Not code-signed: Windows will warn you. Files come from github.com/<owner>/<repo>/releases (link). Steps: ...' and macOS 'Not notarised: macOS may refuse to open it; steps: ...', each linking guides/install/#windows or #macos. Show the full 'owner/repo' as the GitHub pill label on app pages (cards.github_badge already has the repo string; only the label changes), so the instruction in the guide can be followed. Optionally show `authors` as 'Maintained by' when the manifest gives it.",
+   "files": [
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/cards.py",
+    "DESIGN.md",
+    "tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "AGENTS.md puts the OS tile hint lines in pages_apps.os_tile, so wording belongs here. The unsigned fact itself is stated in the template's install.md, so the tile must link to it (no second manually maintained description): keep the tile line to one sentence plus the anchor link. DESIGN.md (GitHub pill 'mark + repository name') needs the label rule updated in the same change. Nothing conflicts with author-controlled."
+  },
+  {
+   "id": "UAT-T8-mobile-menu-focus-order",
+   "requirement": "T8 'Browse on a phone with a keyboard': every navigation and download control operable (section 5 accessibility WCAG 2.2 AA: keyboard, focus order; mobile).",
+   "current": "PARTIAL FAIL. The phone menu opens from the keyboard (Tab x3 to the checkbox 'Menu', Enter: checked=true, five links visible at 358x41), but the next Tab does not enter it. In overrides/main.html the <ul class=\"lc-menu\"> (line 33) comes before the burger (line 42), so after opening, Tab goes to the page body (on /apps/ it lands on the Search input at y=329). To reach 'Apps' the user must press Shift+Tab 4 times (Submit your app, Ecosystem, Docs, Apps), which no visitor would guess (shots/t8-menu-open-apps.png, t8-menu-focus-on-apps.png). The burger exposes no aria-expanded (null), only the checkbox state. The header search is not available on phones at all: .md-search__button measures 0x0 and has no bounding box at 390 px, while on desktop it works (so a phone user has only the App Centre filter, not the site search). Primary download controls are fine (7 Tab presses; see already_met).",
+   "severity": "major",
+   "proposal": "Move the `.lc-burger` span before `<ul class=\"lc-menu\">` in main.html (the menu is absolutely positioned under 52rem, so the visual layout does not change; keep the :has() rule), so Tab after Enter walks Home, Apps, Docs, Ecosystem, Submit. Add `aria-expanded` toggled by lc.js on change. Check the order with a test that opens the menu and presses Tab once. Decide on phone search: either show a search link/icon in the open menu or state in DESIGN.md that phones use the App Centre filter.",
+   "files": [
+    "overrides/main.html",
+    "docs/assets/stylesheets/lc.css",
+    "docs/assets/javascripts/lc.js",
+    "tests/test_site.py",
+    "DESIGN.md"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "None. DESIGN.md 'Everything works from the keyboard' and 'On phones the docs menu folds into a drawer' already promise this. Keep lc.js functions at most 30 lines with annotations as per AGENTS.md."
+  },
+  {
+   "id": "UAT-T7-cite-not-stated",
+   "requirement": "T7 'Report a problem or cite the app': correct links present on the app page (section 1 'Can I use and cite it in research?' license, source, publication and DOI; section 3 FAIR citation; section 4 DOI/publication optional but displayed when provided).",
+   "current": "PARTIAL. 'Report a problem' is present on 6/6 pages and correct, but it sits at the very bottom (y about 2000-2830 px on a 900 px viewport: after Get it, About, Using it, All downloads, How to install), not in the header. 'Cite' appears on only 2 of 6 pages (NucleiSky, CellTracksColab). On the other four (VLab4Mic, Guess the Condition, Demo, Playground) the Details list simply has no Cite row, so the visitor cannot tell 'no reference exists' from 'not shown'. VLab4Mic's README has a Citation section with a BibTeX entry and doi={10.64898/2026.06.02.729521} (bioRxiv), but its manifest has no `doi`, so the page shows nothing; no other app repository has a CITATION.cff. The manifest's one `doi` field is the only citation channel (schema line 36), pages_apps.details_list (lines 152-153) skips the row when absent, and NucleiSky's README shows a Zenodo software DOI (10.5281/zenodo.21071484) while the page shows the paper's DOI, so a visitor cannot tell which one to cite for the software. Support: no page links the troubleshooting guide (/guides/troubleshooting-installed-app/); the only help links are the install guide and the notebook usage guide.",
+   "severity": "minor",
+   "proposal": "In pages_apps.details_list always emit the 'Cite' row: the DOI link when given, otherwise 'Not stated by the authors. See the README' with the README link. Move 'Report a problem' next to the GitHub pill in header_links so it is above the fold. Add a 'Troubleshooting' text link next to 'Need help installing?'. Ask the VLab4Mic authors (pull request in that repository) to add `doi:` to labconstrictor-app.yaml, and consider an optional `cite` field with a label ('Paper' or 'Software') so both DOIs can be shown.",
+   "files": [
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/cards.py",
+    "schema/labconstrictor-app.schema.json",
+    "tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "rule_conflicts": "The explicit 'Not stated' row follows the existing License precedent. It must not become a silent default: it is shown to the visitor. Adding a second DOI field is a schema change to propagate to the template and initialiser copies of the schema."
+  }
+ ],
+ "unverified": [
+  "Rosetta case not tested: an x86_64 build of Chrome on an Apple Silicon Mac reports architecture 'x86' through client hints, so lc.js (lcInitSystem, lines 31-43) would fill the Intel button on an M-series Mac with no 'detected' message. I could not run this.",
+  "Real macOS Gatekeeper / Windows SmartScreen dialogs and the real download and install of any installer were not run; only the .pkg links were checked (HEAD gives 302 to objects.githubusercontent.com via the proxy). Colab pages were not opened, so what a visitor sees in the Colab notebooks (example data, privacy notice) is unverified.",
+  "Real Safari, Firefox and iOS were not used. I emulated 'no client hints' with navigator.userAgentData undefined and platform 'MacIntel'. Screen-reader announcement of the checkbox burger (no aria-expanded) was not tested.",
+  "Layout shift: the macOS tile is moved to first position by lc.js after load (layout-shift 0.059 on 'lc-ostile' in two Mac runs; one Intel run also logged another 0.059 on 'lc-menu/md-container', total 0.119, cause not identified). This is a lab measurement, not a 75th-percentile field value; LCP and INP were not measured.",
+  "Contrast ratios were not measured. Whether NucleiSky, Guess the Condition and VLab4Mic ship example data was only checked by grep in the local clones (which are older than the manifests on GitHub: only the Playground clone had labconstrictor-app.yaml), so the snapshot at build/snapshot.json was used for manifest facts.",
+  "T1 caveat not counted as a gap: the App Centre search tests the whole query as one contiguous substring (lc.js lcMatches, line 52-58 / lcFold). Queries 'track cells', 'tracking cells', 'cells tracking', 'align nuclei', 'image registration', 'microscope simulation' and 'nuclei segmentation' all return '0 of 6 apps' while single words work. The Kind drop-down also offers 'Segmentation' and 'Game', which have 0 apps (counts: analysis 2, segmentation 0, simulation 1, game 0, training 1, utility 2). Splitting the query on spaces and requiring every token (about 3 lines in lc.js) and hiding or counting empty Kind options would fix both; the catalogue is only 6 apps, so I ranked it below the six gaps above."
+ ]
+}

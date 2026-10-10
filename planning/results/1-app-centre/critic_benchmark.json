@@ -1,0 +1,165 @@
+{
+ "sound_ideas": [
+  "Central principle (decide before downloading) and 'catalogue, not store': sound, and the site already leans this way. App pages carry summary, description, a download tile per OS with sizes, the Colab/pip routes, and the Community/Verified legend (scripts/lcsite/pages_apps.py:12, :140-144). Exclusions (ratings, download counts, rankings, accounts) are consistent with the site; GitHub's asset API even returns download_count and the snapshot drops it.",
+  "Keeping 'metadata checked automatically' separate from 'scientifically validated': sound and already met. LEGEND (pages_apps.py:12) and details_list (pages_apps.py:144) say 'Community listing: not verified by a maintainer, and not a security audit'; a DOI is shown under the label 'Cite', not 'Validated'; content/submit.md:48-49 defines both tiers.",
+  "Inputs, outputs, limitations and example data as OPTIONAL structured fields shown when the author provides them: high value, because the information already exists in the app repos but not in the manifest. NucleiSky has docs/limitations.md, docs/exports.md and docs/segmentation.md; GuessTheCondition's README documents the folder layout and .tif input; CellTracksColab's README has an input-format table (CSV/XML). Right surface (the author's manifest), and napari hub's own advice is the same (prose answers to: who is it for, what data, what problem).",
+  "Real UI screenshot plus one input-to-output example: sound and verifiably standard (Apple guideline 2.3.3: screenshots must show the app in use, not title art, login or splash; Microsoft Store EXE/MSI listing: Screenshots 'Required: 1, Recommended: 4+, Maximum: 10'; BMZ ships sample_tensor/test_tensor). The mechanism already exists (schema `screenshots`, max 6, captions, labconstrictor-app.schema.json:40-48). Real gap: only 1 of 6 apps has any, and it is a banner captioned 'NucleiSky banner.', not a UI shot.",
+  "License and maintainer as required: cheap and mostly automatable. catalogue.resolve falls back to GitHub's detected SPDX licence (catalogue.py:103) and the repo owner is known from GitHub, so a hard 'must have a licence' rule can be checked from GitHub data with no new author work. The schema currently leaves `license` optional (schema:34) although submit.md says a licence is needed.",
+  "Local-versus-cloud disclosure, kept small: sound and not yet on the site (no 'uploaded' or privacy text on /apps/nucleisky/ although 3 of 6 apps offer Colab). It can be derived from the route (desktop/pip = local; Colab = processed on Google's servers) as ONE site-wide sentence beside the Colab block, with no author field.",
+  "'Experimental versus planned' for napari/Fiji/QuPath: right instinct. The site hard-codes 'Soon in napari/Fiji/QuPath' on every app (cards.py:64-71) while its own Ecosystem page lists all three host plugins as 'Experimental' (data/ecosystem.yaml, text 'untested and under heavy construction'), so the wording is arguably wrong. The fix is to derive the badge from the host project's single status, not to add per-app flags.",
+  "Core browsing and downloads without JavaScript: sound and already met. Verified with Chromium, JS disabled: /apps/ renders 6 cards (filter form stays hidden); /apps/nucleisky/ and /apps/guessthecondition/ render 3 OS tiles and 4 visible download buttons.",
+  "Filter hygiene (result count, reset, empty state, whole-card click, testing apps kept apart): sound and already met (pages_apps.py:23-31, :46; lc.js count/reset; registry `section: testing`; DESIGN.md:40). 'Fewer, more meaningful filters' is the right instinct and argues against its own vocabulary proposals.",
+  "Do not silently recommend the wrong architecture: sound and already met. lc.js:29 keeps every tile visible; an ARM device on Windows/Linux gets an explicit 'Only 64-bit Intel/AMD (x86_64) installers exist' message; macOS shows both chips with a 'check About This Mac' hint (pages_apps.py:62-67).",
+  "Content-integrity checks (internal links, release assets, version metadata, manifest validity): sound and already enforced (check_site.py, catalogue.read_release raising when installers are promised but absent, schema validation). The benchmark does not credit this.",
+  "Lab-measured regression checks instead of ad-hoc review (P2): useful if scoped to lab budgets. A single local Chromium run on /apps/nucleisky/ at 375px measured CLS 0.087 (limit 0.1), caused by the lc-ostile tile being moved by lc.js:36 (`grid.prepend(tile)`) after first paint. That is a real, near-threshold regression a lab check would catch.",
+  "'Reuse metadata from each repository' (P1) and 'feed the website automatically': matches AGENTS.md's source-of-truth principle and napari hub's own design (it reads name, version, summary, OS, authors, licence, project URLs from PyPI/npe2/.napari-hub/config.yml and CITATION.cff in the plugin's own repo).",
+  "Usability tasks 2, 3, 5, 6, 7 as a one-off manual smoke test by 3 colleagues: proportionate. They map onto the site's existing structure."
+ ],
+ "wrong_or_overreaching": [
+  {
+   "item": "Controlled vocabularies for category/task (Cell tracking, Segmentation, Image restoration, Simulation, Image analysis) and a 'What do you want to do?' filter built on them",
+   "why": "Wrong size and wrong shape for 6 apps. Real manifest categories are free text and each app's are unique: 'cell tracking, TrackMate', 'registration, ROI matching', 'experimental design, blinding', 'microscopy simulation, experiment design', 'diagnostics, testing', 'example'. Two of the benchmark's example terms (Segmentation, Image restoration) match zero apps. The existing fixed `kind` enum already shows the failure: the dropdown offers Segmentation and Game, both with 0 apps (cards.py:7-8; kinds in use are analysis x2, utility x2, simulation, training), so a visitor can pick an option that returns 'No app matches'. NucleiSky does registration, not segmentation, so the benchmark's own usability test 1 ('nuclei segmentation') would mislabel it. Vocabularies pay off at napari-hub scale; here they need an owner and add nothing. Derive filter options from values actually in use and keep `categories` free text."
+  },
+  {
+   "item": "Section 4 'Required' list (inputs/outputs, real screenshot, first-use instructions, docs link, maintainer, development status, known limitations)",
+   "why": "Applied to the current catalogue it delists 6 of 6 apps. From build/snapshot.json: quickstart 0/6, docs_url 0/6, authors 0/6, screenshots 1/6 (a banner), icon 2/6, doi 2/6; inputs, outputs, limitations, status and example data are not in the schema at all. Under AGENTS.md:62 an unresolved app is left out and an issue is opened daily, so the App Centre would be empty. It is also internally inconsistent: Section 4 says example data is only 'strongly recommended', while Section 7 P0 says make scientific examples 'a listing requirement'. BMZ, the benchmark's own model, does not do this: its FAIR-relevant fields (description, documentation, authors, cite, license, tags, test_tensor, sample_tensor) are typed FAIR[...] and only emit an ALERT-level warning 'Needs to be filled for FAIR compliance' (bioimageio.spec generic/v0_3.py, _internal/types.py), not an error. Use warning-level completeness reporting first; make something required only after the 6 manifests are filled."
+  },
+  {
+   "item": "'Verification' tier: maintainer-tested, per version, per OS, with date (Section 1 'Essential', Section 3 rules)",
+   "why": "Nobody staffs it and the data show it. 0 of 6 apps are verified today (verified_version is null in all six registry entries). The existing definition (cards.py:23 is_verified) already expires the badge on every new release, and releases are frequent: NucleiSky had 7 releases between 2026-05-21 and 2026-07-07; VLab4Mic had two within two days. Each release ships 4 platform builds (windows x86_64, macos arm64, macos x86_64, linux x86_64). Adding 'tested OS' multiplies the manual work. It is also ranked inconsistently: 'Essential' in the Section 1 table, P1 in Section 7. If more than the current binary badge is wanted, the credible precedent is automated: BMZ compatibility is shown by partner CI (deepImageJ CI headless pass/fail), not by a contributor-declared field. Otherwise show an automatic 'last release: version, date' line and leave the Verified badge as is."
+  },
+  {
+   "item": "Five separate trust concepts (availability, development status, compatibility, verification, scientific validation) as distinct displayed dimensions",
+   "why": "The separation is right conceptually but overbuilt as UI for 6 apps. Availability (route badges) and compatibility (OS tiles from release assets) are already derived automatically; verification exists; validation is the DOI under 'Cite'. Only 'development status' is new. Add one optional author field and reuse the status enum the site already has (see conflicts); do not render five panels."
+  },
+  {
+   "item": "Search 'common synonyms' and biological-task matching",
+   "why": "A site-side synonym table is a second hand-maintained description. It also targets the wrong defect. lc.js:55 does whole-string `includes`, so multi-word queries break: with the live filter, 'cell tracking' finds CellTracksColab, but 'tracking cell' returns 0, 'nuclei segmentation' (the benchmark's own test query) returns 0, 'segmentation' returns 0, 'tiff' returns 0, 'csv' returns 0. Splitting the query into words that must all match is a few lines and needs no vocabulary. Better terms then come from authors' `categories` and the new inputs/outputs text, which search_text (cards.py:120) can index."
+  },
+  {
+   "item": "Core Web Vitals (LCP<=2.5s, INP<=200ms, CLS<=0.1 at the 75th percentile) as acceptance criteria",
+   "why": "The thresholds are right (see claims) but they are field metrics, and this site cannot produce field data. mkdocs.yml:50 `listed: false` gives noindex on every page and robots.txt 'Disallow: /'; CrUX excludes non-discoverable pages and also needs an undisclosed traffic threshold, which a 6-app lab site may never reach. There is no analytics, and adding RUM runs against the no-tracking posture the benchmark itself endorses. INP is near-moot with about 113 lines of JS (lc.js), and Lighthouse cannot measure INP. Lab LCP on localhost is 68-112 ms and says nothing. The useful, measurable part is lab CLS and page weight. Lighthouse CI would add Node and Chrome to a build whose requirements.txt is five pinned Python packages."
+  },
+  {
+   "item": "Per-integration maturity and 'host versions tested' for napari/Fiji/QuPath on each app",
+   "why": "Integration maturity is a property of the LabConstrictor-Tools bridge and the three host plugins, not of each app. The plugins are all 'Experimental' on the Ecosystem page, and the QuPath card already names 'QuPath 0.7'. Four apps declare non-notebook hosts (GuessTheCondition napari+fiji, VLab4Mic napari+fiji, Playground all three). Per-app status fields would repeat the same fact in several repos and drift from the plugin cards. Only add per-app data if one app truly differs from the bridge."
+  },
+  {
+   "item": "Section C per-app download content (unsigned warning, Gatekeeper handling, where the app appears, Linux terminal, launch instructions)",
+   "why": "These are generic. They are already written once, and per-app copies would duplicate them. The template's install guide says 'The installers are not code-signed yet' and explains 'More info, Run anyway' and 'Open Anyway'; pages_apps.py:62-67 puts the short hint under each OS tile. The benchmark's real ask here is only 'link to it and keep hints near the button', which is met."
+  },
+  {
+   "item": "Section 2B page order (Get-the-app is item 7, below Works with, Produces and screenshots)",
+   "why": "Conflicts with the benchmark's own Section 1 ('How do I get started? One prominent download', Essential) and its headline 'straightforward download experience'. With the real data, Works with and Produces would be empty for all 6 apps and the download would sit below placeholder blocks on a phone. The page currently puts Get first (pages_apps.py page_app). The ordering is only defensible when each section renders if and only if the author supplied it, with no placeholders."
+  },
+  {
+   "item": "'Hardware or cloud requirements: Required when nontrivial'",
+   "why": "'Nontrivial' is an editorial judgement no validator can check (NucleiSky's README: core matching on CPU, GPU only for optional Cellpose/InstanSeg backends). A rule that cannot be checked will not be enforced; make it an optional free-text field."
+  },
+  {
+   "item": "Section 5 usability acceptance tests with 30-second timings and P2 'measure task completion'",
+   "why": "Needs participants and instrumentation a small lab does not have. Test 1 assumes a nuclei-segmentation app that does not exist. Test 4 ('verify the source' of an unsigned installer) names no mechanism, while one is available for free (see missing). Test 8 ('phone with a keyboard') is an odd conflation: the installers cannot be run on a phone, and lc.js lcSystem returns null on phones."
+  },
+  {
+   "item": "Microsoft as a 'standard for install options'",
+   "why": "Only the listing half transfers. Microsoft's EXE/MSI Store requirements (learn.microsoft.com, MSI/EXE app package requirements) demand every PE file be signed by a trusted-root CA, silent install, a versioned immutable HTTPS URL and a standalone offline installer. LabConstrictor's installers are unsigned, so they could never meet that standard. Use it for description and screenshot practice only."
+  }
+ ],
+ "conflicts_with_project_rules": [
+  {
+   "item": "Compulsory exposure of inputs, outputs, limitations, status, maintainer, screenshots and first-use steps (Section 4 'Required')",
+   "rule": "Author-controlled exposure: AGENTS.md:29 ('Everything an app says about itself is labconstrictor-app.yaml') and AGENTS.md:62 ('Optional manifest fields may be absent'). The existing schema makes only schema, name, summary, kind and distribution required (labconstrictor-app.schema.json:8)."
+  },
+  {
+   "item": "Turning those requirements into hard errors",
+   "rule": "No silent fallbacks / per-app exception (AGENTS.md:60-62): an unresolved app is left out of the site and named in build/problems.md. 6 of 6 apps would be unresolved. The alternatives are worse: substituting text such as 'Not stated' is a default the rule forbids for required data, so the benchmark must say 'render only when present, report absence as a warning'. The warning channel already exists (catalogue.build, problems.md 'Warnings (apps still listed)')."
+  },
+  {
+   "item": "A schema change that adds required fields",
+   "rule": "`schema` is `const: 1` (schema:9) and AGENTS.md forbids accepting legacy aliases. New required fields mean schema 2 plus a flag day across 6 repositories, or dual handling the project forbids. Additive optional fields in schema 1 are the only compatible route."
+  },
+  {
+   "item": "Site-side synonym table; hard-coded controlled vocabularies for tasks/categories; per-OS 'tested on' text kept in the registry; per-app host maturity",
+   "rule": "'Nothing written twice / no second manually maintained description' (AGENTS.md:21-29): each would be a hand-maintained list on the site, or the same fact in several repos. Synonyms belong in authors' `categories`; host maturity in the host project's own `labconstrictor-project.yaml` status."
+  },
+  {
+   "item": "inputs/outputs/limitations as new free-text YAML fields",
+   "rule": "Partly consistent (the benchmark says they live in the app repo and feed the site), but they duplicate README content in the same repo (NucleiSky docs/limitations.md and docs/exports.md; GuessTheCondition's README input layout). The manifest `description` already duplicates the README, so the site accepts this once. A more rule-faithful shape is a pointer (a URL or README anchor) or a short capped field. The benchmark does not say which."
+  },
+  {
+   "item": "'Development status: stable, experimental, under development or discontinued'",
+   "rule": "DESIGN.md 'same thing done the same way': the site already has a status vocabulary for the same concept in labconstrictor-project.schema.json (Experimental, Available, Install from GitHub, Deprecated). A second vocabulary on one site is inconsistent. A new badge also needs a DESIGN.md pattern first (DESIGN.md:5, :49 colour roles)."
+  },
+  {
+   "item": "'The action to obtain the app should remain obvious' on App Centre cards",
+   "rule": "DESIGN.md:40-41: 'A card contains no button' and the card is one link; a Get button was deliberately removed. Read as a button it conflicts. Read as 'route badges stay visible' it is already met (card() shows Desktop/Colab/pip badges)."
+  },
+  {
+   "item": "Volume of new rendering (Works with, Produces, Limitations, Example, Status, Verification detail, Cite) in pages_apps.py",
+   "rule": "Code rules in tests/test_code_rules.py:8 (functions <=30 lines, files <=300). pages_apps.py is already 208 lines with 18 functions, so the B layout would need a new module (my estimate, not measured). A cost the benchmark does not size, not an outright conflict."
+  },
+  {
+   "item": "Field-based Core Web Vitals / RUM measurement",
+   "rule": "Not a written rule but against the site's design: the site is built offline from a snapshot with no analytics and is deliberately unlisted (mkdocs.yml:50). AGENTS.md:45 says the build 'never goes online'; a Lighthouse CI step against a live URL would break that repeatability."
+  }
+ ],
+ "claims_to_verify": [
+  {
+   "claim": "WCAG 2.2 SC 2.5.8 Target Size (Minimum) = 24x24 CSS px, Level AA",
+   "verdict": "TRUE (W3C WCAG 2.2 text: 'at least 24 by 24 CSS pixels', AA). The benchmark's 'or adequate spacing' matches only the Spacing exception. It omits the Inline exception (links inside sentences), the Equivalent, User-agent and Essential exceptions. 'Larger for primary actions' has no source; 2.5.5 (44x44) is AAA. Probe: on /apps/nucleisky/ 26 inline links are under 24px high (exempt), and the only non-exempt failures are the 'Soon in napari' and 'Soon in Fiji' pill links on /apps/guessthecondition/ (22px high; whether the Spacing exception rescues them was not checked). A naive checker built from the benchmark wording would produce false positives."
+  },
+  {
+   "claim": "INP replaced FID as a Core Web Vital; good threshold 200 ms",
+   "verdict": "TRUE. web.dev: INP became a Core Web Vital replacing FID on 12 March 2024; good <=200 ms, needs improvement up to 500 ms, poor >500 ms, at the 75th percentile of field page loads, reported separately for mobile and desktop. It is a field metric; Lighthouse cannot measure it (no user input), and TBT is the suggested lab proxy."
+  },
+  {
+   "claim": "LCP <=2.5 s and CLS <=0.1 at the 75th percentile",
+   "verdict": "TRUE as thresholds (web.dev/articles/vitals). NOT MEASURABLE as written for this site: CrUX needs a publicly discoverable page (noindex is excluded) and an undisclosed traffic threshold; the site is noindex and Disallow: / (mkdocs.yml:50, robots.txt). Lab only: single Chromium run, 375px, localhost, unthrottled: LCP 68-112 ms (meaningless), CLS 0.087 on /apps/nucleisky/ and 0.066 on /apps/guessthecondition/ from lc-ostile reordering (lc.js:36). That is a single run and not a field value."
+  },
+  {
+   "claim": "Microsoft: 'description and at least one screenshot' (and MSI/EXE listing requirements)",
+   "verdict": "TRUE for the Store listing: MSI/EXE submissions require Description, Screenshots ('Required: 1; Recommended: 4+; Maximum: 10'), Store logo, category and licence terms. The packaging requirements are stricter and unreachable for LabConstrictor: every PE file must be signed by a trusted-root CA, silent install, a versioned immutable HTTPS URL, standalone offline installer. The site's installers are unsigned (the install guide says 'not code-signed yet')."
+  },
+  {
+   "claim": "napari hub listing guidance emphasises who the plugin serves, what data it handles, what problem it solves and supported formats",
+   "verdict": "TRUE but as prose advice, not required fields. The wiki page 'Writing the Perfect Description for your Plugin' asks: who is it for, what kind of data (2D/3D, time series, multichannel), what problems it solves and how it differs, file types only 'if your plugin provides a reader or writer', plus screenshots, quick start, sample data. Structured fields are read from the plugin's own repo/PyPI: Workflow step (npe2 categories), Image Modality and Supported Data labels (.napari-hub/config.yml), OS classifiers, authors, CITATION.cff, licence, project_urls. The benchmark turns advice into required fields; napari hub does not."
+  },
+  {
+   "claim": "BioImage Model Zoo asks for example inputs and outputs, validation information, compatible software and citations",
+   "verdict": "MOSTLY TRUE, with caveats. In bioimageio.spec ModelDescr 0.5.14, inputs/outputs tensor descriptions are structurally required (a model cannot run without them). test_tensor, sample_tensor, documentation, cite, license, authors, tags and description are FAIR[...] fields that raise only an ALERT warning if empty. Documentation 'should include a # Validation (sub)section', else a warning. Compatibility is shown by partner-software CI (e.g. deepImageJ CI), not self-declared (this last point is from search results; the current bioimage.io contribution checklist page did not render and was not read)."
+  },
+  {
+   "claim": "Google Play data safety (the orchestrator listed it; the benchmark never mentions Google Play)",
+   "verdict": "The benchmark makes no Play claim, so nothing to confirm. Facts: Google's help page says every app on Play (internal-testing-only apps excepted) must complete the Data safety form, even apps that collect no data, and link a privacy policy. Apple guideline 5.1.1(i) likewise requires a privacy-policy link. The benchmark's 'small factual disclosure, no privacy dashboard' is a deliberately scaled-down, appropriate version for a free catalogue of downloadable installers. Not verified: Apple's privacy-label wording (the page text was truncated)."
+  },
+  {
+   "claim": "Apple: authentic UI screenshots",
+   "verdict": "TRUE. App Review Guidelines 2.3.3: 'Screenshots should show the app in use, and not merely the title art, login page, or splash screen.' NucleiSky's only listed screenshot is captioned 'NucleiSky banner.', so it would not pass that standard."
+  },
+  {
+   "claim": "WCAG 2.2 AA contrast 4.5:1 for normal text",
+   "verdict": "Standard SC 1.4.3; not re-fetched in this session. The benchmark omits 1.4.11 Non-text Contrast (3:1 for control boundaries) and 3:1 for large text. By my calculation from lc.css tokens: --lc-muted on white 5.71 (passes), --lc-accent #1fb221 on white 2.82 (fails if used for text; not checked where), filter input border #cfcfcf on white about 1.6 by hand calculation (lc.css:166), likely below 3:1. Not verified as site failures."
+  },
+  {
+   "claim": "WCAG 2.2 additions the benchmark leaves out",
+   "verdict": "Verified from the W3C text: 2.4.11 Focus Not Obscured (Minimum) is AA and new in 2.2; 2.4.13 Focus Appearance is AAA; 4.1.1 Parsing is removed. 2.4.11 is the new AA criterion most likely to matter here: sticky header (lc.css:50) plus in-page anchors #get/#use. Not tested on the site."
+  },
+  {
+   "claim": "FAIR for research software: licensing, version identification, rich metadata, provenance, interoperability, citation",
+   "verdict": "NOT VERIFIED in this session (FAIR4RS was not fetched). Plausible summary, but the benchmark never turns it into a concrete mechanism such as CITATION.cff, CodeMeta or a DOI per release."
+  }
+ ],
+ "missing_from_benchmark": [
+  "The catalogue is 6 apps from ONE owner (all six registry entries carry owner_id 157896130, the CellMigrationLab org) and nothing is verified. The benchmark is written for external laboratories that do not exist yet. It gives no gap analysis, no cost estimate and no sequencing: the first job is to fill in the 6 existing manifests (6 pull requests), not to extend the schema or the site.",
+  "Several of the fields it wants already exist and are unused: quickstart 0/6, docs_url 0/6, authors 0/6, screenshots 1/6, icon 2/6, doi 2/6. The bottleneck is author effort. A completeness report for maintainers (warnings in build/problems.md, which the daily run already files as issues) is the missing, cheap mechanism.",
+  "Installer integrity for unsigned installers: its test 4 asks the visitor to 'verify the source' but names no mechanism. GitHub's release-asset API returns `digest: sha256:...` for every asset (confirmed for NucleiSky 0.1.1 with `gh api`), no release carries separate checksum files, and the snapshot drops the digest (asset keys: name, os, arch, ext, size, url, primary). Showing the SHA-256 beside each download needs zero author effort.",
+  "CITATION.cff: none of the 6 repos has one; only 2 of 6 give a DOI. napari hub reads authors and citation from CITATION.cff and GitHub renders it. This fits the 'repo is the source of truth' rule better than copying a DOI into the manifest. The benchmark names only a DOI.",
+  "Multi-word search is broken (lc.js:55 whole-string includes): 'tracking cell', 'nuclei segmentation', 'segmentation', 'tiff' and 'csv' all return 0 apps. The benchmark discusses synonyms and infrastructure but not this.",
+  "Discoverability, its napari-hub analogy, is blocked by the site's own state: `extra.listed: false` (mkdocs.yml:50) means noindex and Disallow: /. The benchmark never says the launch decision gates SEO and any field performance data. Also no mention of structured data accuracy: jsonld() writes operatingSystem 'Windows, macOS, Linux' for every installer app regardless of which assets the release has (pages_apps.py:176-185), which is a compatibility claim that can be false.",
+  "Automatic freshness instead of author-declared status: the release date is already known, so 'last release N months ago' (NucleiSky 2026-07-07, about 3 months before today) can be derived with no maintenance. A self-declared 'stable' goes stale silently.",
+  "Filter options should be generated from the catalogue's values, not from a fixed list. The current KINDS dropdown shows two empty options (Segmentation, Game) and the benchmark's proposed vocabulary adds more.",
+  "Contrast and focus items beyond 4.5:1: 1.4.11 non-text contrast (filter input borders), and 2.4.11 Focus Not Obscured with a sticky header and in-page anchors. Neither is in the benchmark's accessibility list.",
+  "Privileges and managed machines: both .exe and .msi are published (the page's main button is .exe, the .msi is only in 'All downloads'), but the benchmark does not ask whether installs need admin rights or how IT-managed or headless/HPC Linux users should proceed. Not verified for these installers.",
+  "Governance and operations for a small lab: who reviews submissions, the removal path, what happens when an owner transfers a repository. The site already records repo_id/owner_id and pauses on change (catalogue.check_identity); the benchmark's Community tier ignores this, and the submission form's checks (submit_app.py) are the real gate."
+ ]
+}
