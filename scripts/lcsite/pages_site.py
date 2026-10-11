@@ -38,12 +38,16 @@ def program_pills() -> str:
     return ", ".join(pills[:-1]) + " and " + pills[-1]
 
 
+def plugin_kind() -> str:
+    """"Experimental plugins" when every plugin of data/hosts.yaml is experimental (or deprecated), otherwise "Plugins"; taken from the plugins' own status."""
+    stages = {projects.host_status(key) for key in hosts.load()}
+    return f"{next(iter(stages))} plugins" if len(stages) == 1 and stages <= {"Experimental", "Deprecated"} else "Plugins"
+
+
 def hero_also() -> str:
     """The second line of the hero: plain text saying that plugins let apps work inside the programs of data/hosts.yaml (their stage is on the Ecosystem page)."""
     names = [h["name"] for h in hosts.load().values()]
-    stages = {projects.host_status(key) for key in hosts.load()}
-    kind = f"{stages.copy().pop()} plugins" if len(stages) == 1 and stages <= {"Experimental", "Deprecated"} else "Plugins"
-    return esc(f"{kind} let apps that declare tools work inside {', '.join(names[:-1])} and {names[-1]}; the stage of each plugin is on the Ecosystem page.")
+    return esc(f"{plugin_kind()} let apps that declare tools work inside {', '.join(names[:-1])} and {names[-1]}; the stage of each plugin is on the Ecosystem page.")
 
 
 def page_home(site: dict, apps: list[dict]) -> None:
@@ -66,7 +70,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
           f'<p class="lc-more">{github_badge(site["links"]["template"].removeprefix("https://github.com/"), "Start from the template")} · <a href="how-it-works/">See it step by step</a> · <a href="build/">Read the guides</a></p></section>')
     p.add(pages_demo.tile_band())
     p.add('<section class="lc-band"><h2 class="lc-title">Works where you work</h2>',
-          f'<p class="lc-center">Desktop installers, Google Colab and pip. Apps that declare tools also run inside {program_pills()}.</p>',
+          f'<p class="lc-center">Desktop installers, Google Colab and pip. {plugin_kind()} let apps that declare tools run inside {program_pills()}.</p>',
           '<p class="lc-more"><a href="guides/image-software/">Use apps in your image software</a> · <a href="guides/">Read the docs</a> · <a href="ecosystem/">Explore the ecosystem</a></p></section>')
     p.add(citation.cite_band(site))
     p.write()

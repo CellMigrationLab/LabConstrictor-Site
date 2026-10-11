@@ -21,7 +21,7 @@ use:
       link: Open and use an app
       image: {doc_source: Welcome_Notebook.png}
       alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks under orange header cells and a blue Open the notebook button.
-    - title: Use it in your image software (soon)
+    - title: Use it in your image software (experimental)
       text: Apps that declare tools will run inside napari, Fiji and QuPath. These plugins are experimental; the picture is a prototype running a test app.
       href: guides/image-software/
       link: How it works
@@ -70,7 +70,7 @@ build:
       href: submit/
       link: Submit your app
       live_card: true
-    - title: It can reach napari, Fiji and QuPath (soon)
+    - title: It can reach napari, Fiji and QuPath (experimental)
       text: Apps that declare tools will run inside those programs. These plugins are experimental.
       href: guides/image-software/
       link: How it works

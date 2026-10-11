@@ -22,8 +22,8 @@ def entry_html(entry: dict, note: str) -> str:
              if "doi" in entry else "")
     shared = f'<p class="lc-small">{esc(note)}</p>' if "shared_authors" in entry else ""
     return (f'<li class="lc-related__item"><strong>{esc(entry["name"])}</strong><p>{esc(entry["approach"])}</p>'
-            f'<p><em>A good fit when</em> {esc(entry["fit"][0].lower() + entry["fit"][1:])}</p>{paper}{shared}'
-            f'<p class="lc-small">Checked {entry["checked"].strftime("%-d %B %Y")}</p>{entry_links(entry)}</li>')
+            f'<p><em>A good fit when</em> {esc(entry["fit"])}</p>{paper}{shared}'
+            f'<p class="lc-small">Checked {entry["checked"].day} {entry["checked"]:%B %Y}</p>{entry_links(entry)}</li>')
 
 
 def group_html(group: dict, note: str) -> str:

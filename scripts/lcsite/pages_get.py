@@ -13,13 +13,14 @@ def steps_link(system: str, label: str) -> str:
 
 
 HINTS = {
-    "windows": f"The installer is not code-signed, so Windows may warn you. Run files only from this app's GitHub release. See the {steps_link('windows', 'Windows steps')}.",
+    "windows": f"Installers built with LabConstrictor are not code-signed yet, so Windows may warn you. Run files only from this app's GitHub release. See the {steps_link('windows', 'Windows steps')}.",
     "macos": f"Not sure which? Apple menu, About This Mac: Intel, or M1 and later (Apple Silicon). If macOS refuses to open it, see the {steps_link('macos', 'macOS steps')}.",
     "linux": f"Needs a terminal. Run it with: bash &lt;file name&gt;. See the {steps_link('linux', 'Linux steps')}.",
 }
 COLAB_FILE = re.compile(r"^https://colab\.research\.google\.com/github/([^/]+)/([^/]+)/blob/([^/]+)/(.+)$")
 COLAB_NOTE = ("These run on Google's servers in Google Colab: you need an internet connection and a Google account, and any data you load into "
-              "the notebook is handled by Google. The desktop app runs on your computer.")
+              "the notebook is handled by Google.")
+DESKTOP_NOTE = " The desktop app runs on your computer."
 
 
 def os_button(option: dict, system: str, first: bool, several: bool) -> str:
@@ -37,19 +38,29 @@ def intel_note(app: dict) -> str:
     return '<p class="lc-small">Intel Macs: not supported by this app\'s authors.</p>' if unsupported else ""
 
 
-def os_tile(system: str, options: list[dict], extra: str = "") -> str:
-    """The tile for one system: its download buttons, or "not available" when the release has none (never hidden)."""
+def empty_text(app: dict, system: str) -> str:
+    """Why a tile has no download: the authors do not offer that system (distribution.platforms), or the release has no installer for it."""
+    dist = app["manifest"]["distribution"]
+    listed = [p for p in (dist["platforms"] if "platforms" in dist else []) if p.startswith(system + "-")]
+    return "No installer in this release." if "platforms" not in dist or listed else "Not offered by this app's authors."
+
+
+def os_tile(system: str, options: list[dict], extra: str = "", empty: str = "No installer in this release.") -> str:
+    """The tile for one system: its download buttons and hints, or the reason there are none (never hidden; no hint without a download)."""
     several = len({o["arch"] for o in options}) > 1
-    body = ("".join(os_button(o, system, i == 0, several) for i, o in enumerate(options)) if options
-            else '<p class="lc-small">No installer in this release.</p>')
+    body = "".join(os_button(o, system, i == 0, several) for i, o in enumerate(options)) if options else f'<p class="lc-small">{esc(empty)}</p>'
+    hint = f'<p class="lc-small">{HINTS[system]}</p>' if options else ""
     arches = " ".join(sorted({o["arch"] for o in options}))
-    return f'<div class="lc-ostile" data-os="{system}" data-arches="{arches}"><h3>{SYSTEMS[system]}</h3>{body}{extra}<p class="lc-small">{HINTS[system]}</p></div>'
+    return f'<div class="lc-ostile" data-os="{system}" data-arches="{arches}"><h3>{SYSTEMS[system]}</h3>{body}{extra}{hint}</div>'
 
 
 def github_view(colab_url: str) -> str:
-    """The GitHub address of the notebook behind a Colab link (colab.research.google.com/github/o/r/blob/branch/path), or "" when the link is of another kind."""
+    """The GitHub address of the notebook behind a Colab link (colab.research.google.com/github/o/r/blob/branch/path), or "" when the link is of another kind
+    or climbs out of the repository with ".."."""
     m = COLAB_FILE.match(colab_url)
-    return f"https://github.com/{m.group(1)}/{m.group(2)}/blob/{m.group(3)}/{m.group(4)}" if m else ""
+    if not m or ".." in colab_url.split("/"):
+        return ""
+    return f"https://github.com/{m.group(1)}/{m.group(2)}/blob/{m.group(3)}/{m.group(4)}"
 
 
 def notebook_row(link: dict) -> str:
@@ -60,10 +71,10 @@ def notebook_row(link: dict) -> str:
             f'<a class="lc-btn lc-btn--ghost lc-btn--small" href="{esc(link["url"])}">{hosts.service_logo("colab")}Open in Colab</a>{source}</li>')
 
 
-def notebooks_list(links: list[dict]) -> str:
-    """The notebooks listed in the manifest (`distribution.colab`) and one sentence about the service; only what the author lists is shown."""
+def notebooks_list(links: list[dict], desktop: bool) -> str:
+    """The notebooks listed in the manifest (`distribution.colab`) and one sentence about the service (with a line about the desktop app only when there is one)."""
     return ('<h3 id="notebooks">Notebooks to open in your browser</h3><ul class="lc-notebooks">' + "".join(notebook_row(l) for l in links)
-            + f'</ul><p class="lc-small">{COLAB_NOTE}</p>')
+            + f'</ul><p class="lc-small">{COLAB_NOTE}{DESKTOP_NOTE if desktop else ""}</p>')
 
 
 def pip_block(package: str) -> str:
@@ -81,11 +92,11 @@ def get_section(app: dict) -> str:
     if app["release"] and dist.get("installer"):
         have = downloads(app)
         parts.append(f'<p class="lc-small">{release_line(app)} · files come from github.com/{esc(app["repo"])}/releases</p>')
-        parts.append('<div class="lc-osgrid" data-lc-osgrid>' + "".join(os_tile(k, have[k], intel_note(app) if k == "macos" else "") for k in SYSTEMS) + "</div>")
-        colab = " or open a notebook in Colab below" if optional_list(dist, "colab") else ""
-        parts.append(f'<p class="lc-small" data-lc-nosystem hidden>Installers are for Windows, macOS and Linux computers{colab}.</p>')
+        parts.append('<div class="lc-osgrid" data-lc-osgrid>' + "".join(os_tile(k, have[k], intel_note(app) if k == "macos" else "", empty_text(app, k)) for k in SYSTEMS) + "</div>")
+        colab = " You can also open a notebook in Colab below." if optional_list(dist, "colab") else ""
+        parts.append(f'<p class="lc-small" data-lc-nosystem hidden>These installers are for Windows, macOS and Linux computers.{colab}</p>')
     if optional_list(dist, "colab"):
-        parts.append(notebooks_list(optional_list(dist, "colab")))
+        parts.append(notebooks_list(optional_list(dist, "colab"), bool(dist.get("installer"))))
     if dist.get("pip"):
         parts.append(pip_block(dist["pip"]))
     return "\n".join(parts)
@@ -100,7 +111,7 @@ def using_section(app: dict) -> str:
                  else '<p>The authors have not given first-run steps.</p>')
     if m["distribution"].get("installer"):
         parts.append('<p><strong>For any LabConstrictor desktop app:</strong> after installing, open the app from your Start Menu or Applications folder. '
-                     'Its Welcome notebook lists what it can do; the <a href="guides/notebook-usage/">notebook usage guide</a> shows how to work with it.</p>')
+                     'Its Welcome notebook lists the app&#39;s notebooks; the <a href="guides/notebook-usage/">notebook usage guide</a> shows how to work with it.</p>')
     docs, label = (m["docs_url"], "Documentation") if m.get("docs_url") else (app["html_url"] + "#readme", "README on GitHub")
     parts.append(f'<p>Read more: <a href="{esc(docs)}">{label}</a>.</p>')
     return "\n".join(parts)
@@ -108,7 +119,7 @@ def using_section(app: dict) -> str:
 
 def asset_row(a: dict) -> str:
     """One row of the table of all downloads: system, format, size, file and its SHA-256 (or "not published")."""
-    digest = f'<code class="lc-hash">{esc(a["sha256"])}</code>' if a["sha256"] else "not published"
+    digest = f'<code class="lc-hash" data-search-exclude>{esc(a["sha256"])}</code>' if a["sha256"] else "not published"
     return (f'<tr><td>{SYSTEM_LABELS[(a["os"], a["arch"])]}</td><td>.{a["ext"]}</td><td>{megabytes(a["size"])}</td>'
             f'<td><a href="{esc(a["url"])}">{esc(a["name"])}</a></td><td>{digest}</td></tr>')
 
@@ -119,7 +130,7 @@ def downloads_table(app: dict) -> str:
     return (f'<h2 id="downloads">All downloads</h2><p class="lc-small">Version {esc(app["release"]["tag"])}, '
             f'released {long_date(app["release"]["published_at"])}. Files come straight from the app\'s '
             f'<a href="{esc(app["release"]["url"])}">GitHub release</a>.</p>'
-            '<div class="lc-scroll"><table class="lc-table"><thead><tr><th>System</th><th>Format</th><th>Size</th><th>File</th><th>SHA-256</th></tr></thead>'
+            '<div class="lc-scroll"><table class="lc-table"><caption class="lc-sr">Installers of the latest release</caption><thead><tr><th>System</th><th>Format</th><th>Size</th><th>File</th><th>SHA-256 (from GitHub)</th></tr></thead>'
             f'<tbody>{rows}</tbody></table></div>')
 
 

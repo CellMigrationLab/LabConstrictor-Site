@@ -4,6 +4,7 @@ import json
 
 from .cards import KINDS, SYSTEMS, badge, card, github_badge, host_badge, icon, link_pill, offered_assets, plugin_stage, release_line, testing_badge
 from . import catalogue_text, citation, filters, hosts, pages_facts, pages_get, projects
+from .config import SCIENTIFIC_KINDS
 from .page import Page
 from .validate import optional_list
 from .text import esc, long_date, paragraphs
@@ -45,7 +46,8 @@ def details_list(app: dict) -> str:
     if m.get("categories"):
         rows.append(("Topics", ", ".join(esc(c) for c in m["categories"])))
     links = [("Report a problem", app["html_url"] + "/issues" if app["has_issues"] else ""), ("Homepage", m.get("homepage")), ("Documentation", m.get("docs_url"))]
-    rows.append(("Links", " · ".join(f'<a href="{esc(u)}">{t}</a>' for t, u in links if u) + ("" if app["has_issues"] else " · No issue tracker on GitHub")))
+    shown = [f'<a href="{esc(u)}">{t}</a>' for t, u in links if u] + ([] if app["has_issues"] else ["No issue tracker on GitHub"])
+    rows.append(("Links", " · ".join(shown)))
     return '<h2 id="details">Details</h2><dl class="lc-facts">' + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows) + "</dl>"
 
 
@@ -72,7 +74,7 @@ def jsonld(app: dict) -> str:
     manifest text can close the <script> block or start an HTML comment."""
     m = app["manifest"]
     data = {"@context": "https://schema.org", "@type": "SoftwareApplication", "name": m["name"], "description": m["summary"], "url": app["html_url"]}
-    if app["section"] != "testing":
+    if m["kind"] in SCIENTIFIC_KINDS and app["section"] != "testing":
         data["applicationCategory"] = "ScientificApplication"
     if app["release"]:
         data["softwareVersion"] = app["release"]["tag"]

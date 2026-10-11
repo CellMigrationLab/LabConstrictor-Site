@@ -30,7 +30,7 @@ groups:
         approach: >-
           Runs scientific solutions (tools and routines), each in its own micromamba
           environment, and shares them through catalogs kept in Git.
-        fit: You want to share a scientific tool as a solution that others install and run through Album.
+        fit: you want to share a scientific tool as a solution that others install and run through Album.
         docs: https://docs.album.solutions
         site: https://album.solutions
         checked: 2026-10-11
@@ -39,7 +39,7 @@ groups:
           A cross-platform desktop application for JupyterLab for Windows, macOS and Linux.
           The Python environment can be set globally or per project.
         fit: >-
-          You want JupyterLab on your own computer as a general-purpose application, with a
+          you want JupyterLab on your own computer as a general-purpose application, with a
           choice of Python environment.
         repo: jupyterlab/jupyterlab-desktop
         checked: 2026-10-11
@@ -52,7 +52,7 @@ groups:
           graphical launcher. The notebooks can run locally, in the cloud or on
           high-performance computing systems.
         fit: >-
-          You want to run microscopy deep-learning notebooks in containers on your own, remote
+          you want to run microscopy deep-learning notebooks in containers on your own, remote
           or HPC machines.
         repo: HenriquesLab/DL4MicEverywhere
         doi: 10.1038/s41592-024-02295-6
@@ -65,8 +65,8 @@ groups:
       - name: Binder
         approach: >-
           Opens a Git repository as a live Jupyter session in a web browser. BinderHub builds
-          the image on demand, and mybinder.org is a free-to-use BinderHub deployment.
-        fit: Collaborators should open a repository's notebooks in a browser without installing anything.
+          the image on demand, and one public deployment of BinderHub is open to anyone to use.
+        fit: collaborators should be able to open a repository's notebooks in a browser without installing anything.
         docs: https://mybinder.readthedocs.io
         site: https://mybinder.org
         doi: 10.25080/Majora-4af1f417-011
@@ -77,7 +77,7 @@ groups:
           Builds a container image from the configuration files in a Git repository, so that
           its environment can be reproducibly built and run. BinderHub uses it to build images
           on demand.
-        fit: You want a reproducible container image of a repository's environment.
+        fit: you want a reproducible container image of a repository's environment.
         repo: jupyterhub/repo2docker
         docs: https://repo2docker.readthedocs.io
         checked: 2026-10-11
@@ -85,7 +85,7 @@ groups:
         approach: >-
           Turns Jupyter notebooks into standalone web applications and dashboards. Code cells
           are hidden by default, and widgets stay connected to a live Jupyter kernel.
-        fit: You want to present a notebook as a web application, run from a local or hosted process.
+        fit: you want to present a notebook as a web application, run from a local or hosted process.
         repo: voila-dashboards/voila
         docs: https://voila.readthedocs.io
         checked: 2026-10-11
@@ -97,7 +97,7 @@ groups:
           An open-source library and application for common deep-learning workflows in
           bioimage analysis, with a graphical interface for Windows, Linux and macOS.
         fit: >-
-          You want ready-made deep-learning workflows for bioimage tasks such as segmentation,
+          you want ready-made deep-learning workflows for bioimage tasks such as segmentation,
           detection or denoising.
         repo: BiaPyX/BiaPy
         docs: https://biapy.readthedocs.io
@@ -109,7 +109,7 @@ groups:
         approach: >-
           A collection of Jupyter notebooks for Google Colab, with a graphical interface, for
           deep learning in microscopy.
-        fit: You want to run deep-learning microscopy notebooks in Google Colab.
+        fit: you want to run deep-learning microscopy notebooks in Google Colab.
         repo: HenriquesLab/ZeroCostDL4Mic
         doi: 10.1038/s41467-021-22518-0
         reference: von Chamier et al. (2021), Nature Communications 12, 2276
@@ -119,10 +119,8 @@ closing: >-
   These approaches are not mutually exclusive. A scientific Python package can support a
   notebook distributed with LabConstrictor and also offer workflows through containers or cloud
   notebooks, and the same notebooks can be opened in Google Colab. In our preprint we describe
-  the trade-offs as we see them. Cloud notebooks lower the first barrier but are not an option
-  when data cannot leave an institution or are very large. Containers encapsulate the runtime
-  more fully but add setup work and can be restricted by institutional IT policies. Pinned conda
-  environments in an installed app are not flawless across operating systems and depend on
+  the trade-offs as we see them: cloud notebooks lower the first barrier, containers encapsulate
+  the runtime more fully, and the pinned conda environments of an installed app depend on
   upstream packages staying available. These are our views, not those of the other projects.
 helper: >-
   The descriptions are ours, written from each project's own pages. If something is wrong or a

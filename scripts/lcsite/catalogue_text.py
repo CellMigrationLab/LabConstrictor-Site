@@ -3,7 +3,7 @@
 Nothing here is written by hand: when an app is added, removed or loses its Colab link, the sentences change at the next build.
 """
 
-from .cards import SYSTEMS, routes
+from .cards import SYSTEMS, offered_assets, routes
 from .text import plural
 
 
@@ -25,7 +25,7 @@ def ways(apps: list[dict]) -> list[str]:
 
 def systems(apps: list[dict]) -> list[str]:
     """The operating systems (Windows, macOS, Linux) for which at least one app has an installer in its latest release."""
-    present = {x["os"] for a in apps if a["release"] is not None for x in a["release"]["assets"]}
+    present = {x["os"] for a in apps for x in offered_assets(a)}
     return [label for key, label in SYSTEMS.items() if key in present]
 
 

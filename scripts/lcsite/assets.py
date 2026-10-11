@@ -19,7 +19,12 @@ def download_prefix(repo: str, tag: str) -> str:
 def sha256_of(raw: dict) -> str | None:
     """The SHA-256 digest GitHub lists for a release asset ("sha256:<hex>"), or None when GitHub gives none (older releases)."""
     digest = raw["digest"] if "digest" in raw and raw["digest"] else ""
-    return digest.removeprefix("sha256:") if digest.startswith("sha256:") else None
+    if not digest.startswith("sha256:"):
+        return None
+    hexdigest = digest.removeprefix("sha256:")
+    if not re.fullmatch(r"[0-9a-f]{64}", hexdigest):
+        raise AppProblem(f"asset {raw['name']} has a malformed SHA-256 digest from GitHub")
+    return hexdigest
 
 
 def parse_asset(repo: str, tag: str, raw: dict) -> dict | None:

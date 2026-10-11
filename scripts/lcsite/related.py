@@ -15,7 +15,7 @@ GROUP_KEYS = {"key", "title", "items"}
 REQUIRED = {"name", "approach", "fit", "checked"}
 OPTIONAL = {"repo", "docs", "site", "doi", "reference", "shared_authors"}
 PROSE = ("title", "intro", "disclosure", "shared_authors_note", "closing", "helper")
-BANNED_IN_PROSE = re.compile(r"https?://|www\.|[\[\]<>]|\b(popular|most used|fastest|faster|best|superior|stars|downloads)\b", re.I)
+BANNED_IN_PROSE = re.compile(r"https?://|www\.|\b[a-z0-9-]+\.(org|com|io|net|dev)\b|[\[\]<>]|\b(popular|most used|fastest|faster|best|superior|stars|downloads)\b", re.I)
 REPO = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 GITHUB_ROOT = re.compile(r"^https://github\.com/[^/]+/[^/]+/?$")
 DOI = re.compile(r"^10\.\d{4,9}/\S+$")
@@ -37,6 +37,9 @@ def check_top(data: dict) -> None:
     names: set[str] = set()
     for group in data["groups"]:
         check_group(group, names)
+        order = [e["name"].casefold() for e in group["items"]]
+        if order != sorted(order):
+            fail(f"{FILE}: the entries of group {group['key']} must be in alphabetical order (nothing is ranked)")
 
 
 def check_text(where: str, value: object) -> None:
@@ -68,6 +71,8 @@ def check_entry(entry: dict) -> None:
     name = entry["name"]
     for key in ("name", "approach", "fit"):
         check_text(f"{name}: {key}", entry[key])
+    if not entry["fit"][0].islower():
+        fail(f"{FILE}: {name}: fit continues the sentence 'A good fit when ...', so it starts with a lower-case letter")
     if not isinstance(entry["checked"], date):
         fail(f"{FILE}: {name}: checked must be a date like 2026-10-11")
     if "shared_authors" in entry and entry["shared_authors"] is not True:

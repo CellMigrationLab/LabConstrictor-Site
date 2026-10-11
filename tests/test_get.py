@@ -14,7 +14,7 @@ INTEL = dict(MAC, arch="x86_64")
 def app(assets_list: list[dict], **dist: object) -> dict:
     """A minimal app with a release of the given assets and the given distribution fields."""
     return {"slug": "a", "repo": "o/a", "html_url": "https://github.com/o/a", "section": "apps", "has_issues": True, "license": "MIT", "icon": None, "screenshots": [],
-            "manifest": {"name": "A", "summary": "s", "kind": "utility", "distribution": {"installer": True} | dist},
+            "manifest": {"name": "A", "summary": "s", "kind": "analysis", "distribution": {"installer": True} | dist},
             "release": {"tag": "1.0.0", "published_at": "2026-10-01T00:00:00Z", "url": "https://github.com/o/a/releases/tag/1.0.0", "assets": assets_list}}
 
 
@@ -115,6 +115,39 @@ class TileLinkTests(unittest.TestCase):
 
     def test_each_tile_has_its_own_steps_link(self) -> None:
         """Windows, macOS and Linux tiles point at their own anchors."""
-        html = pages_get.get_section(app([ASSET, MAC]))
+        linux = dict(ASSET, name="A-1.0.0-Linux-x86_64.sh", os="linux", ext="sh")
+        html = pages_get.get_section(app([ASSET, MAC, linux]))
         for system in ("windows", "macos", "linux"):
             self.assertIn(f'guides/install/#{system}"', html)
+
+
+class ReviewFixTests(unittest.TestCase):
+    """Cases found by the review: platforms and tiles, Colab-only apps, tags, digests, Colab links."""
+
+    def test_a_system_the_authors_do_not_list_says_so_and_has_no_hint(self) -> None:
+        """With only macos-arm64 listed, the Windows and Linux tiles say they are not offered, and print no hint about installing."""
+        a = app([ASSET, MAC], platforms=["macos-arm64"])
+        html = pages_get.get_section(a)
+        self.assertIn("Not offered by this app", html)
+        self.assertNotIn("No installer in this release.", html)
+        self.assertNotIn("Windows steps", html)
+
+    def test_the_colab_sentence_mentions_the_desktop_app_only_when_there_is_one(self) -> None:
+        """A Colab-only app is not told that its desktop app runs on the computer."""
+        colab = {"colab": [{"label": "N", "url": "https://colab.research.google.com/x"}]}
+        only = dict(app([]), release=None)
+        only["manifest"]["distribution"] = colab
+        self.assertNotIn("desktop app", pages_get.get_section(only))
+        self.assertIn("desktop app", pages_get.get_section(app([ASSET], **colab)))
+
+    def test_systems_follow_the_platforms_and_tags_keep_one_v(self) -> None:
+        """The description names only offered systems; a tag already starting with v is not doubled."""
+        from lcsite import catalogue_text
+        self.assertEqual(catalogue_text.systems([app([ASSET, MAC], platforms=["macos-arm64"])]), ["macOS"])
+        self.assertTrue(cards.release_line(dict(app([ASSET]), release=dict(app([ASSET])["release"], tag="v1.0"))).startswith("v1.0 "))
+
+    def test_a_malformed_digest_and_a_dotdot_colab_link_are_refused(self) -> None:
+        """GitHub's digest must be 64 hex digits; a Colab link that climbs out of the repository gets no GitHub link."""
+        with self.assertRaises(AppProblem):
+            assets.sha256_of({"name": "x", "digest": "sha256:nothex"})
+        self.assertEqual(pages_get.github_view("https://colab.research.google.com/github/o/r/blob/main/../../x/y.ipynb"), "")

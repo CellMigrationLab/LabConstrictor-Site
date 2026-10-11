@@ -25,7 +25,7 @@ def filter_bar(apps: list[dict]) -> str:
     kinds = Counter(a["manifest"]["kind"] for a in apps)
     ways = Counter(r for a in apps for r in routes(a))
     plugins = Counter(h for a in apps for h in set(optional_list(a["manifest"], "hosts")) if h in HOSTS and h != "notebook")
-    return ('<form class="lc-filter" data-lc-filter role="search" onsubmit="return false" hidden>'
+    return ('<form class="lc-filter" data-lc-filter data-search-exclude role="search" onsubmit="return false" hidden>'
             '<label class="lc-filter__search">Search<input type="search" data-lc-search placeholder="Name, task, what it does"></label>'
             + select("kind", "Kind", options(KINDS, kinds)) + select("route", "How do you want to run it?", options(ROUTE_LABELS, ways))
             + select("host", "Also in", options(HOSTS, plugins)) +

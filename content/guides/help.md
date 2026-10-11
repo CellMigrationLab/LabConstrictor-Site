@@ -1,6 +1,6 @@
 # Find your problem
 
-Find what you see in the left column, then follow the link on the right. Every row goes to a page that already describes it. If yours is not here, open an issue in the app's repository, or in [this site's repository](https://github.com/CellMigrationLab/LabConstrictor-Site/issues/new) if the problem is with the site.
+Find what you see in the left column, then follow the link on the right. Every row goes to a page that already describes it. If yours is not here, use the **Report a problem** link on the app's page (when the repository has an issue tracker), or open an issue in [this site's repository](https://github.com/CellMigrationLab/LabConstrictor-Site/issues/new) if the problem is with the site.
 
 ## An app on your computer
 
@@ -21,5 +21,5 @@ Each guide ends with a section called *If something does not work*: [napari](../
 
 | You see | Go to |
 |---|---|
-| A workflow run failed in the Actions tab of your repository | [Check workflow status and troubleshooting](../workflow-status/index.md#2-how-to-debug-a-failure) |
+| A workflow run failed in the Actions tab of your repository | [Check the status of GitHub workflows](../workflow-status/index.md#2-how-to-debug-a-failure) |
 | A problem while setting up your repository | [Troubleshooting repository setup](../troubleshooting/index.md) |

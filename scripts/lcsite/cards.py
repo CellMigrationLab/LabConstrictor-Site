@@ -105,7 +105,7 @@ def icon(app: dict, size: int = 48) -> str:
 def release_line(app: dict) -> str:
     """"v0.1.5 · 8 October 2026", or "No release yet" for an app that has none (pip or Colab only)."""
     release = app["release"]
-    return f'v{esc(release["tag"])} · {long_date(release["published_at"])}' if release else "No release yet"
+    return f'v{esc(release["tag"].removeprefix("v"))} · {long_date(release["published_at"])}' if release else "No release yet"
 
 
 def offered_assets(app: dict) -> list[dict]:

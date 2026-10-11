@@ -18,7 +18,7 @@ class NotebookTests(unittest.TestCase):
         """One row per listed notebook with Open in Colab and View on GitHub; a Drive notebook has no GitHub link; the label is escaped."""
         html = pages_get.notebooks_list([
             {"label": "2D <b>", "url": "https://colab.research.google.com/github/o/r/blob/main/a.ipynb"},
-            {"label": "3D", "url": "https://colab.research.google.com/drive/abc"}])
+            {"label": "3D", "url": "https://colab.research.google.com/drive/abc"}], True)
         self.assertEqual(html.count("<li>"), 2)
         self.assertEqual(html.count("Open in Colab"), 2)
         self.assertEqual(html.count("View on GitHub"), 1)

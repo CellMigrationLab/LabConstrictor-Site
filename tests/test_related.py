@@ -6,7 +6,7 @@ import unittest
 
 from lcsite import pages_related, related
 
-ENTRY = {"name": "Tool", "approach": "Does one thing.", "fit": "You need that thing.", "repo": "o/tool", "docs": "https://tool.example/docs",
+ENTRY = {"name": "Tool", "approach": "Does one thing.", "fit": "you need that thing.", "repo": "o/tool", "docs": "https://tool.example/docs",
          "doi": "10.1000/abc", "reference": "A. Author et al. (2024), A Journal 1, 2-3", "shared_authors": True, "checked": datetime.date(2026, 10, 11)}
 DATA = {"title": "Related", "intro": "Intro text.", "disclosure": "Some authors overlap.", "shared_authors_note": "Shares authors with LabConstrictor.",
         "groups": [{"key": "g", "title": "A group", "items": [ENTRY]}], "closing": "Closing words.", "helper": "Edit the list."}
@@ -36,7 +36,7 @@ class ValidationTests(unittest.TestCase):
 
     def test_each_mistake_stops_the_build(self) -> None:
         """Unknown key, no link, link inside prose, a volatile word, a GitHub root as docs, doi without reference, a text date, shared_authors false."""
-        mistakes = [bad(extra="x"), bad(repo=None, docs=None), bad(approach="See https://x.example"), bad(fit="It is the fastest option"),
+        mistakes = [bad(extra="x"), bad(repo=None, docs=None), bad(approach="See https://x.example"), bad(fit="it is the fastest option"), bad(fit="You need it"), bad(approach="Hosted at example.org"),
                     bad(docs="https://github.com/o/tool"), bad(reference=None), bad(checked="2026-10-11"), bad(shared_authors=False), bad(doi="nope")]
         for entry in mistakes:
             with self.subTest(entry=entry), self.assertRaises(SystemExit):

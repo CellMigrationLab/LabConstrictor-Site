@@ -28,7 +28,7 @@ class EscapingTests(unittest.TestCase):
 
     def test_json_ld_cannot_close_its_script_block(self) -> None:
         """< > & are written as \\u escapes so that </script> or <!-- cannot appear."""
-        app = {"manifest": {"name": "A</script><!--", "summary": "s", "distribution": {}}, "html_url": "u", "release": None, "section": "apps"}
+        app = {"manifest": {"name": "A</script><!--", "summary": "s", "distribution": {}, "kind": "analysis"}, "html_url": "u", "release": None, "section": "apps"}
         out = pages_apps.jsonld(app)
         self.assertNotIn("<", out)
         self.assertEqual(json.loads(out)["name"], "A</script><!--")

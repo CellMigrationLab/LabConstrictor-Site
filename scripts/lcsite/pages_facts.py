@@ -50,4 +50,4 @@ def screenshot(app: dict, number: int, shot: dict) -> str:
     """One screenshot as a figure: the caption is also its alt text, and its size is written so the page does not shift while it loads."""
     width, height = pixel_size(DOCS / "assets" / "shots" / f"{app['slug']}-{number}.jpg")
     return (f'<figure class="lc-shot"><img class="lc-shot__img" src="assets/shots/{app["slug"]}-{number}.jpg" alt="{esc(shot["caption"])}" '
-            f'width="{width}" height="{height}" loading="lazy"><figcaption>{esc(shot["caption"])}</figcaption></figure>')
+            f'width="{width}" height="{height}" loading="lazy"><figcaption aria-hidden="true">{esc(shot["caption"])}</figcaption></figure>')
