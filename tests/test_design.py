@@ -56,10 +56,12 @@ class HeroTests(unittest.TestCase):
     """The home page's second line is plain text."""
 
     def test_the_line_is_escaped_text_without_links(self) -> None:
-        """The hero's second line is the data text, escaped, with no link in it."""
+        """The hero's second line names the programs of data/hosts.yaml, promises nothing about timing and has no link in it."""
         from lcsite import pages_site
-        out = pages_site.hero_also({"also": "Soon, apps <b>work</b> in napari."})
-        self.assertEqual(out, "Soon, apps &lt;b&gt;work&lt;/b&gt; in napari.")
+        out = pages_site.hero_also()
+        for name in ("napari", "Fiji", "QuPath"):
+            self.assertIn(name, out)
+        self.assertNotIn("Soon", out)
         self.assertNotIn("<a", out)
 
 

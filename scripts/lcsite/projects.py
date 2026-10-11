@@ -7,6 +7,7 @@ The one exception is a project whose repository is copied into every app (the te
 inline in data/ecosystem.yaml, with `name`, `text` and `status` next to `repo`.
 """
 
+from functools import lru_cache
 from typing import Any
 
 from . import sources
@@ -39,6 +40,16 @@ def load_project(repo: str) -> dict[str, Any]:
     except AppProblem as err:
         fail(str(err))
     return data
+
+
+@lru_cache(maxsize=None)
+def host_status(key: str) -> str:
+    """The stage of a program's plugin (Experimental, Available, ...) exactly as the plugin's own project file states it.
+    Stops the build, naming the program, when it has no plugin repository or its project file is invalid."""
+    table = host_table()
+    if key not in table:
+        fail(f"data/hosts.yaml has no program called {key}")
+    return load_project(table[key]["plugin"])["status"]
 
 
 def inline_card(item: dict) -> dict[str, Any]:

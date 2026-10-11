@@ -38,9 +38,10 @@ def program_pills() -> str:
     return ", ".join(pills[:-1]) + " and " + pills[-1]
 
 
-def hero_also(hero: dict) -> str:
-    """The second line of the hero: plain text (no links) saying that apps will also work inside other programs."""
-    return esc(hero["also"])
+def hero_also() -> str:
+    """The second line of the hero: plain text saying that plugins let apps work inside the programs of data/hosts.yaml (their stage is on the Ecosystem page)."""
+    names = [h["name"] for h in hosts.load().values()]
+    return esc(f"Plugins let apps that declare tools work inside {', '.join(names[:-1])} and {names[-1]}; the stage of each plugin is on the Ecosystem page.")
 
 
 def page_home(site: dict, apps: list[dict]) -> None:
@@ -49,7 +50,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
     featured = [a for a in apps if a["featured"]]
     p = Page("index.md", title="LabConstrictor", head_title=f"{site['name']}: {hero['title']}", description=hero["text"], template="home.html")
     p.add(f'<section class="lc-hero"><div class="lc-hero__in"><div><h1>{esc(hero["title"])}</h1><p>{esc(hero["text"])}</p>'
-          f'<p class="lc-hero__also">{hero_also(hero)}</p>'
+          f'<p class="lc-hero__also">{hero_also()}</p>'
           '<div class="lc-choices">'
           + choice("I want to find an app", catalogue_text.home_find_text(apps), "apps/", "Open the App Centre")
           + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "build/", "Why and how to build one", "lc-choice--make") +

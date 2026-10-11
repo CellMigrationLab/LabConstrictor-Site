@@ -3,8 +3,8 @@
 import json
 import re
 
-from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, github_badge, host_badge, icon, link_pill, release_line, testing_badge
-from . import catalogue_text, citation, hosts
+from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, plugin_stage, github_badge, host_badge, icon, link_pill, release_line, testing_badge
+from . import catalogue_text, citation, hosts, projects
 from .page import Page
 from .validate import optional_list
 from .text import esc, long_date, megabytes, paragraphs
@@ -23,7 +23,7 @@ def filter_bar() -> str:
     """Search box and drop-downs; lc.js filters the cards live and keeps the count."""
     return ('<form class="lc-filter" data-lc-filter role="search" onsubmit="return false" hidden>'
             '<label class="lc-filter__search">Search<input type="search" data-lc-search placeholder="Name, topic, what it does"></label>'
-            + select("kind", "Kind", KINDS) + select("route", "Get it as", ROUTES) + select("host", "Works in", HOSTS) +
+            + select("kind", "Kind", KINDS) + select("route", "Get it as", ROUTES) + select("host", "Also in", HOSTS) +
             '<p class="lc-filter__count" data-lc-count aria-live="polite"></p>'
             '<button type="button" class="lc-btn lc-btn--ghost lc-btn--small" data-lc-reset>Clear filters</button></form>')
 
@@ -140,7 +140,7 @@ def details_list(app: dict) -> str:
     m = app["manifest"]
     rows = [("Kind", KINDS[m["kind"]]), ("Latest release", release_line(app)), ("License", esc(app["license"] or "Not stated"))]
     if works_in(app):
-        rows.append(("Works in", works_in(app)))
+        rows.append(("Also in (plugins)", works_in(app)))
     if m.get("authors"):
         rows.append(("Authors", ", ".join(esc(a["name"]) for a in m["authors"])))
     if m.get("categories"):
@@ -162,9 +162,10 @@ def header_links(app: dict) -> str:
 
 
 def works_in(app: dict) -> str:
-    """The programs the app works in, each a pill with its logo linked to the program's website (empty when only a notebook)."""
+    """The programs the app declares a plugin for, each a pill with its logo linked to the program's website and the plugin's stage (empty when only a notebook)."""
     table = hosts.load()
-    return " ".join(hosts.pill(h, table) for h in optional_list(app["manifest"], "hosts") if h in table)
+    return " ".join(f'{hosts.pill(h, table)} <span class="lc-small">plugin: {plugin_stage(projects.host_status(h), h)}</span>'
+                    for h in optional_list(app["manifest"], "hosts") if h in table)
 
 
 def jsonld(app: dict) -> str:

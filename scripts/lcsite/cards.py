@@ -1,6 +1,7 @@
 """HTML snippets shared by several pages: app cards, badges and download data."""
 
-from . import hosts
+from . import hosts, projects
+from .config import fail
 from .text import esc, long_date
 from .validate import optional_list
 
@@ -10,6 +11,7 @@ HOSTS = {"notebook": "Notebook", "napari": "napari", "fiji": "Fiji", "qupath": "
 ROUTES = {"installer": "Desktop", "colab": "Colab", "pip": "pip"}
 SYSTEM_LABELS = {("windows", "x86_64"): "Windows", ("macos", "arm64"): "macOS (Apple Silicon)",
                  ("macos", "x86_64"): "macOS (Intel)", ("linux", "x86_64"): "Linux"}
+PLUGIN_STAGES = {"Experimental": "experimental", "Available": "available", "Install from GitHub": "install from GitHub", "Deprecated": "deprecated"}
 SYSTEMS = {"windows": "Windows", "macos": "macOS", "linux": "Linux"}   # one download tile each, in this order
 CHIPS = {"arm64": "Apple Silicon (M1 or later)", "x86_64": "Intel"}     # macOS buttons are named by chip
 
@@ -48,16 +50,28 @@ def link_pill(url: str, label: str, kind: str) -> str:
     return f'<a class="lc-gh" href="{esc(url)}">{mark}<span>{esc(label)}</span></a>'
 
 
+def plugin_stage(status: str, key: str) -> str:
+    """"experimental", "available", ...: the plugin's stage in the site's one wording. Stops the build, naming the program, for a status it has no wording for."""
+    if status not in PLUGIN_STAGES:
+        fail(f"the {HOSTS[key]} plugin's project file has the status {status!r}; the site has wording only for {sorted(PLUGIN_STAGES)}")
+    return PLUGIN_STAGES[status]
+
+
+def host_phrase(key: str) -> str:
+    """"napari plugin: experimental": what the site says about an app's host, taken from the plugin's own project file (never "soon")."""
+    return f"{HOSTS[key]} plugin: {plugin_stage(projects.host_status(key), key)}"
+
+
 def host_chip(key: str) -> str:
-    """A program's logo as a small chip on an app card (the card is one link, so the chip is not one): "Soon in napari" for screen readers and as a tooltip."""
-    return (f'<span class="lc-badge lc-badge--host lc-badge--logo" title="Soon in {esc(HOSTS[key])}">{hosts.logo(key)}'
-            f'<span class="lc-sr">Soon in {esc(HOSTS[key])}</span></span>')
+    """A program's logo as a small chip on an app card (the card is one link, so the chip is not one): the plugin's stage for screen readers and as a tooltip."""
+    return (f'<span class="lc-badge lc-badge--host lc-badge--logo" title="{esc(host_phrase(key))}">{hosts.logo(key)}'
+            f'<span class="lc-sr">{esc(host_phrase(key))}</span></span>')
 
 
 def host_badge(key: str) -> str:
-    """"Soon in napari" with the program's logo, linked to our guide for it."""
+    """"napari plugin: experimental" with the program's logo, linked to our guide for it."""
     return (f'<a class="lc-badge lc-badge--host" href="{esc(HOST_GUIDES[key])}">{hosts.logo(key)}'
-            f'<span>Soon in {esc(HOSTS[key])}</span></a>')
+            f'<span>{esc(host_phrase(key))}</span></a>')
 
 
 def testing_badge(app: dict) -> str:

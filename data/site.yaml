@@ -3,7 +3,6 @@ name: LabConstrictor
 hero:
   title: Notebooks in. Desktop apps out.
   text: LabConstrictor turns Jupyter notebooks into installable apps for Windows, macOS and Linux. No Python or pip needed.
-  also: Soon, apps can also work inside napari, Fiji and QuPath.
 links:
   template: https://github.com/CellMigrationLab/LabConstrictor
   init_form: https://labconstrictor-form.streamlit.app

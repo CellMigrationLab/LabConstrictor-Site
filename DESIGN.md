@@ -29,7 +29,7 @@ find its type below and use that pattern; if there is no pattern, add one here f
 
 1. **Text link**: inside a sentence. Underlined, ink colour. The text says where it goes; "here", "this link" and "more" are not allowed.
 2. **Action link** (`lc-go`): a destination at the end of a card or block ("Open", "Guide", "Install an app"). Green, bold, no underline, with an arrow that the style adds. The text never contains an arrow.
-3. **Pill**: a small rounded link that names a thing. The **GitHub pill** (mark + repository name, or a short label) is the only way to link to a repository; the **program pill** (the program's logo + its name) is the only way to link to napari, Fiji or QuPath (their own websites); the **documentation pill** (a book) links to an app's documentation. Badges that link (for example "Soon in napari", which goes to our guide) are pills.
+3. **Pill**: a small rounded link that names a thing. The **GitHub pill** (mark + repository name, or a short label) is the only way to link to a repository; the **program pill** (the program's logo + its name) is the only way to link to napari, Fiji or QuPath (their own websites); the **documentation pill** (a book) links to an app's documentation. Badges that link (for example "napari plugin: experimental", which goes to our guide) are pills.
 
 Behaviour: a link that leaves the site opens in a new tab with `rel="noopener"` (done by `finish_site.py` for Markdown, by `page.py` for generated pages); a link inside the site never does. Every link has a name a screen reader can read.
 
@@ -43,11 +43,11 @@ Behaviour: a link that leaves the site opens in a new tab with `rel="noopener"` 
 
 ## Cards
 
-A card is **one link** (the whole card) to one destination: icon or logo and name, kind, summary, badges, a footer with its facts. App cards show the logo of each program the app works in as a chip (the chips are not links; the name is there for screen readers). Ecosystem cards put the repository, the program and the guide in the footer. Cards that need separate actions (ecosystem cards) put them in the footer as a GitHub pill and an action link, never inside the main text. Cards of the same kind have the same parts in the same order.
+A card is **one link** (the whole card) to one destination: icon or logo and name, kind, summary, badges, a footer with its facts. App cards show the logo of each program the app declares a plugin for as a chip (the chips are not links; the plugin's stage, taken from the plugin's own project file, is there for screen readers). Ecosystem cards put the repository, the program and the guide in the footer. Cards that need separate actions (ecosystem cards) put them in the footer as a GitHub pill and an action link, never inside the main text. Cards of the same kind have the same parts in the same order.
 
 ## Badges and pills
 
-One size (12 px, bold). Colour says the role: green = route (Desktop, Colab), grey = Testing, orange = a program (Soon in napari), white with a border = a link to a repository. A badge without an address is plain text; with one it is a pill.
+One size (12 px, bold). Colour says the role: green = route (Desktop, Colab), grey = Testing, orange = a program's plugin and its stage (napari plugin: experimental), white with a border = a link to a repository. A badge without an address is plain text; with one it is a pill.
 
 ## Images
 
