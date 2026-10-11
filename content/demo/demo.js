@@ -3,7 +3,7 @@
 (function () {
   var root = document.querySelector('[data-demo]');
   if (!root) { return; }
-  var FRESH = { view: 'notebook', launched: false, step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
+  var FRESH = { view: 'notebook', launched: false, done: 0, step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
                 fijiDialog: true, selected: '', vis: { reference: true, query: false, aligned: true, alignment: true },
                 opacity: { reference: 100, query: 100, aligned: 100, alignment: 80 } };
   var state = JSON.parse(JSON.stringify(FRESH));
@@ -21,10 +21,12 @@
 
   function showSteps() {
     all('[data-from]').forEach(function (el) { el.hidden = state.step < Number(el.dataset.from); });
+    all('[data-done]:not([data-status])').forEach(function (el) { el.hidden = state.done < Number(el.dataset.done); });
+    all('[data-after]').forEach(function (el) { el.hidden = state.done < Number(el.dataset.after); });
     all('[data-from-welcome]').forEach(function (el) { el.hidden = !state.welcomeRun; });
     all('[data-from-nb]').forEach(function (el) { el.hidden = !state.opened; });
     all('[data-act="run-step"]').forEach(function (b) {
-      if (b.closest('.nb')) { var n = Number(b.dataset.step); b.disabled = state.step < n - 1 || state.step >= n; b.title = state.step >= n ? 'Already run' : b.disabled ? 'Run the cells above first' : ''; }
+      if (b.closest('.nb')) { var n = Number(b.dataset.step); b.disabled = state.done < n - 1 || state.step >= n; b.title = state.step >= n ? 'Already run' : b.disabled ? 'Finish the step above first' : ''; }
     });
     all('#demo-panel-napari [data-act="run-step"], #demo-panel-fiji [data-dialog] [data-act="run-step"]').forEach(function (b) { b.disabled = state.step >= 3 && !b.closest('[data-dialog]'); b.title = b.disabled ? 'The example result is already shown; use Reset demo to start again' : ''; });
     all('[data-status]').forEach(function (el) { if (el.dataset.done) { el.textContent = state.step >= 3 ? el.dataset.done : el.dataset.idle; } });
@@ -40,7 +42,8 @@
     one('[data-act="toggle-code"]').setAttribute('aria-pressed', state.code ? 'true' : 'false');
     one('[data-act="run-welcome"]').disabled = state.welcomeRun;
     var inApp = state.nbTab === 'app' && state.opened;
-    one('[data-act="run-next"]').disabled = inApp ? state.step >= 3 : state.welcomeRun;
+    one('[data-act="run-next"]').disabled = inApp ? (state.step >= 3 || state.step !== state.done) : state.welcomeRun;
+    all('[data-act="widget"]').forEach(function (b) { b.disabled = state.done >= Number(b.dataset.n); });
     showUpdates();
   }
 
@@ -81,7 +84,7 @@
 
   function sync() { root.dataset.step = state.step; showViews(); showSteps(); showNotebook(); showLayers(); showFiji(); }
 
-  function runStep(n) { state.step = Math.max(state.step, n); if (n === 3) { state.selected = state.selected || 'aligned'; state.fijiDialog = false; state.opened = true; state.launched = true; } }
+  function runStep(n, fromHost) { state.step = Math.max(state.step, n); if (fromHost) { state.done = 3; } if (n === 3 && fromHost) { state.selected = state.selected || 'aligned'; state.fijiDialog = false; state.opened = true; state.launched = true; } }
 
   function settle(out) {
     if (!out) { return; }
@@ -94,8 +97,9 @@
     'launch': function () { state.launched = true; return ['#nb-tab-welcome', 'NucleiSky is open in JupyterLab with the Welcome notebook.']; },
     'run-welcome': function () { state.welcomeRun = true; return ['[data-act="test-connection"]', 'Cell ran: the list of notebooks and the update check are shown.']; },
     'open-app': function () { state.launched = true; state.opened = true; state.nbTab = 'app'; },
-    'run-step': function (el) { var n = Number(el.dataset.step); runStep(n); return [n === 3 && !el.closest('.nb') ? '[data-act="fiji-open"]' : '', 'Cell ' + n + ' ran; its output is shown below.']; },
-    'run-next': function () { if (state.nbTab === 'app' && state.opened) { runStep(Math.min(3, state.step + 1)); } else { state.welcomeRun = true; } },
+    'run-step': function (el) { var n = Number(el.dataset.step), host = !el.closest('.nb'); runStep(n, host); return [host && n === 3 ? '[data-act="fiji-open"]' : '', host ? 'Example result shown.' : 'Cell ' + n + ' ran; its widget is shown below.']; },
+    'widget': function (el) { state.done = Math.max(state.done, Number(el.dataset.n)); return ['', 'Done: the result is shown below.']; },
+    'run-next': function () { if (state.nbTab === 'app' && state.opened) { runStep(Math.min(3, state.step + 1), false); } else { state.welcomeRun = true; } },
     'toggle-code': function () { state.code = !state.code; },
     'test-connection': function () { state.checked = true; },
     'scenario': function (el) { state.scenario = el.checked; state.updated = false; },

@@ -1,0 +1,15 @@
+Adaptive matching order policy: 20<=n_crop<1000 (['triangles', 'graph', 'quad', 'hashing'])
+========== Matcher: Triangles ==========
+Triangle-based matching failed.
+========== Matcher: Graph ==========
+RANSAC: # inliers = 6
+Match quality:
+  success        = False
+  frac_inliers   = 0.067
+  mean_error_um = 1.2776524841128292
+========== Matcher: Quad ==========
+Match quality:
+  success        = True
+  frac_inliers   = 0.867
+  mean_error_um = 0.26405536314525246
+✅ Adaptive matching completed and exported successfully.

@@ -17,7 +17,9 @@ Everything in this folder is **generated** by `tools/demo_assets/make_demo_asset
 | `reference_roi.webp`, `reference_roi_green.webp` | the 549 × 549 px region NucleiSky exported around the match (exported by NucleiSky with a 150 px margin; its position in the reference is in `example.json`), grey and green, shown at 2× |
 | `aligned_roi.webp`, `aligned_roi_magenta.webp` | the query warped onto that region by NucleiSky's transform, grey and magenta, transparent outside the footprint |
 | `query.webp` | the query (a generated random crop), shown at 3× |
-| `nuclei_outlines_roi.webp` | (generated, not used on the page) outlines of the reference nuclei in that region (from the supplied masks) |
+| `nuclei_outlines_roi.webp` | outlines of the reference nuclei in that region (from the supplied masks) |
+| `qc_figure.webp`, `run_log.txt` | NucleiSky's own quality-control figure and its printed output (matrices removed) for the adaptive run, shown in the notebook view |
+| `nucleisky-icon.png` | the app icon, cropped (circle only) and shrunk from `app/logo/Gemini_Generated_Image_kc5ezfkc5ezfkc5e.png` in the NucleiSky repository (the file name suggests it was made with an image generator: rights to be confirmed, see planning/QUESTIONS-FOR-AUTHORS.md) |
 | `example.json` | inputs (SHA-256), pixel sizes, transform, attempts, footprint corners, display windows |
 
 Display only: intensities are stretched linearly between the 1st and 99.8th percentiles; images are enlarged with bicubic interpolation and saved as WebP. No value shown on the page is computed from these images.

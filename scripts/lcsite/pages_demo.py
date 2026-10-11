@@ -49,7 +49,7 @@ def about_and_features(text: dict) -> str:
     items = "".join(f'<li><strong>{esc(i["title"])}.</strong> {esc(i["text"])} <a href="{esc(i["href"])}">{esc(i["link"])}</a></li>' for i in f["items"])
     c = text["credit"]
     return (f'<section class="lc-demo__about"><h2>{esc(a["title"])}</h2><p>{esc(a["text"])} {github_badge(c["nucleisky_repo"])} '
-            f'<a href="apps/nucleisky/">{esc(a["app_link"])}</a></p><h2>{esc(f["title"])}</h2><ul>{items}</ul></section>')
+            f'<a href="apps/nucleisky/">{esc(a["app_link"])}</a></p><details><summary>{esc(f["title"])}</summary><ul>{items}</ul></details></section>')
 
 
 def how_it_works(text: dict) -> str:

@@ -35,7 +35,7 @@ features:
       text: Apps that declare tools can run inside napari and Fiji (experimental).
       href: guides/image-software/
       link: Use apps in your image software
-notice: Interactive preview using example microscopy data. The analysis result is precomputed; no scientific computation is performed on this website.
+notice: Interactive preview using example data. The result is precomputed; nothing is computed on this website.
 experimental: Experimental preview. The NucleiSky tool shown here is not in the released NucleiSky app, which lists notebook support only; it exists on development branches. So far it has been tested on Linux only, not on Windows or macOS. Expect bugs and changes.
 how:
   title: How the connection works

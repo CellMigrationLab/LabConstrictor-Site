@@ -6,10 +6,11 @@ import shutil
 from pathlib import Path
 
 from .config import CONTENT, DOCS, fail
+from .text import esc
 
 SOURCE = CONTENT / "demo"
 OUT = DOCS / "assets" / "demo"
-IMAGES = ("reference_full.webp", "reference_roi.webp", "reference_roi_green.webp", "aligned_roi.webp", "aligned_roi_magenta.webp",
+IMAGES = ("nucleisky-icon.png", "qc_figure.webp", "nuclei_outlines_roi.webp", "reference_full.webp", "reference_roi.webp", "reference_roi_green.webp", "aligned_roi.webp", "aligned_roi_magenta.webp",
           "query.webp")
 CODE = ("demo.js", "demo.css")
 MAX_BYTES = 400_000          # one image above this stops the build: the page must stay light
@@ -53,7 +54,11 @@ def values(example: dict) -> dict[str, str]:
     """Every number or phrase a window shows, as display strings, all taken from example.json."""
     r, im, n, region = example["result"], example["images"], example["nuclei"], example["region"]
     y0, y1, x0, x1 = r["bbox_reference_px_y0y1x0x1"]
+    log = (SOURCE / "run_log.txt")
+    if not log.is_file():
+        fail(f"{log} is missing")
     return {
+        "run_log": esc(log.read_text(encoding="utf-8").strip()),
         "rotation": number(r["rotation_deg"], 4), "rotation_short": number(r["rotation_deg"], 1), "scale": number(r["scale"], 4),
         "offset_y": number(r["b_px"][0], 4), "offset_x": number(r["b_px"][1], 4), "bbox": f"[{y0}, {y1}, {x0}, {x1}]",
         "matcher": r["matcher"], "inliers": str(r["inliers"]), "n_query": str(n["query"]), "n_reference": str(n["reference"]),

@@ -6,7 +6,9 @@ Usage (offline; needs numpy, scipy, pandas, tifffile, scikit-image, matplotlib, 
 """
 
 import argparse
+import contextlib
 import hashlib
+import io
 import json
 import sys
 from pathlib import Path
@@ -122,6 +124,15 @@ def build_record(args: argparse.Namespace, data: dict, best: dict, exports: dict
     }
 
 
+def write_log_and_figure(text: str, figure: Path, out: Path) -> None:
+    """What NucleiSky printed (without its number matrices) and its own quality figure, as run_log.txt and qc_figure.webp."""
+    from PIL import Image
+    keep = [line.rstrip() for line in text.splitlines() if line.strip() and not line.lstrip().startswith(("[", "R =", "ICP", "RANSAC (", "QUAD RANSAC", "QUAD ICP"))]
+    (out / "run_log.txt").write_text("\n".join(keep) + "\n", encoding="utf-8")
+    with Image.open(figure) as im:
+        im.convert("RGB").resize((1600, round(im.height * 1600 / im.width)), Image.LANCZOS).save(out / "qc_figure.webp", "WEBP", quality=80, method=6)
+
+
 def main() -> None:
     """Run NucleiSky, write the images and example.json into content/demo/."""
     args = parse_args()
@@ -130,8 +141,11 @@ def main() -> None:
     data = load_inputs(args, lib)
     work = Path(args.work_dir)
     data["each_matcher"] = registration.run_each_matcher(lib, data)
-    best = registration.match(lib, data, work, MARGIN_PX)
-    registration.save_quality_figure(lib, best, data, work)
+    log = io.StringIO()
+    with contextlib.redirect_stdout(log):
+        best = registration.match(lib, data, work, MARGIN_PX)
+        figure = registration.save_quality_figure(lib, best, data, work)
+    write_log_and_figure(log.getvalue(), figure, OUT)
     exports = registration.read_exports(work)
     import tifffile
     stack = tifffile.imread(exports["stack"])
