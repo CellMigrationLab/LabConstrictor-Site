@@ -1,11 +1,11 @@
 site_name: LabConstrictor
 site_description: Turn Jupyter notebooks into installable desktop apps, and find ready-made bioimage analysis apps built with LabConstrictor.
-site_author: Cell Migration Lab
+site_author: Cell Migration Lab and Henriques Lab
 # The address of the site: canonical links, sitemap and llms.txt follow it.
 site_url: https://cellmigrationlab.github.io/LabConstrictor-Site/
 repo_url: https://github.com/CellMigrationLab/LabConstrictor-Site
 repo_name: CellMigrationLab/LabConstrictor-Site
-copyright: © Cell Migration Lab
+copyright: © Cell Migration Lab and Henriques Lab
 use_directory_urls: true
 
 theme:
