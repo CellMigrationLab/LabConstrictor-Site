@@ -16,11 +16,11 @@ use:
       image: {doc_source: Windows_Protected_your_PC.png}
       alt: The two Windows "protected your PC" dialogs, with More info and then Run anyway marked in red.
     - title: Open it and work
-      text: The app opens in your browser with a Welcome notebook that lists its notebooks. Pick one and follow the instructions written in it.
+      text: The app opens in your browser with a Welcome notebook. Run its first cell to list the app's notebooks, pick one and follow the instructions written in it.
       href: guides/using-apps/
       link: Open and use an app
       image: {doc_source: Welcome_Notebook.png}
-      alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks and an orange Open the Notebook button.
+      alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks under orange header cells and a blue Open the notebook button.
     - title: Use it in your image software (soon)
       text: Apps that declare tools will run inside napari, Fiji and QuPath. These plugins are experimental; the picture is a prototype running a test app.
       href: guides/image-software/
@@ -35,8 +35,8 @@ use:
   help:
     title: Something went wrong?
     text: "Fixes for the problems documented after installing: an app that still shows in Windows' list after you uninstall it, and JupyterLab that will not start because Windows reports a certificate error. The Windows \"protected your PC\" warning is in the install guide. A problem inside one app is covered by that app's own documentation and issue tracker."
-    href: guides/troubleshooting-installed-app/
-    link: Troubleshooting an installed app
+    href: guides/help/
+    link: Find your problem
 build:
   title: Build an app
   lead: Turn your Jupyter notebooks into an app that anyone can install with a download. You write notebooks; LabConstrictor builds the installers.
@@ -52,7 +52,7 @@ build:
       href: guides/code-hiding/
       link: Hide code cells
       image: {doc_source: Welcome_Notebook.png}
-      alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks and an orange Open the Notebook button.
+      alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks under orange header cells and a blue Open the notebook button.
     - title: It carries your logo
       text: Put your own logo, banner and header images in the installer and the desktop app.
       href: guides/installer-images/
@@ -78,7 +78,13 @@ build:
       alt: Fiji with a dialog generated from a tool's declaration, next to an image of bright spots.
   flow_title: How it works
   flow:
-    - {title: Create your repository, text: From the template, with one click., href: guides/create-repository/, link: Create a repository}
-    - {title: Add your notebooks, text: Upload them and generate their requirements., href: guides/notebook-upload/, link: Upload your notebooks}
-    - {title: Publish a release, text: One release builds the installers., href: guides/executable-creation/, link: Create installers}
-    - {title: Share it, text: List it in the App Centre so others can find it., href: submit/, link: Submit your app}
+    - {title: Create your repository, text: "From the template, with one click.", href: guides/create-repository/, link: Create a repository}
+    - {title: Initialise it, text: "Fill in a form; it opens a pull request in your repository.", href: guides/initialise-repository/, link: Initialise your repository}
+    - {title: Add your notebooks, text: "Upload them and generate their requirements.", href: guides/notebook-upload/, link: Upload your notebooks}
+    - {title: Publish a release, text: "One release builds the installers.", href: guides/executable-creation/, link: Create installers}
+    - {title: Share it, text: "List it in the App Centre so others can find it.", href: submit/, link: Submit your app}
+  help:
+    title: Something went wrong while building?
+    text: Problems with your repository on GitHub, such as a failed workflow, and how to read them.
+    href: guides/troubleshooting/
+    link: Troubleshooting repository setup

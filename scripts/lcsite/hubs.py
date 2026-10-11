@@ -72,6 +72,31 @@ def features_html(items: list[dict], doc_source: Path, apps: list[dict], taken: 
     return '<ul class="lc-features">' + "".join(cards) + "</ul>"
 
 
+FLOW_KEYS = {"title", "text", "href", "link"}
+HUB_KEYS = {"title", "lead", "cards", "demo", "help", "flow_title", "flow"}
+
+
+def check_hub(name: str, hub: dict) -> None:
+    """Stop the build, naming data/hubs.yaml, for a hub key nobody reads or a flow step with missing or extra keys
+    (a comma inside an unquoted flow value once split a sentence into an ignored key)."""
+    extra = set(hub) - HUB_KEYS - ({"lead"} if name == "docs" else set())
+    if extra:
+        fail(f"data/hubs.yaml: {name} has keys nothing reads: {sorted(extra)}")
+    for step in (hub["flow"] if "flow" in hub else []):
+        if set(step) != FLOW_KEYS:
+            fail(f"data/hubs.yaml: a flow step of {name} needs exactly {sorted(FLOW_KEYS)}, got {sorted(step)} (quote values that contain a comma)")
+
+
+def notes_html(hub: dict) -> str:
+    """The one-line notes under a hub's cards (the demo link and the help line), written once for the hub pages and the Docs home."""
+    out = ""
+    for key in ("demo", "help"):
+        if key in hub:
+            h = hub[key]
+            out += f'<p class="lc-help"><strong>{esc(h["title"])}</strong> {esc(h["text"])} <a class="lc-go" href="{esc(h["href"])}">{esc(h["link"])}</a></p>'
+    return out
+
+
 def flow_html(title: str, steps: list[dict]) -> str:
     """The numbered row of what you do to build an app, each step linking to its guide."""
     items = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["text"])}</span><a class="lc-go" href="{esc(s["href"])}">{esc(s["link"])}</a></li>' for s in steps)
@@ -84,10 +109,7 @@ def write_hub(track: str, hub: dict, nav: list[dict], doc_source: Path, apps: li
              guide_track_title=TRACKS[track], menu="guides/", edit_url=f"{REPO}/edit/main/data/hubs.yaml")
     p.add(f'<section class="lc-pagehead"><h1>{esc(hub["title"])}</h1><p class="lc-lead">{esc(hub["lead"])}</p></section>')
     p.add(features_html(hub["cards"], doc_source, apps, taken))
-    for key in ("demo", "help"):
-        if key in hub:
-            h = hub[key]
-            p.add(f'<p class="lc-help"><strong>{esc(h["title"])}</strong> {esc(h["text"])} <a class="lc-go" href="{esc(h["href"])}">{esc(h["link"])}</a></p>')
+    p.add(notes_html(hub))
     if "flow" in hub:
         p.add(flow_html(hub["flow_title"], hub["flow"]))
     p.write()
@@ -100,7 +122,7 @@ def write_docs_home(hubs: dict, nav: list[dict]) -> None:
     cards = "".join(f'<a class="lc-choice{" lc-choice--make" if t == "build" else ""}" href="{t}/"><strong>{esc(hubs[t]["title"])}</strong>'
                     f'<span>{esc(hubs[t]["lead"])}</span><span class="lc-go">Open</span></a>' for t in TRACKS)
     p.add(f'<h1>{esc(hubs["docs"]["title"])}</h1><p class="lc-lead">{esc(hubs["docs"]["lead"])}</p>',
-          f'<div class="lc-choices">{cards}</div>',
+          f'<div class="lc-choices">{cards}</div>', notes_html(hubs["use"]), notes_html(hubs["build"]),
           '<div class="lc-guides lc-guides--two">' + "".join(f'<section id="all-{t}"><h2>{esc(TRACKS[t])}</h2>{guide_lists(nav, t)}</section>' for t in TRACKS) + "</div>")
     p.write()
 
@@ -108,6 +130,8 @@ def write_docs_home(hubs: dict, nav: list[dict]) -> None:
 def write_all(hubs: dict, nav: list[dict], doc_source: Path, apps: list[dict]) -> None:
     """Write both hub pages."""
     taken: dict[str, Path] = {}
+    for name, hub in hubs.items():
+        check_hub(name, hub)
     for track in TRACKS:
         write_hub(track, hubs[track], nav, doc_source, apps, taken)
     write_docs_home(hubs, nav)
