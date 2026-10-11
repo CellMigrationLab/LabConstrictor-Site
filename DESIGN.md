@@ -58,7 +58,7 @@ One size (12 px, bold). Colour says the role: green = tier or route (Community, 
 
 ## The demo page
 
-- It is a **simulation of one precomputed result** and says so in a visible notice at the top; the napari and Fiji views also carry the experimental notice. No number is typed in the HTML: every value comes from `content/demo/example.json` (made by `tools/demo_assets/`) through `{{placeholders}}` in the window partials.
+- It is a **simulation of one precomputed result** and says so in a visible notice at the top; the napari and Fiji views also carry the experimental notice. No result number is typed in the HTML: every value comes from `content/demo/example.json` (the only made-up number is the version 9.9.9 of the illustrative update scenario, labelled as such) (made by `tools/demo_assets/`) through `{{placeholders}}` in the window partials.
 - Each window partial is one element with no blank lines (Markdown would cut it). Window chrome that is only decoration (menus, tool icons) is `aria-hidden`; everything operable is a native `button`, `input` or `label`, with an accessible name.
 - The picture stack (`lc-view`) is one `role="img"` with one `aria-label`; its layer images have an empty `alt` (class `lc-view__layer` is the checker's one exception).
 - Without JavaScript the live windows are hidden and three real figures with captions are shown instead.

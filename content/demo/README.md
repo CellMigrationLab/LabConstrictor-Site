@@ -16,8 +16,8 @@ Everything in this folder is **generated** by `tools/demo_assets/make_demo_asset
 | `reference_full.webp` | the whole reference field, grey, 633 px wide |
 | `reference_roi.webp`, `reference_roi_green.webp` | the 549 × 549 px region NucleiSky exported around the match (exported by NucleiSky with a 150 px margin; its position in the reference is in `example.json`), grey and green, shown at 2× |
 | `aligned_roi.webp`, `aligned_roi_magenta.webp` | the query warped onto that region by NucleiSky's transform, grey and magenta, transparent outside the footprint |
-| `query.webp` | the query as acquired, shown at 3× |
-| `nuclei_outlines_roi.webp` | outlines of the reference nuclei in that region (from the supplied masks) |
+| `query.webp` | the query (a generated random crop), shown at 3× |
+| `nuclei_outlines_roi.webp` | (generated, not used on the page) outlines of the reference nuclei in that region (from the supplied masks) |
 | `example.json` | inputs (SHA-256), pixel sizes, transform, attempts, footprint corners, display windows |
 
 Display only: intensities are stretched linearly between the 1st and 99.8th percentiles; images are enlarged with bicubic interpolation and saved as WebP. No value shown on the page is computed from these images.

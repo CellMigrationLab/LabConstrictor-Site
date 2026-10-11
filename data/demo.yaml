@@ -10,7 +10,7 @@ tile:
   alt: A microscopy field of green nuclei with the aligned small image outlined in yellow
 about:
   title: About the example
-  text: This demo uses NucleiSky as its example. NucleiSky is an open-source tool that aligns microscopy images by matching the arrangement of cell nuclei, like stars in a constellation. It finds where a small image sits inside a large one and estimates the rotation, scale and shift. It is one app built with LabConstrictor; every app has its own notebooks.
+  text: This demo uses NucleiSky as its example. NucleiSky is an open-source tool that aligns microscopy images by matching the arrangement of cell nuclei, like stars in a constellation. It finds where a small image sits inside a large one and estimates the rotation, scale and shift. The small image here is a random crop generated from the large one, so the correct answer is known. NucleiSky is one app built with LabConstrictor; every app has its own notebooks.
   app_link: Open the NucleiSky page
 features:
   title: What you can try
@@ -36,19 +36,19 @@ features:
       href: guides/image-software/
       link: Use apps in your image software
 notice: Interactive preview using example microscopy data. The analysis result is precomputed; no scientific computation is performed on this website.
-experimental: Experimental integration preview. Not yet validated on all operating systems. NucleiSky's published app currently lists notebook support only.
+experimental: Experimental preview. The NucleiSky tool shown here is not in the released NucleiSky app, which lists notebook support only; it exists on development branches. So far it has been tested on Linux only, not on Windows or macOS. Expect bugs and changes.
 how:
   title: How the connection works
   steps:
     - A LabConstrictor app is installed on the user's computer.
-    - The installer registers the application.
+    - In the experimental version of the installer, an app that ships a tools module is registered on the computer at install time.
     - LabConstrictor-Tools exposes the scientific functions the app declares.
     - napari or Fiji builds its own form from those declarations.
     - The tool runs in the app's own Python environment, in a separate worker process.
     - The results come back to napari or Fiji as images, layers, overlays, points or tables.
   note: This website does not connect to a Fiji or napari running on your computer. Everything on this page is a simulation built from one precomputed result.
 credit:
-  data: Images are Dataset 1 of the NucleiSky paper (a tiled widefield image of a DAPI-stained HUVEC monolayer), CC BY 4.0.
+  data: "Images: Dataset 1 from Hidalgo Cenalmor I. et al., Data associated with NucleiSky enables cross-scale multimodal registration of microscopy data using nuclei constellations (a tiled widefield image of a DAPI-stained HUVEC monolayer), Zenodo, licensed CC BY 4.0. Changes: contrast-stretched, enlarged and cropped; the small image is a software-generated crop that was rotated and rescaled; overlays computed by NucleiSky."
   dataset_doi: 10.5281/zenodo.20721416
   paper_doi: 10.1242/jcs.265152
   nucleisky_repo: CellMigrationLab/NucleiSky

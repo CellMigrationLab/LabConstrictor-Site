@@ -8,7 +8,7 @@ from .text import esc
 
 TABS = (("notebook", "Notebook"), ("napari", "napari"), ("fiji", "Fiji"))
 STATIC = (("reference_full.webp", "The reference image: a tiled widefield image of DAPI-stained nuclei, many small round blobs on black.", "The whole reference field."),
-          ("query.webp", "The small image to locate: about thirty nuclei at a slightly different magnification, rotated.", "The small image, as acquired."),
+          ("query.webp", "The small image to locate: a software-generated crop with about thirty nuclei, rotated and rescaled.", "The small image: a random crop generated from the reference (rotated and rescaled by NucleiSky's Generate Random Crop)."),
           ("reference_roi_green.webp", "The part of the reference where the small image was found, nuclei shown in green.", "The region of the reference where NucleiSky found it."))
 
 
@@ -62,7 +62,7 @@ def how_it_works(text: dict) -> str:
 def credits(text: dict) -> str:
     """Where the images and the method come from: the data deposit, the paper and the NucleiSky repository, with their licences."""
     c = text["credit"]
-    return (f'<p class="lc-small">{esc(c["data"])} Data: <a href="https://doi.org/{c["dataset_doi"]}">doi:{c["dataset_doi"]}</a>. '
+    return (f'<p class="lc-small">{esc(c["data"])} Data: <a href="https://doi.org/{c["dataset_doi"]}">doi:{c["dataset_doi"]}</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. '
             f'Method: NucleiSky, <a href="https://doi.org/{c["paper_doi"]}">doi:{c["paper_doi"]}</a>, {github_badge(c["nucleisky_repo"])}. '
             'The result was computed offline with the released NucleiSky 2D code; how is recorded in <code>content/demo/README.md</code>.</p>')
 

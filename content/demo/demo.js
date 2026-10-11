@@ -44,12 +44,12 @@
   function showUpdates() {
     var out = one('[data-updates-out]'), row = one('[data-nbrow="NucleiSky2DBenchmarking"]');
     var needs = state.checked && state.scenario && !state.updated;
-    row.querySelector('[data-status]').textContent = needs ? '❌ Needs Update to 0.1.1' : '✅ Up-to-date';
-    row.querySelector('[data-version]').textContent = state.updated ? '0.1.1' : '0.1.0';
+    row.querySelector('[data-status]').textContent = needs ? '❌ Needs Update to 9.9.9' : '✅ Up-to-date';
+    row.querySelector('[data-version]').textContent = state.updated ? '9.9.9' : '0.1.0';
     row.querySelector('[data-update]').innerHTML = needs ? '<button type="button" class="nb__btn" data-demo-sim data-act="update">Update</button>' : '-';
     if (!state.checked) { out.textContent = ''; }
-    else if (needs) { out.textContent = '⚠️ Some notebooks need to be updated. (Simulated check; the newer version is an illustrative example.)'; }
-    else { out.textContent = state.updated ? '✅ Updated NucleiSky2DBenchmarking to version 0.1.1. (Illustrative example.)' : '✅ All notebooks are up-to-date. (Simulated check; nothing was contacted.)'; }
+    else if (needs) { out.textContent = '⚠️ Some notebooks need to be updated. (Simulated check; the version number is made up.)'; }
+    else { out.textContent = state.updated ? '✅ Updated NucleiSky2DBenchmarking to version 9.9.9. (Illustrative example.)' : '✅ All notebooks are up-to-date. (Simulated check; nothing was contacted.)'; }
   }
 
   function showLayers() {
