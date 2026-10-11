@@ -1,0 +1,99 @@
+{
+ "verdict": "needs_changes",
+ "problems": [
+  {
+   "severity": "major",
+   "problem": "The staleness warning 'named entry in build/problems.md' cannot work as specified. build/problems.md is written only by the fetch stage (scripts/lcsite/catalogue.py:143-149). build_site.py never writes it. In publish.yml the 'Report left-out apps' step, which reads problems.md and opens issues, runs BEFORE 'Generate pages'. The existing build-time warning pattern is only a stderr print (scripts/lcsite/guides.py:190). The planned test 'faked newer release produces a named entry in build/problems.md' has nothing to assert against.",
+   "fix": "Either (a) print a WARNING to stderr like guides.py:190 and test that, or (b) have the fetch stage (catalogue.py) read content/demo/example.json and add the warning to snapshot['warnings'] (a small snapshot/format change, not budgeted). Also say how the warning reaches a person, since the daily build only opens issues for left-out apps."
+  },
+  {
+   "severity": "major",
+   "problem": "The plan does not say what happens when NucleiSky is absent from the snapshot or has no release. The page needs the app's manifest (doi), its release tag and a link to /apps/nucleisky/. If the app is left out on a scheduled build (AppProblem), check_site fails on the dead link or page_demo crashes. fail() would take the daily build down for someone else's app. This contradicts the 'one broken app never takes the site down' rule. Silent omission would break 'no silent fallbacks'.",
+   "fix": "Decide explicitly in AGENTS.md and the code. Recommended: fail() with a message naming registry/CellMigrationLab__NucleiSky.yaml on pull requests, and on scheduled builds omit the demo page and tile and record it in the warnings, as for apps. Add a test for the app-missing and release-missing cases."
+  },
+  {
+   "severity": "major",
+   "problem": "The check_design_demo rule 'range, radio and checkbox allowed only inside a data-demo root' would fail every page if applied to the whole document. Every built page has checkboxes outside <main>: md-toggle __drawer, md-toggle __search and lc-menu-toggle (e.g. site/apps/index.html, site/guides/index.html). The App Centre also has an input type=search and a <select>. check_design today has NO rule against inputs. I built a prototype /demo/ page with checkbox, radio and range inputs and check_design reported 0 problems. So this is a new restriction, not an exemption, and must be scoped to <main> (Facts already tracks _in_main).",
+   "fix": "Word the rule as 'inside <main>, input type radio, checkbox or range only inside [data-demo]'. Leave header and search controls alone. Add a failure test for a range input in main outside the root and a pass test that the theme's header checkboxes are not flagged."
+  },
+  {
+   "severity": "major",
+   "problem": "Recorded numbers and matcher states were not reproduced by the simplest call on pinned NucleiSky. I ran fixtures/make_nucleisky.py (all three fixture sha256 prefixes match: 2f3e168d, 67ed77fc, 14b8f149, on numpy 2.0.2/scipy 1.16.3 and on the latest numpy/scipy). I then segmented with method 'threshold' (429 and 9 nuclei, as planned) and called NucleiSky() from origin/main c8f8735 with default config. Results: bbox y 637-963, x 597-923 matches; rotation is about 12.17 deg. Scale is 1.00204 for quad and hashing, not 1.0024. Translation is 455.107 / 393.437 um, i.e. 700.17 / 605.29 px at 0.65, not 700.3293 / 605.5654. Triangles fails, but graph SUCCEEDED when given features, where the plan says it fails with 'No match found'. The plan itself says the states came from bridge-test tool code (78c7f0a). The numbers are therefore tied to an unmerged code path, not to the released product the page claims to show.",
+   "fix": "Fix the exact entry point and config the generator uses (library call, notebook's run_adaptive path, or the bridge tool) and record it in example.json. Regenerate the displayed numbers from that path. Re-check the graph/triangles failure states under it, and drop the matcher radio if only some outcomes reproduce. Stage 2 must compare against the real notebook output."
+  },
+  {
+   "severity": "major",
+   "problem": "The generator requirements list is incomplete and the interpreter is unspecified. NucleiSky's pipeline.py imports pandas at module top and the graph matcher needs networkx; neither is in the planned list (numpy, scipy, tifffile, scikit-image, matplotlib, numba, Pillow). NucleiSky pins numpy 2.0.2 and numba 0.60.0, which need Python 3.12 or older. The container default python3 and the site .venv are 3.13. The segmentation module only lazily needs cellpose and torch (not needed for the 'threshold' method). I ran the pinned stack in a 3.12 uv venv; it installs in about 3 s.",
+   "fix": "Pin and document Python 3.12 plus pandas, networkx and the exact NucleiSky pins in tools/demo_assets/requirements.txt. State that 'threshold' segmentation is used so torch and cellpose are not needed."
+  },
+  {
+   "severity": "major",
+   "problem": "The gate 'generator re-run reproduces identical hashes' is unrealistic and cannot be enforced. The publish workflow installs only requirements.txt (zensical, PyYAML, Markdown, jsonschema, Pillow), and unit tests run before everything else. CI will never run the generator. Byte-identical JPEG/PNG/matplotlib output across machines and encoder or matplotlib versions is not guaranteed (PNG metadata carries the Matplotlib version; libjpeg differs). Only the fixture hashes are stable (verified).",
+   "fix": "Split the gate. CI enforces: committed media sha256 equal example.json; fixture hashes and source SHAs present; schema valid. A manual, documented regeneration check compares numbers (tolerance) and fixture hashes, not media bytes."
+  },
+  {
+   "severity": "major",
+   "problem": "Several acceptance items cannot be unit tests as written. Unit tests run before fetch and build in CI, and Page.write() writes to the real docs/ with no output-root parameter. So 'a test greps the built page for each recorded value' cannot run there. The Playwright audits (requests only to site, 390 px, keyboard, JS disabled) are not in any workflow. They are manual unless added.",
+   "fix": "Keep pages_demo functions pure (return strings) and unit-test those. Put built-page assertions (values present, no hand-typed numbers, root text, no <button>) into the post-build check_design_demo step. Mark the Playwright audit explicitly as a manual pre-launch gate or add a CI job."
+  },
+  {
+   "severity": "major",
+   "problem": "Effort and file-budget estimates are optimistic. check_design_demo.py at about 90 lines: it needs its own HTMLParser with a nesting stack (void tags), label/fieldset/legend association, radio-group checked counts, range attributes, root text search, role=status, button and heading bans, all in functions of 30 lines or fewer. A realistic size is 150-190 lines, plus +30 in Stage 3. check_design.main() holds only Facts objects (no raw HTML), so the hook is more than the planned '+4 lines'. pages_demo.py at about 130 lines: viewer_html (3 checkboxes, range, 2 radio groups, 5 matcher radios, layered panels, status) must be split into about 8 helpers, so about 200 lines. Stage 1 also includes a five-person comprehension study, author consent, a 3-module generator on a pinned third-party stack, CSS for a layered responsive viewer and a11y verification. 4-5 days is about half of what this needs.",
+   "fix": "Re-estimate Stage 1 at roughly 7-10 developer days and budget 200 lines for pages_demo.py and 170 for check_design_demo.py. Plan the split now (pages_demo_viewer.py) so no file nears 300."
+  },
+  {
+   "severity": "minor",
+   "problem": "The media size budget is about 2x too low. I measured on the real fixture with Pillow: reference whole 800 px JPEG q80 47 KB (plan 38); zoom reference 29 KB; query 13 KB; aligned query as RGBA PNG whole field 46 KB and zoomed 170 KB; outline PNG 4 KB. That is roughly 390 KB with the QC figure, not about 215 KB. The aligned layer as an 800x800 RGB JPEG on black is only 9 KB, and mix-blend-mode: screen makes black transparent. The tile needs a composite overlay image that is not in the planned media list.",
+   "fix": "Store layers as JPEG on black with mix-blend-mode: screen instead of transparent PNG. Add one overlay composite to the generator output for the tile (images.shrink handles RGB JPEG only, so alpha PNGs cannot go through it). Update the budget to a measured figure."
+  },
+  {
+   "severity": "minor",
+   "problem": "The Zensical template snippet in the plan crashes as likely written. A loop over page.meta.page_css or [] produced 'RuntimeError: undefined value (in main.html:27)' on a page without that key. Only guarded forms work. The scripts block must call {{ super() }} or the theme bundle and extra_javascript disappear (base.html:282-288). I verified a working version in a scratch copy: {% if page.meta and page.meta.page_css %}...{% endif %} in extrahead and {% block scripts %}{{ super() }}{% if page.meta and page.meta.page_js %}...{% endif %}{% endblock %}. The plan's '3 lines' becomes about 5, and the page ships its own link and script with relative url-filter paths.",
+   "fix": "Use the guarded form with super() and document it in main.html and DESIGN.md. Add a build test that /demo/ contains the link and script and that another page does not."
+  },
+  {
+   "severity": "minor",
+   "problem": "finish_site.lazy_images adds loading=lazy to every <img> in <main> that has no loading attribute (finish_site.py IMG regex). The hidden layer and zoom images would not load until first shown, so the first toggle shows blank or flickers. DESIGN.md says content images load lazily, so an exception is needed.",
+   "fix": "Set loading=\"eager\" explicitly on the demo's layer images (the regex skips images that already have the attribute). Add the exception to DESIGN.md's Images section. The few hundred KB is acceptable on a page the visitor chose to open."
+  },
+  {
+   "severity": "minor",
+   "problem": "Without JavaScript the static page shows radios, checkboxes and a range slider that do nothing. The plan rejects re-drawn UIs for exactly this 'dead focusable controls' reason, and 'no JS: all panels stacked' makes the controls pointless.",
+   "fix": "Emit the control fieldsets with the hidden attribute (lc.css has [hidden]{display:none !important}, protected by tests/test_design.py) and let demo.js remove it, or make the check require that no-JS state shows no controls."
+  },
+  {
+   "severity": "minor",
+   "problem": "Poster fix cites page.py:268; the real line is scripts/lcsite/page.py:85 (re.sub(r'\\b(href|src)=...'); page.py has 93 lines. check_site.py:56 is correct. The poster gap itself is confirmed: neither fix_links nor check_site look at poster.",
+   "fix": "Correct the citation. Keep the poster fix and its test."
+  },
+  {
+   "severity": "minor",
+   "problem": "Hand-written JS/CSS goes in content/demo/ but nothing copies content/ subfolders into docs/ (CONTENT is read only by guides.py for content/guides and by pages_site for submit.md). All existing hand-written assets live committed in docs/assets/javascripts and docs/assets/stylesheets. A new copy step is unbudgeted and adds a second location convention.",
+   "fix": "Put demo.js and demo.css in docs/assets/javascripts and docs/assets/stylesheets (committed). Keep only the generated media under the GENERATED docs/assets/demo. Note that StyleTests reads lc.css only, so add an equivalent hidden/size test if needed."
+  },
+  {
+   "severity": "minor",
+   "problem": "Host-support wording is a third hand-maintained variant. The site already says 'Soon, apps can also work inside napari, Fiji and QuPath' (data/site.yaml:8), 'Apps that declare tools also run inside ...' (pages_site.py page_home) and 'Soon in napari' badges (cards.py:64). The demo would add 'prototype ... untested and unlikely to be stable'. The quote itself is verified in docs/guides/image-software/index.md:142, but a hard-coded quote drifts silently. The exact failure notice text is also placed in data/demo.yaml although it is a recorded tool output.",
+   "fix": "At build time assert the quoted phrase exists in the fetched image-software guide, else fail() naming the file. Reconcile the four statements in one pull request or state which is authoritative. Put the recorded 'No match found' sentence in example.json, not YAML."
+  },
+  {
+   "severity": "minor",
+   "problem": "Video tooling claims, checked here. The bundled Chromium cannot decode H.264 (canPlayType for avc1/mp4a is '', VP9/WebM is 'probably'), so an MP4-only page cannot be verified in-container. The preview server has no Range support (200, no Accept-Ranges). Piper does work here: piper-tts 1.8.0 in a 3.12 venv and the 114 MB en_US-ljspeech-high voice downloaded from huggingface. 12 words came out as 4.5 s, about 159 wpm, so 190-225 words is 72-85 s of speech before pauses and exceeds the 75-90 s cap.",
+   "fix": "Target about 150-190 words. For in-container tests also encode a WebM VP9 test source, or test against GitHub Pages. Check the voice licence text from the voice's model card (unverified here)."
+  },
+  {
+   "severity": "minor",
+   "problem": "The AGENTS.md Navigation paragraph says every guide page shows the docs sidebar and highlights Docs. The demo highlights Docs (menu: guides/, verified: aria-current on Docs, check_site menu rule passes) but has no sidebar. The plan edits only the DESIGN.md Menu and Back-link rows.",
+   "fix": "Add the AGENTS.md Navigation sentence to the rule-change list, so DESIGN.md, AGENTS.md and README.md are edited together."
+  }
+ ],
+ "missing": [
+  "PROCESS DISCLOSURE: early in my work a failed rsync left my shell in /home/user/labconstrictor-site, so a throwaway prototype (docs/demo, docs/assets/demo and a patch to overrides/main.html) was written into the real repo and zensical build ran there. I reverted it: git checkout of overrides/main.html, removed docs/demo, docs/assets/demo, site/demo and site/assets/demo. I then rebuilt site/ with the original sources (zensical build --strict, write_sitemap, finish_site; check_site: 38 pages, 0 problems). git status is clean. All later prototyping used a scratch copy under .../demo-feasibility/r1/sc.",
+  "A decision on what happens to /demo/ and the tile when NucleiSky is unlisted, renamed or has no release (see the problem above).",
+  "A CI story for tools/demo_assets: no workflow step runs or tests the generator, so source and commit drift is only caught by hand. State that, or add a manual workflow_dispatch job.",
+  "Clarification of which plan gates are enforced by CI and which are manual (Playwright, five-person check, real-browser video playback).",
+  "A content licence and consent record for the committed media. The repo has no content licence statement, and the plan commits derived images and possibly a 10 MB MP4 into git history permanently.",
+  "How the demo page's search-index text behaves (Zensical's search plugin will index the radio labels and result table); not tested here, unverified.",
+  "A real-desktop check of the recorded numbers against the installed notebook (Stage 2), since the direct library call did not reproduce scale 1.0024 or the graph failure."
+ ]
+}
