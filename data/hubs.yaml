@@ -32,11 +32,6 @@ use:
     text: A hands-on preview of a microscopy registration in a notebook, napari and Fiji, using example data.
     href: demo/
     link: Try the demo
-  help:
-    title: Something went wrong?
-    text: "Fixes for the problems documented after installing: an app that still shows in Windows' list after you uninstall it, and JupyterLab that will not start because Windows reports a certificate error. The Windows \"protected your PC\" warning is in the install guide. A problem inside one app is covered by that app's own documentation and issue tracker."
-    href: guides/help/
-    link: Find your problem
 build:
   title: Build an app
   lead: Turn your Jupyter notebooks into an app that anyone can install with a download. You write notebooks; LabConstrictor builds the installers.
@@ -88,8 +83,3 @@ build:
     text: A step-by-step page with a small interactive picture for each part, from a portable notebook to an installed app.
     href: how-it-works/
     link: How LabConstrictor works
-  help:
-    title: Something went wrong while building?
-    text: Problems with your repository on GitHub, such as a failed workflow, and how to read them.
-    href: guides/troubleshooting/
-    link: Troubleshooting repository setup

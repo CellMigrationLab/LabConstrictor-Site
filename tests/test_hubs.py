@@ -1,4 +1,4 @@
-"""The hub pages: the data is checked strictly and the help lines appear where readers choose a track."""
+"""The hub pages: the data is checked strictly and the demo and how-it-works lines appear where readers choose a track."""
 
 import unittest
 
@@ -21,11 +21,12 @@ class HubDataTests(unittest.TestCase):
             hubs.check_hub("build", {"title": "t", "lead": "l", "flow": [dict(STEP, **{"with one click.": None})]})
         hubs.check_hub("build", {"title": "t", "lead": "l", "flow": [STEP]})
 
-    def test_the_notes_hold_the_demo_and_help_lines(self) -> None:
-        """Both lines render with their link, and are written once for the hub page and the Docs home."""
-        html = hubs.notes_html({"help": {"title": "Stuck?", "text": "Read this.", "href": "g/", "link": "Go"}})
-        self.assertIn("Stuck?", html)
+    def test_the_notes_hold_the_demo_and_how_lines_and_no_help_line(self) -> None:
+        """The demo and how-it-works lines render with their link; a help line is no longer shown; no notes give an empty string."""
+        html = hubs.notes_html({"how": {"title": "Inside?", "text": "Read this.", "href": "g/", "link": "Go"}, "help": {"title": "Stuck?", "text": "x", "href": "h/", "link": "Help"}})
+        self.assertIn("Inside?", html)
         self.assertIn('href="g/"', html)
+        self.assertNotIn("Stuck?", html)
         self.assertEqual(hubs.notes_html({"title": "t"}), "")
 
 
