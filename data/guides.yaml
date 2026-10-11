@@ -12,9 +12,6 @@ sections:
       - {slug: using-apps, title: Open and use an app, file: using-apps.md}
       - {template: notebook_usage.md}
       - {template: troubleshooting_installed_app.md}
-  - title: Connect to a microscope
-    items:
-      - {slug: microscope, repo: CellMigrationLab/NucleiSky, path: docs/smart_microscopy/smart_microscopy.md}
   - title: Use apps in your image software
     items:
       - {slug: image-software, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/user-guide.md}

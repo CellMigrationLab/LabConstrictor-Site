@@ -1,0 +1,10 @@
+# Held back from main until NucleiSky's change is merged (decision 15). Re-add under `use: cards:` in data/hubs.yaml and as a section in data/guides.yaml:
+#   - title: Connect to a microscope
+#     items:
+#       - {slug: microscope, repo: CellMigrationLab/NucleiSky, path: docs/smart_microscopy/smart_microscopy.md}
+    - title: Connect it to a microscope
+      text: "An example from NucleiSky, written by its authors for a Nikon microscope with NIS-Elements JOBS: scan a large area, find where a query image sits in it, then acquire there. Their guide says the same principles apply to other microscopes and software."
+      href: guides/microscope/
+      link: Connect NucleiSky to a microscope
+      image: {repo: CellMigrationLab/NucleiSky, path: docs/smart_microscopy/assets/JOBS_NucleiSky.png}
+      alt: The NucleiSky job loaded in NIS-Elements JOBS, a list of acquisition, autofocus and analysis steps.
