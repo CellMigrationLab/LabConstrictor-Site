@@ -39,7 +39,7 @@
     <ul class="lc-menu" id="lc-menu-list">
       {% for item in nav.items %}
         {% set current = item.active or (page.meta and page.meta.menu == item.url) %}
-        <li><a href="{{ item.url | url }}" class="{% if current %}is-active{% endif %}{% if loop.last %} lc-menu__cta{% endif %}"{% if current %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+        <li><a href="{{ item.url | url }}" class="{% if current %}is-active{% endif %}{% if item.url == 'submit/' %} lc-menu__cta{% endif %}"{% if current %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
       {% endfor %}
     </ul>
     <div class="lc-header__tools">

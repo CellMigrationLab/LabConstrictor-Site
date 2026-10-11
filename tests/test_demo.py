@@ -101,22 +101,35 @@ class ScriptConsistencyTests(unittest.TestCase):
         script = (demo_media.SOURCE / "demo.js").read_text(encoding="utf-8")
         handled = set(re.findall(r"^    '([a-z-]+)':", script, re.M))
         used = set()
-        for name in ("notebook", "napari", "fiji"):
+        for name in ("notebook", "napari", "fiji", "installer"):
             used |= set(re.findall(r'data-act="([a-z-]+)"', demo_media.read_window(name)))
         self.assertEqual(used - handled, set())
 
     def test_tab_panels_and_controls_reference_existing_ids(self) -> None:
         """Every aria-controls in the windows names an element that exists, and tab ids are unique."""
         shown = dict(demo_media.values(example()), footprint=demo_media.footprint_points(example()))
-        html = pages_demo.tab_buttons() + pages_demo.panels(shown, example())
+        html = pages_demo.tab_buttons() + pages_demo.category_tabs() + '<div id="demo-cat-install"></div><div id="demo-cat-use"></div>' + pages_demo.panels(shown, example())
         ids = re.findall(r'\bid="([^"]+)"', html)
         self.assertEqual(len(ids), len(set(ids)))
         for target in re.findall(r'aria-controls="([^"]+)"', html):
             self.assertIn(target, ids)
 
+    def test_installer_values_cover_its_placeholders_and_fail_without_the_release(self) -> None:
+        """Every {{placeholder}} of the installer window has a value, and a missing release or .exe stops the build."""
+        apps = [{"slug": "nucleisky", "manifest": {"name": "NucleiSky"}, "release": {"tag": "0.1.1", "assets": [{"os": "windows", "name": "N-0.1.1-Windows-x86_64.exe", "size": 317528492}]}}]
+        got = demo_media.installer_values(apps)
+        shown = dict(demo_media.values(example()), **got)
+        html = demo_media.render(demo_media.read_window("installer"), shown, "installer.html")
+        self.assertIn("303 MB", html)
+        self.assertNotIn("{{", html)
+        with self.assertRaises(SystemExit):
+            demo_media.installer_values([dict(apps[0], release=None)])
+        with self.assertRaises(SystemExit):
+            demo_media.installer_values([dict(apps[0], release={"tag": "0.1.1", "assets": []})])
+
     def test_no_window_uses_a_heading_element(self) -> None:
         """Simulated-window titles are not headings, so the page's own outline stays clean."""
-        for name in ("notebook", "napari", "fiji"):
+        for name in ("notebook", "napari", "fiji", "installer"):
             self.assertNotRegex(demo_media.read_window(name), r"<h[1-6][ >]")
 
 

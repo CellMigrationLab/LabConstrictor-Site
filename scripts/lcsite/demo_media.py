@@ -10,9 +10,9 @@ from .text import esc
 
 SOURCE = CONTENT / "demo"
 OUT = DOCS / "assets" / "demo"
-IMAGES = ("nucleisky-icon.png", "qc_figure.webp", "seg_figure.webp", "reference_full.webp", "reference_roi.webp", "reference_roi_green.webp", "aligned_roi.webp", "aligned_roi_magenta.webp",
+IMAGES = ("install-banner.webp", "install-header.webp", "nucleisky-icon.png", "qc_figure.webp", "seg_figure.webp", "reference_full.webp", "reference_roi.webp", "reference_roi_green.webp", "aligned_roi.webp", "aligned_roi_magenta.webp",
           "query.webp")
-CODE = ("demo.js", "demo.css")
+CODE = ("demo.js", "demo.css", "installer.css")
 MAX_BYTES = 400_000          # one image above this stops the build: the page must stay light
 PLACEHOLDER = re.compile(r"\{\{(\w+)\}\}")
 REQUIRED = {"images": ("reference_px", "query_px", "reference_um_per_px", "query_um_per_px"), "nuclei": ("reference", "query"),
@@ -66,6 +66,21 @@ def values(example: dict) -> dict[str, str]:
         "reference_size": f"{im['reference_px'][1]} x {im['reference_px'][0]}", "query_size": f"{im['query_px'][1]} x {im['query_px'][0]}",
         "region_px": str(region["size_px"][0]), "query_width_pct": number(100 * im["query_px"][1] * im["query_um_per_px"] / im["reference_um_per_px"] / region["size_px"][1], 2),
     }
+
+
+def installer_values(apps: list[dict]) -> dict[str, str]:
+    """What the Windows installer pages show about the example app: its name, version and installer file (from its latest release) and its licence text."""
+    app = next((a for a in apps if a["slug"] == "nucleisky"), None)
+    if app is None or app["release"] is None:
+        fail("the demo's Install part needs the NucleiSky app and its release in the snapshot")
+    exe = next((x for x in app["release"]["assets"] if x["os"] == "windows" and x["name"].endswith(".exe")), None)
+    if exe is None:
+        fail("the latest NucleiSky release has no Windows .exe installer")
+    licence = SOURCE / "license.txt"
+    if not licence.is_file():
+        fail(f"{licence} is missing")
+    return {"app_name": esc(app["manifest"]["name"]), "app_version": esc(app["release"]["tag"]), "exe_name": esc(exe["name"]),
+            "exe_size": f"{exe['size'] / 1048576:.0f} MB", "license_text": esc(licence.read_text(encoding="utf-8").strip())}
 
 
 def footprint_points(example: dict) -> str:

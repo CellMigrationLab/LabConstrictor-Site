@@ -3,12 +3,47 @@
 (function () {
   var root = document.querySelector('[data-demo]');
   if (!root) { return; }
-  var FRESH = { view: 'notebook', launched: false, done: 0, how: 1, iconSelected: false, busy: false, step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
+  var FRESH = { cat: 'install', page: 'download', progress: 0, installed: false, selectedKey: '', view: 'notebook', launched: false, done: 0, how: 1, busy: false, step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
                 fijiDialog: true, selected: '', vis: { reference: true, query: false, aligned: true, alignment: true },
                 opacity: { reference: 100, query: 100, aligned: 100, alignment: 80 } };
   var state = JSON.parse(JSON.stringify(FRESH));
   var all = function (sel) { return Array.prototype.slice.call(root.querySelectorAll(sel)); };
   var one = function (sel) { return root.querySelector(sel); };
+
+  var INSTALL_NEXT = { download: '.wi__file', smart: '.wi__sl', smart2: '[data-go="welcome"]', welcome: '[data-go="license"]', license: '[data-go="type"]', type: '[data-go="folder"]',
+                       folder: '[data-go="options"]', options: '[data-go="installing"]', installing: '[data-needs-install]', finish: '[data-go="start"]', start: '.wi__start' };
+  var installTimer = null;
+
+  function showCat() {
+    all('[role="tab"][data-cat]').forEach(function (t) {
+      var on = t.dataset.cat === state.cat;
+      t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1;
+      one('#demo-cat-' + t.dataset.cat).hidden = !on;
+    });
+  }
+
+  function showInstaller() {
+    all('[data-page]').forEach(function (p) { p.hidden = p.dataset.page !== state.page; });
+    one('[data-progress] span').style.width = state.progress + '%';
+    one('[data-progress]').setAttribute('aria-valuenow', String(state.progress));
+    all('[data-log] [data-at]').forEach(function (l) { l.hidden = state.progress < Number(l.dataset.at); });
+    one('[data-cmd]').hidden = state.progress < 85;
+    one('[data-needs-install]').disabled = !state.installed;
+    var head = one('[data-page="installing"] .wi__head div');
+    if (!head.dataset.wait) { head.dataset.wait = head.lastElementChild.textContent; }
+    head.firstElementChild.textContent = state.installed ? 'Installation Complete' : 'Installing';
+    head.lastElementChild.textContent = state.installed ? 'Setup was completed successfully.' : head.dataset.wait;
+  }
+
+  function startInstall() {
+    state.progress = 0; state.installed = false;
+    installTimer = setInterval(function () {
+      state.progress = Math.min(100, state.progress + 2);
+      if (state.progress === 100) { clearInterval(installTimer); installTimer = null; state.installed = true; one('[data-announce]').textContent = 'Installation complete. Click Next.'; }
+      sync();
+      if (state.installed) { var t = one('[data-page="installing"] [data-needs-install]'); t.focus(); }
+    }, 100);
+  }
 
   function showViews() {
     all('[role="tab"][data-view]').forEach(function (t) {
@@ -83,9 +118,10 @@
 
   function next() {
     var app = state.nbTab === 'app' && state.opened, n = state.step;
+    if (state.cat === 'install') { return ['[data-page="' + state.page + '"] ' + INSTALL_NEXT[state.page], state.page === 'download' ? (state.selectedKey ? 'Now double-click the file to start the installer (or press Enter).' : 'Double-click the downloaded installer to start it.') : '']; }
     if (state.view === 'napari') { return state.step < 3 ? ['#demo-panel-napari .np__run', 'Click Run in the dock to run the tool.'] : [null, 'Click a layer name to select it, the eye to hide it, and move the opacity slider. Then try Fiji.']; }
     if (state.view === 'fiji') { return state.fijiDialog ? ['[data-dialog] [data-act="run-step"]', 'Click OK to run the tool.'] : state.step < 3 ? ['[data-act="fiji-open"]', 'Open the tool again from the Plugins menu.'] : [null, 'The result opens in its own window. Use Reset demo to start again.']; }
-    if (!state.launched) { return ['[data-act="launch"]', state.iconSelected ? 'Now double-click the icon to open the app (or press Enter).' : 'Double-click the NucleiSky icon to open the app.']; }
+    if (!state.launched) { return ['[data-act="launch"]', state.selectedKey ? 'Now double-click the icon to open the app (or press Enter).' : 'Double-click the NucleiSky icon to open the app.']; }
     if (!state.welcomeRun) { return ['[data-act="run-welcome"]', 'Click the play button to run the Welcome cell. It lists the notebooks of the app.']; }
     if (!app) { return ['[data-act="open-app"]', 'Click Open the notebook on NucleiSky2DApp to open the 2D notebook.']; }
     var names = ['', 'Load & Process', 'Load Masks & Extract Features', 'Run adaptive NucleiSky2D'];
@@ -98,7 +134,7 @@
     all('.is-next').forEach(function (el) { el.classList.remove('is-next'); });
     var hint = next(), target = hint[0] ? one(hint[0]) : null;
     if (target && !target.hidden && !target.disabled && !state.busy) { target.classList.add('is-next'); }
-    one('[data-next]').textContent = (state.launched || state.view !== 'notebook') ? '' : hint[1];
+    one('[data-next]').textContent = (state.cat === 'install' || (!state.launched && state.view === 'notebook')) ? hint[1] : '';
   }
 
   var BOXES = { 1: [0], 2: [0], 3: [1], 4: [2], 5: [0, 1], 6: [2] };
@@ -113,7 +149,7 @@
 
   function showFiji() { one('[data-dialog]').hidden = !state.fijiDialog; }
 
-  function sync() { root.dataset.step = state.step; showViews(); showSteps(); showNotebook(); showLayers(); showFiji(); showHow(); showNext(); }
+  function sync() { root.dataset.step = state.step; showCat(); showInstaller(); showViews(); showSteps(); showNotebook(); showLayers(); showFiji(); showHow(); showNext(); }
 
   function runStep(n, fromHost) { state.step = Math.max(state.step, n); if (fromHost) { state.done = 3; } if (n === 3 && fromHost) { state.selected = state.selected || 'aligned'; state.fijiDialog = false; state.opened = true; state.launched = true; } }
 
@@ -126,6 +162,7 @@
   }
   function clearBusy() {
     if (pending) { clearTimeout(pending); pending = null; }
+    if (installTimer) { clearInterval(installTimer); installTimer = null; }
     state.busy = false; delete root.dataset.busy;
     all('.is-busy').forEach(function (el) { el.classList.remove('is-busy'); el.removeAttribute('aria-busy'); });
   }
@@ -143,6 +180,8 @@
   }
 
   var actions = {
+    'inst': function (el) { state.page = el.dataset.go; state.selectedKey = ''; if (state.page === 'installing') { startInstall(); } return ['[data-page="' + state.page + '"] ' + INSTALL_NEXT[state.page], 'Installer page: ' + state.page + '.']; },
+    'open-start': function () { state.cat = 'use'; state.view = 'notebook'; state.launched = true; return ['#nb-tab-welcome', 'NucleiSky is open in JupyterLab with the Welcome notebook.']; },
     'how': function (el) { state.how = Number(el.dataset.i); },
     'launch': function () { state.launched = true; return ['#nb-tab-welcome', 'NucleiSky is open in JupyterLab with the Welcome notebook.']; },
     'run-welcome': function () { state.welcomeRun = true; return ['[data-act="test-connection"]', 'Cell ran: the list of notebooks and the update check are shown.']; },
@@ -164,11 +203,12 @@
   root.addEventListener('click', function (e) {
     var el = e.target.closest('[data-act], [data-nb-tab], [data-demo-act]');
     if (!el || !root.contains(el) || el.disabled) { return; }
+    if (el.dataset.demoAct === 'cat') { state.cat = el.dataset.cat; sync(); return; }
     if (el.dataset.demoAct === 'view') { state.view = el.dataset.view; sync(); return; }
     if (state.busy && el.dataset.demoAct !== 'reset') { return; }
-    if (el.dataset.demoAct === 'reset') { clearBusy(); state = JSON.parse(JSON.stringify(FRESH)); sync(); one('#demo-tab-notebook').focus(); return; }
+    if (el.dataset.demoAct === 'reset') { clearBusy(); state = JSON.parse(JSON.stringify(FRESH)); sync(); one('#demo-cat-tab-install').focus(); return; }
     if (el.dataset.nbTab) { state.nbTab = el.dataset.nbTab; sync(); return; }
-    if (el.dataset.act === 'launch' && e.detail === 1) { state.iconSelected = true; el.classList.add('is-selected'); sync(); return; }
+    if (el.hasAttribute('data-dbl') && e.detail === 1) { state.selectedKey = el.dataset.act + el.dataset.go; el.classList.add('is-selected'); sync(); return; }
     if (el.tagName === 'INPUT' && el.type !== 'checkbox') { return; }
     if (!actions[el.dataset.act]) { return; }
     var ms = delayFor(el);
@@ -177,12 +217,12 @@
   });
   root.addEventListener('input', function (e) { if (e.target.dataset.act === 'opacity') { actions.opacity(e.target); sync(); } });
   root.addEventListener('keydown', function (e) {
-    var tab = e.target.closest('[role="tab"][data-view]');
+    var tab = e.target.closest('[role="tab"]');
     if (!tab || ['ArrowRight', 'ArrowLeft', 'Home', 'End'].indexOf(e.key) < 0) { return; }
-    var tabs = all('[role="tab"][data-view]'), i = tabs.indexOf(tab);
+    var tabs = all('[role="tab"]').filter(function (t) { return t.parentNode === tab.parentNode; }), i = tabs.indexOf(tab);
     var next = e.key === 'Home' ? tabs[0] : e.key === 'End' ? tabs[tabs.length - 1] : tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
     e.preventDefault();
-    state.view = next.dataset.view; sync(); next.focus();
+    if (next.dataset.view) { state.view = next.dataset.view; } else { state.cat = next.dataset.cat; } sync(); next.focus();
   });
 
   all('[data-status]').forEach(function (el) { el.dataset.idle = el.textContent; });

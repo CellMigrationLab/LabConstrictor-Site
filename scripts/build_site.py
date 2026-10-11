@@ -84,7 +84,7 @@ def main() -> None:
     for app in apps:
         pages_apps.page_app(app)
     pages_site.page_ecosystem(projects.resolve(ecosystem))
-    pages_demo.page_demo()
+    pages_demo.page_demo(apps)
     pages_site.page_submit(site, f"{SITE_URL}schema/labconstrictor-app.schema.json")
     nav = guides.build(args.template_dir, args.doc_source_dir)
     hubs.write_all(load_yaml(DATA / "hubs.yaml"), nav, args.doc_source_dir, apps)

@@ -26,6 +26,15 @@ def tab_buttons() -> str:
     return '<div class="lc-demo__tabs" role="tablist" aria-label="Interface">' + "".join(out) + '</div>'
 
 
+def category_tabs() -> str:
+    """The two parts of the demo: installing the app (Windows) and using it. Real buttons with tab semantics; Install is selected first."""
+    out = []
+    for i, (key, label) in enumerate((("install", "1. Install the app (Windows)"), ("use", "2. Use the app"))):
+        out.append(f'<button type="button" role="tab" id="demo-cat-tab-{key}" aria-controls="demo-cat-{key}" aria-selected="{"true" if i == 0 else "false"}" '
+                   f'class="lc-btn lc-btn--small" data-demo-act="cat" data-cat="{key}">{label}</button>')
+    return '<div class="lc-demo__tabs" role="tablist" aria-label="Part of the demo">' + "".join(out) + '</div>'
+
+
 def panels(shown: dict[str, str], example: dict) -> str:
     """The three simulated windows, each from its partial with the numbers filled in, inside a tab panel."""
     shown = dict(shown, footprint=demo_media.footprint_points(example))
@@ -76,20 +85,23 @@ def credits(text: dict) -> str:
             'The result was computed offline with the released NucleiSky 2D code; how is recorded in <code>content/demo/README.md</code>.</p>')
 
 
-def page_demo() -> None:
+def page_demo(apps: list[dict]) -> None:
     """demo/index.md: notice, tabs, the three windows (or the static figures without JavaScript), the explanation and the credits."""
     d = load()
     text, example = d["text"], d["example"]
-    shown = demo_media.values(example)
+    shown = dict(demo_media.values(example), **demo_media.installer_values(apps))
     demo_media.copy_assets()
     p = Page("demo/index.md", title=text["title"], description=text["description"], layout="wide", menu="demo/",
-             page_css=["assets/demo/demo.css"], page_js=["assets/demo/demo.js"], edit_url=f"{REPO}/edit/main/data/demo.yaml")
+             page_css=["assets/demo/demo.css", "assets/demo/installer.css"], page_js=["assets/demo/demo.js"], edit_url=f"{REPO}/edit/main/data/demo.yaml")
     p.add(f'<section class="lc-pagehead"><h1>{esc(text["title"])}</h1>'
           f'<p class="lc-lead">{esc(text["lead"])}</p></section>')
     p.add(about_and_features(text))
+    installer = demo_media.render(demo_media.read_window("installer"), shown, "windows/installer.html")
     p.add(f'<div class="lc-demo" data-demo data-search-exclude><p class="lc-demo__notice" role="note"><strong>Interactive preview</strong>{esc(text["notice"].removeprefix("Interactive preview"))}</p>'
-          f'<div class="lc-demo__live"><p class="lc-demo__next" data-next></p>{tab_buttons()}<button type="button" class="lc-btn lc-btn--small lc-btn--ghost" data-demo-act="reset">Reset demo</button>'
-          f'<p class="lc-demo__experimental" data-demo-experimental hidden>{esc(text["experimental"])}</p>{panels(shown, example)}{how_it_works(text)}</div>{static_figures(text)}</div>')
+          f'<div class="lc-demo__live"><p class="lc-demo__next" data-next></p>{category_tabs()}<button type="button" class="lc-btn lc-btn--small lc-btn--ghost" data-demo-act="reset">Reset demo</button>'
+          f'<div role="tabpanel" id="demo-cat-install" aria-labelledby="demo-cat-tab-install" data-cat-panel="install" class="lc-demo__panel">{installer}</div>'
+          f'<div role="tabpanel" id="demo-cat-use" aria-labelledby="demo-cat-tab-use" data-cat-panel="use" hidden>{tab_buttons()}'
+          f'<p class="lc-demo__experimental" data-demo-experimental hidden>{esc(text["experimental"])}</p>{panels(shown, example)}{how_it_works(text)}</div></div>{static_figures(text)}</div>')
     p.add(credits(text))
     p.write()
 
