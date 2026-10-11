@@ -7,6 +7,7 @@ Fails (exit status 1) and lists every problem when:
   - text written by an app's author appears unescaped in a page (a sign of HTML injection),
   - an "edit this page" link points at a generated file instead of its source,
   - a page has no current entry in the top menu, or cannot be reached from the home page within 3 clicks,
+  - an imported guide carries active code (a script, frame, event handler or script address),
   - a file that must exist is missing (sitemap, robots.txt, llms.txt, the schemas).
 Run it after `zensical build` and `write_sitemap.py`.
 """
@@ -18,7 +19,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-from lcsite import guide_shape
+from lcsite import active_markup, guide_shape
 from lcsite.config import DATA, ROOT, SNAPSHOT, load_json, load_yaml
 
 SITE = ROOT / "site"
@@ -210,6 +211,12 @@ def unsafe_link_problems(pages: dict[Path, PageParts]) -> list[str]:
     return [f"{page.relative_to(SITE)}: unsafe address {link[:40]!r}" for page, parts in pages.items() for link in parts.links if UNSAFE_SCHEME.match(link)]
 
 
+def imported_markup_problems() -> list[str]:
+    """Active code inside the article of a guide or hub page (guides come from other repositories): the build stops, naming the page."""
+    pages = [p for top in ("guides", "use", "build") for p in sorted((SITE / top).rglob("index.html"))]
+    return [f"{p.relative_to(SITE)}: {found}" for p in pages for found in active_markup.problems(p.read_text(encoding="utf-8"))]
+
+
 def missing_files() -> list[str]:
     """One line per required file that is missing from site/."""
     return [f"missing {name}" for name in REQUIRED if not (SITE / name).is_file()]
@@ -223,7 +230,7 @@ def main() -> int:
     # The 404 page uses absolute addresses on purpose (it is served from any depth), so it is not link-checked.
     pages = {p.resolve(): parse(p) for p in sorted(SITE.rglob("*.html")) if p.name != "404.html"}
     problems = (missing_files() + link_problems(pages) + edit_link_problems(pages) + menu_problems(pages)
-                + reach_problems(pages) + escaping_problems(load_json(SNAPSHOT)) + search_index_problems() + literal_markdown_problems() + unsafe_link_problems(pages))
+                + reach_problems(pages) + escaping_problems(load_json(SNAPSHOT)) + search_index_problems() + literal_markdown_problems() + unsafe_link_problems(pages) + imported_markup_problems())
     # Warnings for now: they become problems once the template's pages comply with the guide shape.
     for warning in guide_shape.warnings(SITE, guide_shape.critical_slugs()):
         print(warning, file=sys.stderr)
