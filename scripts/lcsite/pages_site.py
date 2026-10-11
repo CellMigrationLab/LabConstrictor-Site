@@ -22,7 +22,7 @@ def comic_figure() -> str:
     panels = "".join(f'<span class="lc-comic__panel" role="img" aria-label="{esc(alt)}" style="--i:{i}"></span>'
                      for i, alt in enumerate(PANEL_ALTS))
     return (f'<figure class="lc-comic"><img class="lc-comic__strip" src="assets/images/comic.png" alt="{esc(COMIC_ALT)}" loading="lazy">'
-            f'<div class="lc-comic__panels">{panels}</div><figcaption>The problem LabConstrictor was made for.</figcaption></figure>')
+            f'<div class="lc-comic__panels">{panels}</div></figure>')
 
 
 def choice(title: str, text: str, href: str, label: str, cls: str = "") -> str:

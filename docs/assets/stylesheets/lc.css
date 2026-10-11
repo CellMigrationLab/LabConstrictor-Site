@@ -107,7 +107,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-home { max-width: none; margin: 0; float: none; }
 .lc-home .md-typeset { padding-bottom: 0; }
 .lc-hero { background: var(--lc-band); border-bottom: 1px solid var(--lc-line); overflow: hidden; }
-.lc-hero__in { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); gap: 2rem; align-items: center; max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: clamp(2rem, 6vw, 3.6rem) var(--lc-gutter); }
+.lc-hero__in { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); gap: 2rem; align-items: center; max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: clamp(1.6rem, 4vw, 2.4rem) var(--lc-gutter); }
 .lc-hero h1 { font-size: clamp(2rem, 5.4vw, 3.5rem); line-height: 1.04; letter-spacing: -.03em; margin: 0 0 .5em; max-width: 14ch; }
 .lc-hero p { max-width: 34rem; font-size: clamp(.9rem, 2vw, 1.06rem); margin: 0; }
 .lc-hero__art { position: relative; justify-self: center; width: min(100%, 17rem); aspect-ratio: 1; }
@@ -128,7 +128,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
   .lc-comic__panel { display: block; aspect-ratio: 1.163; border-radius: .5rem; background: #000 url("../images/comic.png") no-repeat; background-size: 300% 100%; background-position: calc(var(--i) * 50%) 0; box-shadow: 0 .4rem 1rem rgba(16, 33, 26, .14); }
 }
 .lc-comic figcaption { margin-top: .8rem; font-size: .68rem; color: var(--lc-muted); }
-.lc-band { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: 3.2rem var(--lc-gutter); }
+.lc-band { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: 2.2rem var(--lc-gutter); }
 .lc-band--soft { max-width: none; background: var(--lc-band); padding-left: max(var(--lc-gutter), calc((100% - var(--lc-wide)) / 2)); padding-right: max(var(--lc-gutter), calc((100% - var(--lc-wide)) / 2)); }   /* full-width band; the padding puts its content on the same left edge as the hero and the white bands */
 .lc-band--soft > * { max-width: none; margin-left: 0; margin-right: 0; }
 [dir] .md-typeset ol.lc-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.4rem; list-style: none; counter-reset: step; margin: 0 auto; padding: 0; }
@@ -381,16 +381,16 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-related-section { margin-top: 2.6rem; }
 
 /* ------------------------------------------------------------------ home: comic and tiles, plugin section, citation */
-.lc-band--comic { padding-bottom: 1rem; }
+.lc-band--comic { padding-top: 2rem; padding-bottom: 2rem; }
 [dir] .md-typeset .lc-band--comic .lc-comic { margin: 0; width: 100%; max-width: none; padding: 0; }
 .lc-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
-.lc-tiles .lc-tile { max-width: none; margin: 0; height: 100%; align-items: flex-start; }
+.lc-tiles .lc-tile { max-width: none; margin: 0; height: 100%; align-items: center; }
 .lc-tiles .lc-tile img { width: 5.5rem; height: 5.5rem; object-fit: contain; }
 .lc-tile__body { gap: .5rem; }
 .lc-tile__body strong { font-family: var(--lc-display); font-size: 1.1rem; color: var(--lc-strong); }
 .lc-tiles .lc-tile[href$="demo/"] img { object-fit: cover; }
 @media (max-width: 40rem) { .lc-tiles { grid-template-columns: 1fr; } }
-@media (max-width: 600px) { .lc-tiles .lc-tile { flex-direction: row; align-items: flex-start; } .lc-tiles .lc-tile img { width: 4.5rem; height: 4.5rem; } }
+@media (max-width: 600px) { .lc-tiles .lc-tile { flex-direction: row; align-items: center; } .lc-tiles .lc-tile img { width: 4.5rem; height: 4.5rem; } }
 [dir] .md-typeset .lc-band .lc-title { margin: 0 0 1.4rem; font-size: 1.55rem; }
 .lc-prose > p { max-width: 46rem; }
 .lc-lead-text { font-size: 1.02rem; }
@@ -423,3 +423,13 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 [dir] .md-typeset details.lc-disclosure > summary::after { top: 1.1rem; right: 1rem; }
 [dir] .md-typeset details.lc-disclosure[open] > summary { border-bottom: 1px solid var(--lc-line); }
 .md-typeset details.lc-disclosure > :not(summary) { margin-left: 1.2rem; margin-right: 1.2rem; }
+
+/* ------------------------------------------------------------------ phones: tighter bands */
+@media (max-width: 40rem) {
+  .lc-band { padding-top: 1.7rem; padding-bottom: 1.7rem; }
+  .lc-band--comic { padding-top: 1.4rem; padding-bottom: 1.4rem; }
+  [dir] .md-typeset .lc-band .lc-title { margin-bottom: 1rem; }
+  .lc-panel { padding: 1.1rem 1.1rem; }
+  .md-typeset .lc-panel .lc-lead-text { font-size: .92rem; }
+  .lc-hero__art { width: 7rem; }
+}
