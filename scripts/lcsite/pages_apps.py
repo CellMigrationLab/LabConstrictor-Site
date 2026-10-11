@@ -4,10 +4,10 @@ import json
 import re
 
 from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, github_badge, host_badge, icon, is_verified, link_pill, release_line, testing_badge, tier_badge
-from . import hosts
+from . import catalogue_text, hosts
 from .page import Page
 from .validate import optional_list
-from .text import esc, long_date, megabytes, paragraphs, plural
+from .text import esc, long_date, megabytes, paragraphs
 
 LEGEND = ("<strong>Verified</strong>: a maintainer installed and ran this exact version. "
           "<strong>Community</strong>: public repository, valid manifest and downloads straight from GitHub, checked automatically. "
@@ -38,10 +38,9 @@ def page_catalogue(all_apps: list[dict]) -> None:
     """apps/index.md: the filterable grid of the apps, then the apps for testing and maintenance listed apart."""
     apps = [a for a in all_apps if a["section"] == "apps"]
     testing = [a for a in all_apps if a["section"] == "testing"]
-    p = Page("apps/index.md", title="Apps", description="Bioimage analysis apps built with LabConstrictor: install them on Windows, macOS or Linux, or open them in Colab.", layout="wide")
+    p = Page("apps/index.md", title="Apps", description=catalogue_text.catalogue_description(all_apps), layout="wide")
     p.add('<section class="lc-pagehead"><h1>Apps</h1>',
-          f'<p class="lc-lead">{plural(len(apps), "app")} built with LabConstrictor'
-          + (f', and {len(testing)} for testing and maintenance' if testing else "") + '. Install one in a few clicks, or open it in Colab.</p></section>',
+          f'<p class="lc-lead">{esc(catalogue_text.catalogue_lead(all_apps))}</p></section>',
           filter_bar(), f'<div data-lc-group>{grid(apps)}</div>',
           '<p class="lc-empty" data-lc-empty hidden>No app matches. Clear a filter or search for something broader.</p>',
           (f'<div data-lc-group class="lc-testing"><h2 class="lc-title">Testing and maintenance</h2><p>Apps that check or '

@@ -16,7 +16,7 @@ def app_line(app: dict) -> str:
 def write(site: dict, apps: list[dict]) -> None:
     """Write docs/llms.txt: what LabConstrictor is, the main pages, and every listed app."""
     lines = [f"# {site['name']}", "", f"> {site['hero']['text']}", "", "## Pages", "",
-             f"- [App Centre]({SITE_URL}apps/): installable bioimage analysis apps built with LabConstrictor",
+             f"- [App Centre]({SITE_URL}apps/): apps built with LabConstrictor, each with its ways to get it",
              f"- [Docs]({SITE_URL}guides/): guides for using apps and for building them",
              f"- [Use]({SITE_URL}use/): install and open an app, and use apps in image software",
              f"- [Build]({SITE_URL}build/): turn your notebooks into an app, with the guides to do it",
