@@ -83,6 +83,11 @@ build:
     - {title: Add your notebooks, text: "Upload them and generate their requirements.", href: guides/notebook-upload/, link: Upload your notebooks}
     - {title: Publish a release, text: "One release builds the installers.", href: guides/executable-creation/, link: Create installers}
     - {title: Share it, text: "List it in the App Centre so others can find it.", href: submit/, link: Submit your app}
+  how:
+    title: Want to see how it works inside?
+    text: A step-by-step page with a small interactive picture for each part, from a portable notebook to an installed app.
+    href: how-it-works/
+    link: How LabConstrictor works
   help:
     title: Something went wrong while building?
     text: Problems with your repository on GitHub, such as a failed workflow, and how to read them.

@@ -1,6 +1,6 @@
 """The interactive demo page (/demo/) and its home-page tile. Everything shown comes from data/demo.yaml and content/demo/."""
 
-from . import demo_media
+from . import demo_media, demo_option_a
 from .cards import github_badge
 from .config import DATA, REPO, load_yaml
 from .page import Page
@@ -92,7 +92,7 @@ def page_demo(apps: list[dict]) -> None:
     """demo/index.md: notice, tabs, the three windows (or the static figures without JavaScript), the explanation and the credits."""
     d = load()
     text, example = d["text"], d["example"]
-    shown = dict(demo_media.values(example), **demo_media.installer_values(apps))
+    shown = dict(demo_media.values(example), **demo_media.installer_values(apps), **demo_option_a.values(text))
     demo_media.copy_assets()
     p = Page("demo/index.md", title=text["title"], description=text["description"], layout="wide", menu="demo/",
              page_css=["assets/demo/demo.css", "assets/demo/installer.css"], page_js=[f"assets/demo/{name}" for name in demo_media.SCRIPTS], edit_url=f"{REPO}/edit/main/data/demo.yaml")

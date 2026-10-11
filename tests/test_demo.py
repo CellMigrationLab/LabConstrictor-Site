@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest import mock
 
 import check_design
-from lcsite import demo_media, pages_demo
+from lcsite import demo_media, demo_option_a, pages_demo
 
 
 def example() -> dict:
@@ -21,7 +21,7 @@ class MediaTests(unittest.TestCase):
 
     def test_values_come_from_the_example_and_every_window_placeholder_has_one(self) -> None:
         """Every {{key}} used by a window partial is a value computed from example.json; none is left over."""
-        shown = dict(demo_media.values(example()), footprint=demo_media.footprint_points(example()))
+        shown = dict(demo_media.values(example()), footprint=demo_media.footprint_points(example()), **demo_option_a.values(pages_demo.load()["text"]))
         for name in ("notebook", "napari", "fiji"):
             html = demo_media.render(demo_media.read_window(name), shown, name)
             self.assertNotRegex(html, r"\{\{\w+\}\}")
@@ -107,7 +107,7 @@ class ScriptConsistencyTests(unittest.TestCase):
 
     def test_tab_panels_and_controls_reference_existing_ids(self) -> None:
         """Every aria-controls in the windows names an element that exists, and tab ids are unique."""
-        shown = dict(demo_media.values(example()), footprint=demo_media.footprint_points(example()))
+        shown = dict(demo_media.values(example()), footprint=demo_media.footprint_points(example()), **demo_option_a.values(pages_demo.load()["text"]))
         html = pages_demo.tab_buttons() + pages_demo.category_tabs() + '<div id="demo-cat-install"></div><div id="demo-cat-use"></div>' + pages_demo.panels(shown, example())
         ids = re.findall(r'\bid="([^"]+)"', html)
         self.assertEqual(len(ids), len(set(ids)))

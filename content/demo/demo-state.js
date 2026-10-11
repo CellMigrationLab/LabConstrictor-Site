@@ -14,6 +14,8 @@
    * @property {number} done - the last widget used (0 to 3).
    * @property {string} crop - 'external' or 'random'.
    * @property {string} seg - 'new' or 'existing'.
+   * @property {boolean} optA - whether the Option A cell ran (its widget is shown).
+   * @property {string} aTab - the matcher settings tab of Option A that is open.
    * @property {Object<string, boolean>} acc - which accordions are open.
    * @property {boolean} busy - whether a simulated run is in progress.
    * @property {string} selected - the selected napari layer ('' for none).
@@ -29,7 +31,7 @@
     return {
       cat: 'install', page: 'download', progress: 0, installed: false, selectedKey: '',
       view: 'notebook', launched: false, welcomeRun: false, opened: false, nbTab: 'welcome', code: false,
-      init: false, step: 0, done: 0, crop: 'external', seg: 'new', acc: { inst: false, thr: false, adv: false },
+      init: false, optA: false, aTab: '_common', step: 0, done: 0, crop: 'external', seg: 'new', acc: { inst: false, thr: false, adv: false },
       checked: false, scenario: false, updated: false, busy: false, how: 1, fijiDialog: true, selected: '',
       vis: { reference: true, query: false, aligned: true, alignment: true },
       opacity: { reference: 100, query: 100, aligned: 100, alignment: 80 }

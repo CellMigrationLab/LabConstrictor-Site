@@ -26,6 +26,7 @@
     d.all(root, '[data-from]').forEach(function (el) { el.hidden = state.step < Number(el.dataset.from); });
     d.all(root, '[data-done]:not([data-status])').forEach(function (el) { el.hidden = state.done < Number(el.dataset.done); });
     d.all(root, '[data-after]').forEach(function (el) { el.hidden = state.done < Number(el.dataset.after); });
+    d.all(root, '[data-opta]').forEach(function (el) { el.hidden = !state.optA; });
     d.all(root, '[data-from-init]').forEach(function (el) { el.hidden = !state.init; });
     d.all(root, '[data-from-welcome]').forEach(function (el) { el.hidden = !state.welcomeRun; });
     d.all(root, '[data-from-nb]').forEach(function (el) { el.hidden = !state.opened; });
@@ -80,6 +81,22 @@
   }
 
   /**
+   * Draw Option A's settings: the matcher tabs show only when Use default settings is unticked, and the open tab's pill and panel.
+   * @param {Element} root - the demo root.
+   * @param {DemoState} state - the state to draw.
+   * @returns {void}
+   */
+  function renderOptionA(root, state) {
+    d.one(root, '[data-a-custom]').hidden = d.one(root, '[data-ctl="a-default"]').checked;
+    d.all(root, '[data-act="a-tab"]').forEach(function (b) {
+      var on = b.dataset.tab === state.aTab;
+      b.classList.toggle('is-on', on);
+      d.setPressed(b, on);
+    });
+    d.all(root, '[data-a-panel]').forEach(function (p) { p.hidden = p.dataset.aPanel !== state.aTab; });
+  }
+
+  /**
    * The sentence the update check shows under its button.
    * @param {DemoState} state - the state.
    * @param {boolean} needs - whether a notebook is shown as outdated.
@@ -127,6 +144,7 @@
     d.one(root, '[data-act="run-init"]').disabled = state.init;
     d.all(root, '[data-act="widget"]').forEach(function (b) { b.disabled = state.done >= Number(b.dataset.n) || (b.dataset.n === '1' && state.crop !== 'random'); });
     renderWidgets(root, state);
+    renderOptionA(root, state);
     renderUpdates(root, state);
   }
 

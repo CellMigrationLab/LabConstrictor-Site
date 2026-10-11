@@ -139,6 +139,8 @@
     'fiji-cancel': setter('fijiDialog', function () { return false; }, '[data-act="fiji-open"]', ''),
     'open-app': function (state) { Object.assign(state, { launched: true, opened: true, nbTab: 'app' }); return reply('', '', false); },
     'widget': function (state, el) { state.done = Math.max(state.done, Number(el.dataset.n)); return reply('', 'Done: the result is shown below.', false); },
+    'open-opt-a': setter('optA', function () { return true; }, '', 'Cell ran: the settings of Option A are shown.'),
+    'a-tab': setter('aTab', function (el) { return el.dataset.tab; }, '', ''),
     'acc': function (state, el) { state.acc[el.dataset.acc] = !state.acc[el.dataset.acc]; return reply('', '', false); }
   };
 

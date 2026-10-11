@@ -73,7 +73,7 @@ def features_html(items: list[dict], doc_source: Path, apps: list[dict], taken: 
 
 
 FLOW_KEYS = {"title", "text", "href", "link"}
-HUB_KEYS = {"title", "lead", "cards", "demo", "help", "flow_title", "flow"}
+HUB_KEYS = {"title", "lead", "cards", "demo", "how", "help", "flow_title", "flow"}
 
 
 def check_hub(name: str, hub: dict) -> None:
@@ -88,9 +88,9 @@ def check_hub(name: str, hub: dict) -> None:
 
 
 def notes_html(hub: dict) -> str:
-    """The one-line notes under a hub's cards (the demo link and the help line), written once for the hub pages and the Docs home."""
+    """The one-line notes under a hub's cards (the demo link, the how-it-works link and the help line), written once for the hub pages and the Docs home."""
     out = ""
-    for key in ("demo", "help"):
+    for key in ("demo", "how", "help"):
         if key in hub:
             h = hub[key]
             out += f'<p class="lc-help"><strong>{esc(h["title"])}</strong> {esc(h["text"])} <a class="lc-go" href="{esc(h["href"])}">{esc(h["link"])}</a></p>'
