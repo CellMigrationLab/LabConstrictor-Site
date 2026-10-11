@@ -1,0 +1,11 @@
+{
+ "app_name": "NucleiSky",
+ "app_version": "0.1.1",
+ "exe_name": "NucleiSky-0.1.1-Windows-x86_64.exe",
+ "exe_size_bytes": 317528492,
+ "source": {
+  "repo": "CellMigrationLab/NucleiSky",
+  "release_url": "https://github.com/CellMigrationLab/NucleiSky/releases/tag/0.1.1",
+  "recorded": "2026-10-11"
+ }
+}

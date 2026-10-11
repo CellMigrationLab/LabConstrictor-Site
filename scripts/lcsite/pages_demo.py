@@ -92,7 +92,7 @@ def page_demo(apps: list[dict]) -> None:
     """demo/index.md: notice, tabs, the three windows (or the static figures without JavaScript), the explanation and the credits."""
     d = load()
     text, example = d["text"], d["example"]
-    shown = dict(demo_media.values(example), **demo_media.installer_values(apps), **demo_option_a.values(text))
+    shown = dict(demo_media.values(example), **demo_media.installer_values(), **demo_option_a.values(text))
     demo_media.copy_assets()
     p = Page("demo/index.md", title=text["title"], description=text["description"], layout="wide", menu="demo/",
              page_css=["assets/demo/demo.css", "assets/demo/installer.css"], page_js=[f"assets/demo/{name}" for name in demo_media.SCRIPTS], edit_url=f"{REPO}/edit/main/data/demo.yaml")

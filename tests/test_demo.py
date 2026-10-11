@@ -114,18 +114,25 @@ class ScriptConsistencyTests(unittest.TestCase):
         for target in re.findall(r'aria-controls="([^"]+)"', html):
             self.assertIn(target, ids)
 
-    def test_installer_values_cover_its_placeholders_and_fail_without_the_release(self) -> None:
-        """Every {{placeholder}} of the installer window has a value, and a missing release or .exe stops the build."""
-        apps = [{"slug": "nucleisky", "manifest": {"name": "NucleiSky"}, "release": {"tag": "0.1.1", "assets": [{"os": "windows", "name": "N-0.1.1-Windows-x86_64.exe", "size": 317528492}]}}]
-        got = demo_media.installer_values(apps)
+    def test_installer_values_come_from_the_stored_record_and_cover_the_placeholders(self) -> None:
+        """Every {{placeholder}} of the installer window has a value taken from content/demo/installer.json, with no release needed."""
+        got = demo_media.installer_values()
         shown = dict(demo_media.values(example()), **got)
         html = demo_media.render(demo_media.read_window("installer"), shown, "installer.html")
         self.assertIn("317.5 MB", html)
         self.assertNotIn("{{", html)
-        with self.assertRaises(SystemExit):
-            demo_media.installer_values([dict(apps[0], release=None)])
-        with self.assertRaises(SystemExit):
-            demo_media.installer_values([dict(apps[0], release={"tag": "0.1.1", "assets": []})])
+
+    def test_a_missing_or_incomplete_installer_record_stops_the_build_naming_it(self) -> None:
+        """No file, or a file without a key, is an error that names content/demo/installer.json."""
+        with tempfile.TemporaryDirectory() as tmp:
+            with mock.patch.object(demo_media, "SOURCE", Path(tmp)):
+                with self.assertRaises(SystemExit) as gone:
+                    demo_media.installer_values()
+                self.assertIn("installer.json", str(gone.exception))
+                (Path(tmp) / "installer.json").write_text(json.dumps({"app_name": "X"}), encoding="utf-8")
+                with self.assertRaises(SystemExit) as partial:
+                    demo_media.installer_values()
+                self.assertIn("app_version", str(partial.exception))
 
     def test_no_window_uses_a_heading_element(self) -> None:
         """Simulated-window titles are not headings, so the page's own outline stays clean."""

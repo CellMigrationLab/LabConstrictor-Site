@@ -70,19 +70,24 @@ def values(example: dict) -> dict[str, str]:
     }
 
 
-def installer_values(apps: list[dict]) -> dict[str, str]:
-    """What the Windows installer pages show about the example app: its name, version and installer file (from its latest release) and its licence text."""
-    app = next((a for a in apps if a["slug"] == "nucleisky"), None)
-    if app is None or app["release"] is None:
-        fail("the demo's Install part needs the NucleiSky app and its release in the snapshot")
-    exe = next((x for x in app["release"]["assets"] if x["os"] == "windows" and x["name"].endswith(".exe")), None)
-    if exe is None:
-        fail("the latest NucleiSky release has no Windows .exe installer")
+INSTALLER_KEYS = ("app_name", "app_version", "exe_name", "exe_size_bytes", "source")
+
+
+def installer_values() -> dict[str, str]:
+    """What the Windows installer pages show about the example app: its name, version, installer file and size (from the stored
+    content/demo/installer.json, not from a live release) and its licence text. A missing file or key stops the build naming it."""
+    path = SOURCE / "installer.json"
+    if not path.is_file():
+        fail(f"{path} is missing: run tools/demo_assets/installer_record.py")
+    record = json.loads(path.read_text(encoding="utf-8"))
+    missing = [k for k in INSTALLER_KEYS if k not in record]
+    if missing:
+        fail(f"{path} has no {', '.join(missing)}")
     licence = SOURCE / "license.txt"
     if not licence.is_file():
         fail(f"{licence} is missing")
-    return {"app_name": esc(app["manifest"]["name"]), "app_version": esc(app["release"]["tag"]), "exe_name": esc(exe["name"]),
-            "exe_size": megabytes(exe["size"]), "license_text": esc(licence.read_text(encoding="utf-8").strip())}
+    return {"app_name": esc(record["app_name"]), "app_version": esc(record["app_version"]), "exe_name": esc(record["exe_name"]),
+            "exe_size": megabytes(record["exe_size_bytes"]), "license_text": esc(licence.read_text(encoding="utf-8").strip())}
 
 
 def footprint_points(example: dict) -> str:
