@@ -46,7 +46,18 @@ how:
     - napari or Fiji builds its own form from those declarations.
     - The tool runs in the app's own Python environment, in a separate worker process.
     - The results come back to napari or Fiji as images, layers, overlays, points or tables.
-  note: The same installed app is used from napari, Fiji and QuPath, each through its own plugin; QuPath is not shown here. This website does not connect to a Fiji or napari running on your computer. Everything on this page is a simulation built from one precomputed result.
+  hosts_title: The same installed app, three programs
+  hosts:
+    - name: napari
+      where: Plugins > LabConstrictor tools
+      detail: Results come back as layers, overlays and tables. Shown on this page.
+    - name: Fiji
+      where: Plugins > LabConstrictor > LabConstrictor Tools
+      detail: Results come back as image windows, overlays and tables. Shown on this page.
+    - name: QuPath
+      where: Extensions > LabConstrictor tools...
+      detail: A prototype for QuPath 0.7. The image open in QuPath is exported for the tool, and points and outlines come back onto the slide. Not shown on this page.
+  note: Each program has its own plugin, and all three run the same installed app. This website does not connect to a Fiji or napari running on your computer. Everything on this page is a simulation built from one precomputed result.
 credit:
   data: "Images: Dataset 1 from Hidalgo Cenalmor I. et al., Data associated with NucleiSky enables cross-scale multimodal registration of microscopy data using nuclei constellations (a tiled widefield image of a DAPI-stained HUVEC monolayer), Zenodo, licensed CC BY 4.0. Changes: contrast-stretched, enlarged and cropped; the small image is a software-generated crop that was rotated and rescaled; overlays computed by NucleiSky."
   dataset_doi: 10.5281/zenodo.20721416

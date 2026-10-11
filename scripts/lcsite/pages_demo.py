@@ -65,16 +65,19 @@ def how_it_works(text: dict) -> str:
     """The six steps of how the real bridge works, as a clickable list with a three-box diagram. Shown only for the napari and Fiji views."""
     steps = "".join(f'<li><button type="button" class="lc-how__step" data-demo-sim data-act="how" data-i="{i}" aria-pressed="{"true" if i == 1 else "false"}">{esc(s)}</button></li>'
                     for i, s in enumerate(text["how"]["steps"], 1))
-    boxes = "".join(f'<span class="lc-how__box" data-box="{i}">{esc(label)}</span>' for i, label in enumerate(("Installed app and its Python environment", "LabConstrictor-Tools bridge", "napari or Fiji")))
+    boxes = "".join(f'<span class="lc-how__box" data-box="{i}">{esc(label)}</span>' for i, label in enumerate(("Installed app and its Python environment", "LabConstrictor-Tools bridge", "napari, Fiji or QuPath")))
+    hosts = "".join(f'<tr><th scope="row">{esc(h["name"])}</th><td><code>{esc(h["where"])}</code></td><td>{esc(h["detail"])}</td></tr>' for h in text["how"]["hosts"])
     return (f'<section class="lc-how" data-how hidden><h2>{esc(text["how"]["title"])}</h2><p class="lc-small">Click a step to see where it happens.</p>'
             f'<div class="lc-how__diagram" aria-hidden="true">{boxes}</div><ol>{steps}</ol>'
+            f'<h3>{esc(text["how"]["hosts_title"])}</h3><table class="lc-how__hosts"><thead><tr><th scope="col">Program</th><th scope="col">Where to find it</th><th scope="col">What happens</th></tr></thead><tbody>{hosts}</tbody></table>'
             f'<p>{esc(text["how"]["note"])} {github_badge(text["credit"]["tools_repo"], "LabConstrictor-Tools")}</p></section>')
 
 
 def how_plain(text: dict) -> str:
     """The same steps as a plain list, for readers without JavaScript."""
     items = "".join(f"<li>{esc(s)}</li>" for s in text["how"]["steps"])
-    return f'<h2>{esc(text["how"]["title"])}</h2><ol>{items}</ol><p>{esc(text["how"]["note"])}</p>'
+    hosts = "".join(f'<li><strong>{esc(h["name"])}</strong> (<code>{esc(h["where"])}</code>): {esc(h["detail"])}</li>' for h in text["how"]["hosts"])
+    return f'<h2>{esc(text["how"]["title"])}</h2><ol>{items}</ol><h3>{esc(text["how"]["hosts_title"])}</h3><ul>{hosts}</ul><p>{esc(text["how"]["note"])}</p>'
 
 
 def credits(text: dict) -> str:

@@ -195,3 +195,6 @@ button.ns-pill { font: inherit; background: #fff; color: #1e293b; cursor: pointe
 .ns-row .ns-field { flex: 1 1 7rem; min-width: 0; }
 .ns-row .ns-field + .ns-flabel { flex: 0 0 auto; }
 .ns-row input[type="number"].ns-field { max-width: 14rem; }
+.lc-how__hosts { max-width: 46rem; font-size: .9em; } .lc-how__hosts th, .lc-how__hosts td { text-align: left; vertical-align: top; }
+.lc-how__hosts code { white-space: normal; word-break: normal; overflow-wrap: break-word; }
+@media (max-width: 40rem) { .lc-how__hosts thead { display: none; } .lc-how__hosts, .lc-how__hosts tbody, .lc-how__hosts tr, .lc-how__hosts th, .lc-how__hosts td { display: block; } .lc-how__hosts tr { margin: 0 0 .8rem; } }
