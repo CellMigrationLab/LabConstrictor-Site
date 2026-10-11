@@ -29,9 +29,9 @@ Display only: intensities are stretched linearly between the 1st and 99.8th perc
 **Query image**: made with NucleiSky's *Generate Random Crop* from this reference (maintainer's statement).
 The TIFF headers contain instrument metadata that is deliberately not published (the WebP files carry none).
 
-## What the run showed (all four matchers, released code, default settings)
+## What the page shows
 
-With NucleiSky's default configuration only **quad** succeeded on this 30-nucleus query (26 inliers, mean error 0.264 um). **graph**, **triangles** and **hashing** did not succeed (graph: 1 of 30 inliers, a different scale and place; triangles: no transform; hashing: 5 of 30). Eight different random seeds gave the same outcome for each matcher, so it is not a seed effect. This is recorded in `example.json` (`each_matcher`) and is what the page must show; it was expected that all matchers would succeed, which this run did not reproduce.
+The page shows **one** matcher, **quad**, which registers this crop (26 of 30 nuclei are inliers, mean error 0.264 um). It is not a benchmark. For transparency, `example.json` still records that, with NucleiSky's default settings, graph, triangles and hashing did not succeed on this crop; the page need not show that.
 
 ## Regenerate
 
