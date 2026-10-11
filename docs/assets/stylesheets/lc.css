@@ -90,7 +90,9 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-crumb { font-size: .68rem; margin: 0 0 1rem; }
 .md-typeset .lc-title { margin: 0 0 1.2rem; }
 .lc-band .lc-title { text-align: center; }
-.lc-more { text-align: center; margin: 1.4rem 0 0; font-size: .68rem; }
+[dir] .md-typeset .lc-band .lc-title { margin: 0 0 1.8rem; font-size: 1.55rem; }
+.lc-more { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .5rem 1.6rem; margin: 2rem 0 0; font-size: .72rem; }
+.lc-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem .8rem; margin: 1.2rem 0 0; }
 
 /* ------------------------------------------------------------------ buttons and badges */
 .md-typeset .lc-btn { display: inline-block; padding: .55rem 1.1rem; border: 1px solid var(--lc-accent-strong); border-radius: .3rem; background: var(--lc-accent-strong); color: #fff; font-size: .72rem; font-weight: 600; text-decoration: none; transition: background .15s, color .15s; }
@@ -119,7 +121,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .md-typeset .lc-choice:hover { transform: translateY(-2px); box-shadow: 0 .7rem 1.6rem rgba(16, 33, 26, .12); color: var(--lc-fg); }
 .lc-choice strong { font-family: var(--lc-display); color: var(--lc-strong); font-size: 1.05rem; }
 .lc-choice .lc-go { margin-top: auto; padding-top: .4rem; }
-.lc-comic { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: 3rem var(--lc-gutter) 0; text-align: center; }
+.lc-comic { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: 4rem var(--lc-gutter); text-align: center; }
 .md-typeset .lc-comic img { display: block; width: 100%; height: auto; border-radius: .5rem; box-shadow: 0 .6rem 1.6rem rgba(16, 33, 26, .14); }
 .lc-comic__panels { display: none; }
 @media (max-width: 40rem) {   /* a phone: three stacked panels, each a third of the strip, instead of a strip too small to read */
@@ -128,9 +130,10 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
   .lc-comic__panel { display: block; aspect-ratio: 1.163; border-radius: .5rem; background: #000 url("../images/comic.png") no-repeat; background-size: 300% 100%; background-position: calc(var(--i) * 50%) 0; box-shadow: 0 .4rem 1rem rgba(16, 33, 26, .14); }
 }
 .lc-comic figcaption { margin-top: .8rem; font-size: .68rem; color: var(--lc-muted); }
-.lc-band { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: 3.2rem var(--lc-gutter); }
+.lc-band { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: 4rem var(--lc-gutter); }
 .lc-band--soft { max-width: none; background: var(--lc-soft); }
 .lc-band--soft > * { max-width: var(--lc-wide); margin-left: auto; margin-right: auto; }
+.lc-band--soft > .lc-center { max-width: 36rem; }
 [dir] .md-typeset ol.lc-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.4rem; list-style: none; counter-reset: step; margin: 0 auto; padding: 0; }
 [dir] .md-typeset ol.lc-steps > li { margin-left: 0; }
 .lc-steps li { counter-increment: step; display: flex; flex-direction: column; gap: .3rem; margin: 0; padding-top: .6rem; border-top: 3px solid var(--lc-orange); }
@@ -337,7 +340,7 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .md-typeset .lc-btn .lc-logo { margin-right: .4em; vertical-align: -.25em; }
 
 /* The home-page tile that links to the demo */
-.lc-tile { display: flex; gap: 1rem; align-items: center; max-width: 46rem; margin: 0 auto; padding: 1rem; border: 1px solid var(--lc-line, #d9ded9); border-radius: 12px; color: inherit; text-decoration: none; }
+.lc-tile { display: flex; gap: 1.4rem; align-items: center; max-width: var(--lc-wide); margin: 0 auto; padding: 1.2rem; background: #fff; border: 1px solid var(--lc-line, #d9ded9); border-radius: 12px; color: inherit; text-decoration: none; }
 [dir] .md-typeset .lc-tile, .lc-tile * { text-decoration: none; }
 .lc-tile img { width: 9rem; height: 9rem; object-fit: cover; border-radius: 8px; flex: none; }
 .lc-tile__body { display: grid; gap: .4rem; }
@@ -370,3 +373,5 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .md-typeset .lc-related__item p { margin: .25rem 0; }
 .lc-related__links { display: flex; flex-wrap: wrap; gap: .4rem; }
 .lc-related-section { margin-top: 2.6rem; }
+.lc-tile__body strong { font-family: var(--lc-display); font-size: 1.25rem; color: var(--lc-strong); }
+.lc-tile__body .lc-go { margin-top: .2rem; }
