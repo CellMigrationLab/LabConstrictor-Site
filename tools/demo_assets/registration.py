@@ -60,3 +60,29 @@ def read_exports(out_dir: Path) -> dict:
     history = [json.loads(line) for line in (export / "history.jsonl").read_text(encoding="utf-8").splitlines()]
     stack = export / "adaptive_best_images_original_roi" / "aligned_on_full_px.tif"
     return {"transform": transform, "history": history, "stack": stack}
+
+
+def run_each_matcher(lib: dict, data: dict) -> list[dict]:
+    """Option A of the notebook: every matcher once with the default configuration (graph also gets the features), as NucleiSky reports it."""
+    features = lib["features"]
+    kwargs = {"centroids_crop_um": features.extract_centroids_um(data["df_crop"], name="df_crop"),
+              "centroids_full_um": features.extract_centroids_um(data["df_full"], name="df_full")}
+    rows = []
+    for name in ("graph", "quad", "triangles", "hashing"):
+        rows.append(one_matcher(lib, data, name, kwargs))
+    return rows
+
+
+def one_matcher(lib: dict, data: dict, name: str, kwargs: dict) -> dict:
+    """One matcher's outcome: success flag, inlier fraction, mean error, scale and translation (None where NucleiSky returns none)."""
+    extra = {}
+    if name == "graph":
+        extra = {"features_crop": lib["features"].stack_feature_vectors(data["df_crop"], name="df_crop"),
+                 "features_full": lib["features"].stack_feature_vectors(data["df_full"], name="df_full")}
+    result = lib["pipeline"].NucleiSky(
+        img_full=data["full"], img_crop=data["crop"], ij_percentile_normalize=lib["preprocess"].ij_percentile_normalize,
+        pixel_size_full_um=data["pix_full"], pixel_size_crop_um=data["pix_crop"], matcher=name, df_full=data["df_full"],
+        df_crop=data["df_crop"], matcher_config=lib["config"].DEFAULT_MATCHER_CONFIG, **kwargs, **extra)
+    quality = result.get("match_quality") or {}
+    return {"matcher": name, "success": bool(result.get("success")), "inlier_fraction": quality.get("frac_inliers"),
+            "mean_error_um": quality.get("mean_error_um"), "scale": result.get("best_scale")}

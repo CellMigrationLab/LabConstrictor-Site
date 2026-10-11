@@ -114,6 +114,7 @@ def build_record(args: argparse.Namespace, data: dict, best: dict, exports: dict
         "result": {"matcher": best["matcher"], "scale": t["scale"], "rotation_deg": t["rotation_deg"], "t_um_yx": t["t_um_yx"],
                    "A_px": t["A_px"], "b_px": t["b_px"], "inlier_fraction": q["frac_inliers"], "mean_error_um": q["mean_error_um"],
                    "inliers": int(round(q["frac_inliers"] * len(data["df_crop"]))), "bbox_reference_px_y0y1x0x1": roi},
+        "each_matcher": data["each_matcher"],
         "attempts": [{k: h[k] for k in ("matcher", "success", "frac_inliers")} for h in exports["history"]],
         "region": {"origin_yx": list(origin), "size_px": list(data["roi_shape"]), "margin_px": MARGIN_PX, "display_scale": display.ROI_SCALE,
                    "footprint_corners_yx": footprint(t, data["crop"].shape, origin)},
@@ -128,6 +129,7 @@ def main() -> None:
     lib = registration.import_pipeline(Path(args.nucleisky_src))
     data = load_inputs(args, lib)
     work = Path(args.work_dir)
+    data["each_matcher"] = registration.run_each_matcher(lib, data)
     best = registration.match(lib, data, work, MARGIN_PX)
     registration.save_quality_figure(lib, best, data, work)
     exports = registration.read_exports(work)

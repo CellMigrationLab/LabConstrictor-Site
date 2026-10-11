@@ -70,6 +70,36 @@
    706
   ]
  },
+ "each_matcher": [
+  {
+   "matcher": "graph",
+   "success": false,
+   "inlier_fraction": 0.03333333333333333,
+   "mean_error_um": 0.21108768628040356,
+   "scale": 1.2333200581816808
+  },
+  {
+   "matcher": "quad",
+   "success": true,
+   "inlier_fraction": 0.8666666666666667,
+   "mean_error_um": 0.26405536314525246,
+   "scale": 0.9989369009979542
+  },
+  {
+   "matcher": "triangles",
+   "success": false,
+   "inlier_fraction": null,
+   "mean_error_um": null,
+   "scale": null
+  },
+  {
+   "matcher": "hashing",
+   "success": false,
+   "inlier_fraction": 0.16666666666666666,
+   "mean_error_um": 0.5393817640847594,
+   "scale": 0.8516303475923281
+  }
+ ],
  "attempts": [
   {
    "matcher": "triangles",
