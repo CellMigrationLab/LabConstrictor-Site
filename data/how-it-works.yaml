@@ -84,9 +84,6 @@ steps:
 map:
   pipeline_file: pipeline.webp
   pipeline_alt: "The developer workflow of the preprint in five blocks: 1 prepare notebooks, optional helper code and an icon; 2 make a repository from the template and initialise it with a form; 3 generate requirements.yaml with the Requirements Generator notebook; 4 submit the notebook and its requirements, which creates a pull request and starts automation A; 5 create a release, which starts automation B and attaches installers for Windows, macOS and Linux."
-  end_file: end.webp
-  end_alt: "What users get: an installer for each system, the installed app with its icon, and JupyterLab opening a Welcome notebook that lists the notebooks, with code hidden and widgets shown."
-  end_caption: "What your users get once you share the release: an installer for their system, the app on their computer, and notebooks that open in JupyterLab with code hidden."
   caption: "The block with the red frame is the step you are reading. A and B are the automatic workflows: A checks what you add, B builds the installers."
 figure_credit:
   text: "Adapted from Figure 2 of the LabConstrictor preprint (CC BY 4.0):"

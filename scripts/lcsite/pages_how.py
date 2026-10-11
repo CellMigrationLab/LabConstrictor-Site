@@ -12,7 +12,7 @@ SOURCE = CONTENT / "how"
 OUT = DOCS / "assets" / "how"
 TOP_KEYS = {"title", "lead", "steps_title", "steps", "map", "figure_credit", "later", "handoff"}
 STEP_KEYS = {"id", "title", "text", "region", "customise", "know", "guides"}
-MAP_KEYS = {"pipeline_file", "pipeline_alt", "end_file", "end_alt", "caption", "end_caption"}
+MAP_KEYS = {"pipeline_file", "pipeline_alt", "caption"}
 CREDIT_KEYS = {"text", "link", "href"}
 LINK_KEYS = {"href", "label"}
 LATER_KEYS = {"title", "links"}
@@ -58,9 +58,9 @@ def load() -> dict:
     check_keys("the top level", data, TOP_KEYS)
     check_keys("map", data["map"], MAP_KEYS)
     check_keys("figure_credit", data["figure_credit"], CREDIT_KEYS)
-    for name in (data["map"]["pipeline_file"], data["map"]["end_file"]):
-        if not (SOURCE / "figures" / name).is_file():
-            fail(f"{SOURCE / 'figures' / name} is missing (map of data/how-it-works.yaml)")
+    name = data["map"]["pipeline_file"]
+    if not (SOURCE / "figures" / name).is_file():
+        fail(f"{SOURCE / 'figures' / name} is missing (map of data/how-it-works.yaml)")
     check_keys("later", data["later"], LATER_KEYS)
     check_keys("handoff", data["handoff"], HANDOFF_KEYS)
     check_steps(data["steps"])
@@ -103,18 +103,14 @@ def last_step_extras(data: dict) -> str:
 
 
 def map_html(data: dict) -> str:
-    """The picture at the side: the developer workflow of the preprint (a CC BY 4.0 figure) with a hand-drawn red loop (as in the demo) round the block of the step being read, the rest faded, or the
-    end-user picture for the last step. The script sets data-current; each step's frame is a box given in percent of the picture."""
+    """The picture at the side: the developer workflow of the preprint (a CC BY 4.0 figure) with a hand-drawn red loop (as in the demo) round the block of the step being read, the rest faded. The script sets data-current; each step's frame is a box given in percent of the picture."""
     m, c = data["map"], data["figure_credit"]
     width, height = pixel_size(SOURCE / "figures" / m["pipeline_file"])
     boxes = [(i, x, y, w, h) for i, s in enumerate(data["steps"], 1) if s["region"] for x, y, w, h in [s["region"]]]
     frames = {kind: "".join(f'<span class="{kind}" data-for="{i}" style="--l:{x * 2 / width * 100:.2f}%;--t:{y * 2 / height * 100:.2f}%;--w:{w * 2 / width * 100:.2f}%;--h:{h * 2 / height * 100:.2f}%"></span>'
                             for i, x, y, w, h in boxes) for kind in ("how__hl", "how__loop")}
-    end_w, end_h = pixel_size(SOURCE / "figures" / m["end_file"])
     return (f'<aside class="how__map" data-current="1"><div class="how__stage"><div class="how__crop"><img src="assets/how/figures/{esc(m["pipeline_file"])}" alt="{esc(m["pipeline_alt"])}" width="{width}" height="{height}">{frames["how__hl"]}</div>{frames["how__loop"]}</div>'
-            f'<p class="how__caption">{esc(m["caption"])}</p>'
-            f'<img class="how__end" src="assets/how/figures/{esc(m["end_file"])}" alt="{esc(m["end_alt"])}" width="{end_w}" height="{end_h}">'
-            f'<p class="how__caption how__caption--end">{esc(m["end_caption"])}</p><p class="how__credit">{esc(c["text"])} <a href="{esc(c["href"])}">{esc(c["link"])}</a></p></aside>')
+            f'<p class="how__caption">{esc(m["caption"])}</p><p class="how__credit">{esc(c["text"])} <a href="{esc(c["href"])}">{esc(c["link"])}</a></p></aside>')
 
 
 def customise(step: dict) -> str:

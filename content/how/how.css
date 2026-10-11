@@ -55,9 +55,6 @@
 .how__loop { display: none; position: absolute; left: calc(var(--l) - 8px); top: calc(var(--t) - 8px); width: calc(var(--w) + 16px); height: calc(var(--h) + 16px); pointer-events: none; transform: rotate(-.8deg); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cpath d='M12 54C6 22 44 5 104 7C162 5 197 24 192 52C188 80 150 95 96 92C42 95 8 80 12 46C16 22 52 9 96 9C130 8 150 12 160 18' fill='none' stroke='%23e11d48' stroke-width='3.2' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") no-repeat center / 100% 100%; }   /* the demo's hand-drawn red loop */
 .how__map[data-current="1"] [data-for="1"], .how__map[data-current="2"] [data-for="2"], .how__map[data-current="3"] [data-for="3"],
 .how__map[data-current="4"] [data-for="4"], .how__map[data-current="5"] [data-for="5"] { display: block; }
-.how__end { display: none; }
-[dir] .md-typeset .how__map[data-current="5"] img.how__end { display: block; margin-top: .8rem; }
-[dir] .md-typeset .how__map .how__caption { margin: .8rem 0 0; font-size: .85rem; color: var(--lc-fg); }
+[dir] .md-typeset .how__map[data-current="5"] img[dir] .md-typeset .how__map .how__caption { margin: .8rem 0 0; font-size: .85rem; color: var(--lc-fg); }
 [dir] .md-typeset .how__map .how__credit { margin: .3rem 0 0; font-size: .72rem; color: var(--lc-muted); }
-.how__caption--end { display: none; }
-[dir] .md-typeset .how__map[data-current="5"] .how__caption--end { display: block; }
+[dir] .md-typeset .how__map[data-current="5"] 

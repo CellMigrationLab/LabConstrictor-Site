@@ -1,4 +1,4 @@
-"""Write the two pictures of the How it works page (content/how/figures/*.webp): crops of Figure 2 of the LabConstrictor preprint.
+"""Write the picture of the How it works page (content/how/figures/*.webp): a crop of Figure 2 of the LabConstrictor preprint.
 
 The preprint (Hidalgo-Cenalmor et al., 2026, doi:10.48550/arXiv.2603.10704) is licensed CC BY 4.0, so its figures may be adapted with credit.
 Usage (needs Playwright with Chromium and Pillow; the figure is downloaded from arXiv first):
@@ -22,7 +22,6 @@ WIDTH = 1300
 SCALE = 2
 BOXES = {   # file name: (left, top, right, bottom) in the 1300-pixel drawing
     "pipeline": (0, 50, 830, 950),    # part A without its heading: the five steps of the developer workflow, numbered 1 to 5 as on the site
-    "end": (4, 1032, 1300, 1260),     # part B: what users get (installers, the app, the notebooks)
 }
 
 

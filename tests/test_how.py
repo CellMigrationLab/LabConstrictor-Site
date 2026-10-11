@@ -65,8 +65,8 @@ class PageTests(unittest.TestCase):
             self.assertEqual("Make it yours" in pages_how.step_html(data, i), bool(step["customise"]), step["id"])
         self.assertEqual([bool(s["customise"]) for s in data["steps"]], [True, True, False, False, True])
 
-    def test_the_picture_at_the_side_frames_each_of_the_first_five_steps_and_shows_the_end_for_the_last(self) -> None:
-        """One loop and one fade per step 1 to 5, and the end-user picture of the same figure (shown at the last step); alt texts, sizes, caption and the CC BY credit are there; a missing picture stops the build."""
+    def test_the_picture_at_the_side_frames_each_of_the_five_steps(self) -> None:
+        """One loop and one fade per step, alt texts, sizes, caption and the CC BY credit are there; a missing picture stops the build."""
         data = pages_how.load()
         html = pages_how.map_html(data)
         for i in range(1, 6):
@@ -76,7 +76,6 @@ class PageTests(unittest.TestCase):
         self.assertRegex(html, r'alt="[^"]{80,}" width="\d+" height="\d+"')
         self.assertIn(data["figure_credit"]["href"], html)
         self.assertIn("CC BY 4.0", data["figure_credit"]["text"])
-        self.assertIn('class="how__end"', html)
 
     def test_a_region_that_is_not_four_numbers_or_empty_stops_the_build(self) -> None:
         """A step's region is [x, y, width, height] or []; anything else is an error naming the step."""
