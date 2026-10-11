@@ -16,24 +16,21 @@
   .how__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* the numbers stay; the step's own heading names it */
 }
 
-[dir] .md-typeset .how__step { margin: 0 0 2rem; padding: 1.6rem 1.8rem; border: 1px solid var(--lc-line); border-radius: 12px; background: #fff; scroll-margin-top: 4.5rem; }
+[dir] .md-typeset .how__step { margin: 0 0 2rem; scroll-margin-top: 4.5rem; }
 .how__step > h2 { display: flex; align-items: center; gap: .8rem; margin: 0 0 .8rem; outline: none; }
 .md-typeset .how__text { max-width: 52rem; font-size: 1.02rem; }
-[dir] .md-typeset .how__figure { margin: 1.2rem 0 1.6rem; padding: 1rem; border-radius: 12px; background: var(--lc-soft); }
-[dir] .md-typeset .how__figure img { display: block; width: min(100%, calc(var(--w, 1000) * 1px)); height: auto; margin: 0 auto; border: 1px solid var(--lc-line); border-radius: .5rem; background: #fff; }
-[dir] .md-typeset .how__figure figcaption { max-width: none; margin: .8rem 0 0; text-align: left; font-style: normal; font-size: .92rem; color: var(--lc-fg); }
-.how__credit { display: block; margin-top: .2rem; font-size: .72rem; color: var(--lc-muted); }
-[dir] .md-typeset .how__cols { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 0 2.6rem; }
-@media (max-width: 56rem) { [dir] .md-typeset .how__cols { grid-template-columns: 1fr; } }
-.md-typeset .how__custom { margin: 1.1rem 0 .4rem; padding: .7rem 1rem .5rem; border-left: 4px solid var(--lc-orange, #f28c28); border-radius: 0 .4rem .4rem 0; background: var(--lc-orange-soft, #fff1e0); }
-.md-typeset .how__step .how__custom h3 { margin: 0 0 .4rem; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--lc-strong); }
-.md-typeset .how__step .how__custom h3 span { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--lc-muted); }
-[dir] .md-typeset .how__custom ul { margin: 0 0 .3rem; }
-.md-typeset .how__step h3 { margin: 1.4rem 0 .5rem; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--lc-muted); }
-[dir] .md-typeset ul.how__know { margin: 0 0 .4rem; }
-[dir] .md-typeset ul.how__know > li { margin-bottom: .45rem; }
-[dir] .md-typeset ul.how__guides { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+[dir] .md-typeset .how__cols { display: grid; grid-template-columns: 1fr; gap: 1rem; margin: 1.2rem 0 0; }
+@media (min-width: 40rem) and (max-width: 63.99rem) { [dir] .md-typeset .how__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+[dir] .md-typeset .how__box { margin: 0; padding: 1.1rem 1.3rem; border: 1px solid var(--lc-line); border-radius: 12px; background: #fff; }
+[dir] .md-typeset .how__box--custom { border-color: #f3c89a; border-left: 4px solid var(--lc-orange, #ff8000); background: var(--lc-orange-soft, #fff0de); }
+[dir] .md-typeset .how__step h3 { margin: 1.4rem 0 .5rem; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--lc-muted); }
+[dir] .md-typeset .how__box h3 { margin: 0 0 .6rem; }
+.md-typeset .how__box h3 span { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--lc-muted); }
+[dir] .md-typeset .how__box ul { margin: 0; }
+[dir] .md-typeset ul.how__guides { display: grid; gap: .5rem; padding: 0; list-style: none; }
 [dir] .md-typeset ul.how__guides > li { margin: 0; }
+[dir] .md-typeset ul.how__know > li { margin-bottom: .45rem; }
+[dir] .md-typeset .how__box ul.how__know > li:last-child { margin-bottom: 0; }
 .md-typeset .how__nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.8rem 0 0; padding-top: 1.1rem; border-top: 1px solid var(--lc-line); }
 [dir] .md-typeset .how__step a.lc-go { font-size: .92rem; }
 [dir] .md-typeset a.how__back { font-weight: 600; font-size: .92rem; color: var(--lc-muted); text-decoration: none; }
@@ -41,7 +38,28 @@
 .how__handoff { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.6rem 0 0; padding: 1.1rem 1.3rem; border-left: 4px solid var(--lc-accent-strong); border-radius: 0 12px 12px 0; background: var(--lc-soft); }
 .md-typeset .how__handoff p { margin: 0; max-width: 34rem; font-weight: 600; }
 [dir] .md-typeset ul.how__guides--wide { grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr)); gap: .5rem 2rem; }
-@media (max-width: 40rem) { [dir] .md-typeset .how__figure { display: none; } }   /* the pictures are too detailed for a phone: the text beside them says the same */
 @media (max-width: 40rem) {
     .md-typeset .how__nav { flex-direction: column-reverse; align-items: flex-start; gap: .9rem; }
 }
+
+/* the picture at the side: the developer workflow of the preprint, with the demo's hand-drawn red loop round the block of the step being read and the rest faded (desktop only, and only with JavaScript) */
+.how__map { display: none; }
+@media (min-width: 64rem) {
+  .how-live .how__layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 2.2rem; align-items: start; }
+  .how-live .how__map { display: block; position: sticky; top: 5rem; padding: 1rem; border: 1px solid var(--lc-line); border-radius: 12px; background: var(--lc-soft); }
+}
+.how__stage { position: relative; }
+.how__crop { position: relative; overflow: hidden; border-radius: .5rem; background: #fff; }
+[dir] .md-typeset .how__map img { display: block; width: 100%; height: auto; margin: 0; border-radius: .5rem; background: #fff; }
+.how__hl { display: none; position: absolute; left: var(--l); top: var(--t); width: var(--w); height: var(--h); box-shadow: 0 0 0 100vmax rgba(255, 255, 255, .72); pointer-events: none; }   /* fades everything but the block */
+.how__loop { display: none; position: absolute; left: calc(var(--l) - 8px); top: calc(var(--t) - 8px); width: calc(var(--w) + 16px); height: calc(var(--h) + 16px); pointer-events: none; transform: rotate(-.8deg); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cpath d='M12 54C6 22 44 5 104 7C162 5 197 24 192 52C188 80 150 95 96 92C42 95 8 80 12 46C16 22 52 9 96 9C130 8 150 12 160 18' fill='none' stroke='%23e11d48' stroke-width='3.2' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") no-repeat center / 100% 100%; }   /* the demo's hand-drawn red loop */
+.how__map[data-current="1"] [data-for="1"], .how__map[data-current="2"] [data-for="2"], .how__map[data-current="3"] [data-for="3"],
+.how__map[data-current="4"] [data-for="4"], .how__map[data-current="5"] [data-for="5"] { display: block; }
+.how__end { display: none; }
+[dir] .md-typeset .how__map[data-current="6"] img.how__end { display: block; }
+.how__map[data-current="6"] .how__stage { display: none; }
+[dir] .md-typeset .how__map .how__caption { margin: .8rem 0 0; font-size: .85rem; color: var(--lc-fg); }
+[dir] .md-typeset .how__map .how__credit { margin: .3rem 0 0; font-size: .72rem; color: var(--lc-muted); }
+.how__caption--end { display: none; }
+[dir] .md-typeset .how__map[data-current="6"] .how__caption { display: none; }
+[dir] .md-typeset .how__map[data-current="6"] .how__caption--end { display: block; }

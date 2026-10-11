@@ -38,7 +38,7 @@
   }
 
   /**
-   * Show one step and hide the others; when the reader moved, bring the row of steps into view and put the focus on the step's heading.
+   * Show one step and hide the others, and tell the picture at the side which step it is; when the reader moved, bring the row of steps into view and put the focus on the step's heading.
    * @param {Element[]} steps - the step sections, in order.
    * @param {Element[]} tabs - the numbered links, in order.
    * @param {number} index - the step to show.
@@ -48,6 +48,7 @@
   function show(steps, tabs, index, moved) {
     steps.forEach(function (step, n) { step.hidden = n !== index; });
     markTabs(tabs, index);
+    one(document, '.how__map').dataset.current = String(index + 1);
     if (!moved) { return; }
     one(document, '.how__stepper').scrollIntoView();
     one(steps[index], 'h2').focus({ preventScroll: true });

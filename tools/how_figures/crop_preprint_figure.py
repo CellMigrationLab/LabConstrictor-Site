@@ -1,12 +1,11 @@
-"""Write the pictures of the How it works steps (content/how/figures/*.webp): crops of Figure 2 of the LabConstrictor preprint.
+"""Write the two pictures of the How it works page (content/how/figures/*.webp): crops of Figure 2 of the LabConstrictor preprint.
 
 The preprint (Hidalgo-Cenalmor et al., 2026, doi:10.48550/arXiv.2603.10704) is licensed CC BY 4.0, so its figures may be adapted with credit.
 Usage (needs Playwright with Chromium and Pillow; the figure is downloaded from arXiv first):
     curl -o Fig2.svg https://arxiv.org/html/2603.10704v1/Fig2.svg
     python tools/how_figures/crop_preprint_figure.py Fig2.svg
 
-The boxes are in pixels of the figure drawn 1300 pixels wide; the pictures are saved at twice that size. The numbered circles and titles of the
-paper are left out of the crops because the site numbers its steps differently.
+The boxes are in pixels of the figure drawn 1300 pixels wide; the pictures are saved at twice that size. The site numbers its steps 1 to 5 like the paper, so the paper's numbered circles are kept.
 """
 
 import argparse
@@ -22,12 +21,8 @@ OUT = ROOT / "content" / "how" / "figures"
 WIDTH = 1300
 SCALE = 2
 BOXES = {   # file name: (left, top, right, bottom) in the 1300-pixel drawing
-    "step-1": (78, 140, 810, 236),    # the notebook, the helper code and the icon (paper step 1)
-    "step-2": (56, 482, 826, 656),    # the requirements generator and requirements.yaml (paper step 3)
-    "step-3": (56, 272, 832, 438),    # the template, the initialiser form and the pull request (paper step 2)
-    "step-4": (56, 695, 832, 806),    # the two uploads and the pull request (paper step 4)
-    "step-5": (88, 858, 802, 942),    # the release and its assets (paper step 5)
-    "step-6": (4, 1032, 1300, 1260),  # what users get: installers, the app and the notebooks (paper part B)
+    "pipeline": (0, 50, 830, 950),    # part A without its heading: the five steps of the developer workflow, numbered 1 to 5 as on the site
+    "end": (4, 1032, 1300, 1260),     # part B: what users get (installers, the app, the notebooks)
 }
 
 
@@ -44,7 +39,7 @@ def render(svg: Path, chromium: str | None) -> Image.Image:
 
 
 def main() -> None:
-    """Draw the figure and save one crop per step."""
+    """Draw the figure and save the crops."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("svg", type=Path, help="Fig2.svg of the preprint")
     parser.add_argument("--chromium", help="path of a Chromium executable (default: the one Playwright installed)")

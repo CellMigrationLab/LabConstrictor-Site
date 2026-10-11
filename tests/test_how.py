@@ -1,7 +1,6 @@
 """The How it works page: the data is checked strictly, and the page is one step at a time with a guide behind every step."""
 
 import copy
-from html import escape as html_escape
 import unittest
 
 from lcsite import pages_how
@@ -60,26 +59,32 @@ class PageTests(unittest.TestCase):
         self.assertEqual(data["handoff"]["href"], "demo/")
 
     def test_customisation_is_shown_only_where_there_is_something_to_customise(self) -> None:
-        """Steps 1, 3 and 6 have a "Make it yours" box; a step with an empty list has none."""
+        """Steps 1, 2 and 6 have a "Make it yours" tile; a step with an empty list has none."""
         data = pages_how.load()
         for i, step in enumerate(data["steps"]):
             self.assertEqual("Make it yours" in pages_how.step_html(data, i), bool(step["customise"]), step["id"])
-        self.assertEqual([bool(s["customise"]) for s in data["steps"]], [True, False, True, False, False, True])
+        self.assertEqual([bool(s["customise"]) for s in data["steps"]], [True, True, False, False, False, True])
 
-    def test_every_step_has_its_picture_with_alt_text_size_and_credit(self) -> None:
-        """Each step shows a crop of the preprint's figure with a description, its size and the CC BY credit; a missing picture file stops the build."""
+    def test_the_picture_at_the_side_frames_each_of_the_first_five_steps_and_shows_the_end_for_the_last(self) -> None:
+        """One loop and one fade per step 1 to 5, none for step 6 (it shows the end-user picture); alt texts, sizes, caption and the CC BY credit are there; a missing picture stops the build."""
         data = pages_how.load()
-        for i, step in enumerate(data["steps"]):
-            html = pages_how.step_html(data, i)
-            self.assertIn(f'src="assets/how/figures/{step["figure"]["file"]}"', html)
-            self.assertRegex(html, r'alt="[^"]{40,}" width="\d+" height="\d+"')
-            self.assertIn(data["figure_credit"]["href"], html)
-            self.assertIn(html_escape(step["figure"]["caption"]), html)
+        html = pages_how.map_html(data)
+        for i in range(1, 6):
+            self.assertIn(f'class="how__loop" data-for="{i}"', html)
+            self.assertIn(f'class="how__hl" data-for="{i}"', html)
+        self.assertNotIn('data-for="6"', html)
+        self.assertRegex(html, r'alt="[^"]{80,}" width="\d+" height="\d+"')
+        self.assertIn(data["figure_credit"]["href"], html)
         self.assertIn("CC BY 4.0", data["figure_credit"]["text"])
-        broken = copy.deepcopy(data["steps"])
-        broken[0]["figure"]["file"] = "no-such-picture.webp"
-        with self.assertRaises(SystemExit):
-            pages_how.check_steps(broken)
+        self.assertIn('class="how__end"', html)
+
+    def test_a_region_that_is_not_four_numbers_or_empty_stops_the_build(self) -> None:
+        """A step's region is [x, y, width, height] or []; anything else is an error naming the step."""
+        for bad in ([1, 2, 3], ["a", 1, 2, 3], "none"):
+            steps = copy.deepcopy(pages_how.load()["steps"])
+            steps[0]["region"] = bad
+            with self.assertRaises(SystemExit):
+                pages_how.check_steps(steps)
 
     def test_a_line_that_yaml_turned_into_a_mapping_stops_the_build(self) -> None:
         """An unquoted "a: b" in a list is read as a mapping; the build names the step instead of printing a dict."""

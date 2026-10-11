@@ -10,11 +10,10 @@ from .text import esc
 
 SOURCE = CONTENT / "how"
 OUT = DOCS / "assets" / "how"
-TOP_KEYS = {"title", "lead", "steps_title", "steps", "figure_credit", "later", "handoff"}
-STEP_KEYS = {"id", "title", "text", "figure", "customise", "know", "guides"}
-FIGURE_KEYS = {"file", "alt", "caption"}
+TOP_KEYS = {"title", "lead", "steps_title", "steps", "map", "figure_credit", "later", "handoff"}
+STEP_KEYS = {"id", "title", "text", "region", "customise", "know", "guides"}
+MAP_KEYS = {"pipeline_file", "pipeline_alt", "end_file", "end_alt", "caption", "end_caption"}
 CREDIT_KEYS = {"text", "link", "href"}
-SHOWN = 0.5   # a picture is saved at twice its drawn size and shown at that drawing size (as wide as fits), so the text in every picture has the same size
 LINK_KEYS = {"href", "label"}
 LATER_KEYS = {"title", "links"}
 HANDOFF_KEYS = {"text", "link", "href"}
@@ -49,16 +48,19 @@ def check_steps(steps: object) -> None:
             if not isinstance(line, str):
                 fail(f"data/how-it-works.yaml: step {step['id']} has a line that is not plain text (a colon followed by a space in unquoted YAML makes a mapping): {line!r}")
         check_links(f"step {step['id']}", step["guides"])
-        check_keys(f"the figure of step {step['id']}", step["figure"], FIGURE_KEYS)
-        if not (SOURCE / "figures" / step["figure"]["file"]).is_file():
-            fail(f"{SOURCE / 'figures' / step['figure']['file']} is missing (step {step['id']} of data/how-it-works.yaml)")
+        if not (isinstance(step["region"], list) and len(step["region"]) in (0, 4) and all(isinstance(n, int) for n in step["region"])):
+            fail(f"data/how-it-works.yaml: the region of step {step['id']} must be [] (the end-user picture) or [x, y, width, height] in pixels of the pipeline picture")
 
 
 def load() -> dict:
     """data/how-it-works.yaml, checked: the exact keys everywhere, unique step ids, things to remember and guides for every step."""
     data = load_yaml(DATA / "how-it-works.yaml")
     check_keys("the top level", data, TOP_KEYS)
+    check_keys("map", data["map"], MAP_KEYS)
     check_keys("figure_credit", data["figure_credit"], CREDIT_KEYS)
+    for name in (data["map"]["pipeline_file"], data["map"]["end_file"]):
+        if not (SOURCE / "figures" / name).is_file():
+            fail(f"{SOURCE / 'figures' / name} is missing (map of data/how-it-works.yaml)")
     check_keys("later", data["later"], LATER_KEYS)
     check_keys("handoff", data["handoff"], HANDOFF_KEYS)
     check_steps(data["steps"])
@@ -100,40 +102,46 @@ def last_step_extras(data: dict) -> str:
             f'<aside class="how__handoff"><p>{esc(h["text"])}</p><a class="lc-btn lc-btn--primary" href="{esc(h["href"])}">{esc(h["link"])}</a></aside>')
 
 
-def figure_html(data: dict, step: dict) -> str:
-    """The step's picture (a crop of a figure of the preprint, which is CC BY 4.0) with what it shows and the credit under it; its size is read from the file."""
-    width, height = pixel_size(SOURCE / "figures" / step["figure"]["file"])
-    c = data["figure_credit"]
-    f = step["figure"]
-    return (f'<figure class="how__figure"><img src="assets/how/figures/{esc(f["file"])}" alt="{esc(f["alt"])}" width="{width}" height="{height}" style="--w:{round(width * SHOWN)}" loading="lazy">'
-            f'<figcaption><span class="how__caption">{esc(f["caption"])}</span> <span class="how__credit">{esc(c["text"])} <a href="{esc(c["href"])}">{esc(c["link"])}</a></span></figcaption></figure>')
+def map_html(data: dict) -> str:
+    """The picture at the side: the developer workflow of the preprint (a CC BY 4.0 figure) with a hand-drawn red loop (as in the demo) round the block of the step being read, the rest faded, or the
+    end-user picture for the last step. The script sets data-current; each step's frame is a box given in percent of the picture."""
+    m, c = data["map"], data["figure_credit"]
+    width, height = pixel_size(SOURCE / "figures" / m["pipeline_file"])
+    boxes = [(i, x, y, w, h) for i, s in enumerate(data["steps"], 1) if s["region"] for x, y, w, h in [s["region"]]]
+    frames = {kind: "".join(f'<span class="{kind}" data-for="{i}" style="--l:{x * 2 / width * 100:.2f}%;--t:{y * 2 / height * 100:.2f}%;--w:{w * 2 / width * 100:.2f}%;--h:{h * 2 / height * 100:.2f}%"></span>'
+                            for i, x, y, w, h in boxes) for kind in ("how__hl", "how__loop")}
+    end_w, end_h = pixel_size(SOURCE / "figures" / m["end_file"])
+    return (f'<aside class="how__map" data-current="1"><div class="how__stage"><div class="how__crop"><img src="assets/how/figures/{esc(m["pipeline_file"])}" alt="{esc(m["pipeline_alt"])}" width="{width}" height="{height}">{frames["how__hl"]}</div>{frames["how__loop"]}</div>'
+            f'<img class="how__end" src="assets/how/figures/{esc(m["end_file"])}" alt="{esc(m["end_alt"])}" width="{end_w}" height="{end_h}">'
+            f'<p class="how__caption">{esc(m["caption"])}</p><p class="how__caption how__caption--end">{esc(m["end_caption"])}</p><p class="how__credit">{esc(c["text"])} <a href="{esc(c["href"])}">{esc(c["link"])}</a></p></aside>')
 
 
 def customise(step: dict) -> str:
-    """The "Make it yours" box of a step: what the author can customise there, or nothing when there is nothing to customise."""
+    """The "Make it yours" tile of a step: what the author can customise there, or nothing when there is nothing to customise."""
     if not step["customise"]:
         return ""
     items = "".join(f"<li>{esc(c)}</li>" for c in step["customise"])
-    return f'<div class="how__custom"><h3>Make it yours <span>(optional)</span></h3><ul>{items}</ul></div>'
+    return f'<section class="how__box how__box--custom"><h3>Make it yours <span>(optional)</span></h3><ul>{items}</ul></section>'
 
 
 def step_html(data: dict, i: int) -> str:
-    """One step: its number and title, what you do, the picture, then two columns (what to remember; what to customise and the guides) and the way on."""
+    """One step: its number and title and what you do, then tiles (what to remember, what to customise when there is something, the guides), and the way on."""
     steps = data["steps"]
     s = steps[i]
     know = "".join(f"<li>{esc(k)}</li>" for k in s["know"])
     extras = last_step_extras(data) if i + 1 == len(steps) else ""
     return (f'<section class="how__step" id="{esc(s["id"])}"><h2 tabindex="-1"><span class="how__num">{i + 1}</span> {esc(s["title"])}</h2>'
-            f'<p class="how__text">{esc(s["text"])}</p>{figure_html(data, s)}<div class="how__cols"><div><h3>Good to know</h3><ul class="how__know">{know}</ul></div>'
-            f'<div>{customise(s)}<h3>Guides</h3>{links_html(s["guides"], "how__guides")}</div></div>{extras}{step_nav(steps, i)}</section>')
+            f'<p class="how__text">{esc(s["text"])}</p><div class="how__cols"><section class="how__box"><h3>Good to know</h3><ul class="how__know">{know}</ul></section>'
+            f'{customise(s)}<section class="how__box"><h3>Guides</h3>{links_html(s["guides"], "how__guides")}</section></div>{extras}{step_nav(steps, i)}</section>')
 
 
 def page_how() -> None:
-    """how-it-works/index.md: the heading and lead, the row of numbered steps and the steps (one shown at a time with JavaScript, all without)."""
+    """how-it-works/index.md: the heading and lead, the row of numbered steps, then the picture at the left and the steps (one shown at a time with JavaScript, all without) at the right."""
     data = load()
     copy_assets()
     p = Page("how-it-works/index.md", title=data["title"], description=data["lead"], layout="wide", menu="how-it-works/",
              page_css=["assets/how/how.css"], page_js=["assets/how/how.js"], edit_url=f"{REPO}/edit/main/data/how-it-works.yaml")
+    steps = "".join(step_html(data, i) for i in range(len(data["steps"])))
     p.add(f'<section class="lc-pagehead"><h1>{esc(data["title"])}</h1><p class="lc-lead">{esc(data["lead"])}</p></section>', stepper(data),
-          *(step_html(data, i) for i in range(len(data["steps"]))))
+          f'<div class="how__layout">{map_html(data)}<div class="how__steps">{steps}</div></div>')
     p.write()
