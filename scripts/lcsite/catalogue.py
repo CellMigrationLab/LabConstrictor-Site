@@ -11,6 +11,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from . import completeness
 from .assets import check_image, parse_assets
 from .config import BUILD, MANIFEST_NAME, RESERVED_SLUGS, SNAPSHOT_FORMAT, AppProblem
 from .github import MAX_FILE, GitHub, NotFound
@@ -95,11 +96,13 @@ def resolve(entry: dict, gh: GitHub, manifest_dir: Path | None) -> dict:
     check_identity(entry, repo)
     manifest = read_manifest(gh, name, repo["default_branch"], manifest_dir)
     slug, branch, warnings = slugify(name.split("/")[1]), repo["default_branch"], []
+    section = entry["section"] if "section" in entry else "apps"
+    licence = manifest["license"] if "license" in manifest else repo_license(repo)
+    warnings += completeness.missing(manifest, section, licence)
     icon = manifest.get("icon")
     return {"warnings": warnings,
         "slug": slug, "repo": name, "html_url": repo["html_url"],
-        "featured": bool(entry.get("featured")), "section": entry["section"] if "section" in entry else "apps", "manifest": manifest,
-        "license": manifest["license"] if "license" in manifest else repo_license(repo),
+        "featured": bool(entry.get("featured")), "section": section, "manifest": manifest, "license": licence,
         "release": read_release(gh, name, manifest),
         "icon": read_icon(gh, name, branch, icon, slug, warnings) if icon else None,
         "screenshots": [{"file": save_image(gh, name, branch, s["path"], slug, f"shot-{i}"), "caption": s["caption"]}

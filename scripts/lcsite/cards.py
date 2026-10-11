@@ -124,7 +124,7 @@ def downloads(app: dict) -> dict[str, list[dict]]:
 def search_text(app: dict) -> str:
     """Lower-case text the live filter searches: what the card shows (name, summary, kind, ways to get it, programs) and the longer description and categories."""
     m = app["manifest"]
-    shown = [m["name"], m["summary"], KINDS[m["kind"]], *(ROUTES[r] + " " + ROUTE_LABELS[r] for r in routes(app)), *(HOSTS[h] for h in optional_list(m, "hosts") if h in HOSTS)]
+    shown = [m["name"], m["summary"], KINDS[m["kind"]], *optional_list(m, "inputs"), *optional_list(m, "outputs"), *(ROUTES[r] + " " + ROUTE_LABELS[r] for r in routes(app)), *(HOSTS[h] for h in optional_list(m, "hosts") if h in HOSTS)]
     return " ".join([*shown, m["description"] if "description" in m else "", *optional_list(m, "categories")]).lower()
 
 

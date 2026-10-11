@@ -4,7 +4,7 @@ import json
 import re
 
 from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, plugin_stage, github_badge, host_badge, icon, link_pill, release_line, testing_badge
-from . import catalogue_text, citation, filters, hosts, projects
+from . import catalogue_text, citation, filters, hosts, pages_facts, projects
 from .page import Page
 from .validate import optional_list
 from .text import esc, long_date, megabytes, paragraphs
@@ -123,7 +123,8 @@ def install_help() -> str:
 def details_list(app: dict) -> str:
     """The facts: kind, version, license, authors, categories, links (the citation has its own section)."""
     m = app["manifest"]
-    rows = [("Kind", KINDS[m["kind"]]), ("Latest release", release_line(app)), ("License", esc(app["license"] or "Not stated"))]
+    rows = [("Kind", KINDS[m["kind"]]), ("Development status (stated by the authors)", pages_facts.status_row(app)), ("Latest release", release_line(app)),
+            ("License", esc(app["license"] or "Not stated"))]
     if works_in(app):
         rows.append(("Also in (plugins)", works_in(app)))
     if m.get("authors"):
@@ -174,14 +175,14 @@ def page_app(app: dict) -> None:
     plugins = [h for h in optional_list(m, "hosts") if h != "notebook"]
     p.add('<p class="lc-crumb"><a href="apps/">&larr; All apps</a></p>',
           f'<header class="lc-apphead"><div class="lc-apphead__name">{icon(app, 56)}<h1>{esc(m["name"])}</h1></div>'
-          f'<p class="lc-lead">{esc(m["summary"])}</p><p>{badge(KINDS[m["kind"]])}'
+          f'<p class="lc-lead">{esc(m["summary"])}</p><p>{badge(KINDS[m["kind"]])}{pages_facts.status_chip(app)}'
           f'{"".join(host_badge(h) for h in plugins)}{testing_badge(app)}</p><p>{header_links(app)}</p></header>')
-    p.add(get_section(app))
+    p.add(pages_facts.works_with(app), get_section(app))
     if m.get("description"):
         p.add('<h2 id="about">About</h2>', paragraphs(m["description"]))
     for i, s in enumerate(app["screenshots"], 1):
         p.add(f'<figure class="lc-shot"><img class="lc-shot__img" src="assets/shots/{app["slug"]}-{i}.jpg" alt="" loading="lazy"><figcaption>{esc(s["caption"])}</figcaption></figure>')
-    p.add(using_section(app), citation.app_section(app))
+    p.add(using_section(app), pages_facts.limitations(app), citation.app_section(app))
     if app["release"] and m["distribution"].get("installer"):
         p.add(downloads_table(app), install_help())
     p.add(details_list(app))

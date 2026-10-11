@@ -69,6 +69,13 @@ One size (12 px, bold). Colour says the role: green = route (Desktop, Colab), gr
 - **Home block** (`#cite`, `citation.cite_band`): the heading "Cite LabConstrictor", the template README's sentence and reference as plain prose, the preprint's DOI as a text link and one action link ("Read the preprint"), and one small line saying that each app page names what to cite. Its text is `citation:` in `data/site.yaml`, copied from the template README; `build_site.py` stops if the README no longer has that DOI. The footer's "Cite LabConstrictor" is an internal link to this block. The site shows the preprint only, not a software archive.
 - **App page** (`#cite`, `citation.app_section`, right after "Using it"): "How to cite" with the manifest's `doi` as a text link and an action link ("Read the paper"), then the latest release as the version to name. Without a `doi` it says only that the listing names no publication to cite (a testing app without one has no section). The site never builds a reference from a DOI registry.
 
+## App page facts
+
+- Under the app header, **Works with** and **Produces** (`pages_facts.works_with`) are two plain-text lists from the manifest's `inputs` and `outputs`, introduced by "The authors say it works with / produces". A scientific app (analysis, segmentation, simulation) that gives neither shows one muted line, "Input and output formats: not stated by the author"; other kinds and testing apps show nothing.
+- **Limitations** (after "Using it") appears only when the manifest lists some, with no placeholder when it does not.
+- **Development status** is a Details row, "Development status (stated by the authors)", reading the manifest's `status` or "Not stated". A grey chip in the header appears only for Experimental and Deprecated. The status is never inferred from a version number.
+- Every value is escaped plain text; a missing recommended fact is a warning in `build/problems.md`, never a reason to unlist an app.
+
 ## Interactions
 
 - Hover: text links underline; cards lift; pills change border colour. Focus: one visible outline for everything (`:focus-visible`). Everything works from the keyboard.

@@ -100,7 +100,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .md-typeset .lc-btn small { display: block; font-weight: 400; opacity: .85; }
 .lc-cta { text-align: center; margin: 2.4rem 0; }
 .lc-badge { display: inline-block; margin: 0 .3rem .2rem 0; padding: .04rem .46rem; border-radius: 1rem; background: var(--lc-soft); color: var(--lc-fg); font-size: .6rem; font-weight: 600; letter-spacing: .03em; white-space: nowrap; }
-.lc-badge--testing { background: #e9ecef; color: #3b4650; }
+.lc-badge--testing, .lc-badge--status { background: #e9ecef; color: #3b4650; }
 .lc-badge--host { background: var(--lc-orange-soft); color: var(--lc-orange-ink); }
 
 /* ------------------------------------------------------------------ home */
@@ -343,3 +343,8 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-tile__body { display: grid; gap: .4rem; }
 @media (max-width: 600px) { .lc-tile { flex-direction: column; align-items: flex-start; } [dir] .md-typeset .lc-tile, .lc-tile * { text-decoration: none; }
 .lc-tile img { width: 100%; height: 12rem; } }
+
+/* What an app works with and produces (from its manifest), side by side */
+.lc-works { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0 2rem; margin: .6rem 0; }
+.lc-works h2 { margin-top: .8rem; }
+.lc-works__none { margin: .6rem 0; }

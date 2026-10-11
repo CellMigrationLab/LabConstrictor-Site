@@ -32,7 +32,11 @@
     },
     "authors": {"type": "array", "items": {"$ref": "#/$defs/author"}},
     "license": {"type": "string", "description": "SPDX identifier, for example MIT."},
-    "categories": {"type": "array", "uniqueItems": true, "maxItems": 6, "items": {"type": "string", "maxLength": 30}},
+    "inputs": {"$ref": "#/$defs/facts", "description": "What the app accepts, as a short list (file formats, dimensions, units it needs). A summary, not README copy; use docs_url for the rest."},
+    "outputs": {"$ref": "#/$defs/facts", "description": "What the app produces, as a short list (images, masks, tables, plots). A summary, not README copy; use docs_url for the rest."},
+    "limitations": {"$ref": "#/$defs/facts", "description": "What the app cannot do or where it may be unreliable, as a short list."},
+    "status": {"enum": ["Experimental", "Available", "Deprecated"], "description": "How mature the app is, in the same words the Ecosystem page uses for projects."},
+    "categories": {"type": "array", "uniqueItems": true, "maxItems": 6, "items": {"type": "string", "maxLength": 30}, "description": "Words a scientist would search for: tasks, synonyms, methods, tools."},
     "doi": {"type": "string", "pattern": "^10\\.\\d{4,9}/\\S+$", "description": "DOI of the paper to cite (not a software archive)."},
     "homepage": {"$ref": "#/$defs/https"},
     "docs_url": {"$ref": "#/$defs/https"},
@@ -47,6 +51,7 @@
     }
   },
   "$defs": {
+    "facts": {"type": "array", "minItems": 1, "maxItems": 6, "items": {"type": "string", "minLength": 5, "maxLength": 200}},
     "https": {"type": "string", "pattern": "^https://[^\\s]+$"},
     "repoPath": {"type": "string", "pattern": "^(?!/)(?!.*\\.\\.)[A-Za-z0-9_./ -]+\\.(png|jpg|jpeg|gif)$", "description": "Path inside the repository, no leading slash."},
     "link": {

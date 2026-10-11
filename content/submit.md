@@ -26,10 +26,26 @@ distribution:             # at least one route
       url: https://colab.research.google.com/github/you/my-app/blob/main/notebooks/App/App.ipynb
   pip: my-app             # name on PyPI
 license: MIT
+status: Experimental      # Experimental, Available or Deprecated
+inputs:                   # what it accepts, in short lines (not README copy)
+  - 2D TIFF images
+outputs:
+  - A table of results (CSV)
+limitations:              # optional: where it may be unreliable
+  - Needs a pixel size in the image metadata
+quickstart:
+  - Open the app and run the Welcome notebook.
+categories: [tracking, segmentation]   # words a scientist would search for
 icon: app/logo/logo.png   # optional square PNG in your repository
 ```
 
 The [full schema]({{schema_url}}) lists every field (authors, DOI, screenshots and more) and works with the YAML extensions of most editors, which then check your file as you type.
+
+| | Fields |
+|---|---|
+| **Required** | `schema`, `name`, `summary`, `kind`, `distribution` |
+| **Recommended** (the page says "Not stated" or leaves it out; the build reports it, and your app stays listed) | `status`, `quickstart`, `screenshots`, a license, and for analysis, segmentation and simulation apps `inputs` and `outputs` |
+| **Optional** | `limitations`, `description`, `authors`, `doi`, `categories`, `homepage`, `docs_url`, `icon` |
 
 ## 2. Make sure your release is ready
 

@@ -86,3 +86,7 @@ class FetchError(Exception):
 
     Unlike AppProblem this is not about one app, so it is never recorded and skipped: it stops the whole
     fetch. Dropping apps because GitHub had a bad minute would silently shrink the live site."""
+
+# Manifest facts the site recommends (not requires): a missing one is a warning in build/problems.md, never a reason to unlist an app.
+RECOMMENDED = ("status", "quickstart", "screenshots")
+SCIENTIFIC_KINDS = ("analysis", "segmentation", "simulation")   # these also need inputs and outputs
