@@ -95,7 +95,7 @@ def stage_chapter(chapter: dict) -> str:
 
 def further_chapter(chapter: dict) -> str:
     """A chapter under "Go further": a native disclosure (closed), so the page stays short; how.js opens it when its address is followed."""
-    return (f'<details class="how__more" id="{esc(chapter["id"])}"><summary>{esc(chapter["title"])}</summary>'
+    return (f'<details class="how__more lc-disclosure" id="{esc(chapter["id"])}"><summary>{esc(chapter["title"])}</summary>'
             f'<div class="how__more-body">{chapter_body(chapter)}</div></details>')
 
 

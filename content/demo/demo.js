@@ -154,7 +154,7 @@
     if (kind !== 'reset') { throw new Error('demo: unknown data-demo-act "' + kind + '"'); }
     restart(ctx);
     sync(ctx);
-    d.one(ctx.root, '#demo-cat-tab-install').focus();
+    d.one(ctx.root, '#demo-cat-tab-use').focus();
   }
 
   /**

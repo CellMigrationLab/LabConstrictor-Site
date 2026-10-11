@@ -1,8 +1,12 @@
 # Wording of the interactive demo (/demo/) and its home-page tile. The numbers shown in the three windows are NOT here:
 # they come from content/demo/example.json (written by tools/demo_assets/make_demo_assets.py), so they are never typed twice.
-title: Try the demo
-description: A hands-on preview of a NucleiSky microscopy registration in a notebook, napari and Fiji. The result is precomputed and nothing runs in your browser.
-lead: Explore how the same NucleiSky microscopy workflow appears in a notebook, napari and Fiji.
+title: Explore an installed app
+description: A hands-on preview of what colleagues see when they open an installed LabConstrictor app, using a real NucleiSky example. The result is precomputed and nothing runs in your browser.
+lead: "See what colleagues get when they install a LabConstrictor app: the notebook in JupyterLab and, as experimental previews, napari and Fiji. NucleiSky, a microscopy registration tool, is one real example."
+packaging:
+  text: Curious how an app like this is made?
+  link: See how an app is packaged
+  href: how-it-works/
 tile:
   title: Explore an installed app
   text: Preview what colleagues see when they open a LabConstrictor app. A simulation with a real, precomputed example; nothing to install.

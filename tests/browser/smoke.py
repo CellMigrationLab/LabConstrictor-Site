@@ -99,6 +99,9 @@ def how_controls(browser: Browser, base: str) -> None:
 def demo_flow(browser: Browser, base: str) -> None:
     """The demo: launch the app, run the notebook to its result, see the keyboard tabs work, and reset when the view changes."""
     page, errors = open_page(browser, base, "demo/", 1280)
+    check("Demo: it opens on the installed app, not on the installer", page.get_attribute("#demo-cat-tab-use", "aria-selected") == "true" and page.locator("#demo-cat-install").is_hidden())
+    page.click("#demo-cat-tab-install")
+    check("Demo: the Windows installer is one click away", page.locator("#demo-cat-install").is_visible())
     page.click("#demo-cat-tab-use")
     page.dblclick("#demo-panel-notebook [data-act=launch]")
     for selector in ('[data-act="run-welcome"]', '[data-act="open-app"]', '[data-act="run-init"]', '[data-act="run-step"][data-step="1"]'):

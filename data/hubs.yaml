@@ -35,7 +35,7 @@ use:
       alt: The NucleiSky job loaded in NIS-Elements JOBS, a list of acquisition, autofocus and analysis steps.
   demo:
     title: Want to see it first?
-    text: A hands-on preview of a microscopy registration in a notebook, napari and Fiji, using example data.
+    text: A hands-on preview of what colleagues see when they open an installed app, in a notebook, napari and Fiji, using example data.
     href: demo/
     link: Try the demo
 build:

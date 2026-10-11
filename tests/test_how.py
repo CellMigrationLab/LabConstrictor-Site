@@ -51,7 +51,7 @@ class StructureTests(unittest.TestCase):
         further_ids = {c for g in data["further"] for c in g["chapters"]}
         html = pages_how.further_html(data)
         for chapter_id in further_ids:
-            self.assertIn(f'<details class="how__more" id="{chapter_id}">', html)
+            self.assertIn(f'<details class="how__more lc-disclosure" id="{chapter_id}">', html)
         self.assertNotIn("<details", pages_how.stages_html(data))
 
     def test_a_chapter_missing_from_the_layout_or_placed_twice_stops_the_build(self) -> None:
