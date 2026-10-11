@@ -3,7 +3,7 @@
 Switch: `mkdocs.yml` `extra: listed: true`, then update `site_url` if the domain changed.
 
 ## Content
-- [ ] The four scientific apps show **Works with**, **Produces** and a **real screenshot** on their pages (drafts: `planning/results/6-manifest-drafts.md`). Status on 2026-10-11: **NucleiSky merged** (NucleiSky#30). Still drafts on feature branches with no pull request: CellTracksColab (1 commit), GuessTheCondition (1 commit), LabConstrictor-VLab4Mic in the HenriquesLab repository (1 commit).
+- [ ] The four scientific apps show **Works with**, **Produces** and a **real screenshot** on their pages (drafts: `planning/results/6-manifest-drafts.md`). Status on 2026-10-11: **NucleiSky merged** (NucleiSky#30). Pull requests opened for the owners to confirm and merge: CellTracksColab#53, GuessTheCondition#7 and CellMigrationLab/LabConstrictor-VLab4Mic#9 (our fork; the same change would go to the HenriquesLab repository once its owners agree).
 - [ ] VLab4Mic's manifest carries its `doi` (decision 21; in the draft commit above, not merged).
 - [ ] The clean-install lines exist (`CLEAN-INSTALL-CHECKLIST.md`) and the install and use guides are updated from them.
 - [ ] An outside reader (not on DL4MicEverywhere, ZeroCostDL4Mic or BiaPy) has read **Related projects**; optional courtesy note to those maintainers.
