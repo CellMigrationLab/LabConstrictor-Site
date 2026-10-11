@@ -4,7 +4,7 @@
     python tests/browser/smoke.py [--chromium /opt/pw-browsers/chromium]
 
 Needs Playwright for Python and a Chromium. Serves site/ on a free local port and checks, at phone and desktop widths: no sideways
-scrolling on the main pages, the App Centre filter, every control of How it works, the demo's flow, its keyboard tabs and the reset when the view changes,
+scrolling on the main pages, the App Centre filter, the steps of How it works, the demo's flow, its keyboard tabs and the reset when the view changes,
 and the no-JavaScript fallback. Prints one line per check and exits with status 1 when any fails.
 """
 
@@ -79,20 +79,23 @@ def app_filter(browser: Browser, base: str) -> None:
 
 
 def how_controls(browser: Browser, base: str) -> None:
-    """Every choice button of every How it works panel can be pressed and ends up pressed, with no script error."""
+    """How it works shows one step at a time: the first at first, the others after a click on their number or on Next, and the address names the step."""
     page, errors = open_page(browser, base, "how-it-works/", 1280)
-    page.evaluate("document.querySelectorAll('details.how__more').forEach(d => { d.open = true; })")   # the Go further chapters are folded
-    check("How it works: following a Go further address opens its chapter", page.evaluate("(() => { history.replaceState(null, '', '#sync'); window.dispatchEvent(new HashChangeEvent('hashchange')); return document.getElementById('sync').open; })()"))
-    buttons = page.locator(".how__panel [data-set], .how__panel [data-toggle]")
-    for i in range(buttons.count()):
-        button = buttons.nth(i)
-        if not button.is_visible():
-            continue   # a button of a state that is not showing yet
-        button.scroll_into_view_if_needed()
-        button.click()
-        if button.get_attribute("data-set"):
-            check(f"How it works: button {i + 1} is pressed after a click", button.get_attribute("aria-pressed") == "true")
-    check("How it works: no script error while pressing every control", not errors, str(errors))
+    check("How it works: only the first step is shown at first", page.locator(".how__step:visible").count() == 1 and page.locator("#step-1").is_visible())
+    page.click(".how__next")
+    page.locator("#step-2").wait_for(state="visible")
+    check("How it works: Next shows the second step and hides the first", page.locator("#step-2").is_visible() and not page.locator("#step-1").is_visible())
+    check("How it works: the address names the step and its number is marked", page.evaluate("location.hash") == "#step-2" and page.locator(".how__tab.is-current").get_attribute("href") == "#step-2")
+    page.click('.how__tab[href="#step-5"]')
+    page.locator("#step-5").wait_for(state="visible")
+    check("How it works: a click on a number shows that step", page.locator("#step-5").is_visible() and page.locator(".how__step:visible").count() == 1)
+    page.go_back()
+    page.locator("#step-2").wait_for(state="visible")
+    check("How it works: the browser's Back button returns to the previous step", page.locator("#step-2").is_visible())
+    page.goto(base + "how-it-works/#step-6")
+    page.locator("#step-6").wait_for(state="visible")
+    check("How it works: an address shows its step, with the hand-over to the demo", page.locator("#step-6").is_visible() and page.locator("#step-6 a[href$='demo/']").count() == 1)
+    check("How it works: no script error", not errors, str(errors))
     page.context.close()
 
 
@@ -118,14 +121,13 @@ def demo_flow(browser: Browser, base: str) -> None:
 
 
 def no_javascript(browser: Browser, base: str) -> None:
-    """Without JavaScript the demo shows its static figures and no working-looking controls, and How it works shows its plain lists."""
+    """Without JavaScript the demo shows its static figures and no working-looking controls, and How it works shows all its steps one under the other."""
     page, _ = open_page(browser, base, "demo/", 1280, js=False)
     check("No JavaScript, demo: the static figures are shown", page.locator(".lc-demo__static img").first.is_visible() or page.locator("noscript").count() > 0)
     check("No JavaScript, demo: no simulated control is visible", page.locator("[data-demo-sim]:visible").count() == 0)
     page.context.close()
     page, _ = open_page(browser, base, "how-it-works/", 1280, js=False)
-    check("No JavaScript, How it works: the plain summaries are shown", page.locator(".how__static:visible").count() > 0)
-    check("No JavaScript, How it works: no inert simulated control is visible", page.locator(".how__panel [data-demo-sim]:visible").count() == 0)
+    check("No JavaScript, How it works: every step is shown", page.locator(".how__step:visible").count() == 6)
     page.context.close()
 
 

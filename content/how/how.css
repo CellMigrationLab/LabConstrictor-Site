@@ -1,56 +1,31 @@
-/* /how-it-works/: chapters with a small interactive panel each. Simulated controls keep a plain, clearly pressed look. */
-.how__static[hidden] { display: none; }
-.how-live .how__panel { display: block; }   /* without JavaScript the panels (their buttons would do nothing) stay hidden and the plain summaries show */
-.how__chapter { margin: 2.6rem 0; padding-top: .4rem; border-top: 1px solid var(--lc-line); }
-.how__panel { display: none; margin: 1rem 0; padding: 1rem; background: var(--lc-soft); border: 1px solid var(--lc-line); border-radius: .5rem; }
-.how__panel[hidden], .how__panel [hidden] { display: none; }
-.how__controls { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: .2rem 0 .6rem; }
-.how__label { font-size: .82rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--lc-muted); }
-.how__btn { margin-right: .3rem; padding: .35rem .8rem; font: inherit; font-size: .82rem; color: var(--lc-strong); background: #fff; border: 1px solid var(--lc-muted); border-radius: 2rem; cursor: pointer; min-height: 2.5rem; }
-.how__btn[aria-pressed="true"] { color: #fff; background: var(--lc-accent-strong); border-color: var(--lc-accent-strong); }
-.how__cell { margin: .6rem 0; padding: .6rem .8rem; background: #fff; border: 1px solid var(--lc-line); border-radius: .4rem; }
-.how__code { margin: 0; padding: .5rem .7rem; overflow-x: auto; background: #f6f8fa; border: 1px solid var(--lc-line); border-radius: .3rem; font: .76rem/1.55 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; white-space: normal; }
-.how__line { display: block; min-height: 1.5em; white-space: pre; }
-.how__line.is-skipped { opacity: .4; text-decoration: line-through; text-decoration-thickness: 1px; }
-.how__out { margin: .5rem 0; font-size: .82rem; }
-.how__note { color: var(--lc-muted); font-size: .82rem; }
-.how__hidden { margin: .4rem 0; padding: .4rem .6rem; background: #f6f8fa; border-left: 3px solid var(--lc-muted); font-size: .82rem; }
-.how__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: .8rem 1.4rem; margin: .6rem 0; }
-.how__steps { margin: .4rem 0 .8rem 1.1rem; font-size: .82rem; }
-.how__yaml { display: flex; flex-direction: column; gap: .3rem; }
-.how__part { display: block; width: 100%; text-align: left; padding: .3rem .5rem; font: inherit; color: inherit; white-space: pre; background: transparent; border: 1px dashed var(--lc-muted); border-radius: .3rem; cursor: pointer; }
-.how__part[aria-pressed="true"] { background: #fff; border: 2px solid var(--lc-accent-strong); }
-@media (forced-colors: active) { .how__btn[aria-pressed="true"], .how__part[aria-pressed="true"] { border: 3px solid Highlight; } }
-.how__form { margin: .6rem 0; padding: .7rem .9rem; background: #fff; border: 1px solid var(--lc-line); border-radius: .4rem; }
-.how__field { display: flex; flex-wrap: wrap; gap: .3rem .8rem; align-items: center; margin: .35rem 0; font-size: .82rem; }
-.how__field > span:first-child { flex: 0 0 15rem; max-width: 100%; color: var(--lc-fg); }
-.how__input { flex: 1 1 10rem; min-width: 0; padding: .25rem .5rem; background: #f6f8fa; border: 1px solid var(--lc-line); border-radius: .25rem; overflow-wrap: anywhere; }
-.how__fake { display: inline-block; padding: .3rem .8rem; font-size: .82rem; background: #eef1f4; border: 1px solid var(--lc-line); border-radius: .3rem; }
-.how__card { display: flex; flex-direction: column; gap: .3rem; padding: .8rem; background: #fff; border: 1px solid var(--lc-line); border-radius: .5rem; }
-.how__badges { display: flex; flex-wrap: wrap; gap: .3rem; }
-.how__badge { padding: .04rem .5rem; font-size: .68rem; font-weight: 600; background: var(--lc-soft); border-radius: 1rem; }
-.how__files { margin: .3rem 0 .3rem 1.1rem; font: .76rem/1.6 ui-monospace, Menlo, Consolas, monospace; }
-.how__img { display: block; max-width: 100%; height: auto; margin: .4rem 0; }
-.how__table { width: 100%;  font-size: .78rem; border-collapse: collapse; } .how__table th, .how__table td { padding: .3rem .5rem; text-align: left; border-bottom: 1px solid var(--lc-line); }
-@media (max-width: 40rem) { .how__table thead { display: none; } .how__table, .how__table tbody, .how__table tr, .how__table td { display: block; } .how__table td { padding: .2rem 0; border: 0; } .how__table td::before { content: attr(data-label) ": "; font-weight: 700; } }
+/* /how-it-works/: a row of numbered steps and one step shown at a time (all of them, one under the other, without JavaScript). */
+.how__step[hidden] { display: none; }
+.how__num { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--lc-accent-strong); color: #fff; font-weight: 700; font-size: .95rem; }
 
-[dir] .md-typeset ol.how__tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin: 1.4rem 0 2rem; padding: 0; list-style: none; }
-[dir] .md-typeset ol.how__tiles > li { margin: 0; }
-[dir] .md-typeset a.how__tile { display: flex; flex-direction: column; gap: .35rem; height: 100%; padding: 1rem 1.1rem; color: var(--lc-fg); text-decoration: none; }
-.how__tile strong { font-family: var(--lc-display); font-size: 1.05rem; color: var(--lc-strong); }
-.how__tile span:last-child { font-size: .82rem; color: var(--lc-muted); }
-.how__num { display: inline-flex; align-items: center; justify-content: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; background: var(--lc-accent-strong); color: #fff; font-weight: 700; font-size: .9rem; }
-@media (max-width: 62rem) { [dir] .md-typeset ol.how__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 36rem) { [dir] .md-typeset ol.how__tiles { grid-template-columns: 1fr; } }
-.how__stage { margin: 3rem 0; padding-top: 1rem; border-top: 1px solid var(--lc-line); scroll-margin-top: 4.5rem; }
-.how__stage > h2 { display: flex; align-items: center; gap: .7rem; margin-top: 0; }
-.how__lead { max-width: 46rem; font-size: 1rem; }
-.how__stage .how__chapter { margin: 1.8rem 0 0; padding-top: 0; border-top: 0; scroll-margin-top: 4.5rem; }
-.md-typeset .how__stage .how__chapter > h3 { margin-top: 1.2rem; }
-.how__handoff { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin: 2.4rem 0; padding: 1.2rem 1.4rem; border-left: 4px solid var(--lc-accent-strong); border-radius: 0 12px 12px 0; background: var(--lc-soft); }
-.md-typeset .how__handoff p { margin: 0; max-width: 40rem; font-weight: 600; }
-.how__further { margin: 3rem 0; padding-top: 1rem; border-top: 1px solid var(--lc-line); }
-.how__more { margin: .6rem 0; border: 1px solid var(--lc-line); border-radius: 12px; background: #fff; scroll-margin-top: 4.5rem; }
-.how__more > summary { padding: .9rem 1.2rem; font-weight: 600; cursor: pointer; }
-.how__more[open] > summary { border-bottom: 1px solid var(--lc-line); }
-.how__more-body { padding: .4rem 1.2rem 1.2rem; }
+[dir] .md-typeset .how__stepper > ol { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .6rem; margin: 1.4rem 0 1.6rem; padding: 0; list-style: none; }
+[dir] .md-typeset .how__stepper > ol > li { margin: 0; }
+[dir] .md-typeset a.how__tab { display: flex; flex-direction: column; align-items: center; gap: .5rem; height: 100%; padding: .8rem .5rem; text-align: center; color: var(--lc-fg); text-decoration: none; border: 1px solid var(--lc-line); border-radius: 12px; background: #fff; transition: border-color .15s, box-shadow .15s; }
+.how__tab .how__num { background: #fff; color: var(--lc-accent-strong); box-shadow: inset 0 0 0 2px var(--lc-accent-strong); }
+.how__name { font-size: .82rem; line-height: 1.3; }
+[dir] .md-typeset a.how__tab:hover { border-color: var(--lc-accent-strong); box-shadow: 0 .4rem 1rem rgba(28, 95, 28, .12); }
+[dir] .md-typeset a.how__tab.is-current { border-color: var(--lc-accent-strong); background: var(--lc-band); }
+[dir] .md-typeset a.how__tab.is-current .how__name { font-weight: 700; color: var(--lc-strong); }
+.how__tab.is-current .how__num { background: var(--lc-accent-strong); color: #fff; }
+@media (max-width: 48rem) {
+  [dir] .md-typeset .how__stepper > ol { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .4rem; }
+  .how__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* the numbers stay; the step's own heading names it */
+}
+
+[dir] .md-typeset .how__step { margin: 0 0 2rem; padding: 1.6rem 1.8rem; border: 1px solid var(--lc-line); border-radius: 12px; background: #fff; scroll-margin-top: 4.5rem; }
+.how__step > h2 { display: flex; align-items: center; gap: .8rem; margin: 0 0 .8rem; outline: none; }
+.md-typeset .how__text { max-width: 44rem; font-size: 1.02rem; }
+.md-typeset .how__outcome { max-width: 44rem; margin: 1rem 0; padding: .6rem .9rem; border-left: 4px solid var(--lc-accent-strong); border-radius: 0 .4rem .4rem 0; background: var(--lc-band); }
+.md-typeset .how__step > h3 { margin: 1.4rem 0 .5rem; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--lc-muted); }
+[dir] .md-typeset ul.how__know { max-width: 44rem; margin: 0 0 .4rem; }
+[dir] .md-typeset ul.how__know > li { margin-bottom: .45rem; }
+[dir] .md-typeset ul.how__guides { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; margin: 0; padding: 0; list-style: none; }
+[dir] .md-typeset ul.how__guides > li { margin: 0; }
+.md-typeset .how__nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.8rem 0 0; padding-top: 1.1rem; border-top: 1px solid var(--lc-line); }
+.how__back { color: var(--lc-muted); }
+.how__handoff { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.6rem 0 0; padding: 1.1rem 1.3rem; border-left: 4px solid var(--lc-accent-strong); border-radius: 0 12px 12px 0; background: var(--lc-soft); }
+.md-typeset .how__handoff p { margin: 0; max-width: 34rem; font-weight: 600; }

@@ -1,98 +1,69 @@
-"""The How it works page: data checked strictly, and every panel agrees with its own choices."""
+"""The How it works page: the data is checked strictly, and the page is one step at a time with a guide behind every step."""
 
 import copy
-import re
 import unittest
 
 from lcsite import pages_how
 
 
 class DataTests(unittest.TestCase):
-    """The data file and the panel partials."""
+    """The data file."""
 
-    def test_the_real_data_is_valid_and_every_chapter_has_a_panel(self) -> None:
-        """data/how-it-works.yaml loads, and each chapter's partial exists and is one block."""
-        for chapter in pages_how.load()["chapters"]:
-            self.assertTrue(pages_how.read_panel(chapter["id"]).startswith("<div"))
-
-    def test_a_missing_partial_stops_the_build(self) -> None:
-        """A chapter without a panel is an error naming the file."""
-        with self.assertRaises(SystemExit):
-            pages_how.read_panel("no-such-chapter")
-
-
-OLD_ADDRESSES = ("portable", "code", "requirements", "deposit", "tools", "branding", "packaging", "installer", "update", "sync", "manifest", "share", "bridge")
-
-
-class StructureTests(unittest.TestCase):
-    """Four stages first, then "Go further"; every chapter is shown once and keeps its address."""
-
-    def test_the_four_stages_and_the_hand_over_to_the_demo(self) -> None:
-        """Four stage tiles link to four stage sections; the hand-over points to the installed-app demo."""
+    def test_the_real_data_is_valid(self) -> None:
+        """data/how-it-works.yaml loads: six steps, each with things to remember and at least one guide."""
         data = pages_how.load()
-        self.assertEqual(len(data["stages"]), 4)
-        tiles, body = pages_how.stage_tiles(data), pages_how.stages_html(data)
-        for stage in data["stages"]:
-            self.assertIn(f'href="#{stage["id"]}"', tiles)
-            self.assertIn(f'id="{stage["id"]}"', body)
-        self.assertIn(f'href="{data["handoff"]["href"]}"', body)
-        self.assertEqual(data["handoff"]["href"], "demo/")
-
-    def test_every_old_chapter_address_still_exists_and_the_new_one_is_added(self) -> None:
-        """#portable, #code, ... keep working (shown in a stage or folded under Go further); #project is new."""
-        data = pages_how.load()
-        html = pages_how.stages_html(data) + pages_how.further_html(data)
-        for chapter_id in OLD_ADDRESSES + ("project",):
-            self.assertIn(f'id="{chapter_id}"', html, chapter_id)
-
-    def test_further_chapters_are_folded_and_stage_chapters_are_open(self) -> None:
-        """Go further uses closed native disclosures; the stages show their chapters."""
-        data = pages_how.load()
-        further_ids = {c for g in data["further"] for c in g["chapters"]}
-        html = pages_how.further_html(data)
-        for chapter_id in further_ids:
-            self.assertIn(f'<details class="how__more lc-disclosure" id="{chapter_id}">', html)
-        self.assertNotIn("<details", pages_how.stages_html(data))
-
-    def test_a_chapter_missing_from_the_layout_or_placed_twice_stops_the_build(self) -> None:
-        """Unknown, doubled and unplaced chapter ids are errors that name them."""
-        data = pages_how.load()
-        for change in (lambda d: d["stages"][0]["chapters"].append("nope"), lambda d: d["further"][0]["chapters"].append("portable"),
-                       lambda d: d["stages"][0]["chapters"].remove("portable")):
-            broken = copy.deepcopy(data)
-            change(broken)
-            with self.assertRaises(SystemExit):
-                pages_how.check_placement(broken)
+        self.assertEqual(len(data["steps"]), 6)
+        for step in data["steps"]:
+            self.assertTrue(step["know"] and step["guides"], step["id"])
 
     def test_wrong_keys_stop_the_build(self) -> None:
-        """A stage without an outcome, or with an unknown key, is an error."""
+        """A step without an outcome, or with an unknown key, is an error that names the data file."""
         with self.assertRaises(SystemExit):
-            pages_how.check_keys("stage x", {"id": "a"}, pages_how.STAGE_KEYS)
+            pages_how.check_keys("step x", {"id": "a"}, pages_how.STEP_KEYS)
         with self.assertRaises(SystemExit):
             pages_how.check_keys("handoff", {"text": "t", "link": "l", "href": "h", "extra": 1}, pages_how.HANDOFF_KEYS)
 
+    def test_repeated_ids_and_empty_lists_stop_the_build(self) -> None:
+        """Two steps with one id, a step with nothing to remember and a step without guides are each an error."""
+        steps = pages_how.load()["steps"]
+        for change in (lambda s: s[1].update(id=s[0]["id"]), lambda s: s[0].update(know=[]), lambda s: s[0].update(guides=[])):
+            broken = copy.deepcopy(steps)
+            change(broken)
+            with self.assertRaises(SystemExit):
+                pages_how.check_steps(broken)
 
-class PanelTests(unittest.TestCase):
-    """Every control and every shown element refers to a choice group the panel declares."""
 
-    def test_buttons_and_show_attributes_use_declared_groups_and_values(self) -> None:
-        """data-set and data-show tokens name a group in data-state."""
-        for chapter in pages_how.load()["chapters"]:
-            html = pages_how.read_panel(chapter["id"])
-            declared = dict(p.split(":") for p in re.search(r'data-state="([^"]+)"', html).group(1).split())
-            for group in re.findall(r'data-set="([^"]+)"', html):
-                self.assertIn(group, declared, f"{chapter['id']}: button group {group}")
-            for attr in re.findall(r'data-show="([^"]+)"', html):
-                for token in attr.split():
-                    self.assertIn(token.split(":")[0], declared, f"{chapter['id']}: {token}")
+class PageTests(unittest.TestCase):
+    """What the page shows."""
 
-    def test_pressed_buttons_match_the_starting_choices(self) -> None:
-        """The button that is aria-pressed=true in the HTML is the one the starting state names."""
-        for chapter in pages_how.load()["chapters"]:
-            html = pages_how.read_panel(chapter["id"])
-            declared = dict(p.split(":") for p in re.search(r'data-state="([^"]+)"', html).group(1).split())
-            for group, value in re.findall(r'data-set="([^"]+)" data-value="([^"]+)" aria-pressed="true"', html):
-                self.assertEqual(declared[group], value, f"{chapter['id']}: {group}")
+    def test_every_step_has_a_numbered_link_a_section_and_its_guides(self) -> None:
+        """The row of numbered links and the sections agree, and each section links to its guides."""
+        data = pages_how.load()
+        row = pages_how.stepper(data)
+        for i, step in enumerate(data["steps"]):
+            html = pages_how.step_html(data, i)
+            self.assertIn(f'href="#{step["id"]}"', row)
+            self.assertIn(f'id="{step["id"]}"', html)
+            for guide in step["guides"]:
+                self.assertIn(f'href="{guide["href"]}"', html)
+
+    def test_the_steps_lead_to_each_other_and_the_last_hands_over_to_the_demo(self) -> None:
+        """The first step has no Back, the middle ones have both, and the last step has the hand-over to the demo instead of Next."""
+        data = pages_how.load()
+        first, middle, last = (pages_how.step_html(data, i) for i in (0, 1, len(data["steps"]) - 1))
+        self.assertNotIn("how__back", first)
+        self.assertIn("how__next", first)
+        self.assertTrue("how__back" in middle and "how__next" in middle)
+        self.assertNotIn("how__next", last)
+        self.assertIn(f'href="{data["handoff"]["href"]}"', last)
+        self.assertEqual(data["handoff"]["href"], "demo/")
+
+    def test_there_is_no_code_and_no_interactive_control(self) -> None:
+        """The overview shows no code block and no button: the guides do the detail."""
+        data = pages_how.load()
+        html = pages_how.stepper(data) + "".join(pages_how.step_html(data, i) for i in range(len(data["steps"])))
+        for banned in ("<pre", "<code", "<button", "data-demo-sim"):
+            self.assertNotIn(banned, html)
 
 
 if __name__ == "__main__":

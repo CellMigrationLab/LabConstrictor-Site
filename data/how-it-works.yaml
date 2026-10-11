@@ -1,177 +1,91 @@
-# The "How LabConstrictor works" page (/how-it-works/). Text only: each chapter's interactive part is content/how/<id>.html.
-# Every statement follows the template's guide named in `guide`; the page is an illustration with example files, nothing runs on it.
-# Layout (issue #12): four stages first (the author journey: notebook, project, release, listing), then "Go further" for the rest.
-# Every chapter id is listed exactly once, in `stages` or in `further`, and keeps its address (#portable, #code, ...).
+# The "How LabConstrictor works" page (/how-it-works/): a quick overview of the whole process, one step at a time.
+# No code and no interactive panels: the guides (linked from every step) do the detail. Every statement follows the guide it links to.
+# Written here only; pages_how.py checks the exact keys and that every link goes to a page of the site.
 title: How LabConstrictor works
-lead: From a notebook that works on your computer to an app that colleagues can install, in four stages. Try each part.
-notice: Interactive illustration with example files. Nothing runs on this page and nothing is uploaded.
-stages_title: "Four stages"
-stages:
-  - id: stage-1
-    title: "Bring your notebook"
-    outcome: "A notebook that runs in JupyterLab, with its requirements listed."
-    text: "Start from a notebook that already works for you. There is no separate interface to write: the notebook is what your colleagues open in the installed app, and a requirements.yaml says which packages it needs."
-    chapters: [portable, requirements]
-  - id: stage-2
-    title: "Prepare the project"
-    outcome: "A repository with your notebook in it, ready to build."
-    text: "Create your repository from the LabConstrictor template on GitHub, initialise it with a short form, then add your notebook and its requirements.yaml."
-    chapters: [project, deposit]
-  - id: stage-3
-    title: "Publish a release"
-    outcome: "Installers for Windows, macOS and Linux in the release's assets."
-    text: "One release on GitHub starts a workflow that builds the installers. Each system gets its own file; there is no single file for all three."
-    chapters: [packaging]
-  - id: stage-4
-    title: "Share and maintain (optional)"
-    outcome: "An optional listing in the App Centre."
-    text: "A release is already installable without a listing. To be found in the App Centre, describe the app in a small file in your repository and submit its address."
-    chapters: [manifest, share]
+lead: From a notebook that works on your computer to an app that colleagues can install, in six steps. Open one at a time; each links to the guides that show how.
+steps_title: The six steps
+steps:
+  - id: step-1
+    title: Build your notebook
+    text: Start with a notebook that already works for you. It is what your colleagues open in the installed app, so there is no separate interface to write.
+    outcome: A notebook that runs in both Google Colab and JupyterLab and carries a version cell.
+    know:
+      - Make it run in Google Colab and in JupyterLab. Setup that only works in Colab is guarded, so it runs only there.
+      - Add a small version cell at the top (current_version and notebook_name), and raise the version whenever the notebook's logic changes. Installed apps use it to tell users about updates.
+      - Code cells can be hidden in the installed app, so put what users must read in Markdown cells.
+    guides:
+      - {href: guides/notebook-portability/, label: Write notebooks that run in both Colab and JupyterLab}
+      - {href: guides/code-hiding/, label: Hide code cells}
+      - {href: guides/notebook-upload/, label: Add the version cell}
+  - id: step-2
+    title: Define your requirements
+    text: Each notebook comes with a requirements.yaml that lists the packages it needs, its Python version and a short description.
+    outcome: A requirements.yaml that matches your notebook.
+    know:
+      - Generate it with the Requirements Generator notebook, in the environment where your notebook runs without errors, on your computer or in Colab.
+      - You can write the file by hand instead and check it with the Requirements Validator notebook.
+      - Helper code can live in your repository's src folder or in a package installed with pip.
+    guides:
+      - {href: guides/notebook-requirements/, label: Generate the requirements of your notebook}
+      - {href: guides/external-code-upload/, label: Upload external code}
+  - id: step-3
+    title: Create your repository
+    text: Start from the LabConstrictor template on GitHub, then fill in a short form that gives your project its name and version.
+    outcome: A repository with the LabConstrictor workflows, named and versioned.
+    know:
+      - You need a GitHub account. A private repository cannot be listed in the App Centre.
+      - Before you initialise it, complete the one-time template synchronisation setup, so that future template improvements can reach your repository.
+      - Have ready a project name, an initial version such as 0.1.0, a one-sentence summary and the kind of app. Installer images are optional.
+      - The form opens a pull request in your repository, which you accept.
+    guides:
+      - {href: guides/create-repository/, label: Create your repository}
+      - {href: guides/initialise-repository/, label: Initialise your repository}
+      - {href: guides/template-synchronization/, label: Set up template updates}
+      - {href: guides/accept-pull-request/, label: Accept a pull request}
+  - id: step-4
+    title: Add your notebook
+    text: Upload your notebook and its requirements.yaml with the LabConstrictor web form, which opens a pull request in your repository.
+    outcome: Your notebook and its requirements in the repository, checked by a workflow.
+    know:
+      - The form asks for your repository address and a GitHub personal access token.
+      - After you merge the pull request, a workflow checks the notebook and its dependencies.
+      - If the check fails, the merge is undone automatically. Read the log, fix the notebook or its requirements and upload again.
+    guides:
+      - {href: guides/notebook-upload/, label: Add or update a notebook}
+      - {href: guides/personal-access-token/, label: Create a personal access token}
+      - {href: guides/workflow-status/, label: Check the status of workflows}
+  - id: step-5
+    title: Create a release
+    text: Publishing a release on GitHub starts a workflow that builds the installers.
+    outcome: Installers for Windows, macOS and Linux, attached to your release.
+    know:
+      - Before you start, check the Actions tab of your repository. No workflow should be running.
+      - The release tag is a version number in the form MAJOR.MINOR.PATCH, for example 0.0.1.
+      - Each system gets its own installer, listed under the release's Assets when the workflow has finished.
+      - Try an installer yourself before you share it.
+    guides:
+      - {href: guides/executable-creation/, label: Create installer files}
+      - {href: guides/workflow-status/, label: Check the status of workflows}
+      - {href: guides/install/, label: Install an app}
+  - id: step-6
+    title: Share your app
+    text: Share the link to your release and anyone can install the app from it. To be found by others, describe the app and list it in the App Centre.
+    outcome: An app that people can install, and optionally find in the App Centre.
+    know:
+      - Users download the installer for their system from your release. The installers are not code-signed yet, so Windows warns about an unknown publisher.
+      - Describing the app takes one small file in your repository, labconstrictor-app.yaml, which the initialisation form creates for you.
+      - To be listed, the repository must be public and have a licence. Submit its address; a bot checks it and a maintainer adds it.
+    guides:
+      - {href: guides/app-manifest/, label: Describe your app for the App Centre}
+      - {href: submit/, label: Submit your app}
+later:
+  title: When you need more
+  links:
+    - {href: guides/notebook-upload/, label: Update a notebook}
+    - {href: guides/installer-images/, label: Add your own logo and installer images}
+    - {href: guides/template-synchronization/, label: Keep up with template updates}
+    - {href: guides/image-software/, label: "Use apps inside napari, Fiji and QuPath (experimental)"}
 handoff:
-  text: "Your release has installers. Explore what the people who install your app receive."
-  link: "Explore an installed app"
-  href: "demo/"
-further_title: "Go further"
-further_text: "Optional parts, each with its own guide. Open one to see it."
-further:
-  - title: Code and dependencies
-    chapters: [code]
-  - title: Installers and branding
-    chapters: [installer, branding]
-  - title: Keep your app up to date
-    chapters: [update, sync]
-  - title: Use functions in other software (experimental)
-    chapters: [tools, bridge]
-chapters:
-  - id: portable
-    title: Write notebooks that run in Colab and in JupyterLab
-    text: A LabConstrictor app opens your notebooks in JupyterLab on the user's computer, and collaborators and reviewers sometimes prefer Google Colab. Running Colab-only setup only on Colab is the first step to a notebook that works in both.
-    guide: guides/notebook-portability/
-    guide_label: Write notebooks that run in both Google Colab and JupyterLab
-    static:
-      - Colab-only setup (mounting Google Drive, installing packages with an exclamation mark) is guarded with a check for Google Colab, so it runs only there.
-      - A "# @title" line at the top of a code cell gives it a header in Colab and stays readable in JupyterLab.
-      - LabConstrictor can hide code cells so the notebook looks like an app; longer explanations belong in Markdown cells, which are always visible.
-  - id: code
-    title: Where the code lives
-    text: Helper code can sit in the repository's src folder, come from a package installed with pip, or both. Which one you pick changes what the notebook imports and what the installer carries.
-    guide: guides/external-code-upload/
-    guide_label: Upload external code
-    static:
-      - "Code in src: a folder under src with an __init__.py file becomes a package your notebooks import."
-      - "A pip package (an option beyond the guide): its name goes into the notebook's requirements.yaml and pip installs it."
-      - "Both: for example the desktop app uses the code in src while a Colab run installs the published package; NucleiSky is built this way."
-  - id: requirements
-    title: Describe what the notebook needs
-    text: Each notebook comes with a requirements.yaml that lists its packages, its Python version and a short description. You can generate it from the notebook, or write it by hand and check it.
-    guide: guides/notebook-requirements/
-    guide_label: Generate the requirements of your notebook
-    static:
-      - "requirements.yaml has three fields: dependencies (packages with versions), python_version and description."
-      - "Option 1 generates the file from your notebook with the Requirements Generator notebook, run in the same environment as your notebook (locally) or in Colab."
-      - "Option 2 means writing the file by hand and checking it with the Requirements Validator notebook."
-  - id: project
-    title: Create your repository and initialise it
-    text: You start from the LabConstrictor template on GitHub. A short form then fills in your project's name and version and opens a pull request in your repository that you accept.
-    guide: guides/create-repository/
-    guide_label: Create your repository
-    static:
-      - "On the template's GitHub page, click the green Use this template button and choose Create a new repository."
-      - "Pick the owner and a short repository name (it becomes the default name of your installer), optionally describe it, choose Public or Private, and click Create repository. A private repository cannot be listed in the App Centre."
-      - "In the LabConstrictor form, choose Start initialisation under Initialise GitHub repository, enter the project name and an initial version such as 0.0.1, and optionally add images for the installer."
-      - "The form opens a pull request in your repository with the suggested changes; accept it."
-  - id: deposit
-    title: Deposit the notebook and its requirements
-    text: A web form checks your requirements.yaml, adds your notebook and its requirements to a list, and opens a pull request in your repository; an automatic workflow then checks the notebook and its dependencies after you merge it.
-    guide: guides/notebook-upload/
-    guide_label: Add or update a notebook
-    static:
-      - "Open the LabConstrictor form, choose Upload/Update notebook, and upload the .ipynb file and its requirements.yaml."
-      - "Click Validate & Add Submission; the form checks that both files are there and that the requirements file is valid, and adds the notebook to the Submission list (you can add several)."
-      - "Give your repository address and a personal access token, then click Create pull request."
-      - "Merge the pull request; an automatic workflow checks the notebook and its dependencies."
-  - id: tools
-    title: Declare tools for napari, Fiji and QuPath
-    text: "If you want your app's functions to appear as forms in napari, Fiji or QuPath, you declare them once in Python: a function with type hints, marked with @tool, in a module with a fixed name. The type hints say what the form looks like. This is experimental."
-    guide: guides/image-software/
-    guide_label: Use apps inside napari, Fiji and QuPath
-    static:
-      - "A tool is a normal Python function with type hints, marked with @tool, in a module named <package>_lc_tools next to your app's package."
-      - "A float or int becomes a number box, a bool a check box, a Literal or Enum a dropdown, an Image an image chosen in the host, a Table a CSV file."
-      - "Everything beyond the types is optional: a host that does not know a hint shows a plain, working form."
-  - id: branding
-    title: Give the installer and the app your own look
-    text: You can add your own logo, banner and header images, so the installer and the desktop app carry your branding. This is optional. Without your images, placeholder images are used.
-    guide: guides/installer-images/
-    guide_label: Customise the installer images
-    static:
-      - "Logo: a 256x256 pixel PNG, used in the executable installer and on the created desktop app."
-      - "Banner: a 164x314 pixel PNG, a vertical image used as a banner in the installer."
-      - "Header: a 150x57 pixel PNG, used as the header in the installer."
-      - "You can provide the images when you initialise your repository or at any time later; without them, placeholder images are used."
-  - id: packaging
-    title: Publish a release and let GitHub build the installers
-    text: A release on GitHub starts a workflow that builds installers for each system. Your users download them from the release.
-    guide: guides/executable-creation/
-    guide_label: Create installer files
-    static:
-      - "Check that no workflow is running, then draft a new release with a tag like 0.0.1 and publish it."
-      - "Publishing starts the workflow that creates the installer files; follow it in the Actions tab."
-      - "When it finishes, the installers are in the release's Assets list."
-  - id: installer
-    title: What the installer does on your users' computers
-    text: The installer sets up a private environment for the app, installs its requirements, and adds a launcher. Your users do not need to install Python or pip. On Linux they run the installer from a terminal, and a terminal window stays open while the app runs. A short demo shows the Windows steps.
-    guide: guides/install/
-    guide_label: Install an app
-    static:
-      - "On Windows the installer asks where to install and for whom (just you, or all users); it then sets up the app's own environment."
-      - "A post-install script installs the app's requirements (on Windows and Linux the GPU versions when an NVIDIA GPU is found, otherwise the CPU ones; on macOS the CPU ones) and the app's own package from src. This needs an internet connection."
-      - "It then adds the app to the Start menu or Applications folder; opening it starts JupyterLab with a Welcome notebook."
-  - id: update
-    title: Update a notebook or the code later
-    text: When you change something after the first release, your users are told in the Welcome notebook of their installed app. A new notebook version or a change to the code in src can be updated from there; a new release means the installed app itself is out of date.
-    guide: guides/notebook-upload/
-    guide_label: Add or update a notebook
-    static:
-      - "Raise current_version in the notebook's top cell, run the bottom cell again to regenerate requirements.yaml, and upload the notebook through the form with exactly the same file name."
-      - "After you merge the pull request, a workflow records the version in notebooks/notebook_latest_versions.yaml, updates the changelog, hides code cells, refreshes the notebook index and, when a requirements file changed, merges the requirements and tests the environment."
-      - "In the installed app, the Welcome notebook compares the local versions with the repository's. An outdated notebook shows Needs Update and an Update button that downloads it."
-      - "A change to the code in src shows an Update Source Code button; a new release changes the app's version, and the table then shows Project Outdated instead of notebook updates."
-  - id: sync
-    title: Keep your app up to date with the template
-    text: The template keeps improving. A workflow in your repository can offer those improvements as a pull request that you review and merge. It needs a token that you create once.
-    guide: guides/template-synchronization/
-    guide_label: Enable automatic LabConstrictor template updates
-    static:
-      - "The Sync with Template Repository workflow runs every Monday at 09:00 UTC, and you can start it from the Actions tab."
-      - "When the template has a newer version, it opens a pull request titled Sync template to version, followed by the new version number; you merge it like any other pull request."
-      - "Opening that pull request needs a token you create once and save in your repository as the secret LABCONSTRICTOR_SYNC_TOKEN."
-      - "Without the secret, the run stops with the error Synchronization setup required when a newer template version exists, and no pull request is created."
-  - id: manifest
-    title: Describe the app for the App Centre
-    text: A small file in your repository, labconstrictor-app.yaml, says what the app is and how people get it. The App Centre reads it from your repository, so there is nothing to copy.
-    guide: guides/app-manifest/
-    guide_label: Describe your app for the App Centre
-    static:
-      - "labconstrictor-app.yaml has a name, a one-sentence summary, a kind and the ways to get the app (installer, Colab notebooks, pip)."
-      - "Further fields add what the app works with and produces, its limitations, status, screenshots and a DOI; the Submit page says which are recommended."
-      - "A workflow checks the file; it never blocks building installers."
-  - id: share
-    title: Share it in the App Centre
-    text: When the release exists, tell the App Centre where your repository is, with a short GitHub form. A bot checks the file and the release, and the App Centre reads everything else from your repository from then on.
-    guide: submit/
-    guide_label: Submit your app
-    static:
-      - "Add labconstrictor-app.yaml to your repository and make sure the repository is public and has a license."
-      - "Send the repository address with the GitHub submission form; a bot checks the manifest and your release and tells you what to fix."
-      - "A maintainer merges the pull request that adds a pointer to your repository, and the app appears at the next daily build."
-  - id: bridge
-    title: Once installed, how the bridge works
-    text: "Apps can also declare tools, scientific functions with typed inputs. A plugin for napari, Fiji or QuPath builds a form from each declaration and runs the tool in the app's own environment. This part is experimental: it is under heavy construction and exists only in a development version of the installer."
-    guide: guides/image-software/
-    guide_label: Use apps inside napari, Fiji and QuPath
-    static:
-      - "An author writes tools as Python functions with type hints, in a module named <package>_lc_tools next to the app's package."
-      - "In the experimental version of the installer, an app that ships a tools module is also registered for the plugins; the installer of the released template does not do this yet. A failure to register never fails the installation."
-      - "The host builds a form from the declaration, the tool runs in the app's own Python environment in a separate process, and the results come back as layers, tables, points or files."
-      - "The plugins are under heavy construction: untested and unlikely to be stable. Each plugin's guide says what stage it is at."
+  text: Your release has installers. Explore what the people who install your app receive.
+  link: Explore an installed app
+  href: demo/

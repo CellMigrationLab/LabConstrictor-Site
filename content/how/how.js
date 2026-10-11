@@ -1,118 +1,62 @@
-/* The /how-it-works/ page: each chapter panel is a small set of choices. A button sets one choice (data-set / data-value); elements with
-   data-show appear when the current choices match; lines with data-ran are dimmed when they would not run in the chosen place.
-   Nothing is calculated here and nothing leaves the page. */
-(function (ns) {
-  var d = ns.dom;
-
+/* The /how-it-works/ page: the steps are all in the HTML; with JavaScript only the current one is shown, chosen by the address (#step-3).
+   Without JavaScript every step is shown, one under the other, and the numbered links jump to them. Nothing leaves the page. */
+(function () {
   /**
-   * Read a panel's starting choices from its data-state attribute ("group:value group2:value2").
-   * @param {string} text - the attribute value.
-   * @returns {Object<string, string>} the choices by group.
-   * @throws {Error} for a part that is not "group:value" or a group declared twice.
+   * The element for a selector; the page cannot work without it.
+   * @param {ParentNode} root - where to look.
+   * @param {string} selector - the CSS selector.
+   * @returns {Element} the first match.
+   * @throws {Error} when nothing matches.
    */
-  function parseState(text) {
-    var state = {};
-    text.split(/\s+/).filter(Boolean).forEach(function (pair) {
-      var parts = pair.split(':');
-      if (parts.length !== 2 || !parts[0] || !parts[1]) { throw new Error('how: "' + pair + '" is not group:value'); }
-      if (Object.prototype.hasOwnProperty.call(state, parts[0])) { throw new Error('how: the choice group "' + parts[0] + '" is declared twice in "' + text + '"'); }
-      state[parts[0]] = parts[1];
-    });
-    return state;
+  function one(root, selector) {
+    var found = root.querySelector(selector);
+    if (!found) { throw new Error('how: nothing matches ' + selector); }
+    return found;
   }
 
   /**
-   * Whether any of the "group:value" alternatives of a data-show attribute matches the choices.
-   * @param {Object<string, string>} state - the current choices.
-   * @param {string} alternatives - space-separated "group:value" tokens.
-   * @returns {boolean} true when one of them is the current choice of its group.
-   * @throws {Error} when a token is not "group:value" or names a group the panel does not have.
+   * The index of the step the address names; an address that names no step is an ordinary browser case and shows the first step.
+   * @param {Element[]} steps - the step sections, in order.
+   * @returns {number} the index to show.
    */
-  function shows(state, alternatives) {
-    return alternatives.split(/\s+/).filter(Boolean).some(function (token) {
-      var parts = token.split(':');
-      if (parts.length !== 2 || !parts[0] || !parts[1]) { throw new Error('how: "' + token + '" in data-show="' + alternatives + '" is not group:value'); }
-      return d.lookup(state, parts[0], 'choice group') === parts[1];
-    });
+  function indexFromAddress(steps) {
+    var found = steps.findIndex(function (step) { return step.id === location.hash.slice(1); });
+    return found < 0 ? 0 : found;
   }
 
   /**
-   * Draw a panel from its choices: pressed buttons, shown elements, dimmed lines.
-   * @param {Element} panel - the panel root.
-   * @param {Object<string, string>} state - the current choices.
+   * Mark one numbered link as the current step and the others as not.
+   * @param {Element[]} tabs - the numbered links, in order.
+   * @param {number} index - the current step.
    * @returns {void}
    */
-  function render(panel, state) {
-    d.all(panel, '[data-set]').forEach(function (b) { d.setPressed(b, d.lookup(state, b.dataset.set, 'choice group') === b.dataset.value); });
-    d.all(panel, '[data-toggle]').forEach(function (b) { d.setPressed(b, d.lookup(state, b.dataset.toggle, 'choice group') === 'on'); });
-    d.all(panel, '[data-show]').forEach(function (el) { el.hidden = !shows(state, el.dataset.show); });
-    d.all(panel, '[data-ran]').forEach(function (el) {
-      var where = el.dataset.ran;
-      el.classList.toggle('is-skipped', where !== 'both' && where !== state.runtime);
+  function markTabs(tabs, index) {
+    tabs.forEach(function (tab, n) {
+      tab.classList.toggle('is-current', n === index);
+      if (n === index) { tab.setAttribute('aria-current', 'step'); } else { tab.removeAttribute('aria-current'); }
     });
   }
 
   /**
-   * Flip an on/off choice; a panel whose data-min-on lists some choices keeps at least one of them on.
-   * @param {Element} panel - the panel root.
-   * @param {Object<string, string>} state - the choices (changed in place).
-   * @param {string} group - the on/off group to flip.
+   * Show one step and hide the others; when the reader moved, bring the row of steps into view and put the focus on the step's heading.
+   * @param {Element[]} steps - the step sections, in order.
+   * @param {Element[]} tabs - the numbered links, in order.
+   * @param {number} index - the step to show.
+   * @param {boolean} moved - whether the reader just chose this step.
    * @returns {void}
    */
-  function toggle(panel, state, group) {
-    var next = d.lookup(state, group, 'choice group') === 'on' ? 'off' : 'on';
-    var kept = panel.dataset.minOn ? panel.dataset.minOn.split(/\s+/) : [];
-    var others = kept.filter(function (g) { return g !== group && state[g] === 'on'; });
-    if (next === 'off' && kept.indexOf(group) >= 0 && others.length === 0) { return; }
-    state[group] = next;
+  function show(steps, tabs, index, moved) {
+    steps.forEach(function (step, n) { step.hidden = n !== index; });
+    markTabs(tabs, index);
+    if (!moved) { return; }
+    one(document, '.how__stepper').scrollIntoView();
+    one(steps[index], 'h2').focus({ preventScroll: true });
   }
 
-  /**
-   * Handle a press on a panel's choice button (data-set picks a value, data-toggle flips on and off).
-   * @param {Element} panel - the panel root.
-   * @param {Object<string, string>} state - the choices (changed in place).
-   * @param {Event} e - the click.
-   * @returns {void}
-   */
-  function onClick(panel, state, e) {
-    var button = e.target.closest('[data-set], [data-toggle]');
-    if (!button || !panel.contains(button)) { return; }
-    if (button.dataset.toggle) {
-      toggle(panel, state, button.dataset.toggle);
-    } else {
-      d.lookup(state, button.dataset.set, 'choice group');
-      state[button.dataset.set] = button.dataset.value;
-    }
-    render(panel, state);
-  }
-
-  /**
-   * Make one panel live.
-   * @param {Element} panel - the panel root (it has data-state).
-   * @returns {void}
-   */
-  function start(panel) {
-    var state = parseState(panel.dataset.state);
-    panel.addEventListener('click', function (e) { onClick(panel, state, e); });
-    render(panel, state);
-  }
-
-  /**
-   * Open the "Go further" disclosure that holds the element the address points to (a chapter keeps its address, whether it is shown or folded).
-   * An address that names no element is an ordinary browser case and is left to the browser.
-   * @returns {void}
-   */
-  function openTarget() {
-    var target = document.getElementById(location.hash.slice(1));
-    var folded = target ? target.closest('details') : null;
-    if (!folded) { return; }
-    folded.open = true;
-    target.scrollIntoView();
-  }
-
+  var steps = Array.from(document.querySelectorAll('.how__step'));
+  var tabs = Array.from(document.querySelectorAll('.how__tab'));
+  if (steps.length !== tabs.length) { throw new Error('how: ' + steps.length + ' steps but ' + tabs.length + ' numbered links'); }
   document.documentElement.classList.add('how-live');
-  d.all(document, '.how__panel').forEach(start);
-  openTarget();
-  window.addEventListener('hashchange', openTarget);
-  d.all(document, '.how__static').forEach(function (list) { list.hidden = true; });
-})(window.LCDemo = window.LCDemo || {});
+  show(steps, tabs, indexFromAddress(steps), location.hash !== '');
+  window.addEventListener('hashchange', function () { show(steps, tabs, indexFromAddress(steps), true); });
+})();
