@@ -1,7 +1,8 @@
 /* /how-it-works/: chapters with a small interactive panel each. Simulated controls keep a plain, clearly pressed look. */
 .how__static[hidden] { display: none; }
+.how-live .how__panel { display: block; }   /* without JavaScript the panels (their buttons would do nothing) stay hidden and the plain summaries show */
 .how__chapter { margin: 2.6rem 0; padding-top: .4rem; border-top: 1px solid var(--lc-line); }
-.how__panel { margin: 1rem 0; padding: 1rem; background: var(--lc-soft); border: 1px solid var(--lc-line); border-radius: .5rem; }
+.how__panel { display: none; margin: 1rem 0; padding: 1rem; background: var(--lc-soft); border: 1px solid var(--lc-line); border-radius: .5rem; }
 .how__panel[hidden], .how__panel [hidden] { display: none; }
 .how__controls { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: .2rem 0 .6rem; }
 .how__label { font-size: .82rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--lc-muted); }

@@ -125,6 +125,7 @@ def no_javascript(browser: Browser, base: str) -> None:
     page.context.close()
     page, _ = open_page(browser, base, "how-it-works/", 1280, js=False)
     check("No JavaScript, How it works: the plain summaries are shown", page.locator(".how__static:visible").count() > 0)
+    check("No JavaScript, How it works: no inert simulated control is visible", page.locator(".how__panel [data-demo-sim]:visible").count() == 0)
     page.context.close()
 
 

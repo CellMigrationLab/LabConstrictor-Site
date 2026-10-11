@@ -110,6 +110,7 @@
     target.scrollIntoView();
   }
 
+  document.documentElement.classList.add('how-live');
   d.all(document, '.how__panel').forEach(start);
   openTarget();
   window.addEventListener('hashchange', openTarget);
