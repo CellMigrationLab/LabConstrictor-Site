@@ -8,7 +8,7 @@ from pathlib import Path
 from PIL import Image
 
 import finish_site
-from lcsite import images, redirects, text, validate
+from lcsite import completeness, images, redirects, text, validate
 from lcsite.config import AppProblem
 
 
@@ -40,6 +40,25 @@ class YamlTests(unittest.TestCase):
         with self.assertRaises(AppProblem):
             validate.load_plain_yaml("a: &x [1]\nb: *x\n", "m")
         self.assertEqual(validate.load_plain_yaml("a: [1, 2]\n", "m"), {"a": [1, 2]})
+
+
+class EmptyValueTests(unittest.TestCase):
+    """An empty optional value is not a stated fact: the schema refuses the ones that can never be useful, and the rest count as missing."""
+
+    BASE = {"schema": 1, "name": "Demo", "summary": "A demo app that does something useful.", "kind": "analysis", "distribution": {"installer": True}}
+
+    def test_an_empty_licence_or_empty_screenshot_list_is_refused_by_the_schema(self) -> None:
+        """`license: ""` and `screenshots: []` used to pass and hide the warnings that would have named them."""
+        for extra in ({"license": ""}, {"screenshots": []}):
+            with self.assertRaises(AppProblem):
+                validate.check({**self.BASE, **extra}, validate.MANIFEST_SCHEMA, "m")
+        validate.check({**self.BASE, "license": "MIT"}, validate.MANIFEST_SCHEMA, "m")
+
+    def test_absent_empty_and_filled_fields(self) -> None:
+        """Absent and empty count as missing; a filled field does not."""
+        self.assertTrue(completeness.lacks({}, "inputs"))
+        self.assertTrue(completeness.lacks({"inputs": []}, "inputs"))
+        self.assertFalse(completeness.lacks({"inputs": ["TIFF images"]}, "inputs"))
 
 
 class LazyImageTests(unittest.TestCase):
