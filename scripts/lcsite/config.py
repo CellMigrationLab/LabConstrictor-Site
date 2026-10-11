@@ -22,7 +22,7 @@ TEMPLATE_REPO = "CellMigrationLab/LabConstrictor"
 MANIFEST_NAME = "labconstrictor-app.yaml"
 
 # Everything build_site.py writes into docs/ (deleted and rebuilt on every run). All git-ignored.
-GENERATED = ["index.md", "apps", "guides", "use", "build", "ecosystem.md", "submit.md", "llms.txt",
+GENERATED = ["index.md", "apps", "guides", "use", "build", "ecosystem.md", "related-projects", "submit.md", "llms.txt",
              "demo", "assets/demo", "how-it-works", "assets/how", "assets/docs-img", "assets/hubs", "assets/hosts", "assets/icons", "assets/shots", "assets/images"]
 
 

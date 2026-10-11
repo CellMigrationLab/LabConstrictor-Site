@@ -10,11 +10,12 @@ from datetime import date
 from .config import DATA, fail, load_yaml
 
 FILE = "data/related-projects.yaml"
-TOP_KEYS = {"title", "intro", "disclosure", "shared_authors_note", "groups", "closing", "helper"}
+TOP_KEYS = {"title", "page_title", "teaser", "intro", "disclosure", "shared_authors_note", "groups", "closing", "helper"}
+TEASER_KEYS = {"title", "text", "link"}
 GROUP_KEYS = {"key", "title", "items"}
 REQUIRED = {"name", "approach", "fit", "checked"}
 OPTIONAL = {"repo", "docs", "site", "doi", "reference", "shared_authors"}
-PROSE = ("title", "intro", "disclosure", "shared_authors_note", "closing", "helper")
+PROSE = ("title", "page_title", "intro", "disclosure", "shared_authors_note", "closing", "helper")
 BANNED_IN_PROSE = re.compile(r"https?://|www\.|\b[a-z0-9-]+\.(org|com|io|net|dev)\b|[\[\]<>]|\b(popular|most used|fastest|faster|best|superior|stars|downloads)\b", re.I)
 REPO = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 GITHUB_ROOT = re.compile(r"^https://github\.com/[^/]+/[^/]+/?$")
@@ -34,6 +35,10 @@ def check_top(data: dict) -> None:
         fail(f"{FILE}: the top level needs exactly {sorted(TOP_KEYS)}, got {sorted(data)}")
     for key in PROSE:
         check_text(f"{key}", data[key])
+    if not isinstance(data["teaser"], dict) or set(data["teaser"]) != TEASER_KEYS:
+        fail(f"{FILE}: teaser needs exactly {sorted(TEASER_KEYS)}")
+    for key in TEASER_KEYS:
+        check_text(f"teaser {key}", data["teaser"][key])
     names: set[str] = set()
     for group in data["groups"]:
         check_group(group, names)

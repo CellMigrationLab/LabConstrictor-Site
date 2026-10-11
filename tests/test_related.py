@@ -8,7 +8,7 @@ from lcsite import pages_related, related
 
 ENTRY = {"name": "Tool", "approach": "Does one thing.", "fit": "you need that thing.", "repo": "o/tool", "docs": "https://tool.example/docs",
          "doi": "10.1000/abc", "reference": "A. Author et al. (2024), A Journal 1, 2-3", "shared_authors": True, "checked": datetime.date(2026, 10, 11)}
-DATA = {"title": "Related", "intro": "Intro text.", "disclosure": "Some authors overlap.", "shared_authors_note": "Shares authors with LabConstrictor.",
+DATA = {"title": "Related", "page_title": "Other ways", "teaser": {"title": "Other ways to share", "text": "Other projects help.", "link": "Explore related projects"}, "intro": "Intro text.", "disclosure": "Some authors overlap.", "shared_authors_note": "Shares authors with LabConstrictor.",
         "groups": [{"key": "g", "title": "A group", "items": [ENTRY]}], "closing": "Closing words.", "helper": "Edit the list."}
 
 
@@ -71,14 +71,41 @@ class SectionTests(unittest.TestCase):
         self.assertIn("https://doi.org/10.1000/abc", full)
         self.assertIn("Checked 11 October 2026", full)
 
-    def test_the_section_has_the_disclosure_the_groups_and_the_helper_links(self) -> None:
-        """Disclosure is visible text; the helper line links to the citation block, the file on GitHub and the issues."""
-        html = pages_related.section(DATA)
+    def test_the_teaser_links_to_the_page_and_keeps_the_old_address(self) -> None:
+        """The Ecosystem teaser has id="related" (older links) and one link to the related-projects page, with the wording from the data."""
+        html = pages_related.teaser(DATA)
         self.assertIn('id="related"', html)
-        self.assertIn("Some authors overlap.", html)
-        self.assertIn('id="related-g"', html)
-        for link in ("index.html#cite", "edit/main/data/related-projects.yaml", "/issues"):
-            self.assertIn(link, html)
+        self.assertEqual(html.count('href="related-projects/"'), 1)
+        self.assertIn("Explore related projects", html)
+
+    def test_every_category_tile_points_to_a_section_that_exists(self) -> None:
+        """Each tile is an in-page link to the anchor of its group, with the names of its projects."""
+        groups = DATA["groups"]
+        tiles = pages_related.category_tiles(groups)
+        sections = "".join(pages_related.group_html(g, DATA["shared_authors_note"]) for g in groups)
+        for group in groups:
+            self.assertIn(f'href="#related-{group["key"]}"', tiles)
+            self.assertIn(f'id="related-{group["key"]}"', sections)
+        self.assertIn("Tool", tiles)
+
+
+class RealDataTests(unittest.TestCase):
+    """The real file keeps the groups of the plan: repo2docker builds containers, Binder is browser and cloud, all eight projects are there."""
+
+    def test_the_four_groups_hold_the_eight_projects(self) -> None:
+        """Desktop tools, Containers, Browser and cloud, Related microscopy initiatives, with repo2docker among the containers."""
+        groups = {g["key"]: [e["name"] for e in g["items"]] for g in related.load()["groups"]}
+        self.assertEqual(groups, {"desktop": ["Album", "JupyterLab Desktop"], "containers": ["DL4MicEverywhere", "repo2docker"],
+                                  "browser-cloud": ["Binder", "Voilà"], "microscopy": ["BiaPy", "ZeroCostDL4Mic"]})
+
+    def test_the_page_pieces_carry_the_disclosure_data_and_every_project(self) -> None:
+        """Every project name, the shared-authors note and each category link appear in the generated pieces."""
+        data = related.load()
+        html = pages_related.category_tiles(data["groups"]) + "".join(pages_related.group_html(g, data["shared_authors_note"]) for g in data["groups"])
+        for group in data["groups"]:
+            for entry in group["items"]:
+                self.assertIn(entry["name"], html)
+        self.assertIn(data["shared_authors_note"], html)
 
 
 if __name__ == "__main__":

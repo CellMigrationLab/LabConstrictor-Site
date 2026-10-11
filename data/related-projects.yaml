@@ -9,6 +9,13 @@
 # Every entry carries `checked` (ISO date it was last compared with the primary pages).
 # Validated by scripts/lcsite/related.py (exact key sets, no defaults); the build stops on a problem.
 title: Related projects and alternative approaches
+page_title: Other ways to share notebooks and scientific tools
+teaser:
+  title: Other ways to share notebooks and scientific tools
+  text: >-
+    LabConstrictor packages notebooks as desktop applications. Other projects help researchers
+    share notebooks or scientific tools through containers, browsers and desktop environments.
+  link: Explore related projects
 intro: >-
   Sharing a notebook does not guarantee that it runs on someone else's computer. Several
   open-source projects address this with different approaches: desktop applications, containers,
@@ -24,7 +31,7 @@ disclosure: >-
 shared_authors_note: Shares authors with LabConstrictor.
 groups:
   - key: desktop
-    title: Desktop applications
+    title: Desktop tools
     items:
       - name: Album
         approach: >-
@@ -59,6 +66,15 @@ groups:
         reference: Hidalgo-Cenalmor et al. (2024), Nature Methods 21(6), 925-927
         shared_authors: true
         checked: 2026-10-11
+      - name: repo2docker
+        approach: >-
+          Builds a container image from the configuration files in a Git repository, so that
+          its environment can be reproducibly built and run. BinderHub uses it to build images
+          on demand.
+        fit: you want a reproducible container image of a repository's environment.
+        repo: jupyterhub/repo2docker
+        docs: https://repo2docker.readthedocs.io
+        checked: 2026-10-11
   - key: browser-cloud
     title: Browser and cloud
     items:
@@ -72,15 +88,6 @@ groups:
         doi: 10.25080/Majora-4af1f417-011
         reference: Project Jupyter et al. (2018), Proceedings of the Python in Science Conference, 113-120
         checked: 2026-10-11
-      - name: repo2docker
-        approach: >-
-          Builds a container image from the configuration files in a Git repository, so that
-          its environment can be reproducibly built and run. BinderHub uses it to build images
-          on demand.
-        fit: you want a reproducible container image of a repository's environment.
-        repo: jupyterhub/repo2docker
-        docs: https://repo2docker.readthedocs.io
-        checked: 2026-10-11
       - name: Voilà
         approach: >-
           Turns Jupyter notebooks into standalone web applications and dashboards. Code cells
@@ -90,7 +97,7 @@ groups:
         docs: https://voila.readthedocs.io
         checked: 2026-10-11
   - key: microscopy
-    title: Deep learning for microscopy and bioimage analysis
+    title: Related microscopy initiatives
     items:
       - name: BiaPy
         approach: >-

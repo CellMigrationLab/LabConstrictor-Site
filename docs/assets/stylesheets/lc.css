@@ -367,8 +367,17 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 @media (max-width: 40rem) { .lc-facts { grid-template-columns: minmax(0, 1fr); gap: .1rem 0; } .lc-facts dd { margin-bottom: .5rem; } }
 
 /* Related projects (Ecosystem page): plain entries, separated by a thin line, pills wrap, nothing scrolls sideways */
-.lc-related { list-style: none; margin: .4rem 0 1.2rem; padding: 0; }
-.lc-related__item { padding: .8rem 0; border-top: 1px solid var(--lc-line); }
+.lc-related { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; list-style: none; margin: .4rem 0 1.6rem; padding: 0; }
+.lc-related__item { padding: 1rem 1.2rem; border: 1px solid var(--lc-line); border-radius: 12px; background: #fff; }
+@media (max-width: 44rem) { .lc-related { grid-template-columns: 1fr; } }
+.lc-kicker { margin: 0 0 .3rem; font-size: .68rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--lc-muted); }
+.lc-cats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; list-style: none; margin: 1.4rem 0 2rem; padding: 0; }
+@media (max-width: 44rem) { .lc-cats { grid-template-columns: 1fr; } }
+[dir] .md-typeset a.lc-cat { display: flex; flex-direction: column; gap: .2rem; height: 100%; padding: 1rem 1.2rem; border: 1px solid var(--lc-line); border-radius: 12px; background: var(--lc-soft); color: var(--lc-fg); text-decoration: none; }
+[dir] .md-typeset a.lc-cat:hover { border-color: var(--lc-accent-strong); }
+.lc-cat strong { font-family: var(--lc-display); font-size: 1.05rem; color: var(--lc-strong); }
+.lc-cat span { font-size: .8rem; color: var(--lc-muted); }
+.lc-related-group { margin-top: 1.6rem; scroll-margin-top: 4.5rem; }
 .md-typeset .lc-related__item p { margin: .25rem 0; }
 .lc-related__links { display: flex; flex-wrap: wrap; gap: .4rem; }
 .lc-related-section { margin-top: 2.6rem; }
@@ -392,3 +401,6 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-cite__lead { max-width: 46rem; }
 [dir] .md-typeset blockquote.lc-cite { max-width: 46rem; margin: 1rem 0; padding: .9rem 1.2rem; border-left: 4px solid var(--lc-accent-strong); border-radius: 0 .4rem .4rem 0; background: var(--lc-soft); color: var(--lc-fg); }
 .lc-cite .lc-cite__ref { margin: 0; line-height: 1.6; }
+[dir] .md-typeset ul.lc-cats, [dir] .md-typeset ul.lc-related { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; list-style: none; padding: 0; margin: 1.2rem 0 1.6rem; }
+[dir] .md-typeset ul.lc-cats > li, [dir] .md-typeset ul.lc-related > li { margin: 0; }
+@media (max-width: 44rem) { [dir] .md-typeset ul.lc-cats, [dir] .md-typeset ul.lc-related { grid-template-columns: 1fr; } }
