@@ -23,3 +23,12 @@
 .how__part { display: block; width: 100%; text-align: left; padding: .3rem .5rem; font: inherit; color: inherit; white-space: pre; background: transparent; border: 1px dashed var(--lc-muted); border-radius: .3rem; cursor: pointer; }
 .how__part[aria-pressed="true"] { background: #fff; border: 2px solid var(--lc-accent-strong); }
 @media (forced-colors: active) { .how__btn[aria-pressed="true"], .how__part[aria-pressed="true"] { border: 3px solid Highlight; } }
+.how__form { margin: .6rem 0; padding: .7rem .9rem; background: #fff; border: 1px solid var(--lc-line); border-radius: .4rem; }
+.how__field { display: flex; flex-wrap: wrap; gap: .3rem .8rem; align-items: center; margin: .35rem 0; font-size: .72rem; }
+.how__field > span:first-child { flex: 0 0 15rem; max-width: 100%; color: var(--lc-fg); }
+.how__input { flex: 1 1 10rem; min-width: 0; padding: .25rem .5rem; background: #f6f8fa; border: 1px solid var(--lc-line); border-radius: .25rem; overflow-wrap: anywhere; }
+.how__fake { display: inline-block; padding: .3rem .8rem; font-size: .72rem; background: #eef1f4; border: 1px solid var(--lc-line); border-radius: .3rem; }
+.how__card { display: flex; flex-direction: column; gap: .3rem; padding: .8rem; background: #fff; border: 1px solid var(--lc-line); border-radius: .5rem; }
+.how__badges { display: flex; flex-wrap: wrap; gap: .3rem; }
+.how__badge { padding: .04rem .5rem; font-size: .6rem; font-weight: 600; background: var(--lc-soft); border-radius: 1rem; }
+.how__files { margin: .3rem 0 .3rem 1.1rem; font: .66rem/1.6 ui-monospace, Menlo, Consolas, monospace; }

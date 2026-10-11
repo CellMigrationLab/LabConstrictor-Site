@@ -42,6 +42,7 @@
    */
   function render(panel, state) {
     d.all(panel, '[data-set]').forEach(function (b) { d.setPressed(b, d.lookup(state, b.dataset.set, 'choice group') === b.dataset.value); });
+    d.all(panel, '[data-toggle]').forEach(function (b) { d.setPressed(b, d.lookup(state, b.dataset.toggle, 'choice group') === 'on'); });
     d.all(panel, '[data-show]').forEach(function (el) { el.hidden = !shows(state, el.dataset.show); });
     d.all(panel, '[data-ran]').forEach(function (el) {
       var where = el.dataset.ran;
@@ -50,17 +51,21 @@
   }
 
   /**
-   * Handle a press on a panel's choice button.
+   * Handle a press on a panel's choice button (data-set picks a value, data-toggle flips on and off).
    * @param {Element} panel - the panel root.
    * @param {Object<string, string>} state - the choices (changed in place).
    * @param {Event} e - the click.
    * @returns {void}
    */
   function onClick(panel, state, e) {
-    var button = e.target.closest('[data-set]');
+    var button = e.target.closest('[data-set], [data-toggle]');
     if (!button || !panel.contains(button)) { return; }
-    d.lookup(state, button.dataset.set, 'choice group');
-    state[button.dataset.set] = button.dataset.value;
+    if (button.dataset.toggle) {
+      state[button.dataset.toggle] = d.lookup(state, button.dataset.toggle, 'choice group') === 'on' ? 'off' : 'on';
+    } else {
+      d.lookup(state, button.dataset.set, 'choice group');
+      state[button.dataset.set] = button.dataset.value;
+    }
     render(panel, state);
   }
 

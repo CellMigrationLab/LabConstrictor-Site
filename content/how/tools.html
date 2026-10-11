@@ -1,0 +1,17 @@
+<div class="how__panel" data-demo data-search-exclude data-state="ptype:float">
+<p class="lc-demo__experimental">Experimental. The plugins are untested on some systems and may change; each plugin's guide says what stage it is at.</p>
+<pre class="how__code"><span class="how__line"># src/my_app_lc_tools/__init__.py  (next to your package `my_app`)</span>
+<span class="how__line">from typing import Annotated, Literal</span>
+<span class="how__line">from labconstrictor_tools import Image, ImageOut, Min, Table, tool</span>
+<span class="how__line"> </span>
+<span class="how__line">@tool("Smooth an image")</span>
+<span class="how__line">def smooth(image: Image,</span>
+<span class="how__line" data-show="ptype:float">           sigma: Annotated[float, Min(0)] = 2.0) -&gt; ImageOut:</span>
+<span class="how__line" data-show="ptype:bool">           keep_range: bool = True) -&gt; ImageOut:</span>
+<span class="how__line" data-show="ptype:choice">           method: Literal["gaussian", "median"] = "gaussian") -&gt; ImageOut:</span>
+<span class="how__line" data-show="ptype:table">           points: Table) -&gt; ImageOut:</span>
+<span class="how__line">    """Smooth an image."""</span></pre>
+<p class="how__controls"><span class="how__label" id="how-tools-label">The second parameter is</span><span role="group" aria-labelledby="how-tools-label"><button type="button" class="how__btn" data-demo-sim data-set="ptype" data-value="float" aria-pressed="true">a number</button><button type="button" class="how__btn" data-demo-sim data-set="ptype" data-value="bool" aria-pressed="false">yes/no</button><button type="button" class="how__btn" data-demo-sim data-set="ptype" data-value="choice" aria-pressed="false">one of a list</button><button type="button" class="how__btn" data-demo-sim data-set="ptype" data-value="table" aria-pressed="false">a table</button></span></p>
+<p class="how__out"><strong>The image</strong> becomes an image chosen from the host (your function receives a NumPy array). <span data-show="ptype:float"><strong>The number</strong> becomes a number box, with the minimum you declared.</span><span data-show="ptype:bool"><strong>The yes/no</strong> becomes a check box.</span><span data-show="ptype:choice"><strong>The list</strong> becomes a dropdown with the listed choices.</span><span data-show="ptype:table"><strong>The table</strong> becomes a CSV file (your function receives a pandas DataFrame).</span> The returned <code>ImageOut</code> becomes a layer or window.</p>
+<p class="how__note">You write no interface code. Everything beyond the types (units, links between parameters, groups) is optional, and a host that does not know a hint shows a plain, working form.</p>
+</div>

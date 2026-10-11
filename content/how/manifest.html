@@ -1,0 +1,26 @@
+<div class="how__panel" data-demo data-search-exclude data-state="kind:analysis installer:on colab:off pip:off">
+<p class="how__controls"><span class="how__label" id="how-kind-label">Kind</span><span role="group" aria-labelledby="how-kind-label"><button type="button" class="how__btn" data-demo-sim data-set="kind" data-value="analysis" aria-pressed="true">analysis</button><button type="button" class="how__btn" data-demo-sim data-set="kind" data-value="segmentation" aria-pressed="false">segmentation</button><button type="button" class="how__btn" data-demo-sim data-set="kind" data-value="simulation" aria-pressed="false">simulation</button><button type="button" class="how__btn" data-demo-sim data-set="kind" data-value="utility" aria-pressed="false">utility</button></span></p>
+<p class="how__controls"><span class="how__label" id="how-routes-label">Ways to get it</span><span role="group" aria-labelledby="how-routes-label"><button type="button" class="how__btn" data-demo-sim data-toggle="installer" aria-pressed="true">installer</button><button type="button" class="how__btn" data-demo-sim data-toggle="colab" aria-pressed="false">Colab</button><button type="button" class="how__btn" data-demo-sim data-toggle="pip" aria-pressed="false">pip</button></span></p>
+<div class="how__grid">
+<div><p class="how__label">labconstrictor-app.yaml</p>
+<pre class="how__code"><span class="how__line"># yaml-language-server: $schema=...</span>
+<span class="how__line">schema: 1</span>
+<span class="how__line">name: My App</span>
+<span class="how__line">summary: One sentence that says what it does.</span>
+<span class="how__line" data-show="kind:analysis">kind: analysis</span>
+<span class="how__line" data-show="kind:segmentation">kind: segmentation</span>
+<span class="how__line" data-show="kind:simulation">kind: simulation</span>
+<span class="how__line" data-show="kind:utility">kind: utility</span>
+<span class="how__line">distribution:</span>
+<span class="how__line" data-show="installer:on">  installer: true</span>
+<span class="how__line" data-show="colab:on">  colab:</span>
+<span class="how__line" data-show="colab:on">    - label: Notebook</span>
+<span class="how__line" data-show="colab:on">      url: https://colab.research.google.com/github/...</span>
+<span class="how__line" data-show="pip:on">  pip: my-app</span></pre></div>
+<div><p class="how__label">How the App Centre can show it</p>
+<div class="how__card"><strong>My App</strong><span class="how__note">One sentence that says what it does.</span>
+<span class="how__badges"><span class="how__badge" data-show="kind:analysis">Analysis</span><span class="how__badge" data-show="kind:segmentation">Segmentation</span><span class="how__badge" data-show="kind:simulation">Simulation</span><span class="how__badge" data-show="kind:utility">Utility</span><span class="how__badge" data-show="installer:on">Desktop</span><span class="how__badge" data-show="colab:on">Colab</span><span class="how__badge" data-show="pip:on">pip</span></span></div>
+<p class="how__note">An illustration: the real card is built by the site from the real file.</p></div>
+</div>
+<p class="how__out">Optional fields add what the app <strong>works with</strong> and <strong>produces</strong>, its limitations, status, screenshots and the paper to cite. The site shows only what the file says, and writes "Not stated" for what it leaves out. A workflow checks the file whenever it changes; it never blocks building installers.</p>
+</div>
