@@ -153,7 +153,7 @@
 @media (prefers-reduced-motion: no-preference) { .lc-view__layer { transition: opacity .15s; } }
 
 /* the guide: a hand-drawn red loop around the next thing to click, and one line (in a handwriting font where the system has one) saying what to do */
-.lc-demo__next { margin: 0 0 .6rem; padding: .4rem .8rem; border-left: 4px solid #e11d48; background: #fff1f2; font: 1.05rem/1.4 "Segoe Print", "Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive; color: #9f1239; transform: rotate(-.4deg); }
+.lc-demo__next { margin: 0 0 .8rem; padding: .55rem .9rem; border-left: 4px solid var(--lc-accent-strong, #1c5f1c); border-radius: 0 .4rem .4rem 0; background: var(--lc-band, #ebf4e7); font-size: .95rem; font-weight: 600; line-height: 1.45; color: var(--lc-strong, #10211a); }
 .lc-demo__next:empty { display: none; }
 .is-next, .is-explain { position: relative; }
 .is-next::after, .is-explain::after { content: ""; position: absolute; inset: -12px -16px; pointer-events: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cpath d='M12 54C6 22 44 5 104 7C162 5 197 24 192 52C188 80 150 95 96 92C42 95 8 80 12 46C16 22 52 9 96 9C130 8 150 12 160 18' fill='none' stroke='%23e11d48' stroke-width='3.2' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") no-repeat center / 100% 100%; transform: rotate(-1.2deg); }

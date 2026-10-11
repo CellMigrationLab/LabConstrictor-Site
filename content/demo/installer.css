@@ -5,7 +5,7 @@
 .wi__dl, .wi__smart, .wi__startmenu { max-width: 30rem; padding: .8rem 1rem; background: #fff; border: 1px solid #c9ccd1; }
 .wi__file { display: inline-flex; align-items: center; gap: .6rem; margin: .5rem 0; padding: .5rem; text-align: left; font: inherit; color: inherit; background: #fff; border: 1px solid transparent; cursor: pointer; }
 .wi__file:hover, .wi__file.is-selected { background: #cce8ff; border-color: #99d1ff; }
-.wi__fileicon { font-size: 1.6rem; color: #1c5f1c; }
+.wi__fileicon { flex: none; width: 2.5rem; height: 2.5rem; }
 .wi__note { margin: .4rem 0 0; color: #555; font-size: 11px; }
 .wi__smart { background: #0f4c9c; color: #fff; border-color: #0f4c9c; }
 .wi__stitle { margin: 0 0 .6rem; font-size: 1.15rem; font-weight: 600; }
