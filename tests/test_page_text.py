@@ -65,11 +65,11 @@ class SearchIndexTests(unittest.TestCase):
         card = load_yaml(DATA / "hubs.yaml")["use"]["cards"][0]
         with tempfile.TemporaryDirectory() as tmp:
             site = Path(tmp)
-            (site / "search.json").write_text(json.dumps({"items": [{"location": "use/", "text": card["text"]}]}), encoding="utf-8")
+            (site / "search.json").write_text(json.dumps({"items": [{"location": "use/", "text": card["text"]}, {"location": "build/", "text": "Build an app"}]}), encoding="utf-8")
             old, check_site.SITE = check_site.SITE, site
             try:
                 found = check_site.search_index_problems()
-                (site / "search.json").write_text(json.dumps({"items": [{"location": "use/", "text": "Use an app"}]}), encoding="utf-8")
+                (site / "search.json").write_text(json.dumps({"items": [{"location": "use/", "text": "Use an app"}, {"location": "build/", "text": "Build an app"}]}), encoding="utf-8")
                 clean = check_site.search_index_problems()
             finally:
                 check_site.SITE = old
@@ -86,3 +86,17 @@ class GuideFooterTests(unittest.TestCase):
         text = 'Body.\n\n---\n\n<div align="center">\n\n[← A](a.md)\n[🏠 Documentation home](README.md)\n[B →](b.md)\n\n</div>\n'
         self.assertNotIn("](", guides.NAV_BLOCK.sub("", text))
         self.assertIn("Body.", guides.NAV_BLOCK.sub("", text))
+
+
+class UnsafeLinkTests(unittest.TestCase):
+    """A script address in a link is reported."""
+
+    def test_javascript_and_data_addresses_are_problems(self) -> None:
+        """check_site names the page and the address; ordinary addresses pass."""
+        from pathlib import Path
+        import check_site
+        parts = check_site.PageParts()
+        parts.feed('<a href="javascript:alert(1)">x</a><a href=" DATA:text/html,x">y</a><a href="https://ok.example/">z</a><img src="a.png">')
+        found = check_site.unsafe_link_problems({check_site.SITE / "p.html": parts})
+        self.assertEqual(len(found), 2)
+        self.assertNotIn("ok.example", " ".join(found))

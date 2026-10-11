@@ -6,10 +6,10 @@
   "additionalProperties": false,
   "required": ["repo", "repo_id", "owner_id", "added"],
   "properties": {
-    "repo": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$", "description": "owner/name on GitHub."},
+    "repo": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$(?!\\n)", "description": "owner/name on GitHub."},
     "repo_id": {"type": "integer", "minimum": 1, "description": "Numeric GitHub id; survives renames, so a changed owner can be noticed."},
     "owner_id": {"type": "integer", "minimum": 1},
-    "added": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "added": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$(?!\\n)"},
     "featured": {"type": "boolean", "description": "Show on the home page."},
     "section": {"enum": ["testing"], "description": "Set to testing for apps that check or maintain LabConstrictor itself rather than analyse data; they are listed apart in the App Centre. Absent means a normal app."}
   }

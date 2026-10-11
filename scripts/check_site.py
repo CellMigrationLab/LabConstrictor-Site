@@ -187,15 +187,27 @@ def search_index_problems() -> list[str]:
     if not index.is_file():
         return ["site/search.json is missing"]
     items = json.loads(index.read_text(encoding="utf-8"))
-    entries = items["items"] if "items" in items else items["docs"]
+    if "items" not in items:
+        return ["site/search.json has an unexpected layout (no 'items'): update this check for the new theme"]
+    entries = items["items"]
     texts = {e["location"]: e["text"] for e in entries}
     hubs = load_yaml(DATA / "hubs.yaml")
     found = []
     for track in ("use", "build"):
         for card in hubs[track]["cards"]:
-            if track + "/" in texts and card["text"][:40] in texts[track + "/"]:
+            if track + "/" not in texts:
+                found.append(f"search.json has no entry for the {track} hub")
+            elif card["text"][:40] in texts[track + "/"]:
                 found.append(f"search.json: the text of the {track} hub card {card['title']!r} is searchable (data-search-exclude is not honoured)")
     return found
+
+
+UNSAFE_SCHEME = re.compile(r"^\s*(javascript|data|vbscript):", re.I)
+
+
+def unsafe_link_problems(pages: dict[Path, PageParts]) -> list[str]:
+    """A link or picture whose address runs script (javascript:, data:, vbscript:): author text must never produce one."""
+    return [f"{page.relative_to(SITE)}: unsafe address {link[:40]!r}" for page, parts in pages.items() for link in parts.links if UNSAFE_SCHEME.match(link)]
 
 
 def missing_files() -> list[str]:
@@ -211,7 +223,7 @@ def main() -> int:
     # The 404 page uses absolute addresses on purpose (it is served from any depth), so it is not link-checked.
     pages = {p.resolve(): parse(p) for p in sorted(SITE.rglob("*.html")) if p.name != "404.html"}
     problems = (missing_files() + link_problems(pages) + edit_link_problems(pages) + menu_problems(pages)
-                + reach_problems(pages) + escaping_problems(load_json(SNAPSHOT)) + search_index_problems() + literal_markdown_problems())
+                + reach_problems(pages) + escaping_problems(load_json(SNAPSHOT)) + search_index_problems() + literal_markdown_problems() + unsafe_link_problems(pages))
     # Warnings for now: they become problems once the template's pages comply with the guide shape.
     for warning in guide_shape.warnings(SITE, guide_shape.critical_slugs()):
         print(warning, file=sys.stderr)

@@ -102,3 +102,26 @@ class ScreenshotTests(unittest.TestCase):
             html = pages_facts.screenshot({"slug": "a"}, 1, {"caption": 'The "main" window <b>'})
         self.assertIn('alt="The &quot;main&quot; window &lt;b&gt;"', html)
         self.assertIn('width="800" height="450"', html)
+
+
+class SchemaHardeningTests(SampleManifestTests):
+    """Patterns refuse a trailing newline and an address with a user name (found by the review)."""
+
+    def test_a_trailing_newline_and_credentials_in_an_address_are_refused(self) -> None:
+        """pip, doi and https fields do not accept 'x\\n'; docs_url may not carry user:password@."""
+        from lcsite.validate import check
+        from lcsite.config import AppProblem
+        base = self.sample()
+        for change in ({"doi": "10.1000/abc\n"}, {"docs_url": "https://user:pw@evil.example/"}, {"homepage": "https://ok.example/\n"}):
+            with self.subTest(change=change), self.assertRaises(AppProblem):
+                check(base | change, "labconstrictor-app.schema.json", "t")
+        check(base | {"docs_url": "https://ok.example:8080/docs"}, "labconstrictor-app.schema.json", "t")
+        bad = dict(base["distribution"], pip="pkg\n")
+        with self.assertRaises(AppProblem):
+            check(base | {"distribution": bad}, "labconstrictor-app.schema.json", "t")
+
+    def test_arm_platforms_are_valid_values(self) -> None:
+        """The platform list knows the ARM installers the asset code handles."""
+        from lcsite.validate import check
+        dist = dict(self.sample()["distribution"], installer=True, platforms=["windows-arm64", "linux-arm64"])
+        check(self.sample() | {"distribution": dist}, "labconstrictor-app.schema.json", "t")
