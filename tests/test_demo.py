@@ -98,7 +98,7 @@ class ScriptConsistencyTests(unittest.TestCase):
 
     def test_every_data_act_in_the_windows_has_a_handler(self) -> None:
         """A control marked data-act that demo.js does not handle would be dead, so each value must be a key of its actions map."""
-        script = (demo_media.SOURCE / "demo.js").read_text(encoding="utf-8")
+        script = "".join((demo_media.SOURCE / name).read_text(encoding="utf-8") for name in demo_media.SCRIPTS)
         handled = set(re.findall(r"^    '([a-z-]+)':", script, re.M))
         used = set()
         for name in ("notebook", "napari", "fiji", "installer"):

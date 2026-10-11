@@ -33,7 +33,7 @@ Find the thing you want to change; edit it **there**, never in the site's genera
 | Home page text | `data/site.yaml` | this repository |
 | The **Submit** page | `content/submit.md` | this repository |
 | The **demo** page and its home tile (wording) | `data/demo.yaml` | this repository |
-| The demo's three windows, script and style | `content/demo/windows/`, `demo.js`, `demo.css` | this repository |
+| The demo's three windows, script and style | `content/demo/windows/`, `demo*.js`, `demo.css`, `installer.css` | this repository |
 | The demo's numbers and images | regenerate with `tools/demo_assets/make_demo_assets.py` (never by hand); provenance in `content/demo/README.md` | this repository |
 | The **menu** | `nav:` in `mkdocs.yml` | this repository |
 | The footer, page layout, colours | `overrides/`, `docs/assets/stylesheets/lc.css` | this repository |

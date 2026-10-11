@@ -26,7 +26,7 @@ def import_pipeline(nucleisky_src: Path) -> dict:
     return {"config": config, "features": features, "pipeline": pipeline, "preprocess": preprocess, "visualization": visualization}
 
 
-def extract_features(lib: dict, masks, pixel_um: float):
+def extract_features(lib: dict, masks: "np.ndarray", pixel_um: float) -> "pandas.DataFrame":
     """Nucleus features of a label image at its original scale (rescale factor 1, as in the notebook's existing-masks path)."""
     table = lib["features"].extract_nuclear_features(masks, None, pixel_um, k_neighbors=10)
     return lib["features"].add_centroids_orig_px_columns(table, 1.0)

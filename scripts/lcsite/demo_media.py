@@ -12,7 +12,8 @@ SOURCE = CONTENT / "demo"
 OUT = DOCS / "assets" / "demo"
 IMAGES = ("install-banner.webp", "install-header.webp", "nucleisky-icon.png", "qc_figure.webp", "seg_figure.webp", "reference_full.webp", "reference_roi.webp", "reference_roi_green.webp", "aligned_roi.webp", "aligned_roi_magenta.webp",
           "query.webp")
-CODE = ("demo.js", "demo.css", "installer.css")
+SCRIPTS = ("demo-dom.js", "demo-state.js", "demo-render-host.js", "demo-render-notebook.js", "demo-guide.js", "demo-actions.js", "demo.js")   # load order
+CODE = SCRIPTS + ("demo.css", "installer.css")
 MAX_BYTES = 400_000          # one image above this stops the build: the page must stay light
 PLACEHOLDER = re.compile(r"\{\{(\w+)\}\}")
 REQUIRED = {"images": ("reference_px", "query_px", "reference_um_per_px", "query_um_per_px"), "nuclei": ("reference", "query"),

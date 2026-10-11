@@ -11,18 +11,18 @@ FULL_WIDTH = 633
 QUALITY = 82
 
 
-def window(image, low: float = 1.0, high: float = 99.8) -> tuple[float, float]:
+def window(image: np.ndarray, low: float = 1.0, high: float = 99.8) -> tuple[float, float]:
     """Display window as two percentiles of the pixels (raises ValueError for an empty image)."""
     lo, hi = np.percentile(image, [low, high])
     return float(lo), float(hi)
 
 
-def to_uint8(image, lo: float, hi: float):
+def to_uint8(image: np.ndarray, lo: float, hi: float) -> np.ndarray:
     """Linear stretch of `image` between lo and hi to 8 bits."""
     return (np.clip((image - lo) / (hi - lo), 0, 1) * 255).astype(np.uint8)
 
 
-def locate_roi(full, roi) -> tuple[int, int]:
+def locate_roi(full: np.ndarray, roi: np.ndarray) -> tuple[int, int]:
     """Top-left corner (y, x) of `roi` inside `full`, found by exact comparison; raises ValueError if it is not a sub-image."""
     h, w = roi.shape
     first = np.argwhere(full == roi[0, 0])
@@ -32,7 +32,7 @@ def locate_roi(full, roi) -> tuple[int, int]:
     raise ValueError("the exported region is not a sub-image of the full image")
 
 
-def save_webp(array, path: Path, scale: int = 1, tint: tuple[int, int, int] | None = None, alpha=None) -> int:
+def save_webp(array: np.ndarray, path: Path, scale: int = 1, tint: tuple[int, int, int] | None = None, alpha: np.ndarray | None = None) -> int:
     """Write an 8-bit image (optionally tinted, optionally with an alpha mask) as WebP; returns its size in bytes."""
     im = Image.fromarray(array)
     if scale != 1:
@@ -48,8 +48,8 @@ def save_webp(array, path: Path, scale: int = 1, tint: tuple[int, int, int] | No
     return path.stat().st_size
 
 
-def outline_layer(labels, scale: int):
-    """RGBA outline (white, 1 display pixel) of a label image, drawn on the up-scaled grid."""
+def outline_layer(labels: np.ndarray, scale: int) -> np.ndarray:
+    """Boolean mask of the outline (1 display pixel) of a label image, drawn on the up-scaled grid."""
     big = np.kron(labels, np.ones((scale, scale), dtype=labels.dtype))
     edge = np.zeros(big.shape, dtype=bool)
     edge[:-1] |= big[:-1] != big[1:]

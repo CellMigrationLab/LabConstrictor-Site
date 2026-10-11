@@ -92,7 +92,7 @@ def page_demo(apps: list[dict]) -> None:
     shown = dict(demo_media.values(example), **demo_media.installer_values(apps))
     demo_media.copy_assets()
     p = Page("demo/index.md", title=text["title"], description=text["description"], layout="wide", menu="demo/",
-             page_css=["assets/demo/demo.css", "assets/demo/installer.css"], page_js=["assets/demo/demo.js"], edit_url=f"{REPO}/edit/main/data/demo.yaml")
+             page_css=["assets/demo/demo.css", "assets/demo/installer.css"], page_js=[f"assets/demo/{name}" for name in demo_media.SCRIPTS], edit_url=f"{REPO}/edit/main/data/demo.yaml")
     p.add(f'<section class="lc-pagehead"><h1>{esc(text["title"])}</h1>'
           f'<p class="lc-lead">{esc(text["lead"])}</p></section>')
     p.add(about_and_features(text))

@@ -82,7 +82,7 @@ def write_images(data: dict, exports: dict, origin: tuple[int, int], out: Path) 
     return {"sizes": sizes, "windows": {"reference_roi": win_roi, "reference_full": win_full, "aligned": win_aligned, "query": win_crop}}
 
 
-def write_full(full, win: tuple[float, float], out: Path) -> int:
+def write_full(full: np.ndarray, win: tuple[float, float], out: Path) -> int:
     """The whole reference field as one small grey WebP."""
     from PIL import Image
     im = Image.fromarray(display.to_uint8(full, *win))
@@ -91,7 +91,7 @@ def write_full(full, win: tuple[float, float], out: Path) -> int:
     return (out / "reference_full.webp").stat().st_size
 
 
-def write_outlines(labels, shape: tuple[int, int], origin: tuple[int, int], out: Path) -> int:
+def write_outlines(labels: np.ndarray, shape: tuple[int, int], origin: tuple[int, int], out: Path) -> int:
     """Outlines of the reference nuclei inside the exported region, white on transparent."""
     from PIL import Image
     y0, x0 = origin

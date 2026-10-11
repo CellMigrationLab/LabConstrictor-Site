@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_FUNCTION_LINES, MAX_FILE_LINES = 30, 300
-SOURCES = sorted(p for folder in ("scripts", "tests") for p in (ROOT / folder).rglob("*.py") if "__pycache__" not in p.parts)
+SOURCES = sorted(p for folder in ("scripts", "tests", "tools") for p in (ROOT / folder).rglob("*.py") if "__pycache__" not in p.parts)
 
 
 def functions(tree: ast.AST) -> list[ast.FunctionDef]:
@@ -45,7 +45,7 @@ def problems(path: Path) -> list[str]:
 
 
 class CodeRuleTests(unittest.TestCase):
-    """AGENTS.md "Code" and "No silent fallbacks", enforced on scripts/ and tests/."""
+    """AGENTS.md "Code" and "No silent fallbacks", enforced on scripts/, tests/ and tools/."""
 
     def test_every_source_file_follows_the_rules(self) -> None:
         """Annotations, docstrings, function and file length, no catch-all except, no .get(key, default): none is broken anywhere."""
