@@ -69,7 +69,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-header .md-search__button { font-size: 0; width: 1.76rem; height: 1.76rem; border-radius: 50%; background: transparent; color: var(--lc-strong); }
 .lc-header .md-search__button::before { width: .88rem; height: .88rem; background-color: var(--lc-strong); }
 .lc-header .md-search__button::after { display: none; }
-@media (max-width: 52rem) {
+@media (max-width: 67rem) {
   .lc-header__tools { margin-left: auto; } .lc-burger { display: block; }
   .lc-menu { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; margin: 0; padding: .4rem var(--lc-gutter) 1.2rem; background: #fff; border-bottom: 1px solid var(--lc-line); box-shadow: 0 .8rem 1.6rem rgba(0,0,0,.06); }
   .lc-menu a { padding: .6rem 0; font-size: .68rem; border-bottom: 1px solid var(--lc-line); }

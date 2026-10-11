@@ -60,7 +60,7 @@ def page_how() -> None:
     """how-it-works/index.md: the introduction, the chapter list and every chapter."""
     data = load()
     copy_assets()
-    p = Page("how-it-works/index.md", title=data["title"], description=data["lead"], layout="wide", menu="guides/",
+    p = Page("how-it-works/index.md", title=data["title"], description=data["lead"], layout="wide", menu="how-it-works/",
              page_css=["assets/how/how.css"], page_js=list(SCRIPTS), edit_url=f"{REPO}/edit/main/data/how-it-works.yaml")
     rail = "".join(f'<li><a href="#{esc(c["id"])}">{esc(c["title"])}</a></li>' for c in data["chapters"])
     p.add(f'<section class="lc-pagehead"><h1>{esc(data["title"])}</h1><p class="lc-lead">{esc(data["lead"])}</p></section>',
