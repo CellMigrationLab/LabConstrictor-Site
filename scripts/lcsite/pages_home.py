@@ -24,7 +24,7 @@ def how_tile(site: dict) -> str:
     """The "How it works" tile, built like the demo tile: a picture, a title, a sentence and a link to the author tour."""
     t = site["how_tile"]
     return (f'<a class="lc-tile" href="how-it-works/"><img class="lc-icon" src="assets/images/logo.png" alt="" width="88" height="88" loading="lazy">'
-            f'<span class="lc-tile__body"><strong>{esc(t["title"])}</strong><span>{esc(t["text"])}</span><span class="lc-go">{esc(t["link"])}</span></span></a>')
+            f'<div class="lc-tile__body"><h3 class="lc-tile__title">{esc(t["title"])}</h3><span>{esc(t["text"])}</span><span class="lc-go">{esc(t["link"])}</span></div></a>')
 
 
 def comic_band(comic: str) -> str:
@@ -32,9 +32,9 @@ def comic_band(comic: str) -> str:
     return f'<section class="lc-band lc-band--comic">{comic}</section>'
 
 
-def tiles_band(tiles: list[str]) -> str:
-    """The two tiles next to each other (stacked on a phone): the author tour and the installed-app demo, equal in size and look."""
-    return f'<section class="lc-band"><div class="lc-tiles">{"".join(tiles)}</div></section>'
+def tiles_band(title: str, tiles: list[str]) -> str:
+    """The two tiles under their heading, next to each other (stacked on a phone): the author tour and the installed-app demo, equal in size and look."""
+    return f'<section class="lc-band"><h2 class="lc-title">{esc(title)}</h2><div class="lc-tiles">{"".join(tiles)}</div></section>'
 
 
 def featured_band(featured: list[str], empty_text: str) -> str:

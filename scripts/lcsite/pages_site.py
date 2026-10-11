@@ -56,7 +56,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
           '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256" loading="eager" fetchpriority="high"></div></div></section>')
     p.add(pages_home.comic_band(comic_figure()))
     p.add(pages_home.steps_band(site))
-    p.add(pages_home.tiles_band([pages_home.how_tile(site), pages_demo.home_tile()]))
+    p.add(pages_home.tiles_band(site["tiles_title"], [pages_home.how_tile(site), pages_demo.home_tile()]))
     p.add(pages_home.plugins_band(site, program_pill_row(plugin_stage())))
     p.add(pages_home.featured_band([card(a) for a in featured], "No app is featured yet."))
     p.add(citation.cite_band(site))

@@ -113,7 +113,7 @@ def tile_html(text: dict) -> str:
     """The home-page tile: one card-sized link to the demo, with a picture and a short line."""
     t = text["tile"]
     return (f'<a class="lc-tile" href="demo/"><img src="assets/demo/reference_roi_green.webp" alt="{esc(t["alt"])}" width="320" height="320" loading="lazy">'
-            f'<span class="lc-tile__body"><strong>{esc(t["title"])}</strong><span>{esc(t["text"])}</span><span class="lc-go">{esc(t["link"])}</span></span></a>')
+            f'<div class="lc-tile__body"><h3 class="lc-tile__title">{esc(t["title"])}</h3><span>{esc(t["text"])}</span><span class="lc-go">{esc(t["link"])}</span></div></a>')
 
 
 def home_tile() -> str:

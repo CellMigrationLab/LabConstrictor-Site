@@ -17,6 +17,7 @@ steps:
     text: Start from the GitHub template and add your notebook, code and dependencies.
   - title: Share the app
     text: Publish a release to build installers. Others can open your notebook in the installed JupyterLab app.
+tiles_title: See it in action
 how_tile:
   title: How it works
   text: See how to turn a notebook workflow into an app.

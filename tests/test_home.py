@@ -44,8 +44,14 @@ class RealDataTests(unittest.TestCase):
         """The How it works tile and the demo tile are built the same way, so they look equal."""
         site = load_yaml(DATA / "site.yaml")
         for tile in (ph.how_tile(site), pages_demo.home_tile()):
-            for part in ('class="lc-tile"', "<img ", "<strong>", 'class="lc-go"'):
+            for part in ('class="lc-tile"', "<img ", '<h3 class="lc-tile__title">', 'class="lc-go"'):
                 self.assertIn(part, tile)
+
+    def test_the_tiles_sit_under_their_own_heading(self) -> None:
+        """The band has an h2 from site.yaml ("See it in action") before the tiles, whose titles are h3."""
+        site = load_yaml(DATA / "site.yaml")
+        html = ph.tiles_band(site["tiles_title"], [ph.how_tile(site)])
+        self.assertTrue(html.startswith('<section class="lc-band"><h2 class="lc-title">See it in action</h2>'))
 
 
 class FeaturedTests(unittest.TestCase):
