@@ -8,7 +8,7 @@ from lcsite import catalogue_text as ct
 def app(section: str = "apps", routes: tuple[str, ...] = ("installer",), systems: tuple[str, ...] = ("windows",)) -> dict:
     """A minimal app record with the given routes and installer systems."""
     release = {"assets": [{"os": s} for s in systems]} if systems else None
-    return {"section": section, "manifest": {"distribution": {r: True for r in routes}}, "release": release}
+    return {"section": section, "manifest": {"name": "App", "summary": "S", "kind": "utility", "distribution": {r: True for r in routes}}, "release": release}
 
 
 class CatalogueTextTests(unittest.TestCase):
@@ -49,3 +49,33 @@ class CatalogueTextTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FilterTests(unittest.TestCase):
+    """The filter offers only what some app has, and the search reads what the card shows."""
+
+    def test_options_exist_only_for_values_some_app_has_and_carry_counts(self) -> None:
+        """A kind, route or program that no app has is not offered; the others show how many apps have them."""
+        from collections import Counter
+        from lcsite import filters
+        self.assertEqual(filters.options({"a": "A", "b": "B"}, Counter({"a": 3})), {"a": "A (3)"})
+        self.assertEqual(filters.select("kind", "Kind", {}), "")
+
+    def test_every_offered_option_matches_a_card_of_the_page(self) -> None:
+        """For the real build input shape: each route option is a route that one of the given apps offers."""
+        from lcsite import filters
+        apps = [app(), app(routes=("colab",), systems=())]
+        html = filters.filter_bar(apps)
+        self.assertIn('value="installer"', html)
+        self.assertIn('value="colab"', html)
+        self.assertNotIn('value="pip"', html)
+        self.assertNotIn("data-lc-host", html)
+
+    def test_the_search_text_includes_the_kind_routes_and_programs_the_card_shows(self) -> None:
+        """Words on the card (kind, "Colab", "napari") find the app."""
+        from lcsite import cards
+        record = app(routes=("installer", "colab"))
+        record["manifest"] |= {"name": "Tracker", "summary": "Follows cells", "kind": "analysis", "hosts": ["napari"]}
+        text = cards.search_text(record)
+        for word in ("tracker", "analysis", "colab", "desktop", "napari", "browser"):
+            self.assertIn(word, text)

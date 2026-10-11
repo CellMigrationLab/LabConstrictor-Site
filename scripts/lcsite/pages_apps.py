@@ -4,28 +4,13 @@ import json
 import re
 
 from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, plugin_stage, github_badge, host_badge, icon, link_pill, release_line, testing_badge
-from . import catalogue_text, citation, hosts, projects
+from . import catalogue_text, citation, filters, hosts, projects
 from .page import Page
 from .validate import optional_list
 from .text import esc, long_date, megabytes, paragraphs
 
 NOTICE = ("Apps are listed after automatic checks: a public repository, a valid manifest and downloads from the app's own GitHub release. "
           "That is not a security audit and not a test of the results: download only from an owner you trust.")
-
-
-def select(name: str, label: str, options: dict[str, str]) -> str:
-    """A filter drop-down whose first option ("All ...") means no filtering."""
-    items = "".join(f'<option value="{esc(k)}">{esc(v)}</option>' for k, v in options.items())
-    return f'<label>{esc(label)}<select data-lc-{name}><option value="">All</option>{items}</select></label>'
-
-
-def filter_bar() -> str:
-    """Search box and drop-downs; lc.js filters the cards live and keeps the count."""
-    return ('<form class="lc-filter" data-lc-filter role="search" onsubmit="return false" hidden>'
-            '<label class="lc-filter__search">Search<input type="search" data-lc-search placeholder="Name, topic, what it does"></label>'
-            + select("kind", "Kind", KINDS) + select("route", "Get it as", ROUTES) + select("host", "Also in", HOSTS) +
-            '<p class="lc-filter__count" data-lc-count aria-live="polite"></p>'
-            '<button type="button" class="lc-btn lc-btn--ghost lc-btn--small" data-lc-reset>Clear filters</button></form>')
 
 
 def grid(apps: list[dict], extra: str = "") -> str:
@@ -40,8 +25,8 @@ def page_catalogue(all_apps: list[dict]) -> None:
     p = Page("apps/index.md", title="Apps", description=catalogue_text.catalogue_description(all_apps), layout="wide")
     p.add('<section class="lc-pagehead"><h1>Apps</h1>',
           f'<p class="lc-lead">{esc(catalogue_text.catalogue_lead(all_apps))}</p></section>',
-          filter_bar(), f'<div data-lc-group>{grid(apps)}</div>',
-          '<p class="lc-empty" data-lc-empty hidden>No app matches. Clear a filter or search for something broader.</p>',
+          filters.filter_bar(apps), f'<div data-lc-group>{grid(apps)}</div>',
+          '<p class="lc-empty" data-lc-empty hidden><span data-lc-empty-text>No app matches.</span> Clear a filter or search for something broader, or <a href="submit/">add an app for this task</a>.</p>',
           (f'<div data-lc-group class="lc-testing"><h2 class="lc-title">Testing and maintenance</h2><p>Apps that check or '
            f'maintain LabConstrictor itself, not for analysing your data. Useful to see that your computer works, or what a template can do.</p>{grid(testing)}</div>' if testing else ""),
           f'<p class="lc-small lc-notice">{NOTICE}</p>',

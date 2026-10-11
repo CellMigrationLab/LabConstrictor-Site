@@ -9,6 +9,7 @@ KINDS = {"analysis": "Analysis", "segmentation": "Segmentation", "simulation": "
          "game": "Game", "training": "Training", "utility": "Utility"}
 HOSTS = {"notebook": "Notebook", "napari": "napari", "fiji": "Fiji", "qupath": "QuPath"}
 ROUTES = {"installer": "Desktop", "colab": "Colab", "pip": "pip"}
+ROUTE_LABELS = {"installer": "On my computer (Windows, macOS, Linux)", "colab": "In the browser (Colab)", "pip": "Python package (pip)"}
 SYSTEM_LABELS = {("windows", "x86_64"): "Windows", ("macos", "arm64"): "macOS (Apple Silicon)",
                  ("macos", "x86_64"): "macOS (Intel)", ("linux", "x86_64"): "Linux"}
 PLUGIN_STAGES = {"Experimental": "experimental", "Available": "available", "Install from GitHub": "install from GitHub", "Deprecated": "deprecated"}
@@ -121,9 +122,10 @@ def downloads(app: dict) -> dict[str, list[dict]]:
 
 
 def search_text(app: dict) -> str:
-    """Lower-case text the live filter searches: name, summary, the longer description and categories."""
+    """Lower-case text the live filter searches: what the card shows (name, summary, kind, ways to get it, programs) and the longer description and categories."""
     m = app["manifest"]
-    return " ".join([m["name"], m["summary"], m["description"] if "description" in m else "", *optional_list(m, "categories")]).lower()
+    shown = [m["name"], m["summary"], KINDS[m["kind"]], *(ROUTES[r] + " " + ROUTE_LABELS[r] for r in routes(app)), *(HOSTS[h] for h in optional_list(m, "hosts") if h in HOSTS)]
+    return " ".join([*shown, m["description"] if "description" in m else "", *optional_list(m, "categories")]).lower()
 
 
 def card(app: dict) -> str:

@@ -48,34 +48,50 @@ async function lcInitSystem() {
 
 function lcInitDownloads() { lcInitSystem(); }
 
-/** True when a card passes the current search text and the three drop-downs. */
+/** True when a card passes the drop-downs and contains every word of the search text (so "nuclei segmentation" needs both words). */
 function lcMatches(card, state) {
   const has = (attr, want) => !want || card.dataset[attr].split(" ").includes(want);
+  const folded = lcFold(card.dataset.search);
   return (!state.kind || card.dataset.kind === state.kind) && has("routes", state.route) && has("hosts", state.host)
-    && (!state.q || lcFold(card.dataset.search).includes(state.q));
+    && state.words.every((w) => folded.includes(w));
+}
+
+/** The sentence under the filter: the apps shown of the apps in the main list, plus a note when the testing list has matches. */
+function lcCountText(shown, total, testingShown) {
+  const more = testingShown ? `, and ${testingShown} more for testing and maintenance` : "";
+  return `Showing ${shown} of ${total} apps${more}`;
+}
+
+/** The empty-state sentence, naming what is active ("No app matches "tracking" with these filters."). */
+function lcEmptyText(query, filtered) {
+  return `No app matches${query ? ` "${query}"` : ""}${filtered ? " with these filters" : ""}.`;
 }
 
 function lcInitFilter() {
   const form = document.querySelector("[data-lc-filter]");
   if (!form || form.dataset.ready) return;
   form.dataset.ready = "1";
-  const cards = [...document.querySelectorAll("[data-lc-grid] .lc-card")];
+  const mainCards = [...document.querySelectorAll("[data-lc-group]:not(.lc-testing) .lc-card")];
+  const testingCards = [...document.querySelectorAll(".lc-testing .lc-card")];
   const fields = { q: form.querySelector("[data-lc-search]"), kind: form.querySelector("[data-lc-kind]"),
                    route: form.querySelector("[data-lc-route]"), host: form.querySelector("[data-lc-host]") };
+  const present = Object.entries(fields).filter(([, el]) => el);
   const params = new URLSearchParams(location.search);
-  Object.entries(fields).forEach(([key, el]) => { el.value = params.get(key) || ""; });
+  present.forEach(([key, el]) => { el.value = params.get(key) || ""; });
   const apply = () => {
-    const state = Object.fromEntries(Object.entries(fields).map(([k, el]) => [k, k === "q" ? lcFold(el.value.trim()) : el.value]));
-    let shown = 0;
-    cards.forEach((c) => { const ok = lcMatches(c, state); c.hidden = !ok; shown += ok; });
-    form.querySelector("[data-lc-count]").textContent = `${shown} of ${cards.length} apps`;
-    document.querySelector("[data-lc-empty]").hidden = shown > 0;
+    const state = Object.fromEntries(present.map(([k, el]) => [k, el.value.trim()]));
+    state.words = lcFold(state.q).split(/\s+/).filter(Boolean);
+    const count = (list) => list.reduce((n, c) => { const ok = lcMatches(c, state); c.hidden = !ok; return n + ok; }, 0);
+    const shown = count(mainCards), testingShown = count(testingCards);
+    form.querySelector("[data-lc-count]").textContent = lcCountText(shown, mainCards.length, testingShown);
+    document.querySelector("[data-lc-empty]").hidden = shown + testingShown > 0;
+    document.querySelector("[data-lc-empty-text]").textContent = lcEmptyText(state.q, present.some(([k]) => k !== "q" && state[k]));
     document.querySelectorAll("[data-lc-group]").forEach((g) => { g.hidden = !g.querySelector(".lc-card:not([hidden])"); });
-    const next = new URLSearchParams(Object.entries(fields).map(([k, el]) => [k, el.value.trim()]).filter(([, v]) => v));
+    const next = new URLSearchParams(present.map(([k]) => [k, state[k]]).filter(([, v]) => v));
     history.replaceState(null, "", next.toString() ? `?${next}` : location.pathname);
   };
-  Object.values(fields).forEach((el) => el.addEventListener("input", apply));
-  form.querySelector("[data-lc-reset]").addEventListener("click", () => { Object.values(fields).forEach((el) => { el.value = ""; }); apply(); });
+  present.forEach(([, el]) => el.addEventListener("input", apply));
+  form.querySelector("[data-lc-reset]").addEventListener("click", () => { present.forEach(([, el]) => { el.value = ""; }); apply(); });
   form.hidden = false;
   apply();
 }
