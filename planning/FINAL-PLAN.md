@@ -32,7 +32,7 @@ Legend: DONE = on the site (feature branch; `main` has everything up to commit 2
 | `rewrite_links` fails on links to unpublished template pages | WAIT (ships with the template change) |
 | Clean installs, expected outputs, macOS/Windows wording | WAIT (a lab member; `CLEAN-INSTALL-CHECKLIST.md`) |
 | Connect to a microscope guide (NucleiSky) | DRAFT, held from `main` until NucleiSky's change is merged (`microscope-guide-held.yaml`) |
-| Interactive "How LabConstrictor works" section | PLAN (`PLAN-how-it-works.md`), waiting for your option choice |
+| Interactive "How LabConstrictor works" page (Option A, 8 chapters) | DONE on the feature branch (home band links to it); chapters A-E and your option choice still open (`PLAN-how-it-works.md`) |
 
 ## 3. Citation and attribution
 | Item | Status |

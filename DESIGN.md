@@ -76,6 +76,12 @@ One size (12 px, bold). Colour says the role: green = route (Desktop, Colab), gr
 - **Development status** is a Details row, "Development status (stated by the authors)", reading the manifest's `status` or "Not stated". A grey chip in the header appears only for Experimental and Deprecated. The status is never inferred from a version number.
 - Every value is escaped plain text; a missing recommended fact is a warning in `build/problems.md`, never a reason to unlist an app.
 
+## The How it works page
+
+- `/how-it-works/` (`pages_how`, from `data/how-it-works.yaml` and a partial per chapter in `content/how/`) is a numbered series of chapters, each with a short text, a small **interactive panel**, a plain summary (shown only without JavaScript) and a link to the full guide. It says at the top that it is an illustration with example files: nothing runs and nothing is uploaded.
+- A panel is one element marked `data-demo` with its starting choices in `data-state` ("group:value group2:value2"). A button sets a choice (`data-set` + `data-value`) or flips one (`data-toggle`, on/off); `data-show` lists the "group:value" alternatives under which an element is visible; `data-ran` dims lines that would not run in the chosen place. All buttons are `data-demo-sim` buttons, a choice group that does not exist stops the page with an error, and `tests/test_how.py` checks every panel.
+- Every statement follows the guide the chapter links to, and a mocked form uses only labels read from the real form's code. Parts about the napari, Fiji and QuPath plugins carry the experimental notice.
+
 ## Related-project list
 
 - Lives on `/ecosystem/#related` (`pages_related.section`, from `data/related-projects.yaml`, checked by `related.py`): an `h2`, an intro, a **visible disclosure sentence** (not a footnote), `h3` groups in a fixed order, entries alphabetical within a group, nothing ranked.
