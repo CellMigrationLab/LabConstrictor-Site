@@ -47,7 +47,7 @@ A card is **one link** (the whole card) to one destination: icon or logo and nam
 
 ## Badges and pills
 
-One size (12 px, bold). Colour says the role: green = tier or route (Community, Verified, Desktop, Colab), grey = Testing, orange = a program (Soon in napari), white with a border = a link to a repository. A badge without an address is plain text; with one it is a pill.
+One size (12 px, bold). Colour says the role: green = route (Desktop, Colab), grey = Testing, orange = a program (Soon in napari), white with a border = a link to a repository. A badge without an address is plain text; with one it is a pill.
 
 ## Images
 

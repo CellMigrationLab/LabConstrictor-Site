@@ -26,7 +26,7 @@ Find the thing you want to change; edit it **there**, never in the site's genera
 | The overview *Use apps inside napari, Fiji and QuPath* | `docs/user-guide.md` | [LabConstrictor-Tools](https://github.com/CellMigrationLab/LabConstrictor-Tools) |
 | A card on the **Ecosystem** page (name, summary, status) | `docs/labconstrictor-project.yaml` | the project's own repository |
 | What an **app says about itself** (name, summary, downloads, screenshots) | `labconstrictor-app.yaml` | the app's own repository |
-| Which apps are listed; featured on the home page; verified; shown under *Testing and maintenance* | `registry/<owner>__<repo>.yaml` (`featured`, `verified_version`, `section: testing`) | this repository |
+| Which apps are listed; featured on the home page; shown under *Testing and maintenance* | `registry/<owner>__<repo>.yaml` (`featured`, `section: testing`) | this repository |
 | The picture cards on the **Use** and **Build** pages | `data/hubs.yaml` | this repository |
 | *Open and use an app* | `content/guides/using-apps.md` | this repository |
 | *Install an app* (steps for each system) | `.tools/docs/install.md` | LabConstrictor |

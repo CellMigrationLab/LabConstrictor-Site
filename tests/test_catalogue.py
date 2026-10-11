@@ -91,7 +91,7 @@ class ResolveTests(unittest.TestCase):
     def test_a_good_app_resolves(self) -> None:
         """A good app resolves."""
         app = catalogue.resolve(ENTRY, FakeGitHub(manifest=MANIFEST), None)
-        self.assertEqual((app["slug"], app["tier"], app["release"]["tag"]), ("demo-app", "listed", "1.0.0"))
+        self.assertEqual((app["slug"], app["release"]["tag"]), ("demo-app", "1.0.0"))
 
     def test_changed_repo_id_needs_re_review(self) -> None:
         """Changed repo id needs re review."""

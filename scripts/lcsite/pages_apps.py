@@ -3,15 +3,14 @@
 import json
 import re
 
-from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, github_badge, host_badge, icon, is_verified, link_pill, release_line, testing_badge, tier_badge
+from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, github_badge, host_badge, icon, link_pill, release_line, testing_badge
 from . import catalogue_text, citation, hosts
 from .page import Page
 from .validate import optional_list
 from .text import esc, long_date, megabytes, paragraphs
 
-LEGEND = ("<strong>Verified</strong>: a maintainer installed and ran this exact version. "
-          "<strong>Community</strong>: public repository, valid manifest and downloads straight from GitHub, checked automatically. "
-          "Neither label is a security audit: download only from an owner you trust.")
+NOTICE = ("Apps are listed after automatic checks: a public repository, a valid manifest and downloads from the app's own GitHub release. "
+          "That is not a security audit and not a test of the results: download only from an owner you trust.")
 
 
 def select(name: str, label: str, options: dict[str, str]) -> str:
@@ -45,7 +44,7 @@ def page_catalogue(all_apps: list[dict]) -> None:
           '<p class="lc-empty" data-lc-empty hidden>No app matches. Clear a filter or search for something broader.</p>',
           (f'<div data-lc-group class="lc-testing"><h2 class="lc-title">Testing and maintenance</h2><p>Apps that check or '
            f'maintain LabConstrictor itself, not for analysing your data. Useful to see that your computer works, or what a template can do.</p>{grid(testing)}</div>' if testing else ""),
-          f'<p class="lc-small lc-legend">{LEGEND}</p>',
+          f'<p class="lc-small lc-notice">{NOTICE}</p>',
           '<p class="lc-cta"><a class="lc-btn" href="submit/">Add your app</a></p>')
     p.write()
 
@@ -137,11 +136,9 @@ def install_help() -> str:
 
 
 def details_list(app: dict) -> str:
-    """The facts: kind, version, license, authors, categories, links, verification (the citation has its own section)."""
+    """The facts: kind, version, license, authors, categories, links (the citation has its own section)."""
     m = app["manifest"]
-    verified = (f"Verified for {esc(app['verified_version'])}" + (f" on {long_date(app['verified_on'])}" if app["verified_on"] else "")
-                if is_verified(app) else "Community listing: not verified by a maintainer, and not a security audit")
-    rows = [("Kind", KINDS[m["kind"]]), ("Latest release", release_line(app)), ("License", esc(app["license"] or "Not stated")), ("Status", verified)]
+    rows = [("Kind", KINDS[m["kind"]]), ("Latest release", release_line(app)), ("License", esc(app["license"] or "Not stated"))]
     if works_in(app):
         rows.append(("Works in", works_in(app)))
     if m.get("authors"):
@@ -191,7 +188,7 @@ def page_app(app: dict) -> None:
     plugins = [h for h in optional_list(m, "hosts") if h != "notebook"]
     p.add('<p class="lc-crumb"><a href="apps/">&larr; All apps</a></p>',
           f'<header class="lc-apphead"><div class="lc-apphead__name">{icon(app, 56)}<h1>{esc(m["name"])}</h1></div>'
-          f'<p class="lc-lead">{esc(m["summary"])}</p><p>{tier_badge(app)}{badge(KINDS[m["kind"]])}'
+          f'<p class="lc-lead">{esc(m["summary"])}</p><p>{badge(KINDS[m["kind"]])}'
           f'{"".join(host_badge(h) for h in plugins)}{testing_badge(app)}</p><p>{header_links(app)}</p></header>')
     p.add(get_section(app))
     if m.get("description"):

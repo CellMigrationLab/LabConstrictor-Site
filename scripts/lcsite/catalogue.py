@@ -97,8 +97,7 @@ def resolve(entry: dict, gh: GitHub, manifest_dir: Path | None) -> dict:
     slug, branch, warnings = slugify(name.split("/")[1]), repo["default_branch"], []
     icon = manifest.get("icon")
     return {"warnings": warnings,
-        "slug": slug, "repo": name, "html_url": repo["html_url"], "tier": "verified" if entry.get("verified_version") else "listed",
-        "verified_version": entry.get("verified_version"), "verified_on": entry.get("verified_on"),
+        "slug": slug, "repo": name, "html_url": repo["html_url"],
         "featured": bool(entry.get("featured")), "section": entry["section"] if "section" in entry else "apps", "manifest": manifest,
         "license": manifest["license"] if "license" in manifest else repo_license(repo),
         "release": read_release(gh, name, manifest),

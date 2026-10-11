@@ -20,12 +20,6 @@ def routes(app: dict) -> list[str]:
     return [r for r in ROUTES if dist.get(r)]
 
 
-def is_verified(app: dict) -> bool:
-    """True when a maintainer verified exactly the version that is now the latest release."""
-    release = app["release"]
-    return bool(app["verified_version"] and release and release["tag"] == app["verified_version"])
-
-
 HOST_GUIDES = {"napari": "guides/napari/", "fiji": "guides/fiji/", "qupath": "guides/qupath/"}   # host key = guide slug; check_site finds a dead one
 
 
@@ -42,11 +36,6 @@ def github_badge(repo: str, label: str = "") -> str:
     """A small pill with the GitHub mark that links straight to the repository; it shows the repository's name unless `label` says otherwise."""
     return (f'<a class="lc-gh" href="https://github.com/{esc(repo)}" title="{esc(repo)} on GitHub">'
             f'{GITHUB_MARK}<span>{esc(label or repo.split("/")[1])}</span></a>')
-
-
-def tier_badge(app: dict) -> str:
-    """"Verified" only when it applies to the latest release; every other app is "Community"."""
-    return badge("Verified", "verified") if is_verified(app) else badge("Community")
 
 
 BOOK_MARK = ('<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path fill="currentColor" '
@@ -131,5 +120,5 @@ def card(app: dict) -> str:
     return (f'<li class="lc-card" {attrs}><a class="lc-card__main" href="apps/{slug}/">'
             f'<span class="lc-card__head">{icon(app)}<span class="lc-card__title"><strong>{esc(m["name"])}</strong>'
             f'<small>{KINDS[m["kind"]]}</small></span></span><span class="lc-card__text">{esc(m["summary"])}</span>'
-            f'<span class="lc-card__badges">{tier_badge(app)}{testing_badge(app)}{route_badges(app)}{host_chips(app)}</span>'
+            f'<span class="lc-card__badges">{testing_badge(app)}{route_badges(app)}{host_chips(app)}</span>'
             f'<span class="lc-card__foot lc-card__foot--in">{release_line(app)}</span></a></li>')

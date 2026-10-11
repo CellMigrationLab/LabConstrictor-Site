@@ -43,11 +43,6 @@ The [full schema]({{schema_url}}) lists every field (authors, DOI, screenshots a
 
 The registry stores only a pointer to your repository. Version, downloads and description are always read from your latest release and manifest, so you never need to resubmit when you publish a new version.
 
-## What the labels mean
-
-- **Community**: listed after automatic checks (public repository, valid manifest, downloads served from your GitHub release).
-- **Verified**: a maintainer also installed and ran a specific version. The badge applies to that version; a newer release is shown as Community until it is checked again.
-
 ## Good to know
 
 - Installers are always downloaded from your own GitHub release. The App Centre never hosts files.

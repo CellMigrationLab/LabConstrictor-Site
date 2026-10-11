@@ -7,8 +7,7 @@ from pathlib import Path
 from lcsite import cards, guides, hubs, projects, redirects, registry, sources
 from lcsite.config import AppProblem, DATA
 
-APP = {"slug": "demo", "repo": "o/demo", "html_url": "https://github.com/o/demo", "tier": "listed", "verified_version": None,
-       "verified_on": None, "featured": False, "section": "apps", "license": "MIT", "icon": None, "screenshots": [],
+APP = {"slug": "demo", "repo": "o/demo", "html_url": "https://github.com/o/demo", "featured": False, "section": "apps", "license": "MIT", "icon": None, "screenshots": [],
        "manifest": {"name": "Demo", "summary": "A demo <b>app</b>", "kind": "utility", "distribution": {"installer": True, "pip": "demo"}},
        "release": {"tag": "1.0.0", "published_at": "2026-10-01T00:00:00Z", "url": "u", "assets": [
            {"name": "x", "os": "windows", "arch": "x86_64", "ext": "exe", "size": 5, "url": "https://x", "primary": True}]}}
@@ -48,12 +47,6 @@ class CardTests(unittest.TestCase):
         """Text from manifests is escaped."""
         self.assertIn("A demo &lt;b&gt;app&lt;/b&gt;", cards.card(APP))
         self.assertNotIn("<b>app", cards.card(APP))
-
-    def test_verification_expires_with_a_newer_release(self) -> None:
-        """Verification expires with a newer release."""
-        self.assertFalse(cards.is_verified(APP))
-        self.assertTrue(cards.is_verified({**APP, "verified_version": "1.0.0"}))
-        self.assertFalse(cards.is_verified({**APP, "verified_version": "0.9.0"}))
 
     def test_only_the_recommended_installer_is_offered_per_system(self) -> None:
         """Only the recommended installer is offered per system."""
@@ -211,7 +204,7 @@ class NavigationTests(unittest.TestCase):
     def test_badge_is_a_link_only_when_given_an_address(self) -> None:
         """A badge with an href is an <a>; without one it is a plain <span>."""
         self.assertIn('<a class="lc-badge lc-badge--host" href="guides/napari/">', cards.badge("Soon in napari", "host", "guides/napari/"))
-        self.assertTrue(cards.badge("Community").startswith("<span"))
+        self.assertTrue(cards.badge("Desktop").startswith("<span"))
 
     def test_github_badge_names_the_repository_and_links_to_it(self) -> None:
         """The GitHub pill links to the repository and shows its name."""
