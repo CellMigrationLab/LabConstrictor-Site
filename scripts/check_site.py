@@ -19,7 +19,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 from lcsite import guide_shape
-from lcsite.config import ROOT, SNAPSHOT, load_json
+from lcsite.config import DATA, ROOT, SNAPSHOT, load_json, load_yaml
 
 SITE = ROOT / "site"
 REQUIRED = ("index.html", "sitemap.xml", "robots.txt", "llms.txt", "schema/labconstrictor-app.schema.json", "404.html")
@@ -180,6 +180,24 @@ def literal_markdown_problems() -> list[str]:
     return found
 
 
+def search_index_problems() -> list[str]:
+    """The search index must not hold the card text of the Use and Build hubs (they are marked data-search-exclude); this fails loudly
+    if a theme upgrade stops honouring the mark."""
+    index = SITE / "search.json"
+    if not index.is_file():
+        return ["site/search.json is missing"]
+    items = json.loads(index.read_text(encoding="utf-8"))
+    entries = items["items"] if "items" in items else items["docs"]
+    texts = {e["location"]: e["text"] for e in entries}
+    hubs = load_yaml(DATA / "hubs.yaml")
+    found = []
+    for track in ("use", "build"):
+        for card in hubs[track]["cards"]:
+            if track + "/" in texts and card["text"][:40] in texts[track + "/"]:
+                found.append(f"search.json: the text of the {track} hub card {card['title']!r} is searchable (data-search-exclude is not honoured)")
+    return found
+
+
 def missing_files() -> list[str]:
     """One line per required file that is missing from site/."""
     return [f"missing {name}" for name in REQUIRED if not (SITE / name).is_file()]
@@ -193,7 +211,7 @@ def main() -> int:
     # The 404 page uses absolute addresses on purpose (it is served from any depth), so it is not link-checked.
     pages = {p.resolve(): parse(p) for p in sorted(SITE.rglob("*.html")) if p.name != "404.html"}
     problems = (missing_files() + link_problems(pages) + edit_link_problems(pages) + menu_problems(pages)
-                + reach_problems(pages) + escaping_problems(load_json(SNAPSHOT)))
+                + reach_problems(pages) + escaping_problems(load_json(SNAPSHOT)) + search_index_problems())
     # Warnings for now: they become problems once the template's pages comply (the template-synchronization footer shows literal Markdown today).
     for warning in guide_shape.warnings(SITE, guide_shape.critical_slugs()) + [f"WARNING {w}" for w in literal_markdown_problems()]:
         print(warning, file=sys.stderr)

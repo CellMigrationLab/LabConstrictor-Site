@@ -108,7 +108,7 @@ def pager(prev: dict | None, nxt: dict | None) -> str:
         if not item:
             return "<span></span>"
         return f'<a class="{cls}" href="../{item["slug"]}/"><span>{label}</span><strong>{esc(item["title"])}</strong></a>'
-    return f'<nav class="lc-pager" aria-label="Previous and next guide">{side(prev, "lc-pager__prev", "&larr; Previous")}{side(nxt, "lc-pager__next", "Next &rarr;")}</nav>'
+    return f'<nav class="lc-pager" data-search-exclude aria-label="Previous and next guide">{side(prev, "lc-pager__prev", "&larr; Previous")}{side(nxt, "lc-pager__next", "Next &rarr;")}</nav>'
 
 
 HOSTS_BY_SLUG = hosts.load()   # a guide named after a host (napari, fiji, qupath) shows that program's logo

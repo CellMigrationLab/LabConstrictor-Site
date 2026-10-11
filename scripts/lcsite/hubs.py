@@ -69,7 +69,7 @@ def live_shot(apps: list[dict]) -> str:
 def features_html(items: list[dict], doc_source: Path, apps: list[dict], taken: dict[str, Path]) -> str:
     """The grid of feature cards."""
     cards = [feature(i, live_shot(apps) if i.get("live_card") else prepare_image(i["image"], doc_source, i.get("alt"), taken)) for i in items]
-    return '<ul class="lc-features">' + "".join(cards) + "</ul>"
+    return '<div data-search-exclude><ul class="lc-features">' + "".join(cards) + "</ul></div>"   # card text would make every hub match every query
 
 
 FLOW_KEYS = {"title", "text", "href", "link"}

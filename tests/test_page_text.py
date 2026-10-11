@@ -50,3 +50,28 @@ class LiteralMarkdownTests(unittest.TestCase):
                 check_site.SITE = old
         self.assertEqual(len(found), 1)
         self.assertIn("bad.html", found[0])
+
+
+class SearchIndexTests(unittest.TestCase):
+    """The hub cards stay out of the search index."""
+
+    def test_a_card_text_in_the_index_is_reported(self) -> None:
+        """If the index holds a card's text (the exclusion stopped working) the check names the hub and the card."""
+        import json
+        import tempfile
+        from pathlib import Path
+        import check_site
+        from lcsite.config import DATA, load_yaml
+        card = load_yaml(DATA / "hubs.yaml")["use"]["cards"][0]
+        with tempfile.TemporaryDirectory() as tmp:
+            site = Path(tmp)
+            (site / "search.json").write_text(json.dumps({"items": [{"location": "use/", "text": card["text"]}]}), encoding="utf-8")
+            old, check_site.SITE = check_site.SITE, site
+            try:
+                found = check_site.search_index_problems()
+                (site / "search.json").write_text(json.dumps({"items": [{"location": "use/", "text": "Use an app"}]}), encoding="utf-8")
+                clean = check_site.search_index_problems()
+            finally:
+                check_site.SITE = old
+        self.assertEqual(len(found), 1)
+        self.assertEqual(clean, [])
