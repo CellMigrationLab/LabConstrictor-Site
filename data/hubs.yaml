@@ -86,6 +86,6 @@ build:
     - {title: Share it, text: "List it in the App Centre so others can find it.", href: submit/, link: Submit your app}
   how:
     title: Want to see how it works inside?
-    text: A step-by-step page with a small interactive picture for each part, from a portable notebook to an installed app.
+    text: A quick overview, one step at a time, from a notebook to an app that people can install.
     href: how-it-works/
     link: How LabConstrictor works
