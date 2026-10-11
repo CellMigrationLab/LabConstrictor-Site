@@ -17,7 +17,7 @@ class DataTests(unittest.TestCase):
             self.assertTrue(step["know"] and step["guides"], step["id"])
 
     def test_wrong_keys_stop_the_build(self) -> None:
-        """A step without an outcome, or with an unknown key, is an error that names the data file."""
+        """A step without its keys, or with an unknown key, is an error that names the data file."""
         with self.assertRaises(SystemExit):
             pages_how.check_keys("step x", {"id": "a"}, pages_how.STEP_KEYS)
         with self.assertRaises(SystemExit):
@@ -57,6 +57,13 @@ class PageTests(unittest.TestCase):
         self.assertNotIn("how__next", last)
         self.assertIn(f'href="{data["handoff"]["href"]}"', last)
         self.assertEqual(data["handoff"]["href"], "demo/")
+
+    def test_customisation_is_shown_only_where_there_is_something_to_customise(self) -> None:
+        """Steps 1, 3 and 6 have a "Make it yours" box; a step with an empty list has none."""
+        data = pages_how.load()
+        for i, step in enumerate(data["steps"]):
+            self.assertEqual("Make it yours" in pages_how.step_html(data, i), bool(step["customise"]), step["id"])
+        self.assertEqual([bool(s["customise"]) for s in data["steps"]], [True, False, True, False, False, True])
 
     def test_there_is_no_code_and_no_interactive_control(self) -> None:
         """The overview shows no code block and no button: the guides do the detail."""

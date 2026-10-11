@@ -10,7 +10,7 @@ from .text import esc
 SOURCE = CONTENT / "how"
 OUT = DOCS / "assets" / "how"
 TOP_KEYS = {"title", "lead", "steps_title", "steps", "later", "handoff"}
-STEP_KEYS = {"id", "title", "text", "outcome", "know", "guides"}
+STEP_KEYS = {"id", "title", "text", "customise", "know", "guides"}
 LINK_KEYS = {"href", "label"}
 LATER_KEYS = {"title", "links"}
 HANDOFF_KEYS = {"text", "link", "href"}
@@ -31,7 +31,7 @@ def check_links(where: str, links: object) -> None:
 
 
 def check_steps(steps: object) -> None:
-    """Stop the build unless the steps are a list with unique ids, exact keys, at least one thing to remember and at least one guide."""
+    """Stop the build unless the steps are a list with unique ids, exact keys, at least one thing to remember, a list of things to customise and at least one guide."""
     if not isinstance(steps, list) or len(steps) < 2:
         fail("data/how-it-works.yaml: steps needs a list of at least two steps")
     ids = [s["id"] for s in steps if isinstance(s, dict) and "id" in s]
@@ -39,8 +39,8 @@ def check_steps(steps: object) -> None:
         fail(f"data/how-it-works.yaml: step ids must be present and unique, got {ids}")
     for step in steps:
         check_keys(f"step {step['id']}", step, STEP_KEYS)
-        if not isinstance(step["know"], list) or not step["know"]:
-            fail(f"data/how-it-works.yaml: step {step['id']} needs a list of things to remember")
+        if not isinstance(step["know"], list) or not step["know"] or not isinstance(step["customise"], list):
+            fail(f"data/how-it-works.yaml: step {step['id']} needs a list of things to remember and a list (possibly empty) of things to customise")
         check_links(f"step {step['id']}", step["guides"])
 
 
@@ -88,14 +88,22 @@ def last_step_extras(data: dict) -> str:
             f'<aside class="how__handoff"><p>{esc(h["text"])}</p><a class="lc-btn lc-btn--primary" href="{esc(h["href"])}">{esc(h["link"])}</a></aside>')
 
 
+def customise(step: dict) -> str:
+    """The "Make it yours" box of a step: what the author can customise there, or nothing when there is nothing to customise."""
+    if not step["customise"]:
+        return ""
+    items = "".join(f"<li>{esc(c)}</li>" for c in step["customise"])
+    return f'<div class="how__custom"><h3>Make it yours <span>(optional)</span></h3><ul>{items}</ul></div>'
+
+
 def step_html(data: dict, i: int) -> str:
-    """One step: its number and title, what you do, what you end up with, what to remember, its guides, and the way to the next step."""
+    """One step: its number and title, what you do, where you can customise (when there is something), what to remember, its guides, and the way to the next step."""
     steps = data["steps"]
     s = steps[i]
     know = "".join(f"<li>{esc(k)}</li>" for k in s["know"])
     extras = last_step_extras(data) if i + 1 == len(steps) else ""
     return (f'<section class="how__step" id="{esc(s["id"])}"><h2 tabindex="-1"><span class="how__num">{i + 1}</span> {esc(s["title"])}</h2>'
-            f'<p class="how__text">{esc(s["text"])}</p><p class="how__outcome"><strong>You end with:</strong> {esc(s["outcome"])}</p>'
+            f'<p class="how__text">{esc(s["text"])}</p>{customise(s)}'
             f'<h3>Good to know</h3><ul class="how__know">{know}</ul><h3>Guides</h3>{links_html(s["guides"], "how__guides")}{extras}{step_nav(steps, i)}</section>')
 
 

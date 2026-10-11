@@ -1,4 +1,5 @@
 # The "How LabConstrictor works" page (/how-it-works/): a quick overview of the whole process, one step at a time.
+# Each step: what you do (text), what to remember (know), where you can customise (customise, may be empty) and the guides.
 # No code and no interactive panels: the guides (linked from every step) do the detail. Every statement follows the guide it links to.
 # Written here only; pages_how.py checks the exact keys and that every link goes to a page of the site.
 title: How LabConstrictor works
@@ -6,9 +7,10 @@ lead: From a notebook that works on your computer to an app that colleagues can 
 steps_title: The six steps
 steps:
   - id: step-1
-    title: Build your notebook
+    title: Build your notebook(s)
     text: Start with a notebook that already works for you. It is what your colleagues open in the installed app, so there is no separate interface to write.
-    outcome: A notebook that runs in both Google Colab and JupyterLab and carries a version cell.
+    customise:
+      - The notebook is your app's interface: its text, widgets and layout are entirely yours.
     know:
       - Make it run in Google Colab and in JupyterLab. Setup that only works in Colab is guarded, so it runs only there.
       - Add a small version cell at the top (current_version and notebook_name), and raise the version whenever the notebook's logic changes. Installed apps use it to tell users about updates.
@@ -20,7 +22,7 @@ steps:
   - id: step-2
     title: Define your requirements
     text: Each notebook comes with a requirements.yaml that lists the packages it needs, its Python version and a short description.
-    outcome: A requirements.yaml that matches your notebook.
+    customise: []
     know:
       - Generate it with the Requirements Generator notebook, in the environment where your notebook runs without errors, on your computer or in Colab.
       - You can write the file by hand instead and check it with the Requirements Validator notebook.
@@ -31,9 +33,12 @@ steps:
   - id: step-3
     title: Create your repository
     text: Start from the LabConstrictor template on GitHub, then fill in a short form that gives your project its name and version.
-    outcome: A repository with the LabConstrictor workflows, named and versioned.
+    customise:
+      - Your app's name and version.
+      - Your own logo, banner and header images for the installer and the desktop app. You can also add them later.
+      - Whether code cells are hidden or shown by default when users open a notebook.
     know:
-      - You need a GitHub account. A private repository cannot be listed in the App Centre.
+      - You need a GitHub account. Your repository can be public or private. A private one keeps access in your hands, but only a public repository can be listed in the App Centre.
       - Before you initialise it, complete the one-time template synchronisation setup, so that future template improvements can reach your repository.
       - Have ready a project name, an initial version such as 0.1.0, a one-sentence summary and the kind of app. Your own logo and installer images are optional.
       - The form opens a pull request in your repository, which you accept.
@@ -45,7 +50,7 @@ steps:
   - id: step-4
     title: Add your notebook
     text: Upload your notebook and its requirements.yaml with the LabConstrictor web form, which opens a pull request in your repository.
-    outcome: Your notebook and its requirements in the repository, checked by a workflow.
+    customise: []
     know:
       - The form asks for your repository address and a GitHub personal access token. You can add several notebooks in one pull request.
       - After you merge the pull request, a workflow checks the notebook and its dependencies.
@@ -57,7 +62,7 @@ steps:
   - id: step-5
     title: Create a release
     text: Publishing a release on GitHub starts a workflow that builds the installers.
-    outcome: Installers for Windows, macOS and Linux, attached to your release.
+    customise: []
     know:
       - Before you start, check the Actions tab of your repository. No workflow should be running.
       - The release tag is a version number in the form MAJOR.MINOR.PATCH, for example 0.0.1.
@@ -70,7 +75,8 @@ steps:
   - id: step-6
     title: Share your app
     text: Share the link to your release and anyone can install the app from it. To be found by others, describe the app and list it in the App Centre.
-    outcome: An app that people can install, and optionally find in the App Centre.
+    customise:
+      - How the App Centre describes your app: its summary, kind, status, screenshots and the paper to cite.
     know:
       - Users download the installer for their system from your release. The installers are not code-signed yet, so their system will warn them: tell them to download only from your release. Installing needs an internet connection.
       - Describing the app takes one small file in your repository, labconstrictor-app.yaml. The initialisation form adds it if you fill in its summary and kind; otherwise you copy the example from the guide.
