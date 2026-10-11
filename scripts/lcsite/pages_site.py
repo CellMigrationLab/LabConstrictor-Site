@@ -18,12 +18,11 @@ PANEL_ALTS = ("A delighted scientist says: Finally, my ultimate notebook is read
 
 
 def comic_figure() -> str:
-    """The comic: the whole strip on wide screens; on phones its three panels (cropped by CSS from the same image) in a row that scrolls sideways, each as legible as the strip."""
+    """The comic: the whole strip on wide screens, three stacked panels (cropped by CSS from the same image) on phones."""
     panels = "".join(f'<span class="lc-comic__panel" role="img" aria-label="{esc(alt)}" style="--i:{i}"></span>'
                      for i, alt in enumerate(PANEL_ALTS))
     return (f'<figure class="lc-comic"><img class="lc-comic__strip" src="assets/images/comic.png" alt="{esc(COMIC_ALT)}" loading="lazy">'
-            f'<div class="lc-comic__panels" role="group" aria-label="The three panels of the comic" tabindex="0">{panels}</div>'
-            '<figcaption>The problem LabConstrictor was made for.<span class="lc-comic__hint"> Swipe to read all three panels.</span></figcaption></figure>')
+            f'<div class="lc-comic__panels">{panels}</div><figcaption>The problem LabConstrictor was made for.</figcaption></figure>')
 
 
 def choice(title: str, text: str, href: str, label: str, cls: str = "") -> str:
@@ -46,7 +45,7 @@ def plugin_stage() -> str:
 
 
 def page_home(site: dict, apps: list[dict]) -> None:
-    """index.md: hero with the logo and the two paths (use / make), the three steps, the comic with its two tiles, featured apps, the optional plugin section and the citation."""
+    """index.md: hero with the logo and the two paths (use / make), then the comic (the problem), the three steps (the solution), the How it works and demo tiles, the optional plugin section, featured apps and the citation."""
     hero = site["hero"]
     featured = pages_home.featured_apps(apps)
     p = Page("index.md", title="LabConstrictor", head_title=f"{site['name']}: {hero['title']}", description=hero["text"], template="home.html")
@@ -55,10 +54,11 @@ def page_home(site: dict, apps: list[dict]) -> None:
           + choice("I want to find an app", catalogue_text.home_find_text(apps), "apps/", "Open the App Centre")
           + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "build/", "Why and how to build one", "lc-choice--make") +
           '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256" loading="eager" fetchpriority="high"></div></div></section>')
+    p.add(pages_home.comic_band(comic_figure()))
     p.add(pages_home.steps_band(site))
-    p.add(pages_home.intro_band(comic_figure(), [pages_home.how_tile(site), pages_demo.home_tile()]))
-    p.add(pages_home.featured_band([card(a) for a in featured], "No app is featured yet."))
+    p.add(pages_home.tiles_band([pages_home.how_tile(site), pages_demo.home_tile()]))
     p.add(pages_home.plugins_band(site, plugin_stage(), program_pill_row()))
+    p.add(pages_home.featured_band([card(a) for a in featured], "No app is featured yet."))
     p.add(citation.cite_band(site))
     p.write()
 

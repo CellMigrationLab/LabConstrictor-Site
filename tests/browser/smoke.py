@@ -18,7 +18,7 @@ from pathlib import Path
 from playwright.sync_api import Browser, Page, sync_playwright
 
 SITE = Path(__file__).resolve().parents[2] / "site"
-PAGES = ("", "apps/", "demo/", "how-it-works/", "ecosystem/", "guides/", "use/", "build/", "submit/")
+PAGES = ("", "apps/", "demo/", "how-it-works/", "ecosystem/", "related-projects/", "guides/", "use/", "build/", "submit/")
 WIDTHS = {"phone": 390, "desktop": 1280}
 FAILURES: list[str] = []
 
@@ -81,6 +81,8 @@ def app_filter(browser: Browser, base: str) -> None:
 def how_controls(browser: Browser, base: str) -> None:
     """Every choice button of every How it works panel can be pressed and ends up pressed, with no script error."""
     page, errors = open_page(browser, base, "how-it-works/", 1280)
+    page.evaluate("document.querySelectorAll('details.how__more').forEach(d => { d.open = true; })")   # the Go further chapters are folded
+    check("How it works: following a Go further address opens its chapter", page.evaluate("(() => { history.replaceState(null, '', '#sync'); window.dispatchEvent(new HashChangeEvent('hashchange')); return document.getElementById('sync').open; })()"))
     buttons = page.locator(".how__panel [data-set], .how__panel [data-toggle]")
     for i in range(buttons.count()):
         button = buttons.nth(i)

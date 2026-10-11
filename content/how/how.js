@@ -97,6 +97,21 @@
     render(panel, state);
   }
 
+  /**
+   * Open the "Go further" disclosure that holds the element the address points to (a chapter keeps its address, whether it is shown or folded).
+   * An address that names no element is an ordinary browser case and is left to the browser.
+   * @returns {void}
+   */
+  function openTarget() {
+    var target = document.getElementById(location.hash.slice(1));
+    var folded = target ? target.closest('details') : null;
+    if (!folded) { return; }
+    folded.open = true;
+    target.scrollIntoView();
+  }
+
   d.all(document, '.how__panel').forEach(start);
+  openTarget();
+  window.addEventListener('hashchange', openTarget);
   d.all(document, '.how__static').forEach(function (list) { list.hidden = true; });
 })(window.LCDemo = window.LCDemo || {});

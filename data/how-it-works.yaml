@@ -1,8 +1,47 @@
 # The "How LabConstrictor works" page (/how-it-works/). Text only: each chapter's interactive part is content/how/<id>.html.
 # Every statement follows the template's guide named in `guide`; the page is an illustration with example files, nothing runs on it.
+# Layout (issue #12): four stages first (the author journey: notebook, project, release, listing), then "Go further" for the rest.
+# Every chapter id is listed exactly once, in `stages` or in `further`, and keeps its address (#portable, #code, ...).
 title: How LabConstrictor works
-lead: From a notebook that works on your computer to an installed app, step by step. Try each part.
+lead: From a notebook that works on your computer to an app that colleagues can install, in four stages. Try each part.
 notice: Interactive illustration with example files. Nothing runs on this page and nothing is uploaded.
+stages_title: "Four stages"
+stages:
+  - id: stage-1
+    title: "Bring your notebook"
+    outcome: "A notebook that runs in JupyterLab, with its requirements listed."
+    text: "Start from a notebook that already works for you. There is no separate interface to write: the notebook is what your colleagues open in the installed app, and a requirements.yaml says which packages it needs."
+    chapters: [portable, requirements]
+  - id: stage-2
+    title: "Prepare the project"
+    outcome: "A repository with your notebook in it, ready to build."
+    text: "Create your repository from the LabConstrictor template on GitHub, initialise it with a short form, then add your notebook and its requirements.yaml."
+    chapters: [project, deposit]
+  - id: stage-3
+    title: "Publish a release"
+    outcome: "Installers for Windows, macOS and Linux in the release's assets."
+    text: "One release on GitHub starts a workflow that builds the installers. Each system gets its own file; there is no single file for all three."
+    chapters: [packaging]
+  - id: stage-4
+    title: "Share and maintain (optional)"
+    outcome: "An optional listing in the App Centre."
+    text: "A release is already installable without a listing. To be found in the App Centre, describe the app in a small file in your repository and submit its address."
+    chapters: [manifest, share]
+handoff:
+  text: "Your release has installers. Explore what the people who install your app receive."
+  link: "Explore an installed app"
+  href: "demo/"
+further_title: "Go further"
+further_text: "Optional parts, each with its own guide. Open one to see it."
+further:
+  - title: Code and dependencies
+    chapters: [code]
+  - title: Installers and branding
+    chapters: [installer, branding]
+  - title: Keep your app up to date
+    chapters: [update, sync]
+  - title: Use functions in other software (experimental)
+    chapters: [tools, bridge]
 chapters:
   - id: portable
     title: Write notebooks that run in Colab and in JupyterLab
@@ -31,6 +70,16 @@ chapters:
       - "requirements.yaml has three fields: dependencies (packages with versions), python_version and description."
       - "Option 1 generates the file from your notebook with the Requirements Generator notebook, run in the same environment as your notebook (locally) or in Colab."
       - "Option 2 means writing the file by hand and checking it with the Requirements Validator notebook."
+  - id: project
+    title: Create your repository and initialise it
+    text: You start from the LabConstrictor template on GitHub. A short form then fills in your project's name and version and opens a pull request in your repository that you accept.
+    guide: guides/create-repository/
+    guide_label: Create your repository
+    static:
+      - "On the template's GitHub page, click the green Use this template button and choose Create a new repository."
+      - "Pick the owner and a short repository name (it becomes the default name of your installer), optionally describe it, choose Public or Private, and click Create repository. A private repository cannot be listed in the App Centre."
+      - "In the LabConstrictor form, choose Start initialisation under Initialise GitHub repository, enter the project name and an initial version such as 0.0.1, and optionally add images for the installer."
+      - "The form opens a pull request in your repository with the suggested changes; accept it."
   - id: deposit
     title: Deposit the notebook and its requirements
     text: A web form checks your requirements.yaml, adds your notebook and its requirements to a list, and opens a pull request in your repository; an automatic workflow then checks the notebook and its dependencies after you merge it.

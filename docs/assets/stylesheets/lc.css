@@ -122,12 +122,10 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-comic { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: 3rem var(--lc-gutter) 0; text-align: center; }
 .md-typeset .lc-comic img { display: block; width: 100%; height: auto; border-radius: .5rem; box-shadow: 0 .6rem 1.6rem rgba(16, 33, 26, .14); }
 .lc-comic__panels { display: none; }
-.lc-comic__hint { display: none; }
-@media (max-width: 40rem) {   /* a phone: the three panels, each a third of the strip, in a row that scrolls sideways (no script), instead of a strip too small to read */
+@media (max-width: 40rem) {   /* a phone: three stacked panels, each a third of the strip, instead of a strip too small to read */
   [dir] .md-typeset .lc-comic .lc-comic__strip { display: none; }
-  .lc-comic__panels { display: flex; gap: .8rem; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: .5rem; }
-  .lc-comic__hint { display: inline; }
-  .lc-comic__panel { flex: 0 0 88%; scroll-snap-align: center; display: block; aspect-ratio: 1.163; border-radius: .5rem; background: #000 url("../images/comic.png") no-repeat; background-size: 300% 100%; background-position: calc(var(--i) * 50%) 0; box-shadow: 0 .4rem 1rem rgba(16, 33, 26, .14); }
+  .lc-comic__panels { display: grid; gap: .8rem; }
+  .lc-comic__panel { display: block; aspect-ratio: 1.163; border-radius: .5rem; background: #000 url("../images/comic.png") no-repeat; background-size: 300% 100%; background-position: calc(var(--i) * 50%) 0; box-shadow: 0 .4rem 1rem rgba(16, 33, 26, .14); }
 }
 .lc-comic figcaption { margin-top: .8rem; font-size: .68rem; color: var(--lc-muted); }
 .lc-band { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: 3.2rem var(--lc-gutter); }
@@ -383,11 +381,10 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-related-section { margin-top: 2.6rem; }
 
 /* ------------------------------------------------------------------ home: comic and tiles, plugin section, citation */
-.lc-band--tight { padding-top: 0; }
-.lc-intro__comic { max-width: 46rem; margin: 0 auto 1.6rem; }
-[dir] .md-typeset .lc-intro__comic .lc-comic { margin: 0; width: 100%; max-width: none; padding: 0; }
+.lc-band--comic { padding-bottom: 1rem; }
+[dir] .md-typeset .lc-band--comic .lc-comic { margin: 0; width: 100%; max-width: none; padding: 0; }
 .lc-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
-.lc-tiles .lc-tile { max-width: none; margin: 0; height: 100%; align-items: center; }
+.lc-tiles .lc-tile { max-width: none; margin: 0; height: 100%; align-items: flex-start; }
 .lc-tiles .lc-tile img { width: 5.5rem; height: 5.5rem; object-fit: contain; }
 .lc-tile__body { gap: .5rem; }
 .lc-tile__body strong { font-family: var(--lc-display); font-size: 1.1rem; color: var(--lc-strong); }
@@ -397,10 +394,24 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 [dir] .md-typeset .lc-band .lc-title { margin: 0 0 1.4rem; font-size: 1.55rem; }
 .lc-prose > p { max-width: 46rem; }
 .lc-lead-text { font-size: 1.02rem; }
+.lc-panel { display: flex; flex-direction: column; align-items: flex-start; gap: .6rem; padding: 1.4rem 1.5rem; border: 1px solid var(--lc-line); border-radius: 12px; background: #fff; }
+.md-typeset .lc-panel p { margin: 0; max-width: 46rem; }
+.lc-panel .lc-pills { margin: .2rem 0; }
 .lc-pills { display: flex; flex-wrap: wrap; gap: .4rem .6rem; margin: .2rem 0; }
-.lc-cite__lead { max-width: 46rem; }
-[dir] .md-typeset blockquote.lc-cite { max-width: 46rem; margin: 1rem 0; padding: .9rem 1.2rem; border-left: 4px solid var(--lc-accent-strong); border-radius: 0 .4rem .4rem 0; background: var(--lc-soft); color: var(--lc-fg); }
+
+[dir] .md-typeset blockquote.lc-cite { max-width: 46rem; margin: 1rem 0; padding: .9rem 1.2rem; border-left: 4px solid var(--lc-accent-strong); border-radius: 0 .4rem .4rem 0; background: #fff; color: var(--lc-fg); }
 .lc-cite .lc-cite__ref { margin: 0; line-height: 1.6; }
 [dir] .md-typeset ul.lc-cats, [dir] .md-typeset ul.lc-related { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; list-style: none; padding: 0; margin: 1.2rem 0 1.6rem; }
 [dir] .md-typeset ul.lc-cats > li, [dir] .md-typeset ul.lc-related > li { margin: 0; }
 @media (max-width: 44rem) { [dir] .md-typeset ul.lc-cats, [dir] .md-typeset ul.lc-related { grid-template-columns: 1fr; } }
+
+/* ------------------------------------------------------------------ one look and one behaviour for every tile and card */
+.lc-band--soft { border-top: 1px solid var(--lc-line); border-bottom: 1px solid var(--lc-line); }
+[dir] .md-typeset .lc-choice, [dir] .md-typeset a.lc-tile, [dir] .md-typeset a.lc-cat, [dir] .md-typeset a.how__tile, [dir] .md-typeset .lc-card { border: 1px solid var(--lc-line); border-radius: 12px; background: #fff; transition: border-color .15s, box-shadow .15s, transform .15s; }
+[dir] .md-typeset .lc-choice { border-top: 4px solid var(--lc-accent); }
+[dir] .md-typeset .lc-choice--make { border-top-color: var(--lc-orange); }
+[dir] .md-typeset .lc-choice:hover, [dir] .md-typeset a.lc-tile:hover, [dir] .md-typeset a.lc-cat:hover, [dir] .md-typeset a.how__tile:hover, [dir] .md-typeset .lc-card:hover { border-color: var(--lc-accent-strong); box-shadow: 0 .6rem 1.4rem rgba(28, 95, 28, .14); transform: translateY(-2px); }
+[dir] .md-typeset .lc-choice:focus-visible, [dir] .md-typeset a.lc-tile:focus-visible, [dir] .md-typeset a.lc-cat:focus-visible, [dir] .md-typeset a.how__tile:focus-visible, .lc-card:focus-within { outline: 2px solid var(--lc-accent-strong); outline-offset: 2px; }
+.lc-choice strong, .lc-tile__body strong, .lc-cat strong, .how__tile strong { font-family: var(--lc-display); font-size: 1.1rem; color: var(--lc-strong); }
+@media (prefers-reduced-motion: reduce) { [dir] .md-typeset .lc-choice:hover, [dir] .md-typeset a.lc-tile:hover, [dir] .md-typeset a.lc-cat:hover, [dir] .md-typeset a.how__tile:hover, [dir] .md-typeset .lc-card:hover { transform: none; } }
+[dir] .md-typeset a.lc-tile, [dir] .md-typeset a.lc-cat, [dir] .md-typeset a.how__tile { padding: 1.2rem; }

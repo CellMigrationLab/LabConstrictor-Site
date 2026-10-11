@@ -33,10 +33,10 @@ def reference_html(c: dict) -> str:
 def cite_band(site: dict) -> str:
     """The home page's "Cite LabConstrictor" band: the template README's sentence, the formatted reference and a link to the preprint."""
     c = load(site)
-    return ('<section class="lc-band"><h2 class="lc-title" id="cite">Cite LabConstrictor</h2>'
+    return ('<section class="lc-band lc-band--soft"><h2 class="lc-title" id="cite">Cite LabConstrictor</h2><div class="lc-prose">'
             f'<p class="lc-cite__lead">{esc(c["lead"])}</p><blockquote class="lc-cite">{reference_html(c)}</blockquote>'
             '<p class="lc-more"><a class="lc-go" href="' + esc(doi_link(c["doi"])) + '">Read the preprint</a>'
-            '<span class="lc-small">Each app page says what its authors ask you to cite.</span></p></section>')
+            '<span class="lc-small">Each app page says what its authors ask you to cite.</span></p></div></section>')
 
 
 def check_template_readme(site: dict, template_dir: Path) -> None:
