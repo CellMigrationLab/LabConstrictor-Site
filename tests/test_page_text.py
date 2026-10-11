@@ -75,3 +75,14 @@ class SearchIndexTests(unittest.TestCase):
                 check_site.SITE = old
         self.assertEqual(len(found), 1)
         self.assertEqual(clean, [])
+
+
+class GuideFooterTests(unittest.TestCase):
+    """The template's own Previous/Next footers are removed (the site writes its own pager)."""
+
+    def test_a_footer_with_a_lower_case_home_link_is_removed_too(self) -> None:
+        """"Documentation home" (lower case h) marks a footer block just like "Home"."""
+        from lcsite import guides
+        text = 'Body.\n\n---\n\n<div align="center">\n\n[← A](a.md)\n[🏠 Documentation home](README.md)\n[B →](b.md)\n\n</div>\n'
+        self.assertNotIn("](", guides.NAV_BLOCK.sub("", text))
+        self.assertIn("Body.", guides.NAV_BLOCK.sub("", text))

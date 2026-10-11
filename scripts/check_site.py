@@ -211,9 +211,9 @@ def main() -> int:
     # The 404 page uses absolute addresses on purpose (it is served from any depth), so it is not link-checked.
     pages = {p.resolve(): parse(p) for p in sorted(SITE.rglob("*.html")) if p.name != "404.html"}
     problems = (missing_files() + link_problems(pages) + edit_link_problems(pages) + menu_problems(pages)
-                + reach_problems(pages) + escaping_problems(load_json(SNAPSHOT)) + search_index_problems())
-    # Warnings for now: they become problems once the template's pages comply (the template-synchronization footer shows literal Markdown today).
-    for warning in guide_shape.warnings(SITE, guide_shape.critical_slugs()) + [f"WARNING {w}" for w in literal_markdown_problems()]:
+                + reach_problems(pages) + escaping_problems(load_json(SNAPSHOT)) + search_index_problems() + literal_markdown_problems())
+    # Warnings for now: they become problems once the template's pages comply with the guide shape.
+    for warning in guide_shape.warnings(SITE, guide_shape.critical_slugs()):
         print(warning, file=sys.stderr)
     for problem in problems:
         print(f"PROBLEM {problem}", file=sys.stderr)

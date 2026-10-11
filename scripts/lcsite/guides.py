@@ -20,7 +20,7 @@ from .text import esc, lead_paragraph
 SKIP = {"download_executable.md"}   # written per app (it carries one app's name); the generic install.md replaces it
 LINK = re.compile(r"\]\(\s*(?!(?:[a-z][a-z0-9+.-]*:|#|/))(?:\./)?([A-Za-z0-9_./-]+\.[A-Za-z0-9]+)(#[^)\s]*)?\s*\)")
 IMAGE = re.compile(rf"https://github\.com/{TEMPLATE_REPO}/(?:blob|raw)/doc_source/([^\s)\"'?]+)(?:\?raw=true)?")
-NAV_BLOCK = re.compile(r'<div align="center">(?:(?!</div>).)*?(?:Previous|Next|Home)(?:(?!</div>).)*?</div>', re.S)
+NAV_BLOCK = re.compile(r'<div align="center">(?:(?!</div>).)*?(?:Previous|Next|[Hh]ome)(?:(?!</div>).)*?</div>', re.S)
 GUIDE_DEPTH = "../../"   # guides/<slug>/index.md -> the site root
 
 
