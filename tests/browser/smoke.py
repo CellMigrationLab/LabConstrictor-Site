@@ -5,7 +5,7 @@
 
 Needs Playwright for Python and a Chromium. Serves site/ on a free local port and checks, at phone and desktop widths: no sideways
 scrolling on the main pages, the App Centre filter, the steps of How it works, the demo's flow, its keyboard tabs and the reset when the view changes,
-and the no-JavaScript fallback. Prints one line per check and exits with status 1 when any fails.
+the no-JavaScript fallback, and that every role (titles, links, buttons, badges, tiles, tables, callouts) looks the same on every page. Prints one line per check and exits with status 1 when any fails.
 """
 
 import argparse
@@ -19,6 +19,7 @@ from playwright.sync_api import Browser, Page, sync_playwright
 
 SITE = Path(__file__).resolve().parents[2] / "site"
 PAGES = ("", "apps/", "demo/", "how-it-works/", "ecosystem/", "related-projects/", "guides/", "use/", "build/", "submit/")
+ALL_PAGES = ("", "apps/", "apps/nucleisky/", "apps/celltrackscolab/", "demo/", "how-it-works/", "ecosystem/", "related-projects/", "guides/", "guides/notebook-upload/", "guides/image-software/", "use/", "build/", "submit/")
 WIDTHS = {"phone": 390, "desktop": 1280}
 FAILURES: list[str] = []
 
@@ -131,6 +132,51 @@ def no_javascript(browser: Browser, base: str) -> None:
     page.context.close()
 
 
+ROLES = {   # a role: the elements that must look exactly alike on every page (font, size, weight, colour, spacing)
+    "page title (h1)": ".md-content h1:not(.lc-hero h1)",
+    "section title (h2)": ".md-content h2:not(.lc-docs__nav h2)",
+    "sub-title (h3 in the text)": ".md-content .md-typeset > h3, .md-content .md-typeset > section > h3",
+    "tile and card title": ".lc-card__title strong, .lc-feature__body strong, .lc-cat strong, .lc-choice strong, .lc-tile__title",
+    "card and tile description": ".lc-card__text, .lc-feature__body span, .lc-cat span",
+    "action link": "a.lc-go",
+    "button": "a.lc-btn:not(.lc-btn--small), button.lc-btn:not(.lc-btn--small)",
+    "small button": ".lc-btn--small",
+    "badge": "span.lc-badge",
+    "lead": "p.lc-lead",
+    "small text": "p.lc-small",
+    "label": ".lc-kicker, .lc-filter label, .lc-card__title small",
+    "table head cell": ".md-typeset th",
+    "table cell": ".md-typeset td",
+    "callout": ".lc-help, .how__handoff",
+    "breadcrumb": ".lc-crumb",
+    "pill link": "a.lc-gh",
+    "menu item": ".lc-menu a:not(.lc-menu__cta)",
+    "footer link": ".lc-footer li a",
+    "fact name": ".lc-facts dt",
+    "fact value": ".lc-facts dd",
+    "docs menu link": ".lc-docs__nav li a:not(.is-active)",
+}
+LOOK = ("fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing", "textTransform", "color")
+BOXES = ("borderRadius", "paddingTop", "paddingLeft")   # for the boxes: tile, card, panel and callout
+BOX_ROLES = {"tile": "a.lc-tile, a.lc-cat, .lc-choice, .lc-panel, .lc-related__item, .lc-ostile, .how__box:not(.how__box--custom)", "callout box": ".lc-help, .lc-demo__next, blockquote, .how__handoff"}
+VARIANTS = {"button", "small button", "badge", "menu item", "docs menu link"}   # filled, ghost, status or host variants differ in colour only
+
+
+def consistency(browser: Browser, base: str) -> None:
+    """Every role in ROLES has one look across the whole site (the first of each differing look is named), and every tile or box has the same padding and corner."""
+    seen: dict[str, dict[str, list[str]]] = {name: {} for name in list(ROLES) + list(BOX_ROLES)}
+    page, _ = open_page(browser, base, "", 1280)
+    for url in ALL_PAGES:
+        page.goto(base + url)
+        for name, selector in {**ROLES, **BOX_ROLES}.items():
+            props = (tuple(p for p in LOOK if p != "color") if name in VARIANTS else LOOK) if name in ROLES else BOXES
+            for look in page.evaluate("([sel, props]) => [...document.querySelectorAll(sel)].filter(e => e.offsetParent).map(e => { const c = getComputedStyle(e); return props.map(p => c[p]).join(' | '); })", [selector, list(props)]):
+                seen[name].setdefault(look, []).append(url or "home")
+    for name, looks in seen.items():
+        check(f"Consistency: {name} has one look", len(looks) <= 1, "; ".join(f"{look} on {pages[:2]}" for look, pages in looks.items()))
+    page.context.close()
+
+
 def main() -> int:
     """Run every group of checks; return the exit status."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -142,7 +188,7 @@ def main() -> int:
     server, base = serve()
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=args.chromium)
-        for group in (no_sideways_scroll, app_filter, how_controls, demo_flow, no_javascript):
+        for group in (no_sideways_scroll, app_filter, how_controls, demo_flow, no_javascript, consistency):
             group(browser, base)
         browser.close()
     server.shutdown()

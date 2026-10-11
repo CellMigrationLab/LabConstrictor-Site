@@ -54,7 +54,8 @@ steps:
     title: Add your notebook
     text: Upload your notebook and its requirements.yaml with the LabConstrictor web form, which opens a pull request in your repository.
     region: [6, 615, 820, 143]
-    customise: []
+    customise:
+      - Add a Python file that declares your app's tools, so that napari, Fiji and QuPath can run them. This is experimental.
     know:
       - The form asks for your repository address and a GitHub personal access token. You can add several notebooks in one pull request.
       - After you merge the pull request, a workflow checks the notebook and its dependencies.
@@ -63,6 +64,7 @@ steps:
       - {href: guides/notebook-upload/, label: Add or update a notebook}
       - {href: guides/personal-access-token/, label: Create a personal access token}
       - {href: guides/workflow-status/, label: Check the status of workflows}
+      - {href: guides/image-software/, label: "Use apps inside napari, Fiji and QuPath (experimental)"}
   - id: step-5
     title: Create a release and share it
     text: Publish a release on GitHub, and a workflow builds the installers. Share the link to your release and anyone can install the app from it.
@@ -95,7 +97,6 @@ later:
     - {href: guides/notebook-upload/, label: Update a notebook}
     - {href: guides/installer-images/, label: Add your own logo and installer images}
     - {href: guides/template-synchronization/, label: Keep up with template updates}
-    - {href: guides/image-software/, label: "Use apps inside napari, Fiji and QuPath (experimental)"}
 handoff:
   text: Your release has installers. Explore what the people who install your app receive.
   link: Explore an installed app

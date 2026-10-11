@@ -59,11 +59,11 @@ class PageTests(unittest.TestCase):
         self.assertEqual(data["handoff"]["href"], "demo/")
 
     def test_customisation_is_shown_only_where_there_is_something_to_customise(self) -> None:
-        """Steps 1, 2 and 5 have a "Make it yours" tile; a step with an empty list has none."""
+        """Steps 1, 2, 4 and 5 have a "Make it yours" tile; a step with an empty list has none."""
         data = pages_how.load()
         for i, step in enumerate(data["steps"]):
             self.assertEqual("Make it yours" in pages_how.step_html(data, i), bool(step["customise"]), step["id"])
-        self.assertEqual([bool(s["customise"]) for s in data["steps"]], [True, True, False, False, True])
+        self.assertEqual([bool(s["customise"]) for s in data["steps"]], [True, True, False, True, True])
 
     def test_the_picture_at_the_side_frames_each_of_the_five_steps(self) -> None:
         """One loop and one fade per step, alt texts, sizes, caption and the CC BY credit are there; a missing picture stops the build."""

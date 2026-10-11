@@ -1,12 +1,14 @@
 ---
 title: Submit your app
 description: How to list your LabConstrictor app in the App Centre.
+layout: wide
 edit_url: https://github.com/CellMigrationLab/LabConstrictor-Site/edit/main/content/submit.md
 ---
 
 # Submit your app
 
 Built an app with LabConstrictor? Listing it takes three steps and no one needs to copy files around: **your app keeps its own description, and the App Centre reads it from your repository.**
+{ .lc-lead }
 
 ## 1. Add a manifest to your repository
 

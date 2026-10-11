@@ -77,6 +77,7 @@ The one deliberate exception is per-app: an app that cannot be resolved is left 
 - `pathlib.Path` for paths; specific exceptions (`AppProblem` for one app, `fail()` to stop the build).
 - The demo's JavaScript (`content/demo/*.js`) follows the same rules, checked by `tests/test_js_rules.py`: a `/** */` comment with a `{type}` for every parameter and a `@returns` on every named function, at most 30 lines per function and 300 per file, no `catch` and no `|| default`; elements and table keys that must exist are read with `dom.one` / `dom.lookup`, which throw an error naming what is missing. Python in `tools/` follows the Python rules too.
 - Every new behaviour gets a test in `tests/`, including its failure case.
+- **One look per role** (DESIGN.md, "The design system"): sizes are the `--fs-*` tokens only (`tests/test_design_system.py` fails on any other `font-size`), boxes use `--pad-box` and `--radius-box`; shared looks are defined in the "roles" section at the end of `lc.css`, not per part.
 - Escape app-written text (`text.esc`); never render it as HTML or Markdown.
 - Preserve public addresses (`/apps/<slug>/`, `/guides/<slug>/`, `/use/`, `/build/`, `/ecosystem/`, `/submit/`) unless a redirect is added.
 
@@ -88,6 +89,6 @@ The one deliberate exception is per-app: an app that cannot be resolved is left 
     zensical build --strict
     python scripts/write_sitemap.py && python scripts/finish_site.py
     python scripts/check_site.py && python scripts/check_design.py
-    python tests/browser/smoke.py        # optional, by hand: real-browser checks of the built site (needs Playwright and Chromium; not run in CI)
+    python tests/browser/smoke.py        # optional, by hand: real-browser checks of the built site, including that every role (titles, links, buttons, tiles, tables) looks the same on every page (needs Playwright and Chromium; not run in CI)
 
 Changes to other repositories (the template, plugins, projects) go in a pull request there; check out a fresh branch from that repository's `main` with an explicit refspec (`git fetch origin +refs/heads/main:refs/remotes/origin/main`), because a shallow clone's `origin/main` can be stale. Do not push to `main` here before the pull requests the build depends on are merged: the daily build reads those repositories' default branches.
