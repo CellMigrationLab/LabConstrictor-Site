@@ -14,14 +14,24 @@ from lcsite.page import new_tab_links
 
 SITE = Path(__file__).resolve().parents[1] / "site"
 MAIN = re.compile(r"(<main\b.*?</main>)", re.S)
-IMG = re.compile(r"<img\b(?![^>]*\bloading=)[^>]*?(/?)>")
+IMG = re.compile(r"<img\b(?:[^>\"']|\"[^\"]*\"|'[^']*')*>")   # one img tag; a > inside a quoted value does not end it
+QUOTED = re.compile(r"\"[^\"]*\"|'[^']*'")
+
+
+def lazy_tag(tag: str) -> str:
+    """One <img ...> tag with loading="lazy" added before its closing bracket, unless it already has a loading attribute
+    (looked for outside quoted values, so alt="loading=eager" does not count)."""
+    if re.search(r"\sloading\s*=", QUOTED.sub('""', tag)):
+        return tag
+    slash = "/" if tag.endswith("/>") else ""
+    return tag[: len(tag) - 1 - len(slash)].rstrip() + ' loading="lazy"' + slash + ">"
 
 
 def lazy_images(html: str) -> str:
     """Add loading="lazy" to the images inside <main> that do not say how they load."""
     def in_main(m: re.Match) -> str:
         """The <main> element with its images made lazy."""
-        return IMG.sub(lambda i: i.group(0)[: -len(i.group(1)) - 1] + ' loading="lazy"' + i.group(1) + ">", m.group(1))
+        return IMG.sub(lambda i: lazy_tag(i.group(0)), m.group(1))
     return MAIN.sub(in_main, html)
 
 

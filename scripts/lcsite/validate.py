@@ -41,7 +41,7 @@ def load_plain_yaml(text: str, where: str) -> Any:
     """Parse untrusted YAML. Anchors and aliases are refused: a few lines of aliases can expand into a structure
     too large to validate. Raises AppProblem for invalid YAML, aliases or an empty document."""
     try:
-        if any(isinstance(event, yaml.AliasEvent) for event in yaml.parse(text, Loader=yaml.SafeLoader)):
+        if any(isinstance(event, yaml.AliasEvent) or getattr(event, "anchor", None) is not None for event in yaml.parse(text, Loader=yaml.SafeLoader)):
             raise AppProblem(f"{where} uses YAML anchors or aliases, which are not allowed")
         data = yaml.safe_load(text)
     except yaml.YAMLError as err:

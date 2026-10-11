@@ -25,6 +25,8 @@ def check(old: str, new: str, docs: Path = DOCS) -> list[str]:
     for label, address in (("old", old), ("new", new)):
         if address.startswith("/") or not address.endswith("/"):
             found.append(f"the {label} address {address!r} must be relative to the site root and end with a slash")
+        if any(part in ("", ".", "..") for part in address.strip("/").split("/")):
+            found.append(f"the {label} address {address!r} must not contain empty, . or .. parts")
     if exists(old, docs):
         found.append(f"{old} is a real page, so it cannot also be a redirect")
     if not exists(new, docs):

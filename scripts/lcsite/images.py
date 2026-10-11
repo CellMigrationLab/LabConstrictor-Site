@@ -10,12 +10,20 @@ ICON_PX, SHOT_PX = 192, 1200      # icons are square and small; screenshots are 
 Image.MAX_IMAGE_PIXELS = 40_000_000   # Pillow raises on larger images (decompression bombs)
 
 
+def check_pixels(img: Image.Image, name: str) -> None:
+    """Raise AppProblem when an image (still undecoded: only its header was read) would need more than MAX_IMAGE_PIXELS pixels in memory.
+    Pillow itself only warns between the limit and twice the limit, so the limit is enforced here."""
+    if img.width * img.height > Image.MAX_IMAGE_PIXELS:
+        raise AppProblem(f"image {name} is {img.width} x {img.height} pixels; the limit is {Image.MAX_IMAGE_PIXELS}")
+
+
 def shrink(src: Path, dest: Path, max_side: int, square: bool = False) -> None:
     """Write `src` to `dest` (PNG for icons, JPEG for screenshots) no larger than `max_side`.
     Re-encoding drops any metadata or trailing data in the original. Raises AppProblem for
     an image Pillow cannot read."""
     try:
         with Image.open(src) as img:
+            check_pixels(img, src.name)
             img = img.convert("RGBA" if square else "RGB")
             if square:
                 img.thumbnail((max_side, max_side))
@@ -32,8 +40,9 @@ def pixel_size(path: Path) -> tuple[int, int]:
     Raises AppProblem for a file Pillow cannot read."""
     try:
         with Image.open(path) as img:
+            check_pixels(img, path.name)
             return img.size
-    except OSError as err:
+    except (OSError, Image.DecompressionBombError) as err:
         raise AppProblem(f"cannot read image {path.name}: {err}") from err
 
 

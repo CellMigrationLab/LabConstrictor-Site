@@ -2,6 +2,7 @@
 
 import html
 import re
+from datetime import date
 import unicodedata
 from urllib.parse import urlsplit
 
@@ -47,9 +48,10 @@ def slugify(text: str) -> str:
 
 
 def long_date(iso: str) -> str:
-    """"2026-09-21" (or a longer ISO timestamp) -> "21 September 2026"."""
-    y, m, d = (int(x) for x in str(iso)[:10].split("-"))
-    return f"{d} {MONTHS[m - 1]} {y}"
+    """"2026-09-21" (or a longer ISO timestamp) -> "21 September 2026". Raises ValueError for a text that is not a real calendar date
+    ("2026-00-10" or "2026-02-30"), so a wrong date is never printed as another one."""
+    day = date.fromisoformat(str(iso)[:10])
+    return f"{day.day} {MONTHS[day.month - 1]} {day.year}"
 
 
 def megabytes(size: int) -> str:
