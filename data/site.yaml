@@ -19,5 +19,8 @@ steps:
 # Copied from the "Citation" section of the template's README.md (build_site.py stops if the README no longer has this DOI).
 citation:
   lead: "If you use LabConstrictor in your research, please cite the project to support its development:"
-  reference: "Iván Hidalgo-Cenalmor, Marcela Xiomara Rivera Pineda, Bruno M. Saraiva, Ricardo Henriques, and Guillaume Jacquemet. Packaging Jupyter notebooks as installable desktop apps using LabConstrictor. arXiv preprint 2026."
+  authors: "Iván Hidalgo-Cenalmor, Marcela Xiomara Rivera Pineda, Bruno M. Saraiva, Ricardo Henriques, and Guillaume Jacquemet"
+  title: Packaging Jupyter notebooks as installable desktop apps using LabConstrictor
+  venue: arXiv preprint
+  year: "2026"
   doi: 10.48550/arXiv.2603.10704

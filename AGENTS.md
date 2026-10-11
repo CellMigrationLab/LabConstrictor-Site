@@ -8,7 +8,7 @@ A static site made with Zensical (Material-compatible, `mkdocs.yml`), published 
 
 | Page | Address | Built by |
 |---|---|---|
-| Home | `/` | `pages_site.page_home`, text in `data/site.yaml` |
+| Home | `/` | `pages_site.page_home` and `pages_home` (comic row, tiles), text in `data/site.yaml` |
 | App Centre and one page per app | `/apps/`, `/apps/<slug>/` | `pages_apps`, from the snapshot (`build/snapshot.json`) |
 | Docs (front page) | `/guides/` | `hubs.write_docs_home` |
 | Use / Build pages (picture cards) | `/use/`, `/build/` | `hubs`, from `data/hubs.yaml` |

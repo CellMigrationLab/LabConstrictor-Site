@@ -1,6 +1,6 @@
 """Home, ecosystem and submit pages."""
 
-from . import catalogue_text, citation, hosts, pages_demo, pages_related, projects
+from . import catalogue_text, citation, hosts, pages_demo, pages_home, pages_related, projects
 from .cards import card, github_badge
 from .config import CONTENT, DOCS, REPO, fail
 from .page import Page
@@ -31,11 +31,10 @@ def choice(title: str, text: str, href: str, label: str, cls: str = "") -> str:
             f'<span class="lc-go">{esc(label)}</span></a>')
 
 
-def program_pills() -> str:
-    """"napari, Fiji and QuPath" as program pills (logo + name, linked to each program's website)."""
+def program_pill_row() -> str:
+    """The program pills (logo + name, linked to each program's website) as one row, written without punctuation between them."""
     table = hosts.load()
-    pills = [hosts.pill(k, table) for k in table]
-    return ", ".join(pills[:-1]) + " and " + pills[-1]
+    return '<p class="lc-pills">' + "".join(hosts.pill(k, table) for k in table) + "</p>"
 
 
 def plugin_kind() -> str:
@@ -61,17 +60,11 @@ def page_home(site: dict, apps: list[dict]) -> None:
           + choice("I want to find an app", catalogue_text.home_find_text(apps), "apps/", "Open the App Centre")
           + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "build/", "Why and how to build one", "lc-choice--make") +
           '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256" loading="eager" fetchpriority="high"></div></div></section>')
-    p.add(comic_figure())
+    p.add(pages_home.intro_row(comic_figure(), [pages_home.how_tile(site["steps"]), pages_demo.home_tile()]))
     p.add('<section class="lc-band"><h2 class="lc-title">Featured apps</h2>',
           '<ul class="lc-grid">' + "\n".join(card(a) for a in featured) + '</ul>',
-          '<p class="lc-more"><a href="apps/">See every app</a></p></section>')
-    steps = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["text"])}</span></li>' for s in site["steps"])
-    p.add(f'<section class="lc-band lc-band--soft"><h2 class="lc-title">How it works</h2><ol class="lc-steps">{steps}</ol>',
-          f'<p class="lc-more">{github_badge(site["links"]["template"].removeprefix("https://github.com/"), "Start from the template")} · <a href="how-it-works/">See it step by step</a> · <a href="build/">Read the guides</a></p></section>')
-    p.add(pages_demo.tile_band())
-    p.add('<section class="lc-band"><h2 class="lc-title">Works where you work</h2>',
-          f'<p class="lc-center">Desktop installers, Google Colab and pip. {plugin_kind()} let apps that declare tools run inside {program_pills()}.</p>',
-          '<p class="lc-more"><a href="guides/image-software/">Use apps in your image software</a> · <a href="guides/">Read the docs</a> · <a href="ecosystem/">Explore the ecosystem</a></p></section>')
+          '<p class="lc-more"><a class="lc-go" href="apps/">See every app</a></p></section>')
+    p.add(pages_home.works_band(apps, plugin_kind(), program_pill_row()))
     p.add(citation.cite_band(site))
     p.write()
 

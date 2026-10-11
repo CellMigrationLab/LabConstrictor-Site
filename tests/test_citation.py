@@ -7,7 +7,8 @@ from pathlib import Path
 from lcsite import citation
 from lcsite.config import fail  # noqa: F401  (SystemExit is what fail raises)
 
-SITE = {"citation": {"lead": "Please cite <this>.", "reference": "A. Author. A title.", "doi": "10.48550/arXiv.2603.10704"}}
+FIELDS = {"lead": "Please cite <this>.", "authors": "A. Author and B. Author", "title": "A title", "venue": "arXiv preprint", "year": "2026", "doi": "10.48550/arXiv.2603.10704"}
+SITE = {"citation": FIELDS}
 
 
 def app(doi: str | None = None, section: str = "apps", release: bool = True) -> dict:
@@ -28,9 +29,14 @@ class HomeBlockTests(unittest.TestCase):
         self.assertIn("Please cite &lt;this&gt;.", html)
         self.assertNotIn("zenodo", html.lower())
 
+    def test_the_reference_is_formatted_as_authors_title_venue_year_doi(self) -> None:
+        """One citation line in that order, the venue in italics, inside a blockquote of its own."""
+        html = citation.cite_band(SITE)
+        self.assertIn('<blockquote class="lc-cite"><p class="lc-cite__ref">A. Author and B. Author. A title. <em>arXiv preprint</em>, 2026. <a href=', html)
+
     def test_a_missing_or_empty_key_stops_the_build_naming_the_file(self) -> None:
         """No block, a missing key and an empty value are errors that name data/site.yaml."""
-        for bad in ({}, {"citation": {"lead": "x", "reference": "y"}}, {"citation": {"lead": "x", "reference": " ", "doi": "10.1/x"}}):
+        for bad in ({}, {"citation": {"lead": "x", "title": "y"}}, {"citation": dict(FIELDS, authors=" ")}, {"citation": {k: v for k, v in FIELDS.items() if k != "year"}}):
             with self.assertRaises(SystemExit):
                 citation.cite_band(bad)
 

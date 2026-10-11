@@ -116,6 +116,6 @@ def tile_html(text: dict) -> str:
             f'<span class="lc-tile__body"><strong>{esc(t["title"])}</strong><span>{esc(t["text"])}</span><span class="lc-go">{esc(t["link"])}</span></span></a>')
 
 
-def tile_band() -> str:
-    """The home-page band that holds the demo tile (wording from data/demo.yaml)."""
-    return f'<section class="lc-band">{tile_html(load_yaml(DATA / "demo.yaml"))}</section>'
+def home_tile() -> str:
+    """The home page's demo tile (wording from data/demo.yaml)."""
+    return tile_html(load_yaml(DATA / "demo.yaml"))

@@ -7,7 +7,7 @@ from .cards import release_line
 from .config import fail
 from .text import esc
 
-KEYS = ("lead", "reference", "doi")
+KEYS = ("lead", "authors", "title", "venue", "year", "doi")
 
 
 def doi_link(doi: str) -> str:
@@ -16,7 +16,7 @@ def doi_link(doi: str) -> str:
 
 
 def load(site: dict) -> dict:
-    """data/site.yaml `citation`, checked: it must hold a non-empty lead, reference and doi (stops the build naming the file)."""
+    """data/site.yaml `citation`, checked: it must hold a non-empty lead, authors, title, venue, year and doi (stops the build naming the file)."""
     block = site["citation"] if "citation" in site else fail("data/site.yaml has no `citation` block")
     for key in KEYS:
         if key not in block or not str(block[key]).strip():
@@ -24,13 +24,19 @@ def load(site: dict) -> dict:
     return block
 
 
+def reference_html(c: dict) -> str:
+    """The reference as a formatted citation: authors, title, venue in italics, year, and the DOI as a link (all text escaped)."""
+    return (f'<p class="lc-cite__ref">{esc(c["authors"])}. {esc(c["title"])}. <em>{esc(c["venue"])}</em>, {esc(c["year"])}. '
+            f'<a href="{esc(doi_link(c["doi"]))}">doi:{esc(c["doi"])}</a></p>')
+
+
 def cite_band(site: dict) -> str:
-    """The home page's "Cite LabConstrictor" band: the template README's sentence and reference, and a link to the preprint."""
+    """The home page's "Cite LabConstrictor" band: the template README's sentence, the formatted reference and a link to the preprint."""
     c = load(site)
-    return ('<section class="lc-band lc-band--soft"><h2 class="lc-title" id="cite">Cite LabConstrictor</h2>'
-            f'<p class="lc-center">{esc(c["lead"])}</p><p class="lc-center">{esc(c["reference"])} <a href="{esc(doi_link(c["doi"]))}">doi:{esc(c["doi"])}</a></p>'
-            '<p class="lc-more"><a class="lc-go" href="' + esc(doi_link(c["doi"])) + '">Read the preprint</a></p>'
-            '<p class="lc-small lc-center">Each app page says what its authors ask you to cite.</p></section>')
+    return ('<section class="lc-band"><h2 class="lc-title" id="cite">Cite LabConstrictor</h2>'
+            f'<p class="lc-cite__lead">{esc(c["lead"])}</p><blockquote class="lc-cite">{reference_html(c)}</blockquote>'
+            '<p class="lc-more"><a class="lc-go" href="' + esc(doi_link(c["doi"])) + '">Read the preprint</a>'
+            '<span class="lc-small">Each app page says what its authors ask you to cite.</span></p></section>')
 
 
 def check_template_readme(site: dict, template_dir: Path) -> None:

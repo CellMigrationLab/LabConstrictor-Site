@@ -64,9 +64,14 @@ One size (12 px, bold). Colour says the role: green = route (Desktop, Colab), gr
 - Without JavaScript the live windows are hidden and three real figures with captions are shown instead.
 - The page loads its own style and script through the `page_css` and `page_js` front matter, so no other page pays for them.
 
+## Home page
+
+- Sections are left-aligned under their title so the cards and tiles line up with it: the hero, then the comic (about three fifths of the width) with two side tiles, **How it works** (the titles of `steps` in `data/site.yaml` as one sentence) and **Try the demo** (`data/demo.yaml` `tile`), each a whole-tile link; then Featured apps, then "Packaged once, easy to install, available where you need it" with up to three tiles (installers with the systems, Colab and pip, image software with the program pills), then the citation. The tiles are `pages_home`; each says only what some app offers, so one is left out when no app backs it. On a phone the comic is three stacked panels and the tiles follow it.
+- Section titles are larger than the titles of the tiles inside them. Every link that leaves a section is the green arrow link (`lc-go`).
+
 ## Citation
 
-- **Home block** (`#cite`, `citation.cite_band`): the heading "Cite LabConstrictor", the template README's sentence and reference as plain prose, the preprint's DOI as a text link and one action link ("Read the preprint"), and one small line saying that each app page names what to cite. Its text is `citation:` in `data/site.yaml`, copied from the template README; `build_site.py` stops if the README no longer has that DOI. The footer's "Cite LabConstrictor" is an internal link to this block. The site shows the preprint only, not a software archive.
+- **Home block** (`#cite`, `citation.cite_band`): the heading "Cite LabConstrictor", the template README's sentence and the reference formatted as a citation (authors, title, venue in italics, year, DOI link) in a quote block, the preprint's DOI as a text link and one action link ("Read the preprint"), and one small line saying that each app page names what to cite. Its text is `citation:` in `data/site.yaml`, copied from the template README; `build_site.py` stops if the README no longer has that DOI. The footer's "Cite LabConstrictor" is an internal link to this block. The site shows the preprint only, not a software archive.
 - **App page** (`#cite`, `citation.app_section`, right after "Using it"): "How to cite" with the manifest's `doi` as a text link and an action link ("Read the paper"), then the latest release as the version to name. Without a `doi` it says only that the listing names no publication to cite (a testing app without one has no section). The site never builds a reference from a DOI registry.
 
 ## App page facts
