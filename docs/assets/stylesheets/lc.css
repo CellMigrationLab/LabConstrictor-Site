@@ -458,13 +458,14 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-ostile.is-yours::after { color: #fff; }
 
 /* title of a tile or card: display font, h3 size, 600 */
-.lc-card__title strong, .lc-choice strong, .lc-cat strong, .lc-feature__body strong, .lc-tile__title, [dir] .md-typeset .lc-ostile h3, [dir] .md-typeset .lc-tile__body .lc-tile__title {
+.lc-card__title strong, .lc-choice strong, .lc-cat strong, .lc-feature__body strong, .lc-tile__title, [dir] .md-typeset .lc-related__title, [dir] .md-typeset .lc-ostile h3, [dir] .md-typeset .lc-tile__body .lc-tile__title {
   font-family: var(--lc-display); font-size: var(--fs-h3); font-weight: 600; line-height: 1.25; letter-spacing: -.01em; color: var(--lc-strong); }
 [dir] .md-typeset .lc-ostile h3, [dir] .md-typeset .lc-tile__body .lc-tile__title { margin: 0; }
+[dir] .md-typeset .lc-related__title { margin: 0 0 .4rem; }
 .lc-footer strong { font-family: var(--lc-display); font-size: var(--fs-h3); font-weight: 700; }
 
 /* description of a tile or card: ui size, 1.55 line height */
-.lc-card__text, .lc-feature__body span, .lc-cat span, .lc-choice p, .lc-tile__body > span:not(.lc-go), .lc-ostile p:not(.lc-small) { font-size: var(--fs-ui); line-height: 1.55; color: var(--lc-fg); }
+.lc-card__text, .lc-feature__body span, .lc-cat span, .lc-choice p, .lc-tile__body > span:not(.lc-go), .lc-ostile p:not(.lc-small), .lc-related__item p:not(.lc-small) { font-size: var(--fs-ui); line-height: 1.55; color: var(--lc-fg); }
 
 /* lead: the larger, light sentence under a title */
 .md-typeset .lc-lead, .md-typeset .lc-lead-text, .md-typeset .how__text, .md-typeset .lc-panel .lc-lead-text { font-size: var(--fs-lead); font-weight: 300; line-height: 1.6; color: var(--lc-fg); }

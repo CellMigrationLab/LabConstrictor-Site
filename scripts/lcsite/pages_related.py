@@ -22,7 +22,7 @@ def entry_html(entry: dict, note: str) -> str:
     paper = (f'<p class="lc-small">{esc(entry["reference"])}, <a href="{esc(citation.doi_link(entry["doi"]))}">doi:{esc(entry["doi"])}</a></p>'
              if "doi" in entry else "")
     shared = f'<p class="lc-small">{esc(note)}</p>' if "shared_authors" in entry else ""
-    return (f'<li class="lc-related__item"><strong>{esc(entry["name"])}</strong><p>{esc(entry["approach"])}</p>'
+    return (f'<li class="lc-related__item"><h3 class="lc-related__title">{esc(entry["name"])}</h3><p>{esc(entry["approach"])}</p>'
             f'<p><em>A good fit when</em> {esc(entry["fit"])}</p>{paper}{shared}'
             f'<p class="lc-small">Checked {entry["checked"].day} {entry["checked"]:%B %Y}</p>{entry_links(entry)}</li>')
 

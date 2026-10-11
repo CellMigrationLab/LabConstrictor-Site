@@ -58,7 +58,7 @@ class SectionTests(unittest.TestCase):
     def test_the_name_is_not_a_link_and_text_is_escaped(self) -> None:
         """The name is bold text (links are pills), and author text is escaped."""
         html = pages_related.entry_html(bad(name="Tool <b>"), DATA["shared_authors_note"])   # not validated: the renderer escapes whatever it gets
-        self.assertIn("<strong>Tool &lt;b&gt;</strong>", html)
+        self.assertIn('<h3 class="lc-related__title">Tool &lt;b&gt;</h3>', html)
         self.assertNotIn("<b>", html)
 
     def test_the_shared_authors_note_and_paper_appear_only_when_set(self) -> None:
