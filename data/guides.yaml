@@ -5,6 +5,9 @@
 #              scripts/fetch_guides.py, titled by its first '# Heading'. Adding a module = adding one line here.
 #   template:  a page of the template's docs that is for users, shown here; title and text stay in the template
 #              (the build stops if the template no longer has it)
+# Guides a first-time reader must be able to follow to the end: scripts/check_site.py warns when one lacks "What you need" (or
+# "Before you start"), "Check that it worked" or "If something does not work".
+critical: [install, initialise-repository, notebook-requirements, notebook-upload, executable-creation]
 sections:
   - title: Install and open
     items:

@@ -18,6 +18,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+from lcsite import guide_shape
 from lcsite.config import ROOT, SNAPSHOT, load_json
 
 SITE = ROOT / "site"
@@ -163,6 +164,22 @@ def reach_problems(pages: dict[Path, PageParts], max_clicks: int = 3) -> list[st
     return found
 
 
+LITERAL_LINK = re.compile(r"\]\([^)\s]")
+CODE_BLOCK = re.compile(r"<(pre|code)\b.*?</\1>", re.S)
+
+
+def literal_markdown_problems() -> list[str]:
+    """Pages whose text still shows Markdown link syntax "](" outside code (a footer written in the wrong format), as "page: message" lines."""
+    found = []
+    for page in sorted(SITE.rglob("*.html")):
+        text = page.read_text(encoding="utf-8")
+        main = text[text.find("<main"):text.find("</main>")] if "<main" in text else ""
+        visible = re.sub(r"<[^>]+>", "", CODE_BLOCK.sub("", main))
+        if LITERAL_LINK.search(visible):
+            found.append(f"{page.relative_to(SITE)}: shows literal Markdown link syntax ](...)")
+    return found
+
+
 def missing_files() -> list[str]:
     """One line per required file that is missing from site/."""
     return [f"missing {name}" for name in REQUIRED if not (SITE / name).is_file()]
@@ -177,6 +194,9 @@ def main() -> int:
     pages = {p.resolve(): parse(p) for p in sorted(SITE.rglob("*.html")) if p.name != "404.html"}
     problems = (missing_files() + link_problems(pages) + edit_link_problems(pages) + menu_problems(pages)
                 + reach_problems(pages) + escaping_problems(load_json(SNAPSHOT)))
+    # Warnings for now: they become problems once the template's pages comply (the template-synchronization footer shows literal Markdown today).
+    for warning in guide_shape.warnings(SITE, guide_shape.critical_slugs()) + [f"WARNING {w}" for w in literal_markdown_problems()]:
+        print(warning, file=sys.stderr)
     for problem in problems:
         print(f"PROBLEM {problem}", file=sys.stderr)
     print(f"check_site: {len(pages)} pages, {len(problems)} problems")

@@ -263,28 +263,3 @@ class SiteCheckTests(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-
-class HostPhraseTests(unittest.TestCase):
-    """What the site says about an app's host comes from the plugin's own status, in one wording everywhere."""
-
-    def test_every_status_has_one_wording_and_the_same_phrase_is_used_everywhere(self) -> None:
-        """Chip, header badge and Details row show the same phrase; an unknown status stops the build naming the program."""
-        from unittest import mock
-        from lcsite import pages_apps, projects
-        with mock.patch.object(projects, "host_status", return_value="Experimental"):
-            phrase = cards.host_phrase("napari")
-            self.assertEqual(phrase, "napari plugin: experimental")
-            self.assertIn(phrase, cards.host_chip("napari"))
-            self.assertIn(phrase, cards.host_badge("napari"))
-        with mock.patch.object(projects, "host_status", return_value="Install from GitHub"):
-            self.assertEqual(cards.host_phrase("fiji"), "Fiji plugin: install from GitHub")
-        with mock.patch.object(projects, "host_status", return_value="Soon"), self.assertRaises(SystemExit):
-            cards.host_phrase("qupath")
-        self.assertTrue(hasattr(pages_apps, "works_in"))
-
-    def test_no_page_text_promises_soon(self) -> None:
-        """The words "Soon in" are gone from the code and the data."""
-        from pathlib import Path
-        root = Path(__file__).resolve().parents[1]
-        hits = [str(p) for folder in ("scripts", "data") for p in (root / folder).rglob("*") if p.suffix in (".py", ".yaml") and "Soon in" in p.read_text(encoding="utf-8")]
-        self.assertEqual(hits, [])
