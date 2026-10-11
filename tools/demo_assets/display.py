@@ -12,13 +12,22 @@ QUALITY = 82
 
 
 def window(image: np.ndarray, low: float = 1.0, high: float = 99.8) -> tuple[float, float]:
-    """Display window as two percentiles of the pixels (raises ValueError for an empty image)."""
+    """Display window as two percentiles of the pixels. Raises ValueError for an empty image, for pixels that are not all finite, and
+    for a window with no width (a constant image), which would otherwise be drawn as a black picture without a word."""
+    if image.size == 0:
+        raise ValueError("cannot take a display window of an empty image")
+    if not np.isfinite(image).all():
+        raise ValueError("the image has NaN or infinite pixels")
     lo, hi = np.percentile(image, [low, high])
+    if hi <= lo:
+        raise ValueError(f"the display window is empty (low {lo}, high {hi}): the image is constant or its range is too small for the percentiles")
     return float(lo), float(hi)
 
 
 def to_uint8(image: np.ndarray, lo: float, hi: float) -> np.ndarray:
-    """Linear stretch of `image` between lo and hi to 8 bits."""
+    """Linear stretch of `image` between lo and hi to 8 bits. Raises ValueError unless lo and hi are finite and hi > lo."""
+    if not (np.isfinite(lo) and np.isfinite(hi) and hi > lo):
+        raise ValueError(f"cannot stretch between {lo} and {hi}")
     return (np.clip((image - lo) / (hi - lo), 0, 1) * 255).astype(np.uint8)
 
 

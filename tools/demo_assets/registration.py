@@ -6,6 +6,11 @@ It mirrors the notebook NucleiSky2DApp.ipynb: 'Load Existing Masks' (no rescalin
 import json
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:   # only the annotations below name these; the offline tool imports them where it runs
+    import numpy as np
+    import pandas
 
 SEED = 0
 

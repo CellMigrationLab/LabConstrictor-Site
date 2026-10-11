@@ -9,12 +9,12 @@ MAX_FUNCTION_LINES, MAX_FILE_LINES = 30, 300
 SOURCES = sorted(p for folder in ("scripts", "tests", "tools") for p in (ROOT / folder).rglob("*.py") if "__pycache__" not in p.parts)
 
 
-def functions(tree: ast.AST) -> list[ast.FunctionDef]:
+def functions(tree: ast.AST) -> list[ast.FunctionDef | ast.AsyncFunctionDef]:
     """Every function and method in a parsed file, nested ones included."""
     return [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
 
 
-def unannotated(fn: ast.FunctionDef) -> list[str]:
+def unannotated(fn: ast.FunctionDef | ast.AsyncFunctionDef) -> list[str]:
     """The parameters of a function that have no annotation, plus "return" when it has none (self and cls need none)."""
     a = fn.args
     params = a.posonlyargs + a.args + a.kwonlyargs + [x for x in (a.vararg, a.kwarg) if x]
