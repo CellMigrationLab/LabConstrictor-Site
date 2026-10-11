@@ -3,30 +3,27 @@
 import unittest
 from unittest import mock
 
-from lcsite import pages_demo, pages_home as ph, pages_site
+from lcsite import pages_demo, pages_home as ph, pages_how, pages_site
 from lcsite.config import load_yaml, DATA
 
 SITE = {"steps_title": "From notebook to app",
-        "steps": [{"title": "Develop in a notebook", "text": "Run it step by step."}, {"title": "Package it", "text": "Start from the template."}, {"title": "Share the app", "text": "Publish a release."}],
         "how_tile": {"title": "How it works", "text": "See how to turn a notebook workflow into an app.", "link": "See the steps"},
         "plugins": {"title": "Make your workflow available in other software", "text": "Your notebook is still the main interface.", "link": "Explore the ecosystem"}}
 
 
 class StepsTests(unittest.TestCase):
-    """The three steps come from data/site.yaml."""
+    """The home page's steps are the steps of How it works, written once in data/how-it-works.yaml."""
 
-    def test_the_steps_are_a_numbered_list_with_their_title_and_text(self) -> None:
-        """Three steps in an ordered list under the band title."""
-        html = ph.steps_band(SITE)
+    def test_the_steps_mirror_how_it_works_in_order_and_link_to_each_step(self) -> None:
+        """One numbered item per How it works step, in the same order, each title linked to its step and followed by its summary."""
+        steps = pages_how.load()["steps"]
+        html = ph.steps_band("From notebook to app", steps)
         self.assertIn("From notebook to app", html)
-        self.assertEqual(html.count("<li>"), 3)
-        self.assertIn("<strong>Package it</strong><span>Start from the template.</span>", html)
-
-    def test_a_step_with_a_missing_or_extra_key_stops_the_build(self) -> None:
-        """A step without text, or with an unknown key, is an error."""
-        for bad in ({"title": "x"}, {"title": "x", "text": "y", "icon": "z"}):
-            with self.assertRaises(SystemExit):
-                ph.steps_band(dict(SITE, steps=[bad]))
+        self.assertEqual(html.count("<li>"), len(steps))
+        positions = [html.index(f'href="how-it-works/#{s["id"]}"') for s in steps]
+        self.assertEqual(positions, sorted(positions))
+        for step in steps:
+            self.assertIn(f'>{step["title"]}</a></strong><span>', html.replace("&#x27;", "'").replace("(s)", "(s)"))
 
 
 class RealDataTests(unittest.TestCase):
@@ -35,7 +32,7 @@ class RealDataTests(unittest.TestCase):
     def test_the_real_site_data_builds_every_section(self) -> None:
         """data/site.yaml gives the steps, the How it works tile and the plugin section; the real wording promises nothing the issue rules out."""
         site = load_yaml(DATA / "site.yaml")
-        html = ph.steps_band(site) + ph.how_tile(site) + ph.plugins_band(site, "")
+        html = ph.steps_band(site["steps_title"], pages_how.load()["steps"]) + ph.how_tile(site) + ph.plugins_band(site, "")
         for banned in ("Packaged once", "runs everywhere", "no coding", "turn any notebook into a plugin", "one click"):
             self.assertNotIn(banned.lower(), html.lower())
         self.assertIn("notebook", site["hero"]["text"].lower())

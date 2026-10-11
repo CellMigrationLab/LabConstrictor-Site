@@ -10,13 +10,6 @@ links:
   submit_issue: https://github.com/CellMigrationLab/LabConstrictor-Site/issues/new?template=submit-app.yml
   tools_docs: https://github.com/CellMigrationLab/LabConstrictor-Tools/tree/main/docs
 steps_title: From notebook to app
-steps:
-  - title: Develop in a notebook
-    text: Run the analysis step by step, check the results and make changes as you go.
-  - title: Package it with LabConstrictor
-    text: Start from the GitHub template and add your notebook, code and dependencies.
-  - title: Share the app
-    text: Publish a release to build installers. Others can open your notebook in the installed JupyterLab app.
 tiles_title: See it in action
 how_tile:
   title: How it works

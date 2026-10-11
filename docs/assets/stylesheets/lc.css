@@ -529,3 +529,7 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-docs .md-content__inner img, .md-typeset .lc-shot img, .md-typeset .lc-comic img, .how__crop, [dir] .md-typeset .how__map img, .md-typeset .lc-demo__fig img, .lc-feature__shot { border-radius: var(--radius-img); }
 .md-typeset .highlight, .md-typeset pre, .md-typeset pre > code, .lc-code { border-radius: var(--radius-code); }
 .lc-docs__nav, .lc-footer, .lc-header { font-family: var(--lc-sans); letter-spacing: -.01em; }   /* the same font stack and tracking as the text */
+/* the home page's steps: the five steps of How it works in one row on a wide screen, one under the other below */
+@media (min-width: 60rem) { [dir] .md-typeset ol.lc-steps:not(.lc-steps--flow) { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.2rem; } }
+@media (max-width: 59.99rem) { [dir] .md-typeset ol.lc-steps:not(.lc-steps--flow) { grid-template-columns: 1fr; } }
+.lc-steps strong a { color: var(--lc-strong); }

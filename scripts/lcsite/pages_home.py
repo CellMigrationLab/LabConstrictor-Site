@@ -1,9 +1,8 @@
-"""The home page's sections after the hero, in the order of the story: the problem (the comic), the solution (three steps), the two tiles, the optional plugin section, the featured apps.
+"""The home page's sections after the hero, in the order of the story: the problem (the comic), the solution (the steps of How it works), the two tiles, the optional plugin section, the featured apps.
 Wording is in data/site.yaml and data/demo.yaml; the apps shown are the ones the catalogue marks as featured."""
 
 from .text import esc
 
-STEP_KEYS = {"title", "text"}
 
 
 def featured_apps(apps: list[dict]) -> list[dict]:
@@ -11,13 +10,11 @@ def featured_apps(apps: list[dict]) -> list[dict]:
     return [a for a in apps if a["featured"] and a["section"] == "apps"]
 
 
-def steps_band(site: dict) -> str:
-    """"From notebook to app": the three steps of data/site.yaml as a numbered row (the interactive version is the How it works page)."""
-    for step in site["steps"]:
-        if set(step) != STEP_KEYS:
-            raise SystemExit(f"data/site.yaml: a step needs exactly {sorted(STEP_KEYS)}, got {sorted(step)}")
-    items = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["text"])}</span></li>' for s in site["steps"])
-    return f'<section class="lc-band lc-band--soft"><h2 class="lc-title">{esc(site["steps_title"])}</h2><ol class="lc-steps">{items}</ol></section>'
+def steps_band(title: str, steps: list[dict]) -> str:
+    """"From notebook to app": the steps of How it works (data/how-it-works.yaml, already checked), each with its title, linked to its step on that
+    page, and its one-line summary; the same steps in the same order, written once."""
+    items = "".join(f'<li><strong><a href="how-it-works/#{esc(s["id"])}">{esc(s["title"])}</a></strong><span>{esc(s["summary"])}</span></li>' for s in steps)
+    return f'<section class="lc-band lc-band--soft"><h2 class="lc-title">{esc(title)}</h2><ol class="lc-steps">{items}</ol></section>'
 
 
 def how_tile(site: dict) -> str:

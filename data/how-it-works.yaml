@@ -1,5 +1,5 @@
 # The "How LabConstrictor works" page (/how-it-works/): a quick overview of the whole process, one step at a time.
-# Each step: what you do (text), what to remember (know), where you can customise (customise, may be empty) and the guides.
+# Each step: a one-line summary (shown on the home page), what you do (text), what to remember (know), where you can customise (customise, may be empty) and the guides.
 # No code and no interactive panels: the guides (linked from every step) do the detail. Every statement follows the guide it links to.
 # Written here only; pages_how.py checks the exact keys and that every link goes to a page of the site.
 title: How LabConstrictor works
@@ -8,6 +8,7 @@ steps_title: The five steps
 steps:
   - id: step-1
     title: Build your notebook(s)
+    summary: "Develop and test your analysis in a Jupyter notebook that runs in Colab and in JupyterLab."
     text: Start with a notebook that already works for you. It is what your colleagues open in the installed app, so there is no separate interface to write.
     region: [6, 55, 820, 127]
     customise:
@@ -22,6 +23,7 @@ steps:
       - {href: guides/notebook-upload/, label: Add the version cell}
   - id: step-2
     title: Create your repository
+    summary: "Start from the GitHub template and give your app its name with a short web form."
     text: Start from the LabConstrictor template on GitHub, then fill in a short form that gives your project its name and version.
     region: [6, 188, 820, 199]
     customise:
@@ -40,6 +42,7 @@ steps:
       - {href: guides/accept-pull-request/, label: Accept a pull request}
   - id: step-3
     title: Define your requirements
+    summary: "List the packages each notebook needs in a requirements.yaml file."
     text: Each notebook comes with a requirements.yaml that lists the packages it needs, its Python version and a short description.
     region: [6, 400, 820, 205]
     customise: []
@@ -52,6 +55,7 @@ steps:
       - {href: guides/external-code-upload/, label: Upload external code}
   - id: step-4
     title: Add your notebook
+    summary: "Upload the notebook and its requirements with the web form; a workflow checks them."
     text: Upload your notebook and its requirements.yaml with the LabConstrictor web form, which opens a pull request in your repository.
     region: [6, 615, 820, 143]
     customise:
@@ -67,6 +71,7 @@ steps:
       - {href: guides/image-software/, label: "Use apps inside napari, Fiji and QuPath (experimental)"}
   - id: step-5
     title: Create a release and share it
+    summary: "A release builds installers for Windows, macOS and Linux; share its link or list the app in the App Centre."
     text: Publish a release on GitHub, and a workflow builds the installers. Share the link to your release and anyone can install the app from it.
     region: [6, 768, 820, 122]
     customise:

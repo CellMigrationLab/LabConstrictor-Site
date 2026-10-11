@@ -11,7 +11,7 @@ from .text import esc
 SOURCE = CONTENT / "how"
 OUT = DOCS / "assets" / "how"
 TOP_KEYS = {"title", "lead", "steps_title", "steps", "map", "figure_credit", "later", "handoff"}
-STEP_KEYS = {"id", "title", "text", "region", "customise", "know", "guides"}
+STEP_KEYS = {"id", "title", "summary", "text", "region", "customise", "know", "guides"}
 MAP_KEYS = {"pipeline_file", "pipeline_alt", "caption"}
 CREDIT_KEYS = {"text", "link", "href"}
 LINK_KEYS = {"href", "label"}
