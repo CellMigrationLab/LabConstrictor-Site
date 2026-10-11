@@ -20,7 +20,7 @@
 /* ------------------------------------------------------------------ tokens */
 /* Palette sampled from LabConstrictor_Logo.png: green #1fb221 and #1c5f1c, orange #ff8000, brown #8c4d0d. */
 :root {
-  --lc-bg: #fff; --lc-fg: #33433a; --lc-strong: #10211a; --lc-muted: #5b6a61; --lc-line: #dde7dd; --lc-soft: #f3f8f1; --lc-footer: #0f2214;
+  --lc-bg: #fff; --lc-fg: #33433a; --lc-strong: #10211a; --lc-muted: #5b6a61; --lc-line: #dde7dd; --lc-soft: #f3f8f1; --lc-band: #ebf4e7; --lc-footer: #0f2214;
   --lc-accent: #1fb221; --lc-accent-strong: #1c5f1c; --lc-accent-soft: #e4f4e2; --lc-accent-deep: #134313;
   --lc-orange: #ff8000; --lc-orange-soft: #fff0de; --lc-orange-ink: #8c4d0d;
   --lc-ok: #1c5f1c; --lc-ok-soft: #e4f4e2;
@@ -106,7 +106,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 /* ------------------------------------------------------------------ home */
 .lc-home { max-width: none; margin: 0; float: none; }
 .lc-home .md-typeset { padding-bottom: 0; }
-.lc-hero { background: var(--lc-soft); border-bottom: 1px solid var(--lc-line); overflow: hidden; }
+.lc-hero { background: var(--lc-band); border-bottom: 1px solid var(--lc-line); overflow: hidden; }
 .lc-hero__in { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); gap: 2rem; align-items: center; max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: clamp(2rem, 6vw, 3.6rem) var(--lc-gutter); }
 .lc-hero h1 { font-size: clamp(2rem, 5.4vw, 3.5rem); line-height: 1.04; letter-spacing: -.03em; margin: 0 0 .5em; max-width: 14ch; }
 .lc-hero p { max-width: 34rem; font-size: clamp(.9rem, 2vw, 1.06rem); margin: 0; }
@@ -129,7 +129,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 }
 .lc-comic figcaption { margin-top: .8rem; font-size: .68rem; color: var(--lc-muted); }
 .lc-band { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: 3.2rem var(--lc-gutter); }
-.lc-band--soft { max-width: none; background: var(--lc-soft); padding-left: max(var(--lc-gutter), calc((100% - var(--lc-wide)) / 2)); padding-right: max(var(--lc-gutter), calc((100% - var(--lc-wide)) / 2)); }   /* full-width band; the padding puts its content on the same left edge as the hero and the white bands */
+.lc-band--soft { max-width: none; background: var(--lc-band); padding-left: max(var(--lc-gutter), calc((100% - var(--lc-wide)) / 2)); padding-right: max(var(--lc-gutter), calc((100% - var(--lc-wide)) / 2)); }   /* full-width band; the padding puts its content on the same left edge as the hero and the white bands */
 .lc-band--soft > * { max-width: none; margin-left: 0; margin-right: 0; }
 [dir] .md-typeset ol.lc-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.4rem; list-style: none; counter-reset: step; margin: 0 auto; padding: 0; }
 [dir] .md-typeset ol.lc-steps > li { margin-left: 0; }
