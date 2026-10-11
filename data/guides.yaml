@@ -22,3 +22,6 @@ sections:
       - {slug: napari, repo: CellMigrationLab/napari-labconstrictor, path: docs/user-guide.md}
       - {slug: fiji, repo: CellMigrationLab/LabConstrictor-Fiji, path: docs/user-guide.md}
       - {slug: qupath, repo: CellMigrationLab/LabConstrictor-QuPath, path: docs/user-guide.md}
+  - title: Connect to a microscope
+    items:
+      - {slug: microscope, repo: CellMigrationLab/NucleiSky, path: docs/smart_microscopy/smart_microscopy.md}

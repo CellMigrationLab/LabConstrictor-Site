@@ -27,6 +27,12 @@ use:
       link: How it works
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/N2_napari_form.png}
       alt: A prototype - napari with the LabConstrictor dock widget open on a test app, showing a form generated from a tool's declaration.
+    - title: Connect it to a microscope
+      text: "An example from NucleiSky, written by its authors for a Nikon microscope with NIS-Elements JOBS: scan a large area, find where a query image sits in it, then acquire there. Their guide says the same principles apply to other microscopes and software."
+      href: guides/microscope/
+      link: Connect NucleiSky to a microscope
+      image: {repo: CellMigrationLab/NucleiSky, path: docs/smart_microscopy/assets/JOBS_NucleiSky.png}
+      alt: The NucleiSky job loaded in NIS-Elements JOBS, a list of acquisition, autofocus and analysis steps.
   demo:
     title: Want to see it first?
     text: A hands-on preview of a microscopy registration in a notebook, napari and Fiji, using example data.

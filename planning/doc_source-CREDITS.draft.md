@@ -1,6 +1,6 @@
 # Credits for the LabConstrictor logo and comic
 
-Draft template for a `CREDITS.md` file at the root of the template's `doc_source` branch (the branch that holds the pictures the documentation and the website use). Creator, licence and generative tools are filled in (told by the project lead); every other field is for the maintainer to complete. Leave a field empty or write "unknown" rather than guess. Name a person only if they agree to be named.
+Draft template for a `CREDITS.md` file at the root of the template's `doc_source` branch (the branch that holds the pictures the documentation and the website use). Creator, rights holder, licence and generative tools are filled in (told by the project lead); every other field is for the maintainer to complete. Leave a field empty or write "unknown" rather than guess. Name a person only if they agree to be named.
 
 Why this file exists: the website and apps built from the template show the logo and the comic, but the repository does not say who made them, who holds the rights, or under which licence they may be reused.
 
@@ -13,7 +13,7 @@ Copy one block per artwork.
 - Name of the work:
 - File in the repository (path on `doc_source`):
 - Creator (named only if they agree; otherwise write "not named at the creator's request"): Iván Hidalgo-Cenalmor (named by the project lead on 2026-10-11, who asked for the credit in the website footer)
-- Rights holder (person, lab or institution):
+- Rights holder (person, lab or institution): Iván Hidalgo-Cenalmor (told by the project lead on 2026-10-11)
 - Licence (name and link; "all rights reserved" if none was granted): CC BY 4.0, https://creativecommons.org/licenses/by/4.0/ (chosen by the project lead on 2026-10-11, who wrote "CC BY"; version 4.0 assumed, confirm)
 - Year created:
 - Generative tools used (yes or no; if yes, which tool, which version, and what it produced): no (told by the project lead on 2026-10-11)
@@ -26,7 +26,7 @@ Copy one block per artwork.
 - Name of the work:
 - File(s) in the repository (path on `doc_source`):
 - Creator (named only if they agree; otherwise write "not named at the creator's request"): Iván Hidalgo-Cenalmor (named by the project lead on 2026-10-11, who asked for the credit in the website footer)
-- Rights holder (person, lab or institution):
+- Rights holder (person, lab or institution): Iván Hidalgo-Cenalmor (told by the project lead on 2026-10-11)
 - Licence (name and link; "all rights reserved" if none was granted): CC BY 4.0, https://creativecommons.org/licenses/by/4.0/ (chosen by the project lead on 2026-10-11, who wrote "CC BY"; version 4.0 assumed, confirm)
 - Year created:
 - Generative tools used (yes or no; if yes, which tool, which version, and what it produced): no (told by the project lead on 2026-10-11)

@@ -31,7 +31,7 @@ Legend: DONE = on the site (feature branch; `main` has everything up to commit 2
 | Plugin guide fixes (Fiji (ImageJ), first-run lines, napari test-version wording) | DRAFT (`planning/results/8-plugin-guide-drafts.md`) |
 | `rewrite_links` fails on links to unpublished template pages | WAIT (ships with the template change) |
 | Clean installs, expected outputs, macOS/Windows wording | WAIT (a lab member; `CLEAN-INSTALL-CHECKLIST.md`) |
-| Connect to a microscope guide (NucleiSky) | DRAFT, held from `main` until NucleiSky's change is merged (`microscope-guide-held.yaml`) |
+| Connect to a microscope guide (NucleiSky) | DONE (NucleiSky's change was merged in #30; the guide and its Use card are on the site) |
 | Interactive "How LabConstrictor works" page (Option A, 10 chapters, including branding and updating a notebook) | DONE (top menu, Build hub and Docs home link to it); suggested chapters A (installer), B (branding) and E (updating notebooks) are built; C (template sync, after the first release) and D (submit) are not, and your option choice is still open (`PLAN-how-it-works.md`) |
 
 ## 3. Citation and attribution

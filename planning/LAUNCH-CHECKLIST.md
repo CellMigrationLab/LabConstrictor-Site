@@ -7,7 +7,7 @@ Switch: `mkdocs.yml` `extra: listed: true`, then update `site_url` if the domain
 - [ ] VLab4Mic's manifest carries its `doi` (decision 21).
 - [ ] The clean-install lines exist (`CLEAN-INSTALL-CHECKLIST.md`) and the install and use guides are updated from them.
 - [ ] An outside reader (not on DL4MicEverywhere, ZeroCostDL4Mic or BiaPy) has read **Related projects**; optional courtesy note to those maintainers.
-- [ ] The microscope guide is on the site (after NucleiSky's change is merged; `planning/microscope-guide-held.yaml`).
+- [x] The microscope guide is on the site (NucleiSky's change was merged in #30).
 - [ ] The template pull requests (labels, Build path order, template sync moved, use-cases link) are merged and the daily build has fetched them; then switch the guide-shape report from warnings to failures.
 
 - [ ] When the template pull request is merged: update the install anchors on the site (`pages_get.HINTS`, `content/guides/help.md`) from `#windows`, `#macos`, `#linux` to `#install-on-windows`, `#install-on-a-mac`, `#install-on-linux` in the same change (check_site fails on a broken anchor), and check the new guide "Keep your app up to date" appears in the Build track.
