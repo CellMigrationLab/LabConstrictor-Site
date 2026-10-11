@@ -32,6 +32,9 @@ Find the thing you want to change; edit it **there**, never in the site's genera
 | *Install an app* (steps for each system) | `.tools/docs/install.md` | LabConstrictor |
 | Home page text | `data/site.yaml` | this repository |
 | The **Submit** page | `content/submit.md` | this repository |
+| The **demo** page and its home tile (wording) | `data/demo.yaml` | this repository |
+| The demo's three windows, script and style | `content/demo/windows/`, `demo.js`, `demo.css` | this repository |
+| The demo's numbers and images | regenerate with `tools/demo_assets/make_demo_assets.py` (never by hand); provenance in `content/demo/README.md` | this repository |
 | The **menu** | `nav:` in `mkdocs.yml` | this repository |
 | The footer, page layout, colours | `overrides/`, `docs/assets/stylesheets/lc.css` | this repository |
 | Which projects the Ecosystem page lists | `data/ecosystem.yaml` (one `- repo: owner/name` line each) | this repository |
@@ -40,7 +43,7 @@ Find the thing you want to change; edit it **there**, never in the site's genera
 
 To **list an app**, the app's authors use the [submission form](https://github.com/CellMigrationLab/LabConstrictor-Site/issues/new?template=submit-app.yml) (or add a pointer file in `registry/`).
 
-Files under `docs/` (`index.md`, `apps/`, `guides/`, `use/`, `build/`, `ecosystem.md`, `submit.md`, `llms.txt`, `assets/{icons,shots,docs-img,images,hubs}/`), `build/` and `site/` are **generated and git-ignored**. If you change one by hand, the next build deletes your change.
+Files under `docs/` (`index.md`, `apps/`, `guides/`, `use/`, `build/`, `ecosystem.md`, `submit.md`, `demo/`, `llms.txt`, `assets/{icons,shots,docs-img,images,hubs,demo}/`), `build/` and `site/` are **generated and git-ignored**. If you change one by hand, the next build deletes your change.
 
 ## When changes appear
 

@@ -8,7 +8,7 @@ You installed a LabConstrictor app ([how to install](../install/index.md)). Here
 - **macOS:** from the Applications folder.
 - **Linux:** from your applications menu.
 
-Jupyter Lab opens in your default web browser, and the **Welcome notebook** appears. It lists the notebooks the app contains. Pick one and follow the instructions written in it. The [notebook usage guide](../notebook-usage/index.md) walks through this with pictures.
+Jupyter Lab opens in your default web browser, and the **Welcome notebook** appears. It lists the notebooks the app contains. Pick one and follow the instructions written in it. The [notebook usage guide](../notebook-usage/index.md) walks through this with pictures, and the [interactive demo](../../demo/index.md) lets you try a notebook, napari and Fiji with example data before you install anything.
 
 ## Use it without installing
 

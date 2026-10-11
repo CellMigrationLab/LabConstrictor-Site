@@ -24,6 +24,12 @@
   {% endif %}
   {% if page.meta and page.meta.jsonld %}<script type="application/ld+json">{{ page.meta.jsonld }}</script>{% endif %}
   <meta name="theme-color" content="#ffffff">
+  {#- A page can ask for its own style and script (front matter page_css / page_js); they load on that page only. -#}
+  {% for css in (page.meta.page_css if page.meta and page.meta.page_css else []) %}<link rel="stylesheet" href="{{ css | url }}">{% endfor %}
+{% endblock %}
+
+{% block scripts %}{{ super() }}
+  {% for js in (page.meta.page_js if page.meta and page.meta.page_js else []) %}<script defer src="{{ js | url }}"></script>{% endfor %}
 {% endblock %}
 
 {% block header %}

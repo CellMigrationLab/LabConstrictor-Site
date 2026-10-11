@@ -1,0 +1,28 @@
+<div class="np" data-window="napari">
+<div class="np__menu" aria-hidden="true"><span>File</span><span>View</span><span>Layers</span><span>Plugins</span><span>Window</span><span>Help</span></div>
+<div class="np__cols">
+<div class="np__left">
+<div class="np__dock"><p class="np__title">layer controls</p>
+<div class="np__panel" data-layer-panel><p class="np__row"><span>opacity:</span><input type="range" min="0" max="100" value="100" data-demo-sim data-act="opacity" aria-label="Opacity of the selected layer" aria-valuetext="1.00" disabled></p><p class="np__row"><span>blending:</span><span class="np__combo">additive</span></p><p class="np__row"><span>colormap:</span><span class="np__combo" data-colormap>gray</span></p><p class="np__hint" data-panel-hint>Select a layer to change its opacity.</p></div></div>
+<div class="np__dock"><p class="np__title">layer list</p>
+<ul class="np__layers" aria-label="Layer list">
+<li class="np__layer" data-layer-row="aligned" data-from="3" hidden><button type="button" class="np__eye" data-demo-sim data-act="eye" aria-pressed="true" aria-label="Show layer NucleiSky:query_aligned">&#128065;</button><button type="button" class="np__name" data-demo-sim data-act="select" data-layer="aligned">NucleiSky:query_aligned</button></li>
+<li class="np__layer" data-layer-row="alignment" data-from="3" hidden><button type="button" class="np__eye" data-demo-sim data-act="eye" aria-pressed="true" aria-label="Show layer NucleiSky:alignment">&#128065;</button><button type="button" class="np__name" data-demo-sim data-act="select" data-layer="alignment">NucleiSky:alignment</button></li>
+<li class="np__layer" data-layer-row="query"><button type="button" class="np__eye" data-demo-sim data-act="eye" aria-pressed="false" aria-label="Show layer query">&#128065;</button><button type="button" class="np__name" data-demo-sim data-act="select" data-layer="query">query</button></li>
+<li class="np__layer" data-layer-row="reference"><button type="button" class="np__eye" data-demo-sim data-act="eye" aria-pressed="true" aria-label="Show layer reference">&#128065;</button><button type="button" class="np__name" data-demo-sim data-act="select" data-layer="reference">reference</button></li>
+</ul></div>
+</div>
+<div class="np__viewer"><div class="lc-view np__canvas" role="img" aria-label="napari viewer. The reference nuclei in grey; once the example has run, the aligned small image is added on top in white and magenta." style="--q:{{query_width_pct}}%"><img class="lc-view__layer" data-layer="reference" src="assets/demo/reference_roi.webp" alt="" loading="lazy"><img class="lc-view__layer lc-view__query" data-layer="query" src="assets/demo/query.webp" alt="" loading="lazy" hidden><img class="lc-view__layer lc-view__blend" data-layer="aligned" src="assets/demo/aligned_roi.webp" alt="" loading="lazy" hidden><img class="lc-view__layer lc-view__blend" data-layer="alignment" src="assets/demo/aligned_roi_magenta.webp" alt="" loading="lazy" hidden></div><p class="np__note">Zoomed to the region around the match.</p></div>
+<div class="np__right"><div class="np__dock"><p class="np__title">LabConstrictor tools (LabConstrictor)</p>
+<div class="np__form"><p class="np__combo np__full">NucleiSky</p><p class="np__combo np__full">Relocalize 2D</p><p class="np__desc">Find where a rotated / rescaled query image lies in a reference image.</p>
+<p class="np__head">Images</p>
+<p class="np__row"><span>Reference</span><span class="np__combo">reference</span></p><p class="np__row"><span>Query</span><span class="np__combo">query</span></p>
+<p class="np__row"><span>Reference pixel size um (um/px)</span><span class="np__field">{{pix_reference}}</span></p><p class="np__row"><span>Query pixel size um (um/px)</span><span class="np__field">{{pix_query}}</span></p>
+<p class="np__row"><span>Reference mask</span><span class="np__combo">-----</span></p><p class="np__row"><span>Query mask</span><span class="np__combo">-----</span></p>
+<p class="np__head">Matching</p><p class="np__row"><span>Matcher</span><span class="np__combo">auto</span></p>
+<button type="button" class="np__run" data-demo-sim data-act="run-step" data-step="3">Run</button>
+<p class="np__status" role="status" data-status data-done="&#10004; example result (precomputed): rotation_deg={{rotation}}, scale={{scale}}, offset_y_px={{offset_y}}, offset_x_px={{offset_x}}, bbox_y0y1x0x1={{bbox}}, n_nuclei_reference={{n_reference}}, n_nuclei_query={{n_query}}, matcher={{matcher}}">idle</p>
+<p class="np__row np__small"><span>Cancel</span><span>Rescan apps</span><span>Restart worker</span><span>Details...</span></p></div></div></div>
+</div>
+<p class="np__foot">The result was computed offline from supplied nucleus masks; the form shows the tool's fields (mask fields and segmentation settings are not used here).</p>
+</div>

@@ -1,0 +1,28 @@
+# Wording of the interactive demo (/demo/) and its home-page tile. The numbers shown in the three windows are NOT here:
+# they come from content/demo/example.json (written by tools/demo_assets/make_demo_assets.py), so they are never typed twice.
+title: Try the demo
+description: A hands-on preview of a NucleiSky microscopy registration in a notebook, napari and Fiji. The result is precomputed and nothing runs in your browser.
+lead: Explore how the same NucleiSky microscopy workflow appears in a notebook, napari and Fiji.
+tile:
+  title: See how LabConstrictor works
+  text: Open a simulated notebook, napari or Fiji and watch a real microscopy registration result appear. Nothing to install.
+  link: Try the demo
+  alt: A microscopy field of green nuclei with the aligned small image outlined in yellow
+notice: Interactive preview using example microscopy data. The analysis result is precomputed; no scientific computation is performed on this website.
+experimental: Experimental integration preview. Not yet validated on all operating systems. NucleiSky's published app currently lists notebook support only.
+how:
+  title: How the connection works
+  steps:
+    - A LabConstrictor app is installed on the user's computer.
+    - The installer registers the application.
+    - LabConstrictor-Tools exposes the scientific functions the app declares.
+    - napari or Fiji builds its own form from those declarations.
+    - The tool runs in the app's own Python environment, in a separate worker process.
+    - The results come back to napari or Fiji as images, layers, overlays, points or tables.
+  note: This website does not connect to a Fiji or napari running on your computer. Everything on this page is a simulation built from one precomputed result.
+credit:
+  data: Images are Dataset 1 of the NucleiSky paper (a tiled widefield image of a DAPI-stained HUVEC monolayer), CC BY 4.0.
+  dataset_doi: 10.5281/zenodo.20721416
+  paper_doi: 10.1242/jcs.265152
+  nucleisky_repo: CellMigrationLab/NucleiSky
+  tools_repo: CellMigrationLab/LabConstrictor-Tools

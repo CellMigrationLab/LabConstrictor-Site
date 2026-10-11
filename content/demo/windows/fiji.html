@@ -1,0 +1,18 @@
+<div class="fj" data-window="fiji">
+<div class="fj__bar"><p class="fj__menu" aria-hidden="true"><span>File</span><span>Edit</span><span>Image</span><span>Process</span><span>Analyze</span><span>Plugins</span><span>Window</span><span>Help</span></p>
+<p class="fj__tools" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></p>
+<p class="fj__open"><button type="button" class="fj__link" data-demo-sim data-act="fiji-open">Plugins &#9656; LabConstrictor &#9656; LabConstrictor Tools...</button></p>
+<p class="fj__status" role="status" data-status data-done="Command finished: LabConstrictor Tools">Ready</p></div>
+<div class="fj__stage">
+<div class="fj__win"><p class="fj__wtitle">reference.tif</p><p class="fj__info">{{reference_size}} pixels; 16-bit (region around the match shown)</p><div class="fj__img"><img src="assets/demo/reference_roi.webp" alt="The reference image: grey nuclei on black" loading="lazy"></div></div>
+<div class="fj__win"><p class="fj__wtitle">query.tif</p><p class="fj__info">{{query_size}} pixels; 16-bit</p><div class="fj__img"><img src="assets/demo/query.webp" alt="The small image to locate: about thirty grey nuclei on black" loading="lazy"></div></div>
+<div class="fj__win" data-from="3" hidden><p class="fj__wtitle">alignment (example result)</p><p class="fj__info">overlay: reference in green, aligned small image in magenta</p><div class="lc-view fj__img" role="img" aria-label="The small image aligned inside the reference, outlined in yellow: reference nuclei in green, aligned small image in magenta." style="--q:{{query_width_pct}}%"><img class="lc-view__layer" data-layer="reference" src="assets/demo/reference_roi_green.webp" alt="" loading="lazy"><img class="lc-view__layer lc-view__blend" data-layer="aligned" src="assets/demo/aligned_roi_magenta.webp" alt="" loading="lazy"><svg class="lc-view__outline" viewBox="0 0 {{region_px}} {{region_px}}" aria-hidden="true"><polygon points="{{footprint}}"/></svg></div></div>
+<form class="fj__dialog" data-dialog onsubmit="return false" aria-label="Relocalize 2D"><p class="fj__dtitle">Relocalize 2D</p>
+<p class="fj__msg">Images are taken from the open windows. To use a file instead, choose it in the matching (or file) field.</p>
+<p class="fj__row"><label>Reference</label><span class="fj__field">reference.tif</span></p><p class="fj__row"><label>Query</label><span class="fj__field">query.tif</span></p>
+<p class="fj__row"><label>Reference pixel size um (um/px)</label><span class="fj__field">{{pix_reference}}</span></p><p class="fj__row"><label>Query pixel size um (um/px)</label><span class="fj__field">{{pix_query}}</span></p>
+<p class="fj__row"><label>Matcher</label><span class="fj__field">auto</span></p>
+<p class="fj__buttons"><button type="button" class="fj__btn fj__btn--ok" data-demo-sim data-act="run-step" data-step="3">OK</button><button type="button" class="fj__btn" data-demo-sim data-act="fiji-cancel">Cancel</button></p></form>
+</div>
+<p class="fj__log" data-from="3" hidden>LabConstrictor: matching {{n_query}} query nuclei against {{n_reference}} reference nuclei. Result (precomputed example): rotation_deg={{rotation}}, scale={{scale}}, matcher={{matcher}}.</p>
+</div>

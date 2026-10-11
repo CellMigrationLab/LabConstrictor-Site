@@ -336,3 +336,11 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 [dir] .md-typeset ul.lc-notebooks > li { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1rem; margin: 0; padding: .55rem .8rem; border: 1px solid var(--lc-line); border-radius: .4rem; background: #fff; }
 .lc-notebooks__name { flex: 1 1 12rem; font-weight: 600; color: var(--lc-strong); }
 .md-typeset .lc-btn .lc-logo { margin-right: .4em; vertical-align: -.25em; }
+
+/* The home-page tile that links to the demo */
+.lc-tile { display: flex; gap: 1rem; align-items: center; max-width: 46rem; margin: 0 auto; padding: 1rem; border: 1px solid var(--lc-line, #d9ded9); border-radius: 12px; color: inherit; text-decoration: none; }
+[dir] .md-typeset .lc-tile, .lc-tile * { text-decoration: none; }
+.lc-tile img { width: 9rem; height: 9rem; object-fit: cover; border-radius: 8px; flex: none; }
+.lc-tile__body { display: grid; gap: .4rem; }
+@media (max-width: 600px) { .lc-tile { flex-direction: column; align-items: flex-start; } [dir] .md-typeset .lc-tile, .lc-tile * { text-decoration: none; }
+.lc-tile img { width: 100%; height: 12rem; } }

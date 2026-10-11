@@ -38,6 +38,7 @@ Behaviour: a link that leaves the site opens in a new tab with `rel="noopener"` 
 - Only a **link** navigates; a `<button>` only acts inside the page (copy, clear filters, open the menu, search). A button never goes anywhere.
 - **Filled button** (`lc-btn`): the main action of a block: download an installer, the page's call to action ("Add your app"). **Ghost button** (`lc-btn--ghost`): the alternative route in the same block (the other Mac chip, Open in Colab). **Small ghost** (`lc-btn--small`): in-page actions such as Copy.
 - A card contains no button. A page has at most one filled button outside the download tiles.
+- **Demo controls** (only on `/demo/`, inside an element marked `data-demo`): `data-demo-act` is a control of the demo itself (view tabs, Reset demo), a small site button; `data-demo-sim` is a control inside a simulated window (Run, Open the notebook, layer eye, Update). Both are `<button type="button">`; a simulated-window control keeps the look of the program it imitates instead of `lc-btn`. A control that would do nothing is not drawn as a control: it is `disabled`, or plain text.
 - Before adding a button, ask whether a link would do. "Get" on a card was a link to the card's own page, so it was removed.
 
 ## Cards
@@ -54,6 +55,14 @@ One size (12 px, bold). Colour says the role: green = tier or route (Community, 
 - Pictures of the real product (screenshots) have a description in `alt` and, if they teach something, a caption.
 - Content images load lazily; images above the fold do not. Icons are square. Formats: PNG, JPEG, GIF; no SVG from app authors.
 - Logos of other programs (napari, Fiji, QuPath) and of services (Google Colab) come only from `data/hosts.yaml` (downloaded at build time; an SVG is reduced to one checked path) and are always shown with the name. "Open in Colab" is the small ghost button with the Colab logo; the notebooks on an app page are exactly the ones the author lists in the manifest (`distribution.colab`), each with Open in Colab and View on GitHub.
+
+## The demo page
+
+- It is a **simulation of one precomputed result** and says so in a visible notice at the top; the napari and Fiji views also carry the experimental notice. No number is typed in the HTML: every value comes from `content/demo/example.json` (made by `tools/demo_assets/`) through `{{placeholders}}` in the window partials.
+- Each window partial is one element with no blank lines (Markdown would cut it). Window chrome that is only decoration (menus, tool icons) is `aria-hidden`; everything operable is a native `button`, `input` or `label`, with an accessible name.
+- The picture stack (`lc-view`) is one `role="img"` with one `aria-label`; its layer images have an empty `alt` (class `lc-view__layer` is the checker's one exception).
+- Without JavaScript the live windows are hidden and three real figures with captions are shown instead.
+- The page loads its own style and script through the `page_css` and `page_js` front matter, so no other page pays for them.
 
 ## Interactions
 

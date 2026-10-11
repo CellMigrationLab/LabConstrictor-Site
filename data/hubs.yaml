@@ -27,6 +27,11 @@ use:
       link: How it works
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/N2_napari_form.png}
       alt: A prototype - napari with the LabConstrictor dock widget open on a test app, showing a form generated from a tool's declaration.
+  demo:
+    title: Want to see it first?
+    text: A hands-on preview of a microscopy registration in a notebook, napari and Fiji, using example data.
+    href: demo/
+    link: Try the demo
   help:
     title: Something went wrong?
     text: Known problems and their fixes, such as an app that still shows in Windows' list after uninstalling.

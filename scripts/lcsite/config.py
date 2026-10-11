@@ -23,7 +23,7 @@ MANIFEST_NAME = "labconstrictor-app.yaml"
 
 # Everything build_site.py writes into docs/ (deleted and rebuilt on every run). All git-ignored.
 GENERATED = ["index.md", "apps", "guides", "use", "build", "ecosystem.md", "submit.md", "llms.txt",
-             "assets/docs-img", "assets/hubs", "assets/hosts", "assets/icons", "assets/shots", "assets/images"]
+             "demo", "assets/demo", "assets/docs-img", "assets/hubs", "assets/hosts", "assets/icons", "assets/shots", "assets/images"]
 
 
 FINAL_URL = "https://labconstrictor.cellmig.org/"   # the address the docs and schemas name; until the domain is live the site is served elsewhere

@@ -8,6 +8,7 @@ Reads                                       Writes (git-ignored, rebuilt every t
   build/media/<app>/                          docs/assets/icons/, docs/assets/shots/ (resized)
   data/site.yaml, ecosystem.yaml  docs/index.md, ecosystem.md
   content/submit.md                           docs/submit.md
+  data/demo.yaml, content/demo/               docs/demo/index.md, docs/assets/demo/
   template .tools/docs + doc_source pictures  docs/guides/, docs/assets/docs-img/, docs/assets/images/ (logo, comic)
   (all of the above)                          docs/llms.txt
 
@@ -19,7 +20,7 @@ import argparse
 import shutil
 from pathlib import Path
 
-from lcsite import guides, hosts, hubs, llms, pages_apps, pages_site, projects, redirects
+from lcsite import guides, hosts, hubs, llms, pages_apps, pages_demo, pages_site, projects, redirects
 from lcsite.config import BUILD, DATA, DOCS, GENERATED, SITE_URL, SNAPSHOT, SNAPSHOT_FORMAT, fail, load_json, load_yaml
 from lcsite.images import ICON_PX, SHOT_PX, shrink
 
@@ -83,6 +84,7 @@ def main() -> None:
     for app in apps:
         pages_apps.page_app(app)
     pages_site.page_ecosystem(projects.resolve(ecosystem))
+    pages_demo.page_demo()
     pages_site.page_submit(site, f"{SITE_URL}schema/labconstrictor-app.schema.json")
     nav = guides.build(args.template_dir, args.doc_source_dir)
     hubs.write_all(load_yaml(DATA / "hubs.yaml"), nav, args.doc_source_dir, apps)

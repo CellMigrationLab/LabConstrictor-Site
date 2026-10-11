@@ -84,9 +84,10 @@ def write_hub(track: str, hub: dict, nav: list[dict], doc_source: Path, apps: li
              guide_track_title=TRACKS[track], menu="guides/", edit_url=f"{REPO}/edit/main/data/hubs.yaml")
     p.add(f'<section class="lc-pagehead"><h1>{esc(hub["title"])}</h1><p class="lc-lead">{esc(hub["lead"])}</p></section>')
     p.add(features_html(hub["cards"], doc_source, apps, taken))
-    if "help" in hub:
-        h = hub["help"]
-        p.add(f'<p class="lc-help"><strong>{esc(h["title"])}</strong> {esc(h["text"])} <a class="lc-go" href="{esc(h["href"])}">{esc(h["link"])}</a></p>')
+    for key in ("demo", "help"):
+        if key in hub:
+            h = hub[key]
+            p.add(f'<p class="lc-help"><strong>{esc(h["title"])}</strong> {esc(h["text"])} <a class="lc-go" href="{esc(h["href"])}">{esc(h["link"])}</a></p>')
     if "flow" in hub:
         p.add(flow_html(hub["flow_title"], hub["flow"]))
     p.write()
