@@ -32,3 +32,6 @@
 .how__badges { display: flex; flex-wrap: wrap; gap: .3rem; }
 .how__badge { padding: .04rem .5rem; font-size: .6rem; font-weight: 600; background: var(--lc-soft); border-radius: 1rem; }
 .how__files { margin: .3rem 0 .3rem 1.1rem; font: .66rem/1.6 ui-monospace, Menlo, Consolas, monospace; }
+.how__img { display: block; max-width: 100%; height: auto; margin: .4rem 0; }
+.how__table { width: 100%;  font-size: .7rem; border-collapse: collapse; } .how__table th, .how__table td { padding: .3rem .5rem; text-align: left; border-bottom: 1px solid var(--lc-line); }
+@media (max-width: 40rem) { .how__table thead { display: none; } .how__table, .how__table tbody, .how__table tr, .how__table td { display: block; } .how__table td { padding: .2rem 0; border: 0; } .how__table td::before { content: attr(data-label) ": "; font-weight: 700; } }

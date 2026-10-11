@@ -50,6 +50,16 @@ chapters:
       - "A tool is a normal Python function with type hints, marked with @tool, in a module named <package>_lc_tools next to your app's package."
       - "A float or int becomes a number box, a bool a check box, a Literal or Enum a dropdown, an Image an image chosen in the host, a Table a CSV file."
       - "Everything beyond the types is optional: a host that does not know a hint shows a plain, working form."
+  - id: branding
+    title: Give the installer and the app your own look
+    text: You can add your own logo, banner and header images, so the installer and the desktop app carry your branding. This is optional. Without your images, placeholder images are used.
+    guide: guides/installer-images/
+    guide_label: Customise the installer images
+    static:
+      - "Logo: a 256x256 pixel PNG, used in the executable installer and on the created desktop app."
+      - "Banner: a 164x314 pixel PNG, a vertical image used as a banner in the installer."
+      - "Header: a 150x57 pixel PNG, used as the header in the installer."
+      - "You can provide the images when you initialise your repository or at any time later; without them, placeholder images are used."
   - id: packaging
     title: Publish a release and let GitHub build the installers
     text: A release on GitHub starts a workflow that builds installers for each system. Your users download them from the release.
@@ -68,6 +78,16 @@ chapters:
       - "On Windows the installer asks where to install and for whom (just you, or all users); it then sets up the app's own environment."
       - "A post-install script installs the app's requirements (on Windows and Linux the GPU versions when an NVIDIA GPU is found, otherwise the CPU ones; on macOS the CPU ones) and the app's own package from src. This needs an internet connection."
       - "It then adds the app to the Start menu or Applications folder; opening it starts JupyterLab with a Welcome notebook."
+  - id: update
+    title: Update a notebook or the code later
+    text: When you change something after the first release, your users are told in the Welcome notebook of their installed app. A new notebook version or a change to the code in src can be updated from there; a new release means the installed app itself is out of date.
+    guide: guides/notebook-upload/
+    guide_label: Add or update a notebook
+    static:
+      - "Raise current_version in the notebook's top cell, run the bottom cell again to regenerate requirements.yaml, and upload the notebook through the form with exactly the same file name."
+      - "After you merge the pull request, a workflow records the version in notebooks/notebook_latest_versions.yaml, updates the changelog, hides code cells, refreshes the notebook index and, when a requirements file changed, merges the requirements and tests the environment."
+      - "In the installed app, the Welcome notebook compares the local versions with the repository's. An outdated notebook shows Needs Update and an Update button that downloads it."
+      - "A change to the code in src shows an Update Source Code button; a new release changes the app's version, and the table then shows Project Outdated instead of notebook updates."
   - id: manifest
     title: Describe the app for the App Centre
     text: A small file in your repository, labconstrictor-app.yaml, says what the app is and how people get it. The App Centre reads it from your repository, so there is nothing to copy.

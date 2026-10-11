@@ -28,7 +28,7 @@ Show, in order, what an author does and what the tool does for them, from a work
 **Combination I recommend:** build A; each chapter also exists as a plain text section (the C layer), which the no-JavaScript view and search use.
 
 ## Where it lives
-- A new page `/how-it-works/` (not another top-level menu entry; reached from the home "How it works" band, the Docs home and the Build hub). The Docs guides stay the reference and each chapter links to its guide ("Read the full guide").
+- A new page `/how-it-works/` (it now also has a top-menu entry, "How it works", added on request; it is reached from the home "How it works" band, the Docs home and the Build hub). The Docs guides stay the reference and each chapter links to its guide ("Read the full guide").
 - Texts in `data/how-it-works.yaml`; chapter panels as partials in `content/how-it-works/` (same rules as the demo: one balanced element, no blank lines, placeholders filled from checked data); scripts as small documented parts under the same JS rules (`tests/test_js_rules.py`).
 - Facts that could go stale are read from the repositories at build time where possible (labels from the form, workflow names, the schema's field list, the tools types table) and the build stops when a name used in a mock no longer exists.
 
