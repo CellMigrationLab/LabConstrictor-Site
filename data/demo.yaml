@@ -16,29 +16,11 @@ about:
   title: About the example
   text: This demo uses NucleiSky as its example. NucleiSky is an open-source tool that aligns microscopy images by matching the arrangement of cell nuclei, like stars in a constellation. It finds where a small image sits inside a large one and estimates the rotation, scale and shift. The small image here is a random crop generated from the large one, so the correct answer is known. NucleiSky is one app built with LabConstrictor; every app has its own notebooks.
   app_link: Open the NucleiSky page
-features:
-  title: What you can try
-  items:
-    - title: Launch the app
-      text: An installed app runs on your own computer and opens in your browser.
-      href: guides/install/
-      link: Install an app
-    - title: Browse its notebooks
-      text: The Welcome notebook lists the notebooks of the app, each with an Open the notebook button.
-      href: guides/notebook-usage/
-      link: Use notebooks after installation
-    - title: Check for updates
-      text: The same page compares your notebooks with the latest versions and updates them with one click.
-      href: guides/notebook-usage/
-      link: Use notebooks after installation
-    - title: Show or hide code, run cells
-      text: Authors can hide the code so users see only the interface; the play buttons run each cell.
-      href: guides/code-hiding/
-      link: Hide code cells
-    - title: Use the same tool in napari and Fiji
-      text: Apps that declare tools can run inside napari and Fiji (experimental).
-      href: guides/image-software/
-      link: Use apps in your image software
+try_it:
+  text: To try it for real, see
+  links:
+    - {href: guides/code-hiding/, label: Hide code cells}
+    - {href: guides/image-software/, label: Use apps in your image software}
 notice: Interactive preview using example data. The result is precomputed; nothing is computed on this website.
 experimental: Experimental preview. The NucleiSky tool shown here is not in the released NucleiSky app, which lists notebook support only; it exists on development branches. Expect bugs and changes.
 how:

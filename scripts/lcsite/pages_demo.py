@@ -53,12 +53,12 @@ def static_figures(text: dict) -> str:
 
 
 def about_and_features(text: dict) -> str:
-    """The short note on the example app (NucleiSky) and the list of features the demo covers, each linked to its guide."""
-    a, f = text["about"], text["features"]
-    items = "".join(f'<li><strong>{esc(i["title"])}.</strong> {esc(i["text"])} <a href="{esc(i["href"])}">{esc(i["link"])}</a></li>' for i in f["items"])
+    """The short note on the example app (NucleiSky), then one line with the guides for trying it for real."""
+    a, t = text["about"], text["try_it"]
+    links = " and ".join(f'<a href="{esc(link["href"])}">{esc(link["label"])}</a>' for link in t["links"])
     c = text["credit"]
     return (f'<section class="lc-demo__about"><h2>{esc(a["title"])}</h2><p>{esc(a["text"])} {github_badge(c["nucleisky_repo"])} '
-            f'<a href="apps/nucleisky/">{esc(a["app_link"])}</a></p><details class="lc-disclosure"><summary>{esc(f["title"])}</summary><ul>{items}</ul></details></section>')
+            f'<a href="apps/nucleisky/">{esc(a["app_link"])}</a></p><p>{esc(t["text"])} {links}.</p></section>')
 
 
 def how_it_works(text: dict) -> str:
@@ -89,7 +89,7 @@ def credits(text: dict) -> str:
 
 
 def page_demo(apps: list[dict]) -> None:
-    """demo/index.md: notice, tabs, the three windows (or the static figures without JavaScript), then the note on the example, what you can try, and the credits."""
+    """demo/index.md: notice, tabs, the three windows (or the static figures without JavaScript), then the note on the example with two guide links, and the credits."""
     d = load()
     text, example = d["text"], d["example"]
     shown = dict(demo_media.values(example), **demo_media.installer_values(), **demo_option_a.values(text))
