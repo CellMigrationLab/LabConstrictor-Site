@@ -57,7 +57,7 @@ class CompletenessTests(unittest.TestCase):
 
     def test_a_complete_manifest_has_no_warning(self) -> None:
         """Nothing is reported when every recommended fact is there."""
-        full = {"kind": "analysis", "status": "Available", "quickstart": ["x"], "screenshots": [], "inputs": ["a"], "outputs": ["b"]}
+        full = {"kind": "analysis", "status": "Available", "quickstart": ["x"], "screenshots": [{"path": "s.png", "caption": "A caption"}], "inputs": ["a"], "outputs": ["b"]}
         self.assertEqual(completeness.missing(full, "apps", "MIT"), [])
 
 
