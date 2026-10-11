@@ -92,9 +92,9 @@ def how_controls(browser: Browser, base: str) -> None:
     page.go_back()
     page.locator("#step-2").wait_for(state="visible")
     check("How it works: the browser's Back button returns to the previous step", page.locator("#step-2").is_visible())
-    page.goto(base + "how-it-works/#step-6")
-    page.locator("#step-6").wait_for(state="visible")
-    check("How it works: an address shows its step, with the hand-over to the demo", page.locator("#step-6").is_visible() and page.locator("#step-6 a[href$='demo/']").count() == 1)
+    page.goto(base + "how-it-works/#step-5")
+    page.locator("#step-5").wait_for(state="visible")
+    check("How it works: an address shows its step, with the hand-over to the demo", page.locator("#step-5").is_visible() and page.locator("#step-5 a[href$='demo/']").count() == 1)
     check("How it works: no script error", not errors, str(errors))
     page.context.close()
 
@@ -127,7 +127,7 @@ def no_javascript(browser: Browser, base: str) -> None:
     check("No JavaScript, demo: no simulated control is visible", page.locator("[data-demo-sim]:visible").count() == 0)
     page.context.close()
     page, _ = open_page(browser, base, "how-it-works/", 1280, js=False)
-    check("No JavaScript, How it works: every step is shown", page.locator(".how__step:visible").count() == 6)
+    check("No JavaScript, How it works: every step is shown", page.locator(".how__step:visible").count() == 5)
     page.context.close()
 
 

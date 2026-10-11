@@ -10,9 +10,9 @@ class DataTests(unittest.TestCase):
     """The data file."""
 
     def test_the_real_data_is_valid(self) -> None:
-        """data/how-it-works.yaml loads: six steps, each with things to remember and at least one guide."""
+        """data/how-it-works.yaml loads: five steps, each with things to remember and at least one guide."""
         data = pages_how.load()
-        self.assertEqual(len(data["steps"]), 6)
+        self.assertEqual(len(data["steps"]), 5)
         for step in data["steps"]:
             self.assertTrue(step["know"] and step["guides"], step["id"])
 
@@ -59,20 +59,20 @@ class PageTests(unittest.TestCase):
         self.assertEqual(data["handoff"]["href"], "demo/")
 
     def test_customisation_is_shown_only_where_there_is_something_to_customise(self) -> None:
-        """Steps 1, 2 and 6 have a "Make it yours" tile; a step with an empty list has none."""
+        """Steps 1, 2 and 5 have a "Make it yours" tile; a step with an empty list has none."""
         data = pages_how.load()
         for i, step in enumerate(data["steps"]):
             self.assertEqual("Make it yours" in pages_how.step_html(data, i), bool(step["customise"]), step["id"])
-        self.assertEqual([bool(s["customise"]) for s in data["steps"]], [True, True, False, False, False, True])
+        self.assertEqual([bool(s["customise"]) for s in data["steps"]], [True, True, False, False, True])
 
     def test_the_picture_at_the_side_frames_each_of_the_first_five_steps_and_shows_the_end_for_the_last(self) -> None:
-        """One loop and one fade per step 1 to 5, none for step 6 (it shows the end-user picture); alt texts, sizes, caption and the CC BY credit are there; a missing picture stops the build."""
+        """One loop and one fade per step 1 to 5, and the end-user picture of the same figure (shown at the last step); alt texts, sizes, caption and the CC BY credit are there; a missing picture stops the build."""
         data = pages_how.load()
         html = pages_how.map_html(data)
         for i in range(1, 6):
             self.assertIn(f'class="how__loop" data-for="{i}"', html)
             self.assertIn(f'class="how__hl" data-for="{i}"', html)
-        self.assertNotIn('data-for="6"', html)
+        self.assertNotIn('data-for="6"', html)   # there are five steps
         self.assertRegex(html, r'alt="[^"]{80,}" width="\d+" height="\d+"')
         self.assertIn(data["figure_credit"]["href"], html)
         self.assertIn("CC BY 4.0", data["figure_credit"]["text"])

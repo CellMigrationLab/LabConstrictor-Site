@@ -2,7 +2,7 @@
 .how__step[hidden] { display: none; }
 .how__num { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--lc-accent-strong); color: #fff; font-weight: 700; font-size: .95rem; }
 
-[dir] .md-typeset .how__stepper > ol { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .6rem; margin: 1.4rem 0 1.6rem; padding: 0; list-style: none; }
+[dir] .md-typeset .how__stepper > ol { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; margin: 1.4rem 0 1.6rem; padding: 0; list-style: none; }
 [dir] .md-typeset .how__stepper > ol > li { margin: 0; }
 [dir] .md-typeset a.how__tab { display: flex; flex-direction: column; align-items: center; gap: .5rem; height: 100%; padding: .8rem .5rem; text-align: center; color: var(--lc-fg); text-decoration: none; border: 1px solid var(--lc-line); border-radius: 12px; background: #fff; transition: border-color .15s, box-shadow .15s; }
 .how__tab .how__num { background: #fff; color: var(--lc-accent-strong); box-shadow: inset 0 0 0 2px var(--lc-accent-strong); }
@@ -12,7 +12,7 @@
 [dir] .md-typeset a.how__tab.is-current .how__name { font-weight: 700; color: var(--lc-strong); }
 .how__tab.is-current .how__num { background: var(--lc-accent-strong); color: #fff; }
 @media (max-width: 48rem) {
-  [dir] .md-typeset .how__stepper > ol { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .4rem; }
+  [dir] .md-typeset .how__stepper > ol { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .4rem; }
   .how__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* the numbers stay; the step's own heading names it */
 }
 
@@ -56,10 +56,8 @@
 .how__map[data-current="1"] [data-for="1"], .how__map[data-current="2"] [data-for="2"], .how__map[data-current="3"] [data-for="3"],
 .how__map[data-current="4"] [data-for="4"], .how__map[data-current="5"] [data-for="5"] { display: block; }
 .how__end { display: none; }
-[dir] .md-typeset .how__map[data-current="6"] img.how__end { display: block; }
-.how__map[data-current="6"] .how__stage { display: none; }
+[dir] .md-typeset .how__map[data-current="5"] img.how__end { display: block; margin-top: .8rem; }
 [dir] .md-typeset .how__map .how__caption { margin: .8rem 0 0; font-size: .85rem; color: var(--lc-fg); }
 [dir] .md-typeset .how__map .how__credit { margin: .3rem 0 0; font-size: .72rem; color: var(--lc-muted); }
 .how__caption--end { display: none; }
-[dir] .md-typeset .how__map[data-current="6"] .how__caption { display: none; }
-[dir] .md-typeset .how__map[data-current="6"] .how__caption--end { display: block; }
+[dir] .md-typeset .how__map[data-current="5"] .how__caption--end { display: block; }

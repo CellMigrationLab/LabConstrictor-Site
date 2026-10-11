@@ -3,8 +3,8 @@
 # No code and no interactive panels: the guides (linked from every step) do the detail. Every statement follows the guide it links to.
 # Written here only; pages_how.py checks the exact keys and that every link goes to a page of the site.
 title: How LabConstrictor works
-lead: From a notebook that works on your computer to an app that colleagues can install, in six steps. Open one at a time; each links to the guides that show how.
-steps_title: The six steps
+lead: From a notebook that works on your computer to an app that colleagues can install, in five steps. Open one at a time; each links to the guides that show how.
+steps_title: The five steps
 steps:
   - id: step-1
     title: Build your notebook(s)
@@ -64,30 +64,21 @@ steps:
       - {href: guides/personal-access-token/, label: Create a personal access token}
       - {href: guides/workflow-status/, label: Check the status of workflows}
   - id: step-5
-    title: Create a release
-    text: Publish a release on GitHub, and a workflow builds the installers.
+    title: Create a release and share it
+    text: Publish a release on GitHub, and a workflow builds the installers. Share the link to your release and anyone can install the app from it.
     region: [6, 768, 820, 122]
-    customise: []
+    customise:
+      - Choose how the App Centre describes your app, from its summary and kind to screenshots and the paper to cite.
     know:
       - Before you start, check the Actions tab of your repository. No workflow should be running.
       - The release tag is a version number in the form MAJOR.MINOR.PATCH, for example 0.0.1.
-      - Each system gets its own installer, listed under the release's Assets when the workflow has finished.
-      - Try an installer yourself before you share it.
+      - Each system gets its own installer, listed under the release's Assets when the workflow has finished. Try one yourself before you share it.
+      - The installers are not code-signed yet, so users' systems will warn them. Tell them to download only from your release. Installing needs an internet connection.
+      - To be found by others, describe the app in labconstrictor-app.yaml (the initialisation form adds it when you fill in the summary and kind) and submit the repository to the App Centre. It must be public and have a licence.
     guides:
       - {href: guides/executable-creation/, label: Create installer files}
       - {href: guides/workflow-status/, label: Check the status of workflows}
       - {href: guides/install/, label: Install an app}
-  - id: step-6
-    title: Share your app
-    text: Share the link to your release and anyone can install the app from it. To be found by others, describe the app and list it in the App Centre.
-    region: []
-    customise:
-      - Choose how the App Centre describes your app, from its summary and kind to screenshots and the paper to cite.
-    know:
-      - Users download the installer for their system from your release. The installers are not code-signed yet, so their system will warn them. Tell them to download only from your release. Installing needs an internet connection.
-      - Describing the app takes one small file in your repository, labconstrictor-app.yaml. The initialisation form adds it if you fill in its summary and kind; otherwise you copy the example from the guide.
-      - To be listed, the repository must be public and have a licence. Submit its address; a bot checks it and a maintainer adds it.
-    guides:
       - {href: guides/app-manifest/, label: Describe your app for the App Centre}
       - {href: submit/, label: Submit your app}
 map:
@@ -95,7 +86,7 @@ map:
   pipeline_alt: "The developer workflow of the preprint in five blocks: 1 prepare notebooks, optional helper code and an icon; 2 make a repository from the template and initialise it with a form; 3 generate requirements.yaml with the Requirements Generator notebook; 4 submit the notebook and its requirements, which creates a pull request and starts automation A; 5 create a release, which starts automation B and attaches installers for Windows, macOS and Linux."
   end_file: end.webp
   end_alt: "What users get: an installer for each system, the installed app with its icon, and JupyterLab opening a Welcome notebook that lists the notebooks, with code hidden and widgets shown."
-  end_caption: "What your users get: an installer for their system, the app on their computer, and notebooks that open in JupyterLab with code hidden."
+  end_caption: "What your users get once you share the release: an installer for their system, the app on their computer, and notebooks that open in JupyterLab with code hidden."
   caption: "The block with the red frame is the step you are reading. A and B are the automatic workflows: A checks what you add, B builds the installers."
 figure_credit:
   text: "Adapted from Figure 2 of the LabConstrictor preprint (CC BY 4.0):"

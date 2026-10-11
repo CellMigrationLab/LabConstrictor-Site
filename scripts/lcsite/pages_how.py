@@ -112,8 +112,9 @@ def map_html(data: dict) -> str:
                             for i, x, y, w, h in boxes) for kind in ("how__hl", "how__loop")}
     end_w, end_h = pixel_size(SOURCE / "figures" / m["end_file"])
     return (f'<aside class="how__map" data-current="1"><div class="how__stage"><div class="how__crop"><img src="assets/how/figures/{esc(m["pipeline_file"])}" alt="{esc(m["pipeline_alt"])}" width="{width}" height="{height}">{frames["how__hl"]}</div>{frames["how__loop"]}</div>'
+            f'<p class="how__caption">{esc(m["caption"])}</p>'
             f'<img class="how__end" src="assets/how/figures/{esc(m["end_file"])}" alt="{esc(m["end_alt"])}" width="{end_w}" height="{end_h}">'
-            f'<p class="how__caption">{esc(m["caption"])}</p><p class="how__caption how__caption--end">{esc(m["end_caption"])}</p><p class="how__credit">{esc(c["text"])} <a href="{esc(c["href"])}">{esc(c["link"])}</a></p></aside>')
+            f'<p class="how__caption how__caption--end">{esc(m["end_caption"])}</p><p class="how__credit">{esc(c["text"])} <a href="{esc(c["href"])}">{esc(c["link"])}</a></p></aside>')
 
 
 def customise(step: dict) -> str:
