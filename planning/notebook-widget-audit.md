@@ -22,3 +22,6 @@ Rule used: a control may be made interactive only if it changes what is shown ho
 
 Suggested order: Step 0 cell; Step 2 toggle with methods and settings; Step 1 crop-strategy toggle and seed; Option B accordion and time limit; then Option A and the apply-transform step only if wanted.
 Everything stays static HTML plus `demo.js`; no new result is ever computed.
+
+## Built (this pass)
+Step 0 cell and output; Step 1 crop-strategy toggle (starts on Load External Crop as in the real notebook, so the guide leads to Generate Random Crop) with Fixed Seed; Step 2 source toggle (starts on Run New Segmentation) with the method dropdown, the InstanSeg and Auto-threshold settings and their accordions (defaults read from cell 8; Cellpose has no settings panel in the notebook); Option B Advanced Constraints accordion and time-limit checkbox. Controls change only what the widget shows; Run Segmentation stays disabled and the load buttons work only for the recorded options. Not built: Option A, apply-saved-transform.

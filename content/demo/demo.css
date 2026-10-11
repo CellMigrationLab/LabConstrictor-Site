@@ -175,3 +175,16 @@
 .lc-how__box.is-active { border-color: #e11d48; background: #fff1f2; font-weight: 700; }
 .lc-how__step { display: block; width: 100%; padding: .35rem .5rem; border: 0; border-radius: 6px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 .lc-how__step[aria-pressed="true"] { background: #fff1f2; box-shadow: inset 3px 0 0 #e11d48; font-weight: 600; }
+/* NucleiSky widgets that can be explored (toggles, dropdown, accordions); values never recompute a result */
+button.ns-pill { font: inherit; background: #fff; color: #1e293b; cursor: pointer; }
+.ns-pill + .ns-pill { margin-left: .3rem; }
+.ns-field { font: inherit; background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; padding: .2rem .4rem; color: #1e293b; max-width: 100%; }
+.ns-field:disabled { background: #e2e8f0; color: #64748b; }
+.ns-select { min-width: 12rem; }
+.ns-acc { display: block; width: 100%; margin: .5rem 0 .2rem; padding: .4rem .6rem; text-align: left; font: inherit; font-weight: 600; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; color: #1e293b; cursor: pointer; }
+.ns-acc::before { content: '\25B6\00a0'; font-size: .7em; } .ns-acc[aria-expanded="true"]::before { content: '\25BC\00a0'; }
+.ns-ph { color: #64748b; }
+.ns-row input[type="range"] { flex: 1; max-width: 12rem; }
+.ns-row .ns-field { flex: 1 1 7rem; min-width: 0; }
+.ns-row .ns-field + .ns-flabel { flex: 0 0 auto; }
+.ns-row input[type="number"].ns-field { max-width: 14rem; }

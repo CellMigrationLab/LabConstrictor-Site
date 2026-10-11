@@ -3,7 +3,7 @@
 (function () {
   var root = document.querySelector('[data-demo]');
   if (!root) { return; }
-  var FRESH = { cat: 'install', page: 'download', progress: 0, installed: false, selectedKey: '', view: 'notebook', launched: false, done: 0, how: 1, busy: false, step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
+  var FRESH = { init: false, crop: 'external', seg: 'new', acc: { inst: false, thr: false, adv: false }, cat: 'install', page: 'download', progress: 0, installed: false, selectedKey: '', view: 'notebook', launched: false, done: 0, how: 1, busy: false, step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
                 fijiDialog: true, selected: '', vis: { reference: true, query: false, aligned: true, alignment: true },
                 opacity: { reference: 100, query: 100, aligned: 100, alignment: 80 } };
   var state = JSON.parse(JSON.stringify(FRESH));
@@ -59,10 +59,11 @@
     all('[data-from]').forEach(function (el) { el.hidden = state.step < Number(el.dataset.from); });
     all('[data-done]:not([data-status])').forEach(function (el) { el.hidden = state.done < Number(el.dataset.done); });
     all('[data-after]').forEach(function (el) { el.hidden = state.done < Number(el.dataset.after); });
+    all('[data-from-init]').forEach(function (el) { el.hidden = !state.init; });
     all('[data-from-welcome]').forEach(function (el) { el.hidden = !state.welcomeRun; });
     all('[data-from-nb]').forEach(function (el) { el.hidden = !state.opened; });
     all('[data-act="run-step"]').forEach(function (b) {
-      if (b.closest('.nb')) { var n = Number(b.dataset.step); b.disabled = state.done < n - 1 || state.step >= n; b.title = state.step >= n ? 'Already run' : b.disabled ? 'Finish the step above first' : ''; }
+      if (b.closest('.nb')) { var n = Number(b.dataset.step); b.disabled = state.done < n - 1 || state.step >= n || (n === 1 && !state.init); b.title = state.step >= n ? 'Already run' : b.disabled ? (n === 1 && !state.init ? 'Run the Step 0 cell first' : 'Finish the step above first') : ''; }
     });
     all('#demo-panel-napari [data-act="run-step"], #demo-panel-fiji [data-dialog] [data-act="run-step"]').forEach(function (b) { b.disabled = state.step >= 3 && !b.closest('[data-dialog]'); b.title = b.disabled ? 'The example result is already shown; use Reset demo to start again' : ''; });
     all('[data-status]').forEach(function (el) { if (el.dataset.done) { el.textContent = state.busy ? 'running\u2026' : state.step >= 3 ? el.dataset.done : el.dataset.idle; } });
@@ -78,9 +79,33 @@
     one('[data-act="toggle-code"]').setAttribute('aria-pressed', state.code ? 'true' : 'false');
     one('[data-act="run-welcome"]').disabled = state.welcomeRun;
     var inApp = state.nbTab === 'app' && state.opened;
-    one('[data-act="run-next"]').disabled = inApp ? (state.step >= 3 || state.step !== state.done) : state.welcomeRun;
-    all('[data-act="widget"]').forEach(function (b) { b.disabled = state.done >= Number(b.dataset.n); });
+    one('[data-act="run-next"]').disabled = inApp ? (state.init && (state.step >= 3 || state.step !== state.done)) : state.welcomeRun;
+    one('[data-act="run-init"]').disabled = state.init;
+    all('[data-act="widget"]').forEach(function (b) { b.disabled = state.done >= Number(b.dataset.n) || (b.dataset.n === '1' && state.crop !== 'random'); });
+    showWidgets();
     showUpdates();
+  }
+
+  function pressed(sel, current) {
+    all(sel).forEach(function (b) { var on = b.dataset.mode === current; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+  }
+
+  function showWidgets() {
+    pressed('[data-act="crop-mode"]', state.crop); pressed('[data-act="seg-mode"]', state.seg);
+    all('[data-crop]').forEach(function (el) { el.hidden = el.dataset.crop !== state.crop; });
+    all('[data-seg]').forEach(function (el) { el.hidden = el.dataset.seg !== state.seg; });
+    var method = one('[data-ctl="method"]').value;
+    all('[data-method]').forEach(function (el) { el.hidden = el.dataset.method !== method; });
+    all('[data-method-desc]').forEach(function (el) { el.hidden = el.dataset.methodDesc !== method; });
+    [['seed', 'seed-val'], ['override', 'override-val'], ['time', 'time-val']].forEach(function (p) { one('[data-ctl="' + p[1] + '"]').disabled = !one('[data-ctl="' + p[0] + '"]').checked; });
+    all('[data-act="acc"]').forEach(function (b) { var on = state.acc[b.dataset.acc]; b.setAttribute('aria-expanded', on ? 'true' : 'false'); one('#' + b.getAttribute('aria-controls')).hidden = !on; });
+    all('input[type="range"] + output').forEach(function (o) { o.textContent = o.previousElementSibling.value; });
+  }
+
+  function resetControls() {
+    all('input, select').forEach(function (c) {
+      if (c.tagName === 'SELECT') { Array.prototype.forEach.call(c.options, function (o) { o.selected = o.defaultSelected; }); } else { c.value = c.defaultValue; c.checked = c.defaultChecked; }
+    });
   }
 
   function showUpdates() {
@@ -124,8 +149,11 @@
     if (!state.launched) { return ['[data-act="launch"]', state.selectedKey ? 'Now double-click the icon to open the app (or press Enter).' : 'Double-click the NucleiSky icon to open the app.']; }
     if (!state.welcomeRun) { return ['[data-act="run-welcome"]', 'Click the play button to run the Welcome cell. It lists the notebooks of the app.']; }
     if (!app) { return ['[data-act="open-app"]', 'Click Open the notebook on NucleiSky2DApp to open the 2D notebook.']; }
+    if (!state.init) { return ['#nb-doc-app [data-act="run-init"]', 'Click the play button to run Step 0, which initializes the environment.']; }
     var names = ['', 'Load & Process', 'Load Masks & Extract Features', 'Run adaptive NucleiSky2D'];
     if (n === state.done && n < 3) { return ['#nb-doc-app [data-act="run-step"][data-step="' + (n + 1) + '"]', 'Click the play button to run the next cell. It shows a widget.']; }
+    if (n === 1 && n > state.done && state.crop !== 'random') { return ['[data-act="crop-mode"][data-mode="random"]', 'Choose Generate Random Crop: this preview has no crop file to load.']; }
+    if (n === 2 && n > state.done && state.seg !== 'existing') { return ['[data-act="seg-mode"][data-mode="existing"]', 'Choose Load Existing Masks: the recorded example uses supplied masks.']; }
     if (n > state.done) { return ['[data-act="widget"][data-n="' + n + '"]', 'Use the widget: click ' + names[n] + '.']; }
     return [null, 'That is the whole notebook: scroll down for NucleiSky\'s own output. Try Show/Hide code, then napari or Fiji.'];
   }
@@ -151,18 +179,18 @@
 
   function sync() { root.dataset.step = state.step; showCat(); showInstaller(); showViews(); showSteps(); showNotebook(); showLayers(); showFiji(); showHow(); showNext(); }
 
-  function runStep(n, fromHost) { state.step = Math.max(state.step, n); if (fromHost) { state.done = 3; } if (n === 3 && fromHost) { state.selected = state.selected || 'aligned'; state.fijiDialog = false; state.opened = true; state.launched = true; } }
+  function runStep(n, fromHost) { state.step = Math.max(state.step, n); if (fromHost) { state.done = 3; } if (n === 3 && fromHost) { state.init = true; state.crop = 'random'; state.seg = 'existing'; state.selected = state.selected || 'aligned'; state.fijiDialog = false; state.opened = true; state.launched = true; } }
 
   var pending = null;
   function switchView(view) {
-    if (view !== state.view) { clearBusy(); state = JSON.parse(JSON.stringify(FRESH)); state.cat = 'use'; state.view = view; }
+    if (view !== state.view) { clearBusy(); state = JSON.parse(JSON.stringify(FRESH)); resetControls(); state.cat = 'use'; state.view = view; }
     sync();
   }
   function delayFor(el) {
     var a = el.dataset.act;
     if (a === 'run-step') { return el.closest('.nb') ? 600 : 1500; }
     if (a === 'widget') { return [0, 900, 900, 2200][Number(el.dataset.n)]; }
-    return { 'run-welcome': 700, 'test-connection': 900, 'update': 700 }[a] || 0;
+    return { 'run-init': 700, 'run-welcome': 700, 'test-connection': 900, 'update': 700 }[a] || 0;
   }
   function clearBusy() {
     if (pending) { clearTimeout(pending); pending = null; }
@@ -186,13 +214,17 @@
   var actions = {
     'inst': function (el) { state.page = el.dataset.go; state.selectedKey = ''; if (state.page === 'installing') { startInstall(); } return ['[data-page="' + state.page + '"] ' + INSTALL_NEXT[state.page], 'Installer page: ' + state.page + '.']; },
     'open-start': function () { state.cat = 'use'; state.view = 'notebook'; state.launched = true; return ['#nb-tab-welcome', 'NucleiSky is open in JupyterLab with the Welcome notebook.']; },
+    'run-init': function () { state.init = true; return ['', 'Cell ran: the environment is ready.']; },
+    'crop-mode': function (el) { state.crop = el.dataset.mode; return ['', 'Crop strategy: ' + el.textContent + '.']; },
+    'seg-mode': function (el) { state.seg = el.dataset.mode; return ['', 'Segmentation source: ' + el.textContent + '.']; },
+    'acc': function (el) { state.acc[el.dataset.acc] = !state.acc[el.dataset.acc]; },
     'how': function (el) { state.how = Number(el.dataset.i); },
     'launch': function () { state.launched = true; return ['#nb-tab-welcome', 'NucleiSky is open in JupyterLab with the Welcome notebook.']; },
     'run-welcome': function () { state.welcomeRun = true; return ['[data-act="test-connection"]', 'Cell ran: the list of notebooks and the update check are shown.']; },
     'open-app': function () { state.launched = true; state.opened = true; state.nbTab = 'app'; },
     'run-step': function (el) { var n = Number(el.dataset.step), host = !el.closest('.nb'); runStep(n, host); return [host && n === 3 ? '[data-act="fiji-open"]' : '', host ? 'Example result shown.' : 'Cell ' + n + ' ran; its widget is shown below.']; },
     'widget': function (el) { state.done = Math.max(state.done, Number(el.dataset.n)); return ['', 'Done: the result is shown below.']; },
-    'run-next': function () { if (state.nbTab === 'app' && state.opened) { runStep(Math.min(3, state.step + 1), false); } else { state.welcomeRun = true; } },
+    'run-next': function () { if (state.nbTab === 'app' && state.opened) { if (!state.init) { state.init = true; } else { runStep(Math.min(3, state.step + 1), false); } } else { state.welcomeRun = true; } },
     'toggle-code': function () { state.code = !state.code; },
     'test-connection': function () { state.checked = true; },
     'scenario': function (el) { state.scenario = el.checked; state.updated = false; },
@@ -210,16 +242,17 @@
     if (el.dataset.demoAct === 'cat') { state.cat = el.dataset.cat; sync(); return; }
     if (el.dataset.demoAct === 'view') { switchView(el.dataset.view); return; }
     if (state.busy && el.dataset.demoAct !== 'reset') { return; }
-    if (el.dataset.demoAct === 'reset') { clearBusy(); state = JSON.parse(JSON.stringify(FRESH)); sync(); one('#demo-cat-tab-install').focus(); return; }
+    if (el.dataset.demoAct === 'reset') { clearBusy(); state = JSON.parse(JSON.stringify(FRESH)); resetControls(); sync(); one('#demo-cat-tab-install').focus(); return; }
     if (el.dataset.nbTab) { state.nbTab = el.dataset.nbTab; sync(); return; }
     if (el.hasAttribute('data-dbl') && e.detail === 1) { state.selectedKey = el.dataset.act + el.dataset.go; el.classList.add('is-selected'); sync(); return; }
-    if (el.tagName === 'INPUT' && el.type !== 'checkbox') { return; }
+    if ((el.tagName === 'INPUT' && el.type !== 'checkbox') || el.tagName === 'SELECT') { return; }
     if (!actions[el.dataset.act]) { return; }
     var ms = delayFor(el);
     if (ms) { runLater(el, ms); return; }
     var out = actions[el.dataset.act](el); sync(); settle(out);
   });
-  root.addEventListener('input', function (e) { if (e.target.dataset.act === 'opacity') { actions.opacity(e.target); sync(); } });
+  root.addEventListener('change', function (e) { if (e.target.dataset.ctl || e.target.type === 'range') { sync(); } });
+  root.addEventListener('input', function (e) { if (e.target.dataset.act === 'opacity') { actions.opacity(e.target); } if (e.target.type === 'range') { sync(); } });
   root.addEventListener('keydown', function (e) {
     var tab = e.target.closest('[role="tab"]');
     if (!tab || ['ArrowRight', 'ArrowLeft', 'Home', 'End'].indexOf(e.key) < 0) { return; }
