@@ -54,7 +54,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
           '<div class="lc-choices">'
           + choice("I want to find an app", catalogue_text.home_find_text(apps), "apps/", "Open the App Centre")
           + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "build/", "Why and how to build one", "lc-choice--make") +
-          '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256"></div></div></section>')
+          '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256" loading="eager" fetchpriority="high"></div></div></section>')
     p.add(comic_figure())
     p.add('<section class="lc-band"><h2 class="lc-title">Featured apps</h2>',
           '<ul class="lc-grid">' + "\n".join(card(a) for a in featured) + '</ul>',

@@ -2,7 +2,8 @@
 A recommended fact the author left out is said to be missing (never guessed)."""
 
 from .cards import badge
-from .config import SCIENTIFIC_KINDS
+from .config import DOCS, SCIENTIFIC_KINDS
+from .images import pixel_size
 from .text import esc
 from .validate import optional_list
 
@@ -43,3 +44,10 @@ def status_chip(app: dict) -> str:
     """A grey chip in the header for an app the authors call Experimental or Deprecated; nothing otherwise."""
     m = app["manifest"]
     return badge(m["status"], "status") if "status" in m and m["status"] in STATUS_CHIPS else ""
+
+
+def screenshot(app: dict, number: int, shot: dict) -> str:
+    """One screenshot as a figure: the caption is also its alt text, and its size is written so the page does not shift while it loads."""
+    width, height = pixel_size(DOCS / "assets" / "shots" / f"{app['slug']}-{number}.jpg")
+    return (f'<figure class="lc-shot"><img class="lc-shot__img" src="assets/shots/{app["slug"]}-{number}.jpg" alt="{esc(shot["caption"])}" '
+            f'width="{width}" height="{height}" loading="lazy"><figcaption>{esc(shot["caption"])}</figcaption></figure>')

@@ -181,7 +181,7 @@ def page_app(app: dict) -> None:
     if m.get("description"):
         p.add('<h2 id="about">About</h2>', paragraphs(m["description"]))
     for i, s in enumerate(app["screenshots"], 1):
-        p.add(f'<figure class="lc-shot"><img class="lc-shot__img" src="assets/shots/{app["slug"]}-{i}.jpg" alt="" loading="lazy"><figcaption>{esc(s["caption"])}</figcaption></figure>')
+        p.add(pages_facts.screenshot(app, i, s))
     p.add(using_section(app), pages_facts.limitations(app), citation.app_section(app))
     if app["release"] and m["distribution"].get("installer"):
         p.add(downloads_table(app), install_help())

@@ -19,7 +19,7 @@ from lcsite.config import SITE_URL
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "site"
 GENERIC_LINK_TEXT = {"here", "click here", "link", "more", "read more", "this", "this link"}
-DECORATIVE_IMAGE_PARENTS = ("lc-brand", "lc-footer__brand", "lc-icon", "lc-logo", "lc-shot__img", "lc-view__layer")   # lc-shot__img: its figcaption says what it shows; lc-view__layer: the picture stack carries one aria-label
+DECORATIVE_IMAGE_PARENTS = ("lc-brand", "lc-footer__brand", "lc-icon", "lc-logo", "lc-view__layer")   # lc-view__layer: the picture stack carries one aria-label
 DESCRIPTION_LENGTH = (20, 200)
 # Known breaks of a rule in imported content we cannot change from here yet, each with the reason. A new break is never added silently.
 KNOWN_EXCEPTIONS = {

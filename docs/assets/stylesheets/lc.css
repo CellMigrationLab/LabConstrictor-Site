@@ -147,7 +147,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-card__head { display: flex; align-items: center; gap: .75rem; }
 .lc-card__title { display: flex; flex-direction: column; line-height: 1.25; }
 .lc-card__title strong { font-family: var(--lc-display); color: var(--lc-strong); font-size: 1rem; }
-.lc-card__title small { color: var(--lc-muted); font-size: .64rem; text-transform: uppercase; letter-spacing: .08em; }
+.lc-card__title small { opacity: 1; color: var(--lc-muted); font-size: .64rem; text-transform: uppercase; letter-spacing: .08em; }
 .lc-card__text { font-size: .74rem; line-height: 1.55; }
 .lc-card__badges { margin-top: auto; }
 .lc-card__foot { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .55rem 1rem; border-top: 1px solid var(--lc-line); font-size: .62rem; color: var(--lc-muted); }
@@ -162,7 +162,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-filter { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .6rem .9rem; margin: 0 0 1rem; padding: .85rem; background: var(--lc-soft); border-radius: .4rem; }
 .lc-filter label { display: flex; flex-direction: column; justify-content: flex-end; gap: .2rem; font-size: .6rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--lc-muted); }
 .lc-filter__search { flex: 1 1 14rem; }
-.lc-filter input, .lc-filter select { padding: .45rem .6rem; border: 1px solid #cfcfcf; border-radius: .3rem; background: #fff; font: inherit; font-size: .74rem; letter-spacing: 0; text-transform: none; color: var(--lc-strong); }
+.lc-filter input, .lc-filter select { padding: .45rem .6rem; border: 1px solid var(--lc-muted); border-radius: .3rem; background: #fff; font: inherit; font-size: .74rem; letter-spacing: 0; text-transform: none; color: var(--lc-strong); }
 .lc-filter input:focus, .lc-filter select:focus { outline: 2px solid var(--lc-accent-strong); outline-offset: 0; }
 .md-typeset .lc-filter__count { flex-basis: 100%; margin: 0; font-size: .66rem; color: var(--lc-muted); }
 
@@ -348,3 +348,7 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-works { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0 2rem; margin: .6rem 0; }
 .lc-works h2 { margin-top: .8rem; }
 .lc-works__none { margin: .6rem 0; }
+
+/* Keyboard focus and contrast repairs: the skip link shows above the header; the ring is white on the dark footer */
+.md-skip:focus { z-index: 30; }
+.lc-footer :focus-visible { outline-color: #fff; }

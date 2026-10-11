@@ -78,7 +78,7 @@ One size (12 px, bold). Colour says the role: green = route (Desktop, Colab), gr
 
 ## Interactions
 
-- Hover: text links underline; cards lift; pills change border colour. Focus: one visible outline for everything (`:focus-visible`). Everything works from the keyboard.
+- Hover: text links underline; cards lift; pills change border colour. Focus: one visible outline colour for all links (white in the dark footer; content links keep the theme's ring), and the skip link shows above the header. Everything works from the keyboard.
 - The filter on the App Centre updates as you type and keeps its state in the address. Sections (`details`) open and close with the keyboard.
 - On phones the docs menu folds into a "Docs menu" drawer above the content; nothing scrolls sideways.
 

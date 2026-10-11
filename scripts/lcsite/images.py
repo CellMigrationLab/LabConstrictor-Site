@@ -27,6 +27,16 @@ def shrink(src: Path, dest: Path, max_side: int, square: bool = False) -> None:
         raise AppProblem(f"cannot read image {src.name}: {err}") from err
 
 
+def pixel_size(path: Path) -> tuple[int, int]:
+    """(width, height) of an image file, for the width and height attributes that stop the page from shifting while it loads.
+    Raises AppProblem for a file Pillow cannot read."""
+    try:
+        with Image.open(path) as img:
+            return img.size
+    except OSError as err:
+        raise AppProblem(f"cannot read image {path.name}: {err}") from err
+
+
 def check_square(path: Path, tolerance: float = 1.35) -> None:
     """Raise AppProblem unless the image is roughly square (the longer side at most `tolerance` times the shorter)."""
     try:

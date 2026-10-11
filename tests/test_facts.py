@@ -90,3 +90,15 @@ class SampleManifestTests(unittest.TestCase):
             with self.assertRaises(AppProblem) as ctx:
                 check(self.sample() | {field: value}, "labconstrictor-app.schema.json", "t")
             self.assertIn(field, str(ctx.exception))
+
+
+class ScreenshotTests(unittest.TestCase):
+    """A screenshot figure describes itself and reserves its space."""
+
+    def test_the_caption_is_the_alt_text_and_the_size_is_written(self) -> None:
+        """alt equals the escaped caption, and width and height come from the file."""
+        from unittest import mock
+        with mock.patch.object(pages_facts, "pixel_size", return_value=(800, 450)):
+            html = pages_facts.screenshot({"slug": "a"}, 1, {"caption": 'The "main" window <b>'})
+        self.assertIn('alt="The &quot;main&quot; window &lt;b&gt;"', html)
+        self.assertIn('width="800" height="450"', html)

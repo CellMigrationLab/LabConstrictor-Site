@@ -52,6 +52,15 @@ class DesignTests(unittest.TestCase):
             self.assertIn(expected, report)
 
 
+    def test_a_screenshot_with_an_empty_alt_is_reported(self) -> None:
+        """Screenshots are content: an empty alt on one fails the design check (the figure caption is not a substitute)."""
+        import check_design
+        facts = check_design.Facts()
+        facts.feed('<html lang="en"><head><title>t</title></head><body><main><h1>a</h1><img class="lc-shot__img" src="s.jpg" alt=""></main></body></html>')
+        report = "\n".join(check_design.all_problems({"p/index.html": facts}))
+        self.assertIn("alt", report)
+
+
 class HeroTests(unittest.TestCase):
     """The home page's second line is plain text."""
 
