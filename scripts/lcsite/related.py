@@ -11,7 +11,7 @@ from .config import DATA, fail, load_yaml
 
 FILE = "data/related-projects.yaml"
 TOP_KEYS = {"title", "page_title", "teaser", "intro", "disclosure", "shared_authors_note", "groups", "closing", "helper"}
-TEASER_KEYS = {"title", "text", "link"}
+TEASER_KEYS = {"heading", "lead", "title", "text", "link"}
 GROUP_KEYS = {"key", "title", "items"}
 REQUIRED = {"name", "approach", "fit", "checked"}
 OPTIONAL = {"repo", "docs", "site", "doi", "reference", "shared_authors"}

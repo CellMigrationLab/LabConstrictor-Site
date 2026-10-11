@@ -41,10 +41,12 @@ def category_tiles(groups: list[dict]) -> str:
 
 
 def teaser(related: dict) -> str:
-    """The one compact card at the end of the Ecosystem page (id="related", the address that older links use) pointing to the full page."""
+    """The end of the Ecosystem page, built like the tiers above it: a heading (id="related", the address older links use), one sentence,
+    and one card in the same grid that leads to the related-projects page."""
     t = related["teaser"]
-    return (f'<section class="lc-related-section" id="related"><a class="lc-tile lc-tile--text" href="related-projects/"><span class="lc-tile__body">'
-            f'<strong>{esc(t["title"])}</strong><span>{esc(t["text"])}</span><span class="lc-go">{esc(t["link"])}</span></span></a></section>')
+    card = (f'<li class="lc-card lc-card--plain"><a class="lc-card__main" href="related-projects/"><span class="lc-card__title"><strong>{esc(t["title"])}</strong></span>'
+            f'<span class="lc-card__text">{esc(t["text"])}</span><span class="lc-go">{esc(t["link"])}</span></a></li>')
+    return f'<h2 class="lc-tier" id="related">{esc(t["heading"])}</h2><p>{esc(t["lead"])}</p><ul class="lc-grid">{card}</ul>'
 
 
 def page_related(related: dict) -> None:

@@ -11,6 +11,8 @@
 title: Related projects and alternative approaches
 page_title: Other ways to share notebooks and scientific tools
 teaser:
+  heading: Related projects
+  lead: Independent projects, not part of LabConstrictor, that take other routes to sharing notebooks and scientific tools.
   title: Other ways to share notebooks and scientific tools
   text: >-
     LabConstrictor packages notebooks as desktop applications. Other projects help researchers

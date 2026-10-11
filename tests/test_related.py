@@ -8,7 +8,7 @@ from lcsite import pages_related, related
 
 ENTRY = {"name": "Tool", "approach": "Does one thing.", "fit": "you need that thing.", "repo": "o/tool", "docs": "https://tool.example/docs",
          "doi": "10.1000/abc", "reference": "A. Author et al. (2024), A Journal 1, 2-3", "shared_authors": True, "checked": datetime.date(2026, 10, 11)}
-DATA = {"title": "Related", "page_title": "Other ways", "teaser": {"title": "Other ways to share", "text": "Other projects help.", "link": "Explore related projects"}, "intro": "Intro text.", "disclosure": "Some authors overlap.", "shared_authors_note": "Shares authors with LabConstrictor.",
+DATA = {"title": "Related", "page_title": "Other ways", "teaser": {"heading": "Related projects", "lead": "Independent projects.", "title": "Other ways to share", "text": "Other projects help.", "link": "Explore related projects"}, "intro": "Intro text.", "disclosure": "Some authors overlap.", "shared_authors_note": "Shares authors with LabConstrictor.",
         "groups": [{"key": "g", "title": "A group", "items": [ENTRY]}], "closing": "Closing words.", "helper": "Edit the list."}
 
 
@@ -72,9 +72,10 @@ class SectionTests(unittest.TestCase):
         self.assertIn("Checked 11 October 2026", full)
 
     def test_the_teaser_links_to_the_page_and_keeps_the_old_address(self) -> None:
-        """The Ecosystem teaser has id="related" (older links) and one link to the related-projects page, with the wording from the data."""
+        """The Ecosystem end has a heading with id="related" (older links), one sentence, and one card in the same grid as the tiers above, linking to the related-projects page."""
         html = pages_related.teaser(DATA)
-        self.assertIn('id="related"', html)
+        self.assertIn('<h2 class="lc-tier" id="related">Related projects</h2>', html)
+        self.assertIn('<ul class="lc-grid">', html)
         self.assertEqual(html.count('href="related-projects/"'), 1)
         self.assertIn("Explore related projects", html)
 
