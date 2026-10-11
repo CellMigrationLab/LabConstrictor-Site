@@ -29,8 +29,8 @@ nav:
   - Apps: apps/index.md
   - Demo: demo/index.md
   - Ecosystem: ecosystem.md
-  - Submit your app: submit.md
   - Docs: guides/index.md
+  - Submit your app: submit.md
 
 plugins:
   - search
