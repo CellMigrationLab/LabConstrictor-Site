@@ -64,6 +64,7 @@ def values(example: dict) -> dict[str, str]:
         "offset_y": number(r["b_px"][0], 4), "offset_x": number(r["b_px"][1], 4), "bbox": f"[{y0}, {y1}, {x0}, {x1}]",
         "matcher": r["matcher"], "inliers": str(r["inliers"]), "n_query": str(n["query"]), "n_reference": str(n["reference"]),
         "mean_error": number(r["mean_error_um"], 3), "pix_reference": number(im["reference_um_per_px"], 4), "pix_query": number(im["query_um_per_px"], 4),
+        "mask_reference_file": esc(example["inputs"]["masks_reference"]["file"]), "mask_query_file": esc(example["inputs"]["masks_query"]["file"]),
         "reference_size": f"{im['reference_px'][1]} x {im['reference_px'][0]}", "query_size": f"{im['query_px'][1]} x {im['query_px'][0]}",
         "region_px": str(region["size_px"][0]), "query_width_pct": number(100 * im["query_px"][1] * im["query_um_per_px"] / im["reference_um_per_px"] / region["size_px"][1], 2),
     }

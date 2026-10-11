@@ -3,7 +3,7 @@
 <div class="np__cols">
 <div class="np__left">
 <div class="np__dock"><p class="np__title">layer controls</p>
-<div class="np__panel" data-layer-panel><p class="np__row"><span>opacity:</span><input type="range" min="0" max="100" value="100" data-demo-sim data-act="opacity" aria-label="Opacity of the selected layer" aria-valuetext="1.00" disabled></p><p class="np__row"><span>blending:</span><span class="np__combo">additive</span></p><p class="np__row"><span>colormap:</span><span class="np__combo" data-colormap>gray</span></p><p class="np__hint" data-panel-hint>Select a layer to change its opacity.</p></div></div>
+<div class="np__panel" data-layer-panel><p class="np__row"><span>opacity:</span><input type="range" min="0" max="100" value="100" data-demo-sim data-act="opacity" aria-label="Opacity of the selected layer" aria-valuetext="1.00" disabled></p><p class="np__row"><span>blending:</span><span class="np__combo">additive</span></p><p class="np__row"><span>colormap:</span><span class="np__combo" data-colormap>gray</span></p><div aria-hidden="true"><p class="np__row"><span>gamma:</span><span class="np__field">1.00</span></p><p class="np__row"><span>interpolation 2D:</span><span class="np__combo">nearest</span></p></div><p class="np__hint" data-panel-hint>Select a layer to change its opacity.</p></div></div>
 <div class="np__dock"><p class="np__title">layer list</p>
 <ul class="np__layers" aria-label="Layer list">
 <li class="np__layer" data-layer-row="aligned" data-from="3" hidden><button type="button" class="np__eye" data-demo-sim data-act="eye" aria-pressed="true" aria-label="Show layer NucleiSky:query_aligned">&#128065;</button><button type="button" class="np__name" data-demo-sim data-act="select" data-layer="aligned">NucleiSky:query_aligned</button></li>
@@ -16,13 +16,22 @@
 <div class="np__right"><div class="np__dock"><p class="np__title">LabConstrictor tools (LabConstrictor)</p>
 <div class="np__form"><p class="np__combo np__full">NucleiSky</p><p class="np__combo np__full">Relocalize 2D</p><p class="np__desc">Find where a rotated / rescaled query image lies in a reference image.</p>
 <p class="np__head">Images</p>
-<p class="np__row"><span>Reference</span><span class="np__combo">reference</span></p><p class="np__row"><span>Query</span><span class="np__combo">query</span></p>
+<p class="np__row"><span>Reference</span><span class="np__combo">reference</span></p><p class="np__row np__file" aria-hidden="true"><span>or file</span><span class="np__field"></span><span class="np__chip">Select file</span></p>
+<p class="np__row"><span>Query</span><span class="np__combo">query</span></p><p class="np__row np__file" aria-hidden="true"><span>or file</span><span class="np__field"></span><span class="np__chip">Select file</span></p>
 <p class="np__row"><span>Reference pixel size um (um/px)</span><span class="np__field">{{pix_reference}}</span></p><p class="np__row"><span>Query pixel size um (um/px)</span><span class="np__field">{{pix_query}}</span></p>
-<p class="np__row"><span>Reference mask</span><span class="np__combo">-----</span></p><p class="np__row"><span>Query mask</span><span class="np__combo">-----</span></p>
+<p class="np__row"><span>Reference mask</span><span class="np__combo">-----</span></p><p class="np__row np__file" aria-hidden="true"><span>or file</span><span class="np__field">{{mask_reference_file}}</span><span class="np__chip">Select file</span></p>
+<p class="np__row"><span>Query mask</span><span class="np__combo">-----</span></p><p class="np__row np__file" aria-hidden="true"><span>or file</span><span class="np__field">{{mask_query_file}}</span><span class="np__chip">Select file</span></p>
+<div aria-hidden="true"><p class="np__head">Segmentation</p>
+<p class="np__row"><span>Segmentation</span><span class="np__combo">threshold</span></p><p class="np__row"><span>Threshold method</span><span class="np__combo">otsu</span></p>
+<p class="np__row"><span>Blur sigma (px)</span><span class="np__field">1.0000</span></p><p class="np__row"><span>Min area (px)</span><span class="np__field">5</span></p>
+<p class="np__row np__tick"><span class="np__box is-on"></span><span>Watershed split</span></p>
+<p class="np__row np__dim"><span>InstanSeg model</span><span class="np__combo">brightfield_nuclei</span></p><p class="np__row np__dim"><span>InstanSeg target</span><span class="np__combo">nuclei</span></p><p class="np__row np__tick np__dim"><span class="np__box is-on"></span><span>InstanSeg: clean up fragments</span></p></div>
 <p class="np__head">Matching</p><p class="np__row"><span>Matcher</span><span class="np__combo">auto</span></p>
+<p class="np__row np__tick" aria-hidden="true"><span class="np__box"></span><span>Show advanced settings</span></p>
 <button type="button" class="np__run" data-demo-sim data-act="run-step" data-step="3">Run</button>
 <p class="np__status" role="status" data-status data-done="&#10004; example result (precomputed): rotation_deg={{rotation}}, scale={{scale}}, offset_y_px={{offset_y}}, offset_x_px={{offset_x}}, bbox_y0y1x0x1={{bbox}}, n_nuclei_reference={{n_reference}}, n_nuclei_query={{n_query}}, matcher={{matcher}}">idle</p>
-<p class="np__row np__small" aria-hidden="true"><span>Cancel</span><span>Rescan apps</span><span>Restart worker</span><span>Details...</span></p></div></div></div>
+<p class="np__row np__tick" aria-hidden="true"><span class="np__box is-on"></span><span>Keep the worker running between runs (faster repeat runs)</span></p>
+<p class="np__row np__small" aria-hidden="true"><span class="np__dim">Cancel</span><span>Rescan apps</span><span>Restart worker</span><span class="np__dim">Details...</span></p></div></div></div>
 </div>
-<p class="np__foot">Simplified. The result was computed offline from nucleus masks supplied with the data. In the real tool you would select those masks in the Reference mask and Query mask fields; with none selected the tool segments the images itself and the counts would differ.</p>
+<p class="np__foot">Simplified. Only Run, the layer list and the layer controls respond in this preview; the other fields are shown as in the real tool, for orientation. The result was computed offline from nucleus masks supplied with the data. In the real tool you would select those masks in the Reference mask and Query mask fields; with none selected the tool segments the images itself and the counts would differ.</p>
 </div>

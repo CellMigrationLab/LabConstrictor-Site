@@ -113,6 +113,13 @@
 .np__canvas { background: #000; }
 .np__run { width: 100%; margin: .5rem 0; padding: .35rem; border: 0; border-radius: 3px; background: #424a54; color: #f0f1f2; font: inherit; cursor: pointer; }
 .np__status { margin: .2rem 0; word-break: break-word; min-height: 2.6em; }
+.np__file { padding-left: 1rem; } .np__file .np__field { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+.np__chip { background: #424a54; padding: .2rem .5rem; border-radius: 3px; white-space: nowrap; }
+.np__tick { justify-content: flex-start; } .np__box, .fj__box { flex: none; width: 13px; height: 13px; border-radius: 2px; border: 1px solid #8a8f98; background: transparent; }
+.np__box.is-on { background: #4560c4; border-color: #4560c4; }
+.np__dim { opacity: .5; }
+.fj__chip { border: 1px solid #d5d5d5; background: #fff; padding: .15rem .7rem; border-radius: 3px; }
+.fj__box { background: #fff; border-color: #888; } .fj__box.is-on { background: #3b73b9; border-color: #3b73b9; }
 .np__small { color: #a0a2a8; font-size: 11px; justify-content: space-between; }
 /* ---- Fiji (flat light Swing look) ---- */
 .fj { font: 12px/1.4 Arial, Helvetica, sans-serif; color: #1a1a1a; background: #000; min-width: 640px; padding: .5rem; }
