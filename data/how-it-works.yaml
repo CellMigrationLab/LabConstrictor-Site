@@ -88,6 +88,16 @@ chapters:
       - "After you merge the pull request, a workflow records the version in notebooks/notebook_latest_versions.yaml, updates the changelog, hides code cells, refreshes the notebook index and, when a requirements file changed, merges the requirements and tests the environment."
       - "In the installed app, the Welcome notebook compares the local versions with the repository's. An outdated notebook shows Needs Update and an Update button that downloads it."
       - "A change to the code in src shows an Update Source Code button; a new release changes the app's version, and the table then shows Project Outdated instead of notebook updates."
+  - id: sync
+    title: Keep your app up to date with the template
+    text: The template keeps improving. A workflow in your repository can offer those improvements as a pull request that you review and merge. It needs a token that you create once.
+    guide: guides/template-synchronization/
+    guide_label: Enable automatic LabConstrictor template updates
+    static:
+      - "The Sync with Template Repository workflow runs every Monday at 09:00 UTC, and you can start it from the Actions tab."
+      - "When the template has a newer version, it opens a pull request titled Sync template to version, followed by the new version number; you merge it like any other pull request."
+      - "Opening that pull request needs a token you create once and save in your repository as the secret LABCONSTRICTOR_SYNC_TOKEN."
+      - "Without the secret, the run stops with the error Synchronization setup required when a newer template version exists, and no pull request is created."
   - id: manifest
     title: Describe the app for the App Centre
     text: A small file in your repository, labconstrictor-app.yaml, says what the app is and how people get it. The App Centre reads it from your repository, so there is nothing to copy.
