@@ -88,7 +88,7 @@ class PageTests(unittest.TestCase):
     def test_experimental_notice_and_precomputed_wording_are_in_the_data(self) -> None:
         """The honesty wording the page must carry exists in data/demo.yaml."""
         text = pages_demo.load()["text"]
-        self.assertIn("precomputed", text["notice"])
+        self.assertIn("precomputed", text["lead"])
         self.assertIn("Experimental", text["experimental"])
         self.assertIn("does not connect", text["how"]["note"].replace("This website does not connect", "does not connect"))
 

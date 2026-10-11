@@ -43,7 +43,7 @@
     }
     if (state.fijiDialog) { return { target: '[data-dialog] [data-act="run-step"]', text: 'Click OK to run the tool.' }; }
     return state.step < 3 ? { target: '[data-act="fiji-open"]', text: 'Open the tool again from the Plugins menu.' }
-      : { target: null, text: 'The result opens in its own window. Use Reset demo to start again.' };
+      : { target: null, text: 'The result opens in its own window. Switch to another view to start again.' };
   }
 
   /**

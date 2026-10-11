@@ -46,7 +46,7 @@
   function renderHostRuns(root, state) {
     d.all(root, '#demo-panel-napari [data-act="run-step"], #demo-panel-fiji [data-dialog] [data-act="run-step"]').forEach(function (b) {
       b.disabled = state.step >= 3 && !b.closest('[data-dialog]');
-      b.title = b.disabled ? 'The example result is already shown; use Reset demo to start again' : '';
+      b.title = b.disabled ? 'The example result is already shown; switch to another view to start again' : '';
     });
     d.all(root, '[data-status][data-done]').forEach(function (el) {
       el.textContent = state.busy ? 'running…' : state.step >= 3 ? el.dataset.done : el.dataset.idle;

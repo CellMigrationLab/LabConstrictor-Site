@@ -89,7 +89,7 @@ def credits(text: dict) -> str:
 
 
 def page_demo(apps: list[dict]) -> None:
-    """demo/index.md: notice, tabs, the three windows (or the static figures without JavaScript), then the note on the example with two guide links, and the credits."""
+    """demo/index.md: heading and lead (with the precomputed-result sentence), tabs, the three windows (or the static figures without JavaScript), then the note on the example with two guide links, and the credits."""
     d = load()
     text, example = d["text"], d["example"]
     shown = dict(demo_media.values(example), **demo_media.installer_values(), **demo_option_a.values(text))
@@ -99,8 +99,7 @@ def page_demo(apps: list[dict]) -> None:
     p.add(f'<section class="lc-pagehead"><h1>{esc(text["title"])}</h1>'
           f'<p class="lc-lead">{esc(text["lead"])}</p><p>{esc(text["packaging"]["text"])} <a class="lc-go" href="{esc(text["packaging"]["href"])}">{esc(text["packaging"]["link"])}</a></p></section>')
     installer = demo_media.render(demo_media.read_window("installer"), shown, "windows/installer.html")
-    p.add(f'<div class="lc-demo" data-demo data-search-exclude><p class="lc-demo__notice" role="note"><strong>Interactive preview</strong>{esc(text["notice"].removeprefix("Interactive preview"))}</p>'
-          f'<div class="lc-demo__live"><p class="lc-demo__next" data-next></p>{category_tabs()}<button type="button" class="lc-btn lc-btn--small lc-btn--ghost" data-demo-act="reset">Reset demo</button>'
+    p.add(f'<div class="lc-demo" data-demo data-search-exclude><div class="lc-demo__live"><p class="lc-demo__next" data-next></p>{category_tabs()}'
           f'<div role="tabpanel" id="demo-cat-install" aria-labelledby="demo-cat-tab-install" data-cat-panel="install" class="lc-demo__panel" hidden>{installer}</div>'
           f'<div role="tabpanel" id="demo-cat-use" aria-labelledby="demo-cat-tab-use" data-cat-panel="use">{tab_buttons()}'
           f'<p class="lc-demo__experimental" data-demo-experimental hidden>{esc(text["experimental"])}</p>{panels(shown, example)}{how_it_works(text)}</div></div>{static_figures(text)}</div>')

@@ -1,4 +1,4 @@
-/* The demo's whole state in one object. Changing the view or pressing Reset starts again from `fresh()`. */
+/* The demo's whole state in one object. Changing the view starts again from `fresh()`. */
 (function (ns) {
   /**
    * @typedef {Object} DemoState

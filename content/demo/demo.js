@@ -141,7 +141,7 @@
   }
 
   /**
-   * Handle a press on one of the demo's own controls (part tabs, view tabs, Reset).
+   * Handle a press on one of the demo's own controls (category tabs, view tabs).
    * @param {DemoContext} ctx - the controller context.
    * @param {HTMLElement} el - the control (it has data-demo-act).
    * @returns {void}
@@ -151,10 +151,7 @@
     var kind = el.dataset.demoAct;
     if (kind === 'view') { switchView(ctx, el.dataset.view); return; }
     if (kind === 'cat') { ctx.state.cat = el.dataset.cat; sync(ctx); return; }
-    if (kind !== 'reset') { throw new Error('demo: unknown data-demo-act "' + kind + '"'); }
-    restart(ctx);
-    sync(ctx);
-    d.one(ctx.root, '#demo-cat-tab-use').focus();
+    throw new Error('demo: unknown data-demo-act "' + kind + '"');
   }
 
   /**

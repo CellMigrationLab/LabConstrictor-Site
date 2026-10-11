@@ -4,7 +4,7 @@
     python tests/browser/smoke.py [--chromium /opt/pw-browsers/chromium]
 
 Needs Playwright for Python and a Chromium. Serves site/ on a free local port and checks, at phone and desktop widths: no sideways
-scrolling on the main pages, the App Centre filter, every control of How it works, the demo's flow, its keyboard tabs and its reset,
+scrolling on the main pages, the App Centre filter, every control of How it works, the demo's flow, its keyboard tabs and the reset when the view changes,
 and the no-JavaScript fallback. Prints one line per check and exits with status 1 when any fails.
 """
 

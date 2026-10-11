@@ -2,7 +2,7 @@
 # they come from content/demo/example.json (written by tools/demo_assets/make_demo_assets.py), so they are never typed twice.
 title: Explore an installed app
 description: A hands-on preview of what colleagues see when they open an installed LabConstrictor app, using a real NucleiSky example. The result is precomputed and nothing runs in your browser.
-lead: "See what colleagues get when they install a LabConstrictor app: the notebook in JupyterLab and, as experimental previews, napari and Fiji. NucleiSky, a microscopy registration tool, is one real example."
+lead: "See what colleagues get when they install a LabConstrictor app: the notebook in JupyterLab and, as experimental previews, napari and Fiji. NucleiSky, a microscopy registration tool, is one real example. This is an interactive preview using example data: the result is precomputed, and nothing is computed on this website."
 packaging:
   text: Curious how an app like this is made?
   link: See how an app is packaged
@@ -21,7 +21,6 @@ try_it:
   links:
     - {href: guides/code-hiding/, label: Hide code cells}
     - {href: guides/image-software/, label: Use apps in your image software}
-notice: Interactive preview using example data. The result is precomputed; nothing is computed on this website.
 experimental: Experimental preview. The NucleiSky tool shown here is not in the released NucleiSky app, which lists notebook support only; it exists on development branches. Expect bugs and changes.
 how:
   title: How the connection works
