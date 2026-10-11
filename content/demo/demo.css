@@ -75,7 +75,7 @@
 .ns-btn:disabled { background: #94a3b8; cursor: not-allowed; }
 .nb__log { margin: .4rem 0; padding: .5rem .7rem; background: #fff; border: 1px solid #e0e0e0; font: 12px/1.4 monospace; white-space: pre-wrap; overflow-x: auto; }
 .nb__qc { width: 100%; height: auto; margin: .3rem 0 .8rem; }
-.nb__seg { max-width: 22rem; }
+.nb__qc.nb__seg { max-width: 34rem; }
 .nb__appicon { width: 2.4rem; height: 2.4rem; border-radius: 8px; }
 .ns-pill { display: inline-block; padding: .2rem .7rem; border: 1px solid #cbd5e1; border-radius: 999px; }
 .ns-pill.is-on { background: #2563eb; border-color: #2563eb; color: #fff; }

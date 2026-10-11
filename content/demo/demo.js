@@ -154,6 +154,10 @@
   function runStep(n, fromHost) { state.step = Math.max(state.step, n); if (fromHost) { state.done = 3; } if (n === 3 && fromHost) { state.selected = state.selected || 'aligned'; state.fijiDialog = false; state.opened = true; state.launched = true; } }
 
   var pending = null;
+  function switchView(view) {
+    if (view !== state.view) { clearBusy(); state = JSON.parse(JSON.stringify(FRESH)); state.cat = 'use'; state.view = view; }
+    sync();
+  }
   function delayFor(el) {
     var a = el.dataset.act;
     if (a === 'run-step') { return el.closest('.nb') ? 600 : 1500; }
@@ -204,7 +208,7 @@
     var el = e.target.closest('[data-act], [data-nb-tab], [data-demo-act]');
     if (!el || !root.contains(el) || el.disabled) { return; }
     if (el.dataset.demoAct === 'cat') { state.cat = el.dataset.cat; sync(); return; }
-    if (el.dataset.demoAct === 'view') { state.view = el.dataset.view; sync(); return; }
+    if (el.dataset.demoAct === 'view') { switchView(el.dataset.view); return; }
     if (state.busy && el.dataset.demoAct !== 'reset') { return; }
     if (el.dataset.demoAct === 'reset') { clearBusy(); state = JSON.parse(JSON.stringify(FRESH)); sync(); one('#demo-cat-tab-install').focus(); return; }
     if (el.dataset.nbTab) { state.nbTab = el.dataset.nbTab; sync(); return; }
@@ -222,7 +226,7 @@
     var tabs = all('[role="tab"]').filter(function (t) { return t.parentNode === tab.parentNode; }), i = tabs.indexOf(tab);
     var next = e.key === 'Home' ? tabs[0] : e.key === 'End' ? tabs[tabs.length - 1] : tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
     e.preventDefault();
-    if (next.dataset.view) { state.view = next.dataset.view; } else { state.cat = next.dataset.cat; } sync(); next.focus();
+    if (next.dataset.view) { switchView(next.dataset.view); } else { state.cat = next.dataset.cat; sync(); } next.focus();
   });
 
   all('[data-status]').forEach(function (el) { el.dataset.idle = el.textContent; });
