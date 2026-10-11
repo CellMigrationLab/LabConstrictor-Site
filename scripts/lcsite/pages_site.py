@@ -71,9 +71,11 @@ def card_foot(card: dict) -> str:
 
 
 def ecosystem_card(card: dict) -> str:
-    """One project card: its name, summary and status, linked to its repository (or hosted app), with its guide."""
+    """One project card: its name, summary and status, linked to its repository (or hosted app), with its guide. The card of a plugin is
+    titled "Plugin for <program>" (the project's own name is the program's, so the card says what the project is)."""
+    title = f'Plugin for {card["name"]}' if card["host"] else card["name"]
     return (f'<li class="lc-card lc-card--plain"><a class="lc-card__main" href="{esc(card["link"])}">'
-            f'<span class="lc-card__title">{hosts.logo(card["host"]) if card["host"] else ""}<strong>{esc(card["name"])}</strong></span><span class="lc-card__text">{esc(card["summary"])}</span>'
+            f'<span class="lc-card__title">{hosts.logo(card["host"]) if card["host"] else ""}<strong>{esc(title)}</strong></span><span class="lc-card__text">{esc(card["summary"])}</span>'
             f'<span class="lc-card__badges"><span class="lc-badge">{esc(card["status"])}</span></span></a>{card_foot(card)}</li>')
 
 

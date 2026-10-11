@@ -2,7 +2,7 @@
 
 import unittest
 
-from lcsite import pages_demo, pages_home as ph
+from lcsite import pages_demo, pages_home as ph, pages_site
 from lcsite.config import load_yaml, DATA
 
 SITE = {"steps_title": "From notebook to app",
@@ -72,6 +72,21 @@ class PluginTests(unittest.TestCase):
         self.assertIn(">Experimental<", html)
         self.assertIn("An entire notebook does not become a plugin.", html)
         self.assertEqual(html.count('href="ecosystem/"'), 1)
+
+
+class EcosystemCardTests(unittest.TestCase):
+    """The card of a plugin says what the project is."""
+
+    CARD = {"name": "napari", "summary": "One dock widget.", "status": "Experimental", "link": "https://github.com/o/n", "repo": "o/n", "guide": None}
+
+    def test_a_plugin_card_is_titled_plugin_for_the_program_and_other_cards_keep_their_name(self) -> None:
+        """"napari" becomes "Plugin for napari" (the logo stays); a card with no program keeps the name its project gave it."""
+        plugin = pages_site.ecosystem_card(dict(self.CARD, host="napari"))
+        self.assertIn("<strong>Plugin for napari</strong>", plugin)
+        self.assertIn("lc-logo", plugin)
+        other = pages_site.ecosystem_card(dict(self.CARD, name="LabConstrictor-Tools", host=None))
+        self.assertIn("<strong>LabConstrictor-Tools</strong>", other)
+        self.assertNotIn("Plugin for", other)
 
 
 if __name__ == "__main__":
