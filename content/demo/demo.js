@@ -3,7 +3,7 @@
 (function () {
   var root = document.querySelector('[data-demo]');
   if (!root) { return; }
-  var FRESH = { view: 'notebook', launched: false, done: 0, step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
+  var FRESH = { view: 'notebook', launched: false, done: 0, iconSelected: false, step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
                 fijiDialog: true, selected: '', vis: { reference: true, query: false, aligned: true, alignment: true },
                 opacity: { reference: 100, query: 100, aligned: 100, alignment: 80 } };
   var state = JSON.parse(JSON.stringify(FRESH));
@@ -80,9 +80,29 @@
     one('[data-panel-hint]').hidden = !!sel;
   }
 
+  function next() {
+    var app = state.nbTab === 'app' && state.opened, n = state.step;
+    if (state.view === 'napari') { return state.step < 3 ? ['#demo-panel-napari .np__run', 'Click Run in the dock to run the tool.'] : [null, 'Click a layer name to select it, the eye to hide it, and move the opacity slider. Then try Fiji.']; }
+    if (state.view === 'fiji') { return state.fijiDialog ? ['[data-dialog] [data-act="run-step"]', 'Click OK to run the tool.'] : state.step < 3 ? ['[data-act="fiji-open"]', 'Open the tool again from the Plugins menu.'] : [null, 'The result opens in its own window. Use Reset demo to start again.']; }
+    if (!state.launched) { return ['[data-act="launch"]', state.iconSelected ? 'Now double-click the icon to open the app (or press Enter).' : 'Double-click the NucleiSky icon to open the app.']; }
+    if (!state.welcomeRun) { return ['[data-act="run-welcome"]', 'Click the play button to run the Welcome cell. It lists the notebooks of the app.']; }
+    if (!app) { return ['[data-act="open-app"]', 'Click Open the notebook on NucleiSky2DApp to open the 2D notebook.']; }
+    var names = ['', 'Load & Process', 'Load Masks & Extract Features', 'Run adaptive NucleiSky2D'];
+    if (n === state.done && n < 3) { return ['#nb-doc-app [data-act="run-step"][data-step="' + (n + 1) + '"]', 'Click the play button to run the next cell. It shows a widget.']; }
+    if (n > state.done) { return ['[data-act="widget"][data-n="' + n + '"]', 'Use the widget: click ' + names[n] + '.']; }
+    return [null, 'That is the whole notebook: scroll down for NucleiSky\'s own output. Try Show/Hide code, then napari or Fiji.'];
+  }
+
+  function showNext() {
+    all('.is-next').forEach(function (el) { el.classList.remove('is-next'); });
+    var hint = next(), target = hint[0] ? one(hint[0]) : null;
+    if (target && !target.hidden && !target.disabled) { target.classList.add('is-next'); }
+    one('[data-next]').textContent = hint[1];
+  }
+
   function showFiji() { one('[data-dialog]').hidden = !state.fijiDialog; }
 
-  function sync() { root.dataset.step = state.step; showViews(); showSteps(); showNotebook(); showLayers(); showFiji(); }
+  function sync() { root.dataset.step = state.step; showViews(); showSteps(); showNotebook(); showLayers(); showFiji(); showNext(); }
 
   function runStep(n, fromHost) { state.step = Math.max(state.step, n); if (fromHost) { state.done = 3; } if (n === 3 && fromHost) { state.selected = state.selected || 'aligned'; state.fijiDialog = false; state.opened = true; state.launched = true; } }
 
@@ -117,6 +137,7 @@
     if (el.dataset.demoAct === 'view') { state.view = el.dataset.view; sync(); return; }
     if (el.dataset.demoAct === 'reset') { state = JSON.parse(JSON.stringify(FRESH)); sync(); one('#demo-tab-notebook').focus(); return; }
     if (el.dataset.nbTab) { state.nbTab = el.dataset.nbTab; sync(); return; }
+    if (el.dataset.act === 'launch' && e.detail === 1) { state.iconSelected = true; el.classList.add('is-selected'); sync(); return; }
     if (el.tagName === 'INPUT' && el.type !== 'checkbox') { return; }
     if (actions[el.dataset.act]) { var out = actions[el.dataset.act](el); sync(); settle(out); }
   });

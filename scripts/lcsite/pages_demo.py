@@ -79,7 +79,7 @@ def page_demo() -> None:
           f'<p class="lc-lead">{esc(text["lead"])}</p></section>')
     p.add(about_and_features(text))
     p.add(f'<div class="lc-demo" data-demo data-search-exclude><p class="lc-demo__notice" role="note"><strong>Interactive preview</strong>{esc(text["notice"].removeprefix("Interactive preview"))}</p>'
-          f'<div class="lc-demo__live">{tab_buttons()}<button type="button" class="lc-btn lc-btn--small lc-btn--ghost" data-demo-act="reset">Reset demo</button>'
+          f'<div class="lc-demo__live"><p class="lc-demo__next" data-next></p>{tab_buttons()}<button type="button" class="lc-btn lc-btn--small lc-btn--ghost" data-demo-act="reset">Reset demo</button>'
           f'<p class="lc-demo__experimental" data-demo-experimental hidden>{esc(text["experimental"])}</p>{panels(shown, example)}</div>{static_figures()}</div>')
     p.add(how_it_works(text), credits(text))
     p.write()
