@@ -1,0 +1,197 @@
+{
+ "headline": "Add a neutral, disclosed \"Related projects and alternative approaches\" section at the bottom of /ecosystem/, written from a new validated data/related-projects.yaml. It has 8 entries in 4 approach groups, rendered with the site's existing pills and no logos. Wording follows each project's own documentation and the LabConstrictor preprint's framing.",
+ "final_text": "## Related projects and alternative approaches\n\n**Intro.** Sharing a notebook does not guarantee that it runs on someone else's computer. Several open-source projects address this with different approaches: desktop applications, containers, notebooks in the cloud and browser-based apps. LabConstrictor turns Jupyter notebooks into installable desktop applications that run locally in their own software environment, and it builds its installers with conda constructor. The projects below take other routes. Which one fits depends on where the notebook has to run, on the data and on the people who will use it. They are complementary and can be combined.\n\n**Disclosure (visible sentence directly under the intro, not a footnote).** Some of the people who wrote LabConstrictor are also authors of publications about DL4MicEverywhere, ZeroCostDL4Mic and BiaPy. We describe every project here from its own documentation and link to its sources.\n\nEntries use the same fields in the same order: name (not a link), what it does, \"A good fit when\", optional paper line with a DOI text link, a small \"Shares authors with LabConstrictor\" plain-text note (three entries only), \"Checked <date>\", then pills. Groups are in a fixed order and entries are alphabetical within a group. Nothing is ranked.\n\n### Desktop applications\n- **Album.** Runs scientific solutions (tools and routines), each in its own micromamba environment, and shares them through catalogs kept in Git. *A good fit when:* you want to share a scientific tool as a solution that others install and run through Album. Links: Documentation, Website.\n- **JupyterLab Desktop.** A cross-platform desktop application for JupyterLab for Windows, macOS and Linux. The Python environment can be set globally or per project. *A good fit when:* you want JupyterLab on your own computer as a general-purpose application, with a choice of Python environment. Link: GitHub pill (jupyterlab/jupyterlab-desktop).\n\n### Containers\n- **DL4MicEverywhere.** Runs deep-learning microscopy notebooks inside Docker containers, started from a graphical launcher. The notebooks can run locally, in the cloud or on high-performance computing systems. *A good fit when:* you want to run microscopy deep-learning notebooks in containers on your own, remote or HPC machines. Paper: Hidalgo-Cenalmor et al. (2024), Nature Methods 21(6), 925-927, doi:10.1038/s41592-024-02295-6. Shares authors with LabConstrictor. Link: GitHub pill (HenriquesLab/DL4MicEverywhere).\n\n### Browser and cloud\n- **Binder.** Opens a Git repository as a live Jupyter session in a web browser. BinderHub builds the image on demand, and mybinder.org is the free public BinderHub deployment. *A good fit when:* collaborators should open a repository's notebooks in a browser without installing anything. Paper: Project Jupyter et al. (2018), Proceedings of the Python in Science Conference, 113-120, doi:10.25080/Majora-4af1f417-011. Links: Documentation (mybinder.readthedocs.io), Website (mybinder.org).\n- **repo2docker.** Builds a container image from the configuration files in a Git repository, so that its environment can be reproducibly built and run. BinderHub uses it to build images on demand. *A good fit when:* you want a reproducible container image of a repository's environment. Links: GitHub pill (jupyterhub/repo2docker), Documentation.\n- **Voilà.** Turns Jupyter notebooks into standalone web applications and dashboards. Code cells are hidden by default, and widgets stay connected to a live Jupyter kernel. *A good fit when:* you want to present a notebook as a web application, run from a local or hosted process. Links: GitHub pill (voila-dashboards/voila), Documentation.\n\n### Deep learning for microscopy and bioimage analysis\n- **BiaPy.** An open-source library and application for common deep-learning workflows in bioimage analysis, with a graphical interface for Windows, Linux and macOS. *A good fit when:* you want ready-made deep-learning workflows for bioimage tasks such as segmentation, detection or denoising. Paper: Franco-Barranco et al. (2025), Nature Methods 22(6), 1124-1126, doi:10.1038/s41592-025-02699-y. Shares authors with LabConstrictor. Links: GitHub pill (BiaPyX/BiaPy), Documentation.\n- **ZeroCostDL4Mic.** A collection of Jupyter notebooks for Google Colab, with a graphical interface, for deep learning in microscopy. *A good fit when:* you want to run deep-learning microscopy notebooks in Google Colab. Paper: von Chamier et al. (2021), Nature Communications 12, 2276, doi:10.1038/s41467-021-22518-0. Shares authors with LabConstrictor. Link: GitHub pill (HenriquesLab/ZeroCostDL4Mic).\n\n**Closing (the paragraph is attributed to us, not to the other projects).** These approaches are not mutually exclusive. A scientific Python package can support a notebook distributed with LabConstrictor and also offer workflows through containers or cloud notebooks, and the same notebooks can be opened in Google Colab. In our preprint we describe the trade-offs as we see them. Cloud notebooks lower the first barrier but are not an option when data cannot leave an institution or are very large. Containers encapsulate the runtime more fully but add setup work and can be restricted by institutional IT policies. Pinned conda environments in an installed app are not flawless across operating systems and depend on upstream packages staying available. These are our views, not those of the other projects.\n\n**Helper line (small text).** The descriptions are ours, written from each project's own pages. If something is wrong or a project is missing, edit this list on GitHub or open an issue.\n\n**Further reading (rendered as links, not as data).** The DL4MicEverywhere, BiaPy, ZeroCostDL4Mic and Binder papers appear inside their entries. The LabConstrictor preprint is \"arXiv preprint (2026)\", Hidalgo-Cenalmor, Rivera Pineda, Saraiva, Henriques, Jacquemet, doi:10.48550/arXiv.2603.10704. Its DOI is written once, in data/site.yaml (citation.doi, from the citation plan). The section links to it with the text link \"Cite LabConstrictor\", which goes to the home page #cite block.\n\n**Page description for /ecosystem/.** \"Hosts, tools and templates around LabConstrictor, plus other open-source ways to share and reproduce scientific software.\"\n\n**Verification status.** The section avoids every claim about maintenance, release, popularity, availability, Singularity/Apptainer, or what the JupyterLab Desktop installer bundles. Re-check these items before committing:\n- all URLs return 200;\n- the mybinder.readthedocs.io and docs.album.solutions pages;\n- the Crossref records for the Binder, BiaPy and ZeroCostDL4Mic DOIs;\n- the BiaPy documentation, in case a longer list of execution routes can be stated;\n- the Album documentation wording.",
+ "corrections_to_proposal": [
+  "Voila is written Voilà (grave accent) in prose and in the YAML. Add GitHub pills github.com/voila-dashboards/voila and github.com/jupyterhub/repo2docker, which the proposal omits. A repository link must be a GitHub pill under the site rules.",
+  "'repo2docker and Binder' is not one project: repo2docker builds images, BinderHub serves them, mybinder.org is a free public BinderHub deployment. Split into two entries that each name the other.",
+  "DL4MicEverywhere 'computationally demanding ... GPU environments' is not the project's wording. It tilts against LabConstrictor, which ships requirements_gpu.txt, and the paper says GPU setup in Docker is hard. Replaced by the README-supported 'own, remote or HPC machines'. Singularity is not mentioned in the README, so it is not claimed.",
+  "JupyterLab Desktop 'rather than a separately packaged app per workflow' defines the project by LabConstrictor's model. Replaced by 'general-purpose application, with a choice of Python environment'.",
+  "Voilà 'hosted on a server' is too narrow: it runs as a standalone local or hosted process and needs a live Jupyter kernel.",
+  "BiaPy 'unlike LabConstrictor primarily an image-analysis framework, not a general tool' describes it only by contrast, and 'framework' is not its word ('library and application'). Described on its own terms. GUI and Docker/Colab routes: the two fact reports disagree, so only the README-confirmed GUI is stated.",
+  "ZeroCostDL4Mic 'interactive ... reducing dedicated compute' is paraphrase. Replaced by the README: Jupyter notebooks for Google Colab with a graphical interface. No status claim (maintained, outdated, superseded) is made.",
+  "The Nature Methods citation needs issue 6 (online 17 May 2024). Do not copy Crossref's 24-entry author array, which lists consortium members individually and duplicates Mariana G. Ferreira. Use 'Hidalgo-Cenalmor et al.', with the diacritic in Iván Hidalgo-Cenalmor wherever the full name is shown.",
+  "The LabConstrictor reference is an arXiv preprint (v1, 11 March 2026), not a journal article. Its DOI 10.48550/arXiv.2603.10704 and its title are correct. It lives once in site.yaml citation.doi and is not duplicated in the related file. The stale Zenodo 0.0.2 DOI (links.citation_doi) is not reused.",
+  "The key message 'overlapping distribution problems, different technologies' is only partly supported, because neither project cites the other. Replaced by the paper's own framing: complementary approaches with trade-offs, stated as the authors' view.",
+  "The 'Choosing an approach' list read as recommendations (including 'installable desktop application: LabConstrictor') and duplicates the 'When it may be useful' column. Dropped: the per-entry 'A good fit when' field is the choosing aid, and the 'not mutually exclusive' sentence becomes the closing paragraph.",
+  "Two comparators the LabConstrictor paper itself names were missing: Album (under local reproducibility) and Google Colab (via ZeroCostDL4Mic). Album is added as an entry. Colab is covered in the ZeroCostDL4Mic entry and the closing paragraph, and a separate Colab entry is a user decision.",
+  "Disclosure was missing. Authors of LabConstrictor are also authors of the DL4MicEverywhere paper (Hidalgo-Cenalmor, Jacquemet, Henriques), the ZeroCostDL4Mic paper (Jacquemet, Henriques) and the BiaPy paper (Hidalgo-Cenalmor, per Crossref). Disclosure now covers BiaPy as well, which the fact report 1 omitted.",
+  "The single 'url' field in the proposed data file cannot express GitHub pill versus text link. It is replaced by repo / docs / site, with docs and site forbidden from being a GitHub repository root.",
+  "The proposal's table column 'When it may be useful' is replaced by 'A good fit when' with capabilities that appear in each project's own pages and no comparative adjectives."
+ ],
+ "data_file": "```yaml\n# data/related-projects.yaml\n# Hand-written here and nowhere else. This is OUR wording about other people's projects.\n# Rules: describe each project in its own terms (README / documentation / paper), never by what\n# it lacks compared with LabConstrictor. No popularity, performance, maintenance or\n# superiority claims. No URLs, brackets or angle brackets in prose (links come from the\n# repo / docs / site fields). Papers: hand-copied from Crossref (never generated); DOI lives in `doi`.\n# The LabConstrictor preprint DOI is NOT here: it is data/site.yaml citation.doi.\n# Every entry carries `checked` (ISO date it was last compared with the primary pages).\n# Validated by scripts/lcsite/related.py (exact key sets, no defaults); the build stops on a problem.\ntitle: Related projects and alternative approaches\nintro: >-\n  Sharing a notebook does not guarantee that it runs on someone else's computer. Several\n  open-source projects address this with different approaches: desktop applications, containers,\n  notebooks in the cloud and browser-based apps. LabConstrictor turns Jupyter notebooks into\n  installable desktop applications that run locally in their own software environment, and it\n  builds its installers with conda constructor. The projects below take other routes. Which one\n  fits depends on where the notebook has to run, on the data and on the people who will use it.\n  They are complementary and can be combined.\ndisclosure: >-\n  Some of the people who wrote LabConstrictor are also authors of publications about\n  DL4MicEverywhere, ZeroCostDL4Mic and BiaPy. We describe every project here from its own\n  documentation and link to its sources.\nshared_authors_note: Shares authors with LabConstrictor.\ngroups:\n  - key: desktop\n    title: Desktop applications\n    items:\n      - name: Album\n        approach: >-\n          Runs scientific solutions (tools and routines), each in its own micromamba\n          environment, and shares them through catalogs kept in Git.\n        fit: You want to share a scientific tool as a solution that others install and run through Album.\n        docs: https://docs.album.solutions\n        site: https://album.solutions\n        checked: 2026-10-11\n      - name: JupyterLab Desktop\n        approach: >-\n          A cross-platform desktop application for JupyterLab for Windows, macOS and Linux.\n          The Python environment can be set globally or per project.\n        fit: >-\n          You want JupyterLab on your own computer as a general-purpose application, with a\n          choice of Python environment.\n        repo: jupyterlab/jupyterlab-desktop\n        checked: 2026-10-11\n  - key: containers\n    title: Containers\n    items:\n      - name: DL4MicEverywhere\n        approach: >-\n          Runs deep-learning microscopy notebooks inside Docker containers, started from a\n          graphical launcher. The notebooks can run locally, in the cloud or on\n          high-performance computing systems.\n        fit: >-\n          You want to run microscopy deep-learning notebooks in containers on your own, remote\n          or HPC machines.\n        repo: HenriquesLab/DL4MicEverywhere\n        doi: 10.1038/s41592-024-02295-6\n        reference: Hidalgo-Cenalmor et al. (2024), Nature Methods 21(6), 925-927\n        shared_authors: true\n        checked: 2026-10-11\n  - key: browser-cloud\n    title: Browser and cloud\n    items:\n      - name: Binder\n        approach: >-\n          Opens a Git repository as a live Jupyter session in a web browser. BinderHub builds\n          the image on demand, and mybinder.org is the free public BinderHub deployment.\n        fit: Collaborators should open a repository's notebooks in a browser without installing anything.\n        docs: https://mybinder.readthedocs.io\n        site: https://mybinder.org\n        doi: 10.25080/Majora-4af1f417-011\n        reference: Project Jupyter et al. (2018), Proceedings of the Python in Science Conference, 113-120\n        checked: 2026-10-11\n      - name: repo2docker\n        approach: >-\n          Builds a container image from the configuration files in a Git repository, so that\n          its environment can be reproducibly built and run. BinderHub uses it to build images\n          on demand.\n        fit: You want a reproducible container image of a repository's environment.\n        repo: jupyterhub/repo2docker\n        docs: https://repo2docker.readthedocs.io\n        checked: 2026-10-11\n      - name: Voilà\n        approach: >-\n          Turns Jupyter notebooks into standalone web applications and dashboards. Code cells\n          are hidden by default, and widgets stay connected to a live Jupyter kernel.\n        fit: You want to present a notebook as a web application, run from a local or hosted process.\n        repo: voila-dashboards/voila\n        docs: https://voila.readthedocs.io\n        checked: 2026-10-11\n  - key: microscopy\n    title: Deep learning for microscopy and bioimage analysis\n    items:\n      - name: BiaPy\n        approach: >-\n          An open-source library and application for common deep-learning workflows in\n          bioimage analysis, with a graphical interface for Windows, Linux and macOS.\n        fit: >-\n          You want ready-made deep-learning workflows for bioimage tasks such as segmentation,\n          detection or denoising.\n        repo: BiaPyX/BiaPy\n        docs: https://biapy.readthedocs.io\n        doi: 10.1038/s41592-025-02699-y\n        reference: Franco-Barranco et al. (2025), Nature Methods 22(6), 1124-1126\n        shared_authors: true\n        checked: 2026-10-11\n      - name: ZeroCostDL4Mic\n        approach: >-\n          A collection of Jupyter notebooks for Google Colab, with a graphical interface, for\n          deep learning in microscopy.\n        fit: You want to run deep-learning microscopy notebooks in Google Colab.\n        repo: HenriquesLab/ZeroCostDL4Mic\n        doi: 10.1038/s41467-021-22518-0\n        reference: von Chamier et al. (2021), Nature Communications 12, 2276\n        shared_authors: true\n        checked: 2026-10-11\nclosing: >-\n  These approaches are not mutually exclusive. A scientific Python package can support a\n  notebook distributed with LabConstrictor and also offer workflows through containers or cloud\n  notebooks, and the same notebooks can be opened in Google Colab. In our preprint we describe\n  the trade-offs as we see them. Cloud notebooks lower the first barrier but are not an option\n  when data cannot leave an institution or are very large. Containers encapsulate the runtime\n  more fully but add setup work and can be restricted by institutional IT policies. Pinned conda\n  environments in an installed app are not flawless across operating systems and depend on\n  upstream packages staying available. These are our views, not those of the other projects.\nhelper: >-\n  The descriptions are ours, written from each project's own pages. If something is wrong or a\n  project is missing, edit this list on GitHub or open an issue.\n```\nNotes on the schema. Top-level keys: title, intro, disclosure, shared_authors_note, groups, closing, helper (all required, no others). Group: key, title, items (required), text (optional). Entry required: name, approach, fit, checked. Entry optional: repo ('owner/name'), docs, site, doi, reference, shared_authors (true only). At least one of repo, docs, site. doi and reference come together. docs and site must be https and must not be a GitHub repository root. Names and group keys are unique. Banned in prose: URLs, [ ] < >, and the volatile words (popular, most used, fastest, faster, best, superior, stars, downloads). The 'Cite LabConstrictor', 'Edit this list on GitHub' and 'open an issue' link labels are constants in pages_site.py, as page chrome.",
+ "implement_now": [
+  {
+   "order": 1,
+   "title": "Write the rules first (DESIGN.md, AGENTS.md)",
+   "what": "Add the Related-project list pattern to DESIGN.md. It covers h2#related with h3 groups, the entry parts and their order, a non-link name, links only as GitHub / Documentation / Website pills plus the shared DOI text link, no logos, no URLs in prose, neutral wording, the visible disclosure plus the per-entry note, the stable #related anchor, and the second edit link for a two-file page. Add one line under Images and one row to 'Where this is enforced'. In AGENTS.md add the Ecosystem row 'from projects and related' and a Sources-of-truth bullet for data/related-projects.yaml.",
+   "files": [
+    "/home/user/labconstrictor-site/DESIGN.md",
+    "/home/user/labconstrictor-site/AGENTS.md"
+   ],
+   "effort": "S",
+   "tests": "None (documentation). The rules are enforced by items 3 to 5."
+  },
+  {
+   "order": 2,
+   "title": "Create the data file and its validator",
+   "what": "Add data/related-projects.yaml as in data_file (UTF-8, Voilà and Iván with diacritics). Add scripts/lcsite/related.py with load() -> dict (via config.load_yaml) and check() split into check_group, check_entry, check_links, check_text and check_doi. Every error goes through config.fail and names the file and the entry. Use no defaults and no .get(key, default). Validation is Python, not a JSON schema, because schema/ is published at /schema/ for outside authors. Run the volatile-word and URL checks on prose only.",
+   "files": [
+    "/home/user/labconstrictor-site/data/related-projects.yaml",
+    "/home/user/labconstrictor-site/scripts/lcsite/related.py",
+    "/home/user/labconstrictor-site/scripts/lcsite/__init__.py"
+   ],
+   "effort": "M",
+   "tests": "New tests/test_related.py (tests/test_site.py is 271 lines). Write the failure cases first, each asserting that SystemExit names data/related-projects.yaml and the entry. Cases: missing file, missing or unknown key, extra key, text too short or too long, no link, repo not owner/name, docs or site not https, docs or site that is a GitHub repo root, duplicate names, duplicate group keys, empty items, malformed DOI, doi without reference and reference without doi, shared_authors not true, URL / bracket / angle bracket in prose, a banned volatile word, invalid checked date. Success case: the real file passes and 'Voilà' and 'Hidalgo-Cenalmor' (if present) keep their diacritics."
+  },
+  {
+   "order": 3,
+   "title": "Shared DOI helper (after citation item 1, or ship without any LabConstrictor DOI)",
+   "what": "Add text.doi_url(doi), a pure function that validates the '10.' pattern, percent-quotes the DOI and raises ValueError on a malformed one. Add cards.doi_link(doi), a text link with text 'doi:<doi>' pointing to https://doi.org/<doi>. If the citation plan lands first, reuse its helper instead of adding a second one.",
+   "files": [
+    "/home/user/labconstrictor-site/scripts/lcsite/text.py",
+    "/home/user/labconstrictor-site/scripts/lcsite/cards.py"
+   ],
+   "effort": "S",
+   "tests": "In tests/test_related.py: doi_url accepts 10.48550/arXiv.2603.10704 and 10.1038/s41592-024-02295-6 and rejects 'https://doi.org/x', '' and 'doi:10.1/x'. doi_link has href https://doi.org/10.1038/s41592-024-02295-6 and escapes the text."
+  },
+  {
+   "order": 4,
+   "title": "Render the section on the Ecosystem page",
+   "what": "In pages_site.py add related_links(entry), related_entry(entry), related_group(group) and related_section(related), each at most 25 lines. The section is h2 id=related with an h3 id=related-<key> per group, placed above the logos footnote. Entries are li in ul.lc-related: bold non-link name, approach, 'A good fit when: ...', optional 'reference + doi link' line, the plain-text shared-authors note when set, 'Checked <date>', then pills. Pills: cards.github_badge(repo) for repositories, the existing Documentation and Website pills for docs and site. All text goes through text.esc. page_ecosystem gains a related parameter and the new description. The disclosure sentence is a visible paragraph under the intro. The closing paragraph is followed by the helper line with three text links: 'Cite LabConstrictor' (target index.md#cite, only once the home #cite block exists), 'Edit this list on GitHub' ({REPO}/edit/main/data/related-projects.yaml) and 'open an issue'. Add the ul.lc-related CSS (no bullets, entries separated by a thin border, pill row wraps, no sideways scroll at phone width). No logos.",
+   "files": [
+    "/home/user/labconstrictor-site/scripts/lcsite/pages_site.py",
+    "/home/user/labconstrictor-site/docs/assets/stylesheets/lc.css"
+   ],
+   "effort": "M",
+   "tests": "In tests/test_related.py. A repo gives class lc-gh with an https://github.com/... href. docs and site pills render. The DOI link href is correct. Text containing <script> and quotes is escaped. The section contains no '<img'. There is one h2 and one h3 per group, and the page's ids are unique. Integration: run the HTML through Page.fix_links and check_design.Facts, then link_problems and heading_problems return nothing (outside links open in a new tab, no unpilled repo link, no skipped heading). The disclosure text and the shared-authors note appear."
+  },
+  {
+   "order": 5,
+   "title": "Wire the build and update the generated text",
+   "what": "In build_site.py import related and call pages_site.page_ecosystem(projects.resolve(ecosystem), related.load()). Keep main() at 30 lines or fewer and add data/related-projects.yaml to the 'Reads' docstring. Update the llms.py Ecosystem line to mention related projects. Update README.md (what the site does and the 'Where to edit what' table).",
+   "files": [
+    "/home/user/labconstrictor-site/scripts/build_site.py",
+    "/home/user/labconstrictor-site/scripts/lcsite/llms.py",
+    "/home/user/labconstrictor-site/README.md"
+   ],
+   "effort": "S",
+   "tests": "The existing test_code_rules (function length, annotations, file length) passes. tests/test_site.py still passes. Add a test that llms.txt names related projects."
+  },
+  {
+   "order": 6,
+   "title": "Pre-commit fact and link re-check, then full pipeline",
+   "what": "Run curl -L on every URL in the data file (GitHub URLs return 403 to curl through the proxy, so check them with a browser or WebFetch). Re-read the Album, Binder docs and BiaPy docs wording. Check the Binder, BiaPy and ZeroCostDL4Mic DOIs in Crossref and copy only the first author, year, journal, volume, issue and pages. Run 'Before you push': unit tests, fetch, build_site, zensical build --strict, write_sitemap, finish_site, check_site, check_design. Ask a person who is not involved with DL4MicEverywhere, ZeroCostDL4Mic or BiaPy to read the page before the site stops being noindex.",
+   "files": [
+    "/home/user/labconstrictor-site/data/related-projects.yaml"
+   ],
+   "effort": "S",
+   "tests": "Whole pipeline green. check_site anchor check passes for index.md#cite. No new network step is added to the build."
+  }
+ ],
+ "rule_changes": [
+  "DESIGN.md: new pattern 'Related-project list' (h2#related, h3 groups, fixed entry parts and order, name not a link, links only as pills plus the shared DOI text link, no URLs in prose, neutral wording with no popularity, performance, maintenance or superiority claims, visible disclosure plus per-entry note, stable /ecosystem/#related anchor).",
+  "DESIGN.md, Links: say that the Documentation and Website pills may also be used for third-party projects in this list. These pills are today described only for app headers. The GitHub pill rule is unchanged and docs or site fields may never hold a repository root.",
+  "DESIGN.md, Images: related projects are shown without logos. If one is ever added it needs its own entry type, never data/hosts.yaml, whose entries require a plugin repository.",
+  "DESIGN.md: a page written from two data files may add a second text link 'Edit this list on GitHub' in the section's helper line. The footer edit link stays on data/ecosystem.yaml.",
+  "DESIGN.md, 'Where this is enforced': add a row for related.py validation and tests/test_related.py.",
+  "AGENTS.md: Ecosystem row in the page table becomes 'pages_site.page_ecosystem, from projects and related'. Add a Sources-of-truth bullet for data/related-projects.yaml, our wording about other projects, written only there, linking to each project's own repository, documentation or paper, with a per-entry 'checked' date. Add the file to 'Hand-written here'.",
+  "AGENTS.md, Code rules (no change needed, but follow them): new tests go in tests/test_related.py because tests/test_site.py is 271 of 300 lines.",
+  "README.md: one line on the Ecosystem page's related-projects section and one row in the 'Where to edit what' table for data/related-projects.yaml.",
+  "No change to check_design.py, check_site.py, mkdocs.yml, overrides, hosts.yaml or schema/. No network link check is added to the build, because the build is offline by design."
+ ],
+ "reject": [
+  {
+   "item": "A new top-level page, menu entry, or Docs / Use / Build / home cards for the comparison",
+   "why": "The Ecosystem page is already one click from home and has a menu entry. A new page would need reach and menu work for little gain. Only the llms.txt line is updated."
+  },
+  {
+   "item": "Putting the entries in data/ecosystem.yaml or data/hosts.yaml",
+   "why": "ecosystem.yaml lists our own repositories. hosts.yaml entries require a plugin repository and drive logos and host pills."
+  },
+  {
+   "item": "A JSON schema in schema/ for the new file",
+   "why": "The repository's precedent is Python validation with fail() for hand-written data files. schema/ is published publicly at /schema/ for outside authors, so a schema there would publish a contract nobody consumes."
+  },
+  {
+   "item": "Logos or full ecosystem cards for related projects",
+   "why": "The proposal asks for none. Third-party logos are allowed only through hosts.yaml. A card is a single link, which conflicts with having both a repository pill and a documentation link."
+  },
+  {
+   "item": "Plain text links to the GitHub repositories",
+   "why": "Repository links must be the GitHub pill (check_design.link_problems fails otherwise)."
+  },
+  {
+   "item": "The separate 'Choosing an approach' list and any 'choose X for Y' sentence naming LabConstrictor, DL4MicEverywhere or ZeroCostDL4Mic",
+   "why": "It restates the 'fit' field, so it breaks single source of truth, and it steers readers to the authors' own tools."
+  },
+  {
+   "item": "The 'overlapping distribution problems' headline",
+   "why": "Neither project describes itself as an alternative to the other. The paper calls the approaches complementary."
+  },
+  {
+   "item": "The 'Computationally demanding ... GPU environments', 'rather than a separately packaged app per workflow', 'hosted on a server' and 'unlike LabConstrictor ... not a general tool' wordings",
+   "why": "They are not the projects' words and they tilt the comparison by contrast with LabConstrictor."
+  },
+  {
+   "item": "Statements of maintenance status, release versions, 'actively maintained', availability or limits of mybinder.org, stars or user numbers, a 'superseded' or 'outdated' label for ZeroCostDL4Mic, and Singularity or Apptainer support for DL4MicEverywhere",
+   "why": "None could be verified from primary sources, and the standing rule is no volatile claims."
+  },
+  {
+   "item": "Listing conda constructor, PyInstaller, Briefcase, conda-pack, Pinokio, JupyterLite, Streamlit, Gradio, Panel, napari hub, Fiji update sites, BioImage.IO, Galaxy or nbdev as alternatives",
+   "why": "They are building blocks, distribution channels or unverified here. constructor is mentioned once as what LabConstrictor builds on."
+  },
+  {
+   "item": "Generating references from Crossref or DataCite, or copying Crossref's author array",
+   "why": "The array has 24 entries, a duplicated author and a mis-split name, and arXiv DOIs are not in Crossref. Copy first author, year, journal, volume, issue and pages by hand."
+  },
+  {
+   "item": "Repeating the LabConstrictor preprint DOI in related-projects.yaml, or reusing links.citation_doi",
+   "why": "It would be a second copy next to site.yaml citation.doi, and links.citation_doi is a stale Zenodo 0.0.2 version DOI."
+  },
+  {
+   "item": "One row for 'repo2docker and Binder'",
+   "why": "They are different projects with different links, so they become two entries."
+  },
+  {
+   "item": "A network link checker in the daily build",
+   "why": "A third-party outage must not stop publishing, and the build is offline by design. The per-entry 'checked' date and the pre-commit curl check cover link rot."
+  }
+ ],
+ "ask_user": [
+  {
+   "question": "Should Album be a main entry, and should Google Colab get its own entry? The LabConstrictor paper names Album, JupyterLab Desktop and DL4MicEverywhere as its local-reproducibility comparators, and names Colab and Binder as its cloud comparators. The proposal omits Album and covers Colab only through ZeroCostDL4Mic.",
+   "recommendation": "Include Album, with the description above (it needs a re-read of the Album docs before commit), and keep Colab folded into the ZeroCostDL4Mic entry and the closing paragraph. The site already treats Colab as a complementary route. Leaving out the paper's own comparators makes the page look selective."
+  },
+  {
+   "question": "Do you agree with a visible disclosure sentence in the section intro plus a plain-text 'Shares authors with LabConstrictor' note on DL4MicEverywhere, ZeroCostDL4Mic and BiaPy? BiaPy is added because Crossref lists Hidalgo-Cenalmor on that paper.",
+   "recommendation": "Yes. Please confirm the BiaPy authorship, and tell me if you would rather word the note differently, for example by naming the shared authors."
+  },
+  {
+   "question": "Do you want someone outside DL4MicEverywhere, ZeroCostDL4Mic and BiaPy to read the section before the site is unlisted, and a courtesy note to the other projects' maintainers?",
+   "recommendation": "Yes to the outside reader before removing noindex. A courtesy note to the maintainers of the non-LabConstrictor projects is optional but cheap, and the helper line already invites corrections."
+  },
+  {
+   "question": "Should the LabConstrictor preprint appear in the section only through the 'Cite LabConstrictor' link to the home #cite block, rather than as a second DOI line?",
+   "recommendation": "Yes, link only. This keeps one source for the DOI and depends on citation plan item 1. If that is delayed, ship the section without the LabConstrictor link."
+  },
+  {
+   "question": "Are you happy with a Website and Documentation pill for third-party projects, and with the section's helper line holding 'Edit this list on GitHub' and 'open an issue' links?",
+   "recommendation": "Yes. The Website and Documentation pills already exist on app headers, and the edit link keeps the 'points to where the text is written' rule honest. Please confirm that issues are enabled on the site repository."
+  },
+  {
+   "question": "Should each entry show a visible 'Checked <date>' line?",
+   "recommendation": "Yes. It is honest for descriptions of other people's projects that can drift, and it costs one small line per entry. The alternative is a date only in the data-file header comment."
+  },
+  {
+   "question": "Do you want me to try to confirm the open facts (BiaPy Docker and Colab routes, what the JupyterLab Desktop installer bundles, DL4MicEverywhere maintenance status) before the section is written?",
+   "recommendation": "Not blocking. The wording above avoids all of them. If you want to state more, re-check the primary pages first and extend the entries."
+  }
+ ],
+ "overlaps_with_other_plans": [
+  "3-citation: the DOI text-link helper (text.doi_url and cards.doi_link) and the home page #cite block. The related section links to home #cite as index.md#cite and must land after citation item 1, or ship without the LabConstrictor link. Whichever plan lands first adds the shared helper. data/site.yaml citation.doi is the only place for the preprint DOI, and the stale links.citation_doi (Zenodo 0.0.2) must not be reused.",
+  "3-citation: both plans edit pages_site.py (the home cite band adds about 30 lines, this plan about 50) and cards.py or text.py, so merge order matters for the 300-line file limit. pages_site.py is about 101 lines now.",
+  "build_site.py: main() is about 26 of 30 allowed lines and other plans may also add calls. Add the 'related' import and parameter in one line each.",
+  "DESIGN.md, AGENTS.md, README.md and llms.py are edited by several plans. Resolve conflicts by merging the new rows and bullets, not by rewriting.",
+  "1-app-centre, 2-documentation and 4-demo-and-video: no direct overlap found. Only the shared 'Where this is enforced' table and the page-table rows in the docs above may conflict."
+ ]
+}

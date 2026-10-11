@@ -1,0 +1,120 @@
+{
+ "area": "FACTS: accuracy of the six project descriptions, URLs, citations, overlap claim and disclosure advice for the proposed \"Related projects and alternative approaches\" section",
+ "facts": [
+  {
+   "statement": "DL4MicEverywhere: Docker containers, graphical launcher, local and remote computing, including HPC.",
+   "verdict": "confirmed",
+   "evidence": "README (HenriquesLab/DL4MicEverywhere, via WebFetch): Docker Desktop required; OS-specific launchers open a GUI; 'Notebooks can run locally, in the cloud, or on high-performance computing infrastructure'. Nature Methods text (henriqueslab.org txt copy): 'launched graphically, via X11 forwarding, or directly through a command line'; the headless command line supports HPC. No archive notice on the repo page. Neither README mentions Colab or Singularity."
+  },
+  {
+   "statement": "DL4MicEverywhere 'when useful': computationally demanding microscopy workflows across different machines and GPU environments.",
+   "verdict": "partly",
+   "evidence": "Paper says launch 'on local or remote systems with GPU acceleration' and README names laptops, workstations, HPC and cloud. 'Computationally demanding' and 'across different GPU environments' are the proposal's wording, not the project's. Safer: 'deep-learning microscopy notebooks on your own, remote or HPC machines'."
+  },
+  {
+   "statement": "DL4MicEverywhere is maintained / current.",
+   "verdict": "unverifiable",
+   "evidence": "GitHub REST API was blocked for this session and curl to github.com returns 403, so last-commit date and releases could not be read. The repo page showed no archive notice, 1,030 commits, and an empty Releases section at fetch time. Do not write 'actively maintained' on the site."
+  },
+  {
+   "statement": "repo2docker builds reproducible container environments from repositories.",
+   "verdict": "confirmed",
+   "evidence": "repo2docker.readthedocs.io: 'reproducibly build and run user environment container images for interactive computing'; 'the tool used by BinderHub to build images on demand'. README: 'fetches a git repository and builds a container image based on the configuration files found in the repository.' Repo is under the jupyterhub GitHub organisation (github.com/jupyterhub/repo2docker); no archive notice; 3,283 commits."
+  },
+  {
+   "statement": "repo2docker + Binder 'make notebooks available through an online Jupyter interface'.",
+   "verdict": "partly",
+   "evidence": "Accurate only for Binder. repo2docker itself only builds (and can run) images; hosting is done by BinderHub (open-source, runs on Kubernetes). mybinder.org is the free public BinderHub deployment (mybinder.readthedocs.io: 'The public deployment at mybinder.org is free to use'; the Binder Project is described as a non-profit 'built, led, and supported by an open community'). The proposal merges two different things; the entry should say so."
+  },
+  {
+   "statement": "Binder / mybinder.org current status (up, funded, usage limits, federation).",
+   "verdict": "unverifiable",
+   "evidence": "mybinder.org front page fetch returned only the title 'Binder'. The docs mention the BinderHub Federation, usage guidelines and a 'Support the project' page but give no limits, guarantees or sunset notice in the pages fetched. The URLs https://mybinder.org and https://repo2docker.readthedocs.io both return 200 (the latter redirects to /en/latest/). Avoid any availability or capacity claim."
+  },
+  {
+   "statement": "Voila (voila.readthedocs.io) turns notebooks into interactive web apps, hiding code and exposing widgets, for a browser-based interface hosted on a server.",
+   "verdict": "confirmed",
+   "evidence": "Docs: 'From notebooks to standalone web applications and dashboards'; 'By default, the notebook code cells are hidden'; widgets 'have access to the underlying Jupyter kernel'; 'A new Jupyter kernel will be created for each notebook you click'; served 'as a Tornado application, or via the Jupyter server'. README: 'Voilà turns Jupyter notebooks into standalone web applications.'"
+  },
+  {
+   "statement": "Voila current name and maintainer.",
+   "verdict": "partly",
+   "evidence": "The project is written Voilà (with accent) in prose; repo and package are voila, at github.com/voila-dashboards/voila (organisation voila-dashboards). Docs promote a sister tool, Voici. Neither the docs nor the README names maintainers or states governance or a move from another organisation, so 'maintained by X' or 'Jupyter subproject' cannot be claimed. Docs changelog showed 0.5.8 as latest at fetch time (volatile; do not print a version). Proposal gives only the readthedocs URL, which resolves (200, redirects to /en/stable/)."
+  },
+  {
+   "statement": "JupyterLab Desktop is a desktop application for working with JupyterLab and Python environments; useful for a convenient local notebook environment rather than a separately packaged app per workflow.",
+   "verdict": "confirmed",
+   "evidence": "README: 'the cross-platform desktop application for JupyterLab'; user guide: bundled with a Python environment containing jupyterlab, numpy, scipy, pandas, ipywidgets, matplotlib; can select a custom conda/venv/pyenv Python globally or per project (--python-path); each session window runs its own server. Installers for Windows, macOS and Linux. No archive/deprecation notice seen; github.com/jupyterlab/jupyterlab-desktop is under the jupyterlab organisation. Maintenance schedule not stated (unverifiable). Difference from LabConstrictor, per its own docs: it is one general JupyterLab application you point at notebooks and environments; it is not described as building a separate installer for each notebook set, whereas LabConstrictor's README says it 'turns your Jupyter notebooks into installable desktop applications'. The docs themselves do not make this comparison, so the contrast is ours and must be worded as a difference in approach."
+  },
+  {
+   "statement": "ZeroCostDL4Mic: interactive Google Colab notebooks for deep-learning microscopy, reducing local installation and dedicated compute.",
+   "verdict": "partly",
+   "evidence": "README: 'a collection of self-explanatory Jupyter Notebooks for Google Colab' with a graphical interface for people with little coding experience; Colab 'provides the computations resources needed at no-cost'. 'Interactive' and 'reducing dedicated compute' are paraphrase; say 'uses Google Colab for compute'. Status (maintained, archived, superseded) is not stated on the README page, which does not mention DL4MicEverywhere; the DL4MicEverywhere paper calls DL4MicEverywhere an advancement of ZeroCostDL4Mic and says DL4MicEverywhere 'extends the capabilities of ZeroCostDL4Mic'. Do not call ZeroCostDL4Mic outdated, superseded or active. Citation shown on README: Nature Communications 2021, DOI 10.1038/s41467-021-22518-0 (copied from README, not checked in Crossref)."
+  },
+  {
+   "statement": "BiaPy: deep-learning bioimage analysis workflows with several execution options including GUIs and containers; primarily an image-analysis framework, not a general notebook packager.",
+   "verdict": "confirmed",
+   "evidence": "README: 'an open source library and application that streamlines the use of common deep-learning workflows'; tasks include semantic/instance segmentation, detection, denoising, super-resolution, classification, image-to-image translation. Installation docs list: GUI for Windows/Linux/macOS (requires Docker Desktop), Google Colab notebooks, Galaxy, Docker image, conda/mamba, pip, and Python API. Words 'framework' is ours; the project says 'library and application'. README says 'actively under development' and cites Nat Methods 22, 1124-1126 (2025) (not Crossref-checked). Repo github.com/BiaPyX/BiaPy, docs biapy.readthedocs.io (200)."
+  },
+  {
+   "statement": "The six URLs in the proposal resolve to the right projects.",
+   "verdict": "partly",
+   "evidence": "curl: repo2docker.readthedocs.io, mybinder.org, voila.readthedocs.io, and the DOI/arXiv links return 200. All github.com URLs (DL4MicEverywhere, jupyterlab-desktop, ZeroCostDL4Mic, BiaPy) return 403 to curl through the proxy, but WebFetch retrieved each repository page and it was the correct project. The proposal names no GitHub URL for repo2docker or Voila (the repositories are github.com/jupyterhub/repo2docker and github.com/voila-dashboards/voila); under the site rule a link to a repository must be the GitHub pill, so add these two."
+  },
+  {
+   "statement": "Nature Methods citation: Hidalgo-Cenalmor et al. (2024) DL4MicEverywhere: deep learning for microscopy made flexible, shareable and reproducible. Nature Methods 21, 925-927, DOI 10.1038/s41592-024-02295-6.",
+   "verdict": "confirmed",
+   "evidence": "Crossref: title 'DL4MicEverywhere: deep learning for microscopy made flexible, shareable and reproducible'; container Nature Methods; volume 21; issue 6; pages 925-927; published online 2024-05-17, print 2024-06; type journal-article; DOI 10.1038/s41592-024-02295-6 (doi.org resolves to nature.com). Add issue 6. Europe PMC agrees (21, 6, 925-927, 2024)."
+  },
+  {
+   "statement": "Full author list with diacritics (journal byline, as printed on the article text copy and consistent with Europe PMC).",
+   "verdict": "confirmed",
+   "evidence": "Iván Hidalgo-Cenalmor, Joanna W. Pylvänäinen, Mariana G. Ferreira, Craig T. Russell, Alon Saguy, Ignacio Arganda-Carreras, Yoav Shechtman, AI4Life Horizon Europe Program Consortium, Guillaume Jacquemet, Ricardo Henriques, Estibaliz Gómez-de-Mariscal. Crossref's record is messier: 24 entries, which list the consortium members individually (Arrate Muñoz-Barrutia, Beatriz Serrano-Solano, Caterina Fuster Barcelo, Constantin Pape, Emma Lundberg, Florian Jug, Joran Deschamps, Matthew Hartley, Mehdi Seifi, Teresa Zulueta-Coarasa, Vera Galinova, Wei Ouyang), repeat Mariana G. Ferreira (once split wrongly as given 'Mariana', family 'G. Ferreira'), and place Jacquemet, Henriques and Gómez-de-Mariscal after the consortium entries. Crossref author order therefore must not be copied blindly. Nature page itself returned a cookie redirect (unverifiable directly); byline taken from the henriqueslab.org text copy and cross-checked with Europe PMC."
+  },
+  {
+   "statement": "arXiv 2603.10704 title and DOI 10.48550/arXiv.2603.10704.",
+   "verdict": "confirmed",
+   "evidence": "arXiv API and abs page: title 'Packaging Jupyter notebooks as installable desktop apps using LabConstrictor'; authors Iván Hidalgo-Cenalmor, Marcela Xiomara Rivera Pineda, Bruno M. Saraiva, Ricardo Henriques, Guillaume Jacquemet; submitted 2026-03-11 (v1), cs.SE, q-bio.QM, '2 figures', no journal reference. DataCite resolves the DOI (Crossref does not hold it, as expected for arXiv DOIs). Note DataCite lists the second author as 'Pineda, Marcela Xiomara Rivera' (inverted family name); arXiv's own form 'Marcela Xiomara Rivera Pineda' matches the LabConstrictor README. It is a preprint, not peer reviewed, and the page must say 'arXiv preprint (2026)'."
+  },
+  {
+   "statement": "'LabConstrictor and DL4MicEverywhere solve overlapping distribution problems through different technologies' is supported by both projects' own words.",
+   "verdict": "partly",
+   "evidence": "Supported in a narrow form: LabConstrictor README/arXiv: turns notebooks into 'installable desktop applications', 'closes this deployment gap' for notebook sharing and local execution; DL4MicEverywhere README/paper: lets users run Jupyter notebooks with graphical interfaces locally, remotely or on HPC, using Docker containers. Both therefore aim to let people run notebooks on their own machines without building environments by hand. Not supported as stated: neither the LabConstrictor README nor the arXiv abstract mentions DL4MicEverywhere, Docker, Binder, Voila or JupyterLab Desktop, and neither project describes itself as an alternative to the other. DL4MicEverywhere is a catalogue of microscopy deep-learning notebooks with a container runtime; LabConstrictor is a build template for any notebook-based app. 'Overlapping' is the authors' framing, so present it as such."
+  },
+  {
+   "statement": "Conflict-of-interest context: LabConstrictor authors are also authors of DL4MicEverywhere and ZeroCostDL4Mic.",
+   "verdict": "confirmed",
+   "evidence": "Hidalgo-Cenalmor, Henriques and Jacquemet are authors of both the LabConstrictor preprint and the DL4MicEverywhere Nature Methods paper (the latter declares 'no competing interests' and says Hidalgo-Cenalmor, Jacquemet, Henriques and Gómez-de-Mariscal 'conceived, designed and wrote the source code'). The ZeroCostDL4Mic README citation (Nature Communications 2021) lists Jacquemet and Henriques among the authors. DL4MicEverywhere and ZeroCostDL4Mic are in the HenriquesLab GitHub organisation. The user's email identifies the user as Guillaume Jacquemet, a co-author of all three. Affiliations of Rivera Pineda and Saraiva were not checked."
+  }
+ ],
+ "findings": "The proposal is factually sound in outline: all four main comparisons are real, current-looking projects, no project is archived or renamed on the pages I could read, and both bibliographic references are correct. Corrections are needed in wording, not in substance.\n\nCorrections that must be made:\n1. The repo2docker + Binder row merges a build tool with a hosted service. repo2docker builds container images from a repository; BinderHub (which uses repo2docker) serves them; mybinder.org is a free public BinderHub deployment. Describe them separately inside one entry.\n2. Nature Methods citation needs issue 6 (and 17 May 2024 online). Do not copy Crossref's author array: it has 24 entries, includes the consortium members individually, duplicates Mariana G. Ferreira and mis-splits her name once. Use 'Hidalgo-Cenalmor, I. et al.' or the 11-entry byline including 'AI4Life Horizon Europe Program Consortium'.\n3. The LabConstrictor reference is an arXiv preprint (11 March 2026, v1), not a journal article; label it as such. The DOI 10.48550/arXiv.2603.10704 and the title are exact.\n4. 'Computationally demanding' (DL4MicEverywhere) and 'reducing dedicated compute' (ZeroCostDL4Mic) are the proposal's wording, not the projects'; replace with their own claims.\n5. The overlap claim should be softened to 'both help people run Jupyter notebooks on their own computers, one with per-app desktop installers, the other with Docker containers'; neither project cites the other, so present it as the authors' view.\n6. Voila should be written Voilà; no maintainer or governance statement can be sourced from its docs or README, so none should be written. GitHub links for repo2docker and Voilà are missing and must use the GitHub pill.\n7. The 'Choosing an approach' list reads as recommendations; because the authors are involved in two of the entries, keep it as a neutral 'differences' list.\n\nCorrected one-sentence neutral descriptions (each sourced above, no popularity, speed or superiority claims):\n- DL4MicEverywhere: Runs deep-learning microscopy notebooks, many adapted from ZeroCostDL4Mic, inside Docker containers, with a graphical launcher and options for local, remote and HPC systems.\n- repo2docker and Binder: repo2docker builds a container image from the configuration files in a Git repository, BinderHub uses it to build images on demand, and mybinder.org is a free public BinderHub service that opens such repositories in a browser.\n- Voilà: Turns Jupyter notebooks into standalone web applications that hide code cells by default and give widgets access to a live kernel, served by its own Tornado application or through Jupyter Server.\n- JupyterLab Desktop: A cross-platform desktop application for JupyterLab that ships with its own Python environment and can be pointed at your own conda, venv or pyenv environments.\n- ZeroCostDL4Mic: A collection of Jupyter notebooks for Google Colab with graphical interfaces for training and using deep-learning models on microscopy data.\n- BiaPy: An open-source library and application for deep-learning bioimage analysis workflows that can be run through a graphical interface, Google Colab notebooks, Galaxy, Docker, conda or pip, or from Python.\n\nSuggested neutral 'when it may be useful' phrasing (own-words based): DL4MicEverywhere, 'to run microscopy deep-learning notebooks on your own, remote or HPC machines with Docker'; repo2docker/Binder, 'to let others open a repository as a notebook in the browser without installing anything'; Voilà, 'to publish a notebook as a web application hosted on a server'; JupyterLab Desktop, 'for a general local JupyterLab with managed Python environments'; ZeroCostDL4Mic, 'to run the notebooks in Google Colab'; BiaPy, 'for deep-learning bioimage analysis tasks with its own workflows'.\n\nDisclosure advice: state the relationship in a visible sentence at the top of the section, not in a footnote, for example 'LabConstrictor was written by people who also wrote DL4MicEverywhere and ZeroCostDL4Mic; we describe every project here in its own words and link to its sources.' Add a small plain-text 'by authors of LabConstrictor' note on those two entries only (a text note, not a badge, to stay within the pill/badge rules). Use the same fields in the same order for every entry, list in a fixed non-ranking order (alphabetical), give each entry one source link, and avoid 'choose X for Y' sentences that steer readers to the group's own tools. Give the exact sentence once in data/related-projects.yaml so it has a single source of truth. Invite corrections from the other projects (a contact or issue link). Ask someone not involved with those projects to read the page before the site is listed.\n\nFit with site rules (brief, outside my main area): descriptions in a data file are consistent with single source of truth; no third-party logos is correct because only napari, Fiji, QuPath and Colab are in data/hosts.yaml; repositories need GitHub pills, papers and websites text links opening in a new tab; unlike the Ecosystem cards, nothing here comes from a project manifest, so the descriptions will not update themselves. Dated 'last checked' per entry would be honest, and a link check at fetch time (not build time) fits the two-stage rule.",
+ "recommendations": [
+  "Replace the repo2docker + Binder row by one entry that says: repo2docker builds images, BinderHub serves them, mybinder.org is a free public instance; link repo2docker docs, GitHub pill for jupyterhub/repo2docker, and mybinder.org.",
+  "Use the six corrected one-sentence descriptions above; strip 'computationally demanding', 'reducing dedicated compute' and 'framework' unless the projects use those words.",
+  "Cite the Nature Methods paper as: Hidalgo-Cenalmor, I. et al. DL4MicEverywhere: deep learning for microscopy made flexible, shareable and reproducible. Nature Methods 21(6), 925-927 (2024). doi:10.1038/s41592-024-02295-6; copy the author list from the journal byline, not from Crossref.",
+  "Cite LabConstrictor as an arXiv preprint: Hidalgo-Cenalmor, I., Rivera Pineda, M. X., Saraiva, B. M., Henriques, R., Jacquemet, G. Packaging Jupyter notebooks as installable desktop apps using LabConstrictor. arXiv:2603.10704 (2026), doi:10.48550/arXiv.2603.10704.",
+  "Reword the key message to 'Both help people run notebooks on their own computers; LabConstrictor uses per-app desktop installers, DL4MicEverywhere uses Docker containers and a launcher', and mark it as the authors' view.",
+  "Add the visible affiliation disclosure sentence and per-entry note described above, keep a fixed alphabetical order, and drop any 'choose X for Y' sentence that points to the authors' own projects.",
+  "Do not state maintenance status, release versions, star counts or availability for any project; for volatile facts link to the project page and add a 'last checked' date.",
+  "Write Voilà with the accent in prose and put the GitHub pills for jupyterhub/repo2docker and voila-dashboards/voila alongside the docs links.",
+  "Before publishing, re-check the items I could not read: DL4MicEverywhere/ZeroCostDL4Mic last commit and status, mybinder.org status, JupyterLab Desktop maintenance, BiaPy Nature Methods 2025 and ZeroCostDL4Mic Nature Communications 2021 citations in Crossref."
+ ],
+ "risks": [
+  "Presenting LabConstrictor beside DL4MicEverywhere and ZeroCostDL4Mic without a visible disclosure could look like self-promotion or a biased comparison, since the same people wrote all three.",
+  "Calling Binder a way to 'make notebooks available' hides that mybinder.org is a shared public service whose capacity and continuity are not guaranteed by anything I could read; do not imply reliability.",
+  "Copying Crossref's author array into data/*.yaml would publish a duplicated author (Mariana G. Ferreira twice, one mis-split) and the wrong author order.",
+  "Labelling ZeroCostDL4Mic as active, maintained, outdated or superseded would be unsupported: its README does not say, and the DL4MicEverywhere paper calls DL4MicEverywhere an advancement of it.",
+  "Project descriptions will go stale (JupyterLab Desktop, BiaPy and Voilà are under active development); a static data file has no automatic refresh.",
+  "Some facts came through WebFetch summaries (a small model) and a third-party text copy of the Nature Methods article rather than the publisher page, which blocked the fetch; quote-level wording should be re-read on the primary pages when the data file is written.",
+  "GitHub URLs returned 403 to curl through the proxy; a build-time link checker that uses plain HTTP may report false failures on github.com."
+ ],
+ "open_questions": [
+  "Is DL4MicEverywhere currently maintained (last commit and release dates could not be read), and what exactly does the 'ZeroCostDL4Mic and DL4MicEverywhere over time' document in its repo say about the status of ZeroCostDL4Mic?",
+  "Does the DL4MicEverywhere project describe LabConstrictor, or the LabConstrictor project describe DL4MicEverywhere, anywhere (the LabConstrictor README does not; the DL4MicEverywhere README text I received did not)?",
+  "What are the current mybinder.org operating status and usage limits, and who currently operates it?",
+  "Who currently maintains Voilà, and is it still a Jupyter-governed project? The organisation name is voila-dashboards but no page I read states governance.",
+  "Which affiliations do Marcela Xiomara Rivera Pineda and Bruno M. Saraiva have to the HenriquesLab projects, for the disclosure sentence?",
+  "Do the BiaPy Nature Methods 2025 (22, 1124-1126) and ZeroCostDL4Mic Nature Communications 2021 (10.1038/s41467-021-22518-0) citations check out in Crossref? They were taken from the READMEs only.",
+  "Should the section say 'by authors of LabConstrictor' as a note on each of the two entries, or only as one sentence in the intro? This is a design choice for the site owner that DESIGN.md does not cover."
+ ]
+}

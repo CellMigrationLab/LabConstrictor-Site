@@ -1,0 +1,119 @@
+{
+ "area": "Completeness and fairness of the landscape (related-projects proposal)",
+ "facts": [
+  {
+   "statement": "LabConstrictor itself builds installers with conda constructor (plus menuinst for the desktop entry) and runs a local JupyterLab session.",
+   "verdict": "confirmed",
+   "evidence": "Paper arXiv 2603.10704 (Methods: 'conda constructor', 'menuinst'); template README/.tools/docs/before_getting_started.md line 15 ('created using Conda Constructor'); template construct.yaml. So constructor is a building block, not an alternative; conda-pack, PyInstaller and Briefcase are not used."
+  },
+  {
+   "statement": "The paper (arXiv 2603.10704, authors Iván Hidalgo-Cenalmor, Marcela Xiomara Rivera Pineda, Bruno M. Saraiva, Ricardo Henriques, Guillaume Jacquemet; cs.SE; 11 Mar 2026) positions itself against: Binder and Google Colab (cloud platforms), ZeroCostDL4Mic, CellTracksColab and ColabFold (tools built on Colab), and 'efforts to enhance local reproducibility': DL4MicEverywhere, JupyterLab Desktop and album.",
+   "verdict": "confirmed",
+   "evidence": "Introduction of the PDF (downloaded and read in full). It does not mention Voila, repo2docker, BiaPy, Streamlit/Gradio/Panel, JupyterLite, napari hub, Fiji update sites, Galaxy or Pinokio. The abs page (WebFetch) gave no related-work text; the PDF did."
+  },
+  {
+   "statement": "The authors' own wording on DL4MicEverywhere: it 'packages notebooks using Docker to improve stability and portability, but Docker can introduce setup and operational complexity (e.g., resource management and GPU configuration) and is sometimes constrained by institutional IT policies'; and in Methods that 'complementary strategies based on containerization, such as DL4MicEverywhere... can address these issues by fully encapsulating the runtime environment... although they require a more complex setup'.",
+   "verdict": "confirmed",
+   "evidence": "Paper, Introduction and Methods (building installers section). The paper also concedes that pinned conda environments are 'not always flawless across different operating systems' and depend on upstream package availability (e.g. a removed PyPI release). The proposal omits this honest limitation."
+  },
+  {
+   "statement": "The authors' wording on JupyterLab Desktop and album: 'JupyterLab Desktop makes it easy to launch notebooks, but users still need to manage Python environments. Album supports cross-platform sharing of scientific software, yet preparing tools for distribution can still require significant developer time and familiarity with packaging conventions.'",
+   "verdict": "confirmed",
+   "evidence": "Paper Introduction. Album is therefore one of the three local-reproducibility comparators the authors name, and it is absent from the proposal."
+  },
+  {
+   "statement": "Binder is cited in the paper as Project Jupyter et al. (2018), Binder 2.0, Proc. SciPy 113-120, doi:10.25080/Majora-4af1f417-011.",
+   "verdict": "confirmed",
+   "evidence": "Crossref record: title 'Binder 2.0 - Reproducible, interactive, sharable environments for science at scale', pages 113-120, 2018, authors Project Jupyter, Bussonnier, Forde, Freeman, Granger, Head, Holdgraf, Kelley, Nalvarte, Osheroff, Pacer, Panda, Perez, Ragan-Kelley, Willing. Good citation if a Binder reference is wanted."
+  },
+  {
+   "statement": "The proposal's DL4MicEverywhere citation: Hidalgo-Cenalmor et al. (2024) Nature Methods 21, 925-927, DOI 10.1038/s41592-024-02295-6.",
+   "verdict": "confirmed",
+   "evidence": "Crossref: Nature Methods vol 21 issue 6, pp 925-927, issued 2024-05-17, first author 'Iván Hidalgo-Cenalmor' (with diacritic). Quirk in the Crossref author list: an 'AI4Life Horizon Europe Program Consortium' entry and Mariana G. Ferreira listed twice; cite as 'Hidalgo-Cenalmor et al.' rather than copying the list."
+  },
+  {
+   "statement": "The LabConstrictor DOI 10.48550/arXiv.2603.10704 and title.",
+   "verdict": "confirmed",
+   "evidence": "DataCite API (Crossref returns 404 because arXiv DOIs are registered with DataCite): title 'Packaging Jupyter notebooks as installable desktop apps using LabConstrictor', publicationYear 2026, five creators as above. It is a preprint (cs.SE, v1) and should be labelled as such. The template README also carries a Zenodo software DOI badge 10.5281/zenodo.20758747 (not resolved by me)."
+  },
+  {
+   "statement": "DL4MicEverywhere uses Docker containers, has a graphical launcher, and supports local and remote computing including HPC.",
+   "verdict": "partly",
+   "evidence": "GitHub README: 'utilizes Docker containers', 'A GUI will automatically pop up', 'remotely on diverse computing platforms, including workstations, high-performance computing (HPC), and cloud-based systems', Docker Desktop listed as requirement, MIT licence. Singularity/Apptainer is NOT mentioned in the README; the linked Remote Connection document could not be fetched (404 on guessed paths). So 'HPC' is supported at README level only; do not say Singularity."
+  },
+  {
+   "statement": "Voila turns notebooks into interactive web applications, hiding code and exposing widgets; useful for 'a browser-based interface hosted on a server'.",
+   "verdict": "partly",
+   "evidence": "Voila docs: 'From notebooks to standalone web applications and dashboards'; 'By default, the notebook code cells are hidden'; widgets talk to a Jupyter kernel; a new kernel is created per notebook served. But it runs either 'as a standalone application' or as a Jupyter server extension, so it can run locally as well as on a server; 'hosted on a server' is too narrow."
+  },
+  {
+   "statement": "repo2docker builds reproducible container environments from repositories and is the engine behind Binder (BinderHub).",
+   "verdict": "confirmed",
+   "evidence": "repo2docker docs: 'lets you reproducibly build and run user environment container images'; 'the tool used by BinderHub to build images on demand'; works with other container engines (Podman). It is also usable locally without Binder, so listing it in one row with mybinder.org is acceptable but the two should be named separately."
+  },
+  {
+   "statement": "JupyterLab Desktop is a desktop application for JupyterLab and Python environments.",
+   "verdict": "confirmed",
+   "evidence": "README: 'the cross-platform desktop application for JupyterLab', 'quickest and easiest way to get started with Jupyter notebooks on your personal computer'; per-project Python environment, `jlab` CLI with custom environment, guide for managing environments. I could not confirm from the README what the installer bundles (a second fetch returned 503), so do not claim it does or does not bundle Python."
+  },
+  {
+   "statement": "BiaPy is primarily a deep-learning bioimage-analysis framework with several execution options including GUI and containers.",
+   "verdict": "partly",
+   "evidence": "README: 'open source library and application that streamlines the use of common deep-learning workflows'; a GUI with Windows/Linux/macOS downloads is stated; PyPI and conda-forge badges; a 'Publish Docker image' workflow badge, but no Docker usage instructions were visible and the docs front page did not list Docker/Colab. Container availability is therefore indirect evidence only. Publication: Franco-Barranco et al., Nature Methods 22(6):1124-1126, 2025, doi:10.1038/s41592-025-02699-y (Crossref lists 'Ivan Hidalgo-Cenalmor' without diacritic, a co-author)."
+  },
+  {
+   "statement": "ZeroCostDL4Mic provides interactive Google Colab notebooks for deep-learning microscopy, reducing local installation and dedicated compute.",
+   "verdict": "confirmed",
+   "evidence": "README: 'a collection of self-explanatory Jupyter Notebooks for Google Colab'; 'Google Colab itself provides the computations resources needed at no-cost'. Publication: von Chamier et al., Nature Communications 12, article 2276, 2021, doi:10.1038/s41467-021-22518-0 (Crossref)."
+  },
+  {
+   "statement": "Album's current primary record differs from the way the LabConstrictor paper cites it.",
+   "verdict": "confirmed",
+   "evidence": "The paper cites Albrecht, Schmidt, Harrington (2021), 'Album: a framework for scientific data processing with software solutions of heterogeneous tools', doi:10.48550/ARXIV.2110.00601. DataCite now returns title 'Album: executable building blocks for scientific imaging routines, from sharing to LLM-assisted orchestration' with creators Albrecht, Schmidt, Rieckert, Otto, Harrington (later version). Copy from the primary record at the time of writing and name the version. docs.album.solutions: solutions with their own micromamba environment, git-native catalogs, MIT licence, and the statement that Album 'complements - rather than replaces - package managers, workflow engines, and container runtimes'. The GitHub page I saw (album-app/album) looked like a thin mirror (1 open issue, 3 stars); the main development is on GitLab, so link to album.solutions rather than a GitHub pill unless the maintainers' GitHub repo is confirmed."
+  },
+  {
+   "statement": "Other approaches a sceptic might expect: BeeWare Briefcase, Pinokio, JupyterLite, constructor.",
+   "verdict": "confirmed",
+   "evidence": "Briefcase: 'a tool for converting a Python project into a standalone native application' (macOS .app, Windows MSI, Linux system package, iOS, Android, web). Pinokio: '1-click launcher for any open-source project', MIT, scripts from public Git repositories (general purpose, not microscopy). JupyterLite: JupyterLab distribution that 'runs entirely in the browser' with WebAssembly kernels and package-compatibility limits. constructor: 'constructing an installer for a collection of conda packages' (.sh, .pkg, .exe, .msi). I did NOT verify Galaxy, napari hub, Fiji update sites, BioImage.IO/Model Zoo, nbdev, Streamlit/Gradio/Panel/Solara, PyInstaller or conda-pack in this pass."
+  },
+  {
+   "statement": "The site already treats Google Colab as a complementary route and Streamlit as part of the toolchain, not as outside alternatives.",
+   "verdict": "confirmed",
+   "evidence": "data/hosts.yaml has a 'services: colab' entry (name, url, logo from simple-icons, 'always shown with the name'); data/hubs.yaml 'The same notebooks run in Colab'; template README links a notebook portability guide for Colab and JupyterLab; the Ecosystem page lists CellMigrationLab/LabConstrictor_streamlit; the paper's configuration form is a Streamlit app. VLab4Mic's README (an app built with LabConstrictor) offers Google Colab notebooks, local Jupyter and a Python library as other ways to use it."
+  },
+  {
+   "statement": "Shared authorship between LabConstrictor and several listed projects.",
+   "verdict": "confirmed",
+   "evidence": "Hidalgo-Cenalmor, Jacquemet and Henriques are authors on both the LabConstrictor paper and the DL4MicEverywhere paper (Crossref); Jacquemet and Henriques on ZeroCostDL4Mic; Hidalgo-Cenalmor on BiaPy. The proposal's 'key message' elevates DL4MicEverywhere as the main foil without disclosing this."
+  }
+ ],
+ "findings": "The proposal is accurate on its own six entries but its landscape is skewed in three ways against the authors' own positioning (paper arXiv 2603.10704, Introduction and Methods).\n\n1. Two comparators the authors name are missing. (a) Album is one of the three 'local reproducibility' efforts the paper lists next to DL4MicEverywhere and JupyterLab Desktop; the proposal drops it. (b) Google Colab (and Binder) are the paper's main contrast class ('Cloud platforms such as Binder and Google Colab lower initial barriers'; Colab-based tools ZeroCostDL4Mic, CellTracksColab, ColabFold). The proposal covers Binder but treats Colab only through ZeroCostDL4Mic as a secondary item, although the site already integrates Colab as a first-class route (hosts.yaml 'services', 'Open in Colab', notebook portability guide). Conversely Voila, repo2docker and BiaPy appear in the proposal but not in the paper: they are the proposer's additions, reasonable for a sceptic but not the authors' positioning.\n\n2. Honest positioning is already written by the authors and is more candid than the proposal. The paper states that containers (DL4MicEverywhere) give fuller encapsulation and better long-term reproducibility than pinned conda environments, at the cost of setup complexity and IT-policy constraints, and that cloud execution fails when data cannot leave an institution or are too large; LabConstrictor's stated strengths are local, offline, private-repository, no-DevOps use. The website text should reuse that trade-off framing (verbatim ideas, not new claims) and say 'complementary', as the paper does, instead of the proposal's 'solve overlapping distribution problems' headline. The paper's own concession about conda limits should be reflected, otherwise the page reads as more favourable to LabConstrictor than the paper.\n\n3. Lines that quietly tilt: \n- DL4MicEverywhere 'Computationally demanding microscopy workflows across different machines and GPU environments' implies LabConstrictor cannot do demanding or GPU work (the template ships requirements_gpu.txt) and implies GPU setup is easy in Docker (the paper says it is hard). Say instead: 'workflows that need a fully containerised runtime, or that run on remote or HPC systems' (README-supported); omit Singularity.\n- JupyterLab Desktop 'rather than a separately packaged app per workflow' defines the competitor by LabConstrictor's model and treats packaging as a burden. Use the neutral 'general-purpose desktop JupyterLab where you manage your own Python environments'.\n- Voila 'hosted on a server' understates it (Voila can run as a local standalone app) and omits that it needs a live kernel. Say 'serves a notebook as a web app, from a local or hosted process; code cells are hidden by default'.\n- BiaPy 'unlike LabConstrictor primarily an image-analysis framework, not a general tool for packaging' describes BiaPy only by contrast; describe it on its own terms (deep-learning bioimage workflows; GUI, library) and state container availability only once confirmed.\n- Choosing table 'shareable cloud-hosted notebook environment: Binder and repo2docker' merges a hosted service with a build tool.\n- Missing disclosure that DL4MicEverywhere, ZeroCostDL4Mic and BiaPy share authors with LabConstrictor (see facts).\n\nSmallest honest set and grouping (by approach, mirroring the paper):\n- Desktop app: JupyterLab Desktop; Album. (LabConstrictor itself sits here.)\n- Container: DL4MicEverywhere (the authors' declared complement).\n- Cloud notebook: Binder with repo2docker named as its build engine; Google Colab with ZeroCostDL4Mic as the microscopy example (cite CellTracksColab/ColabFold only if wanted).\n- Web app: Voila.\n- Domain framework (secondary line): BiaPy, plus ZeroCostDL4Mic only as the Colab example.\nThat is six main entries plus one secondary, i.e. two more main entries than the proposal's four (album, Colab), with ZeroCostDL4Mic folded under Colab. Do not add entries for Docker/Singularity (technologies, covered by DL4MicEverywhere), conda-pack/PyInstaller (unverified), Streamlit/Gradio/Panel/Solara (the site's own stack uses Streamlit; a web-app row represented by Voila is enough), JupyterLite, Pinokio, Briefcase, napari hub/Fiji update sites/BioImage.IO/Galaxy/nbdev (distribution channels or domain platforms, not notebook-to-app alternatives; napari/Fiji/QuPath are already hosts on the Ecosystem page). Mention conda constructor once, as what LabConstrictor is built on (verified), not as an alternative.\n\nFit with site rules: repositories on GitHub use the GitHub pill; non-GitHub destinations (mybinder.org, readthedocs, album.solutions, Colab, DOIs) are text links that open in a new tab; no third-party logos (the Colab logo exists only via data/hosts.yaml 'services' and must show with the name, so the proposal's 'no logos' is simplest); keep descriptions in data/related-projects.yaml with a schema and loud failure on missing fields; keep citations as DOIs from Crossref/DataCite records, and avoid duplicating the LabConstrictor citation if the citation audit (planning input 3) creates one source of truth. Page code must stay in functions of at most 30 lines and files of at most 300 lines, with tests incl. failure cases.",
+ "recommendations": [
+  "Adopt six main entries plus one secondary, grouped by approach: Desktop app (JupyterLab Desktop, Album); Container (DL4MicEverywhere); Cloud notebook (Binder + repo2docker named as its engine; Google Colab with ZeroCostDL4Mic as example); Web app (Voila); Domain framework (BiaPy, secondary). This keeps the proposal's four and adds the two comparators the paper itself names (Album, Colab).",
+  "Open the section with the paper's own framing: sharing a notebook does not guarantee it runs elsewhere; cloud tools lower barriers but are not feasible for sensitive or very large data; containers encapsulate more fully but are heavier to set up; LabConstrictor targets local, offline use without DevOps. Use the word 'complementary', not 'overlapping'/'competing', and state that pinned conda environments depend on upstream package availability (paper's own caveat).",
+  "Replace the 'When it may be useful' column with 'What it is' and 'A good fit when', each stating a capability confirmed in the project's own README/docs, with no comparative adjectives (easier, simpler, heavier, only). Never describe another project by what it lacks relative to LabConstrictor.",
+  "Rewrite the flagged lines: DL4MicEverywhere 'workflows that need a fully containerised runtime, or remote/HPC systems' (no Singularity, no 'demanding'); JupyterLab Desktop 'general-purpose desktop JupyterLab; you manage Python environments' (paper wording); Voila 'serves a notebook as a web app from a local or hosted process; code hidden by default'; BiaPy described on its own terms.",
+  "Add a one-line disclosure that several listed projects (DL4MicEverywhere, ZeroCostDL4Mic, BiaPy) share authors with LabConstrictor.",
+  "Name conda constructor (and menuinst) once as what LabConstrictor builds on; do not list it, PyInstaller, Briefcase, conda-pack or Pinokio as alternatives.",
+  "Cite from primary records: DL4MicEverywhere Nat Methods 21(6):925-927 doi:10.1038/s41592-024-02295-6; ZeroCostDL4Mic Nat Commun 12:2276 doi:10.1038/s41467-021-22518-0; BiaPy Nat Methods 22(6):1124-1126 doi:10.1038/s41592-025-02699-y; Binder 2.0 Proc. SciPy 2018 pp 113-120 doi:10.25080/Majora-4af1f417-011; Album from the current DataCite record (title and author list changed since the version the paper cites); LabConstrictor labelled 'preprint', DataCite 10.48550/arXiv.2603.10704. Keep Iván Hidalgo-Cenalmor with the diacritic where Crossref has it.",
+  "Do not state numbers of stars, users, speed or maturity; for Album link to album.solutions/docs.album.solutions rather than a GitHub pill until the maintainers' canonical repository is confirmed.",
+  "Include a short line that notebooks can be used both ways (the site already offers Colab notebooks and the template ships a portability guide), instead of presenting Colab only as an alternative."
+ ],
+ "risks": [
+  "Omitting Album and Colab while including Voila/repo2docker makes the page look cherry-picked and diverges from the authors' paper; a reviewer comparing the page to arXiv 2603.10704 will notice.",
+  "Tilted 'when useful' lines (GPU/'demanding', 'separately packaged app', 'hosted on a server') can be read as disparaging DL4MicEverywhere, JupyterLab Desktop and Voila, or as overstating LabConstrictor; the shared authorship with DL4MicEverywhere/ZeroCostDL4Mic/BiaPy raises the fairness bar.",
+  "Capabilities I could not verify must not enter the page: Singularity/Apptainer support in DL4MicEverywhere, BiaPy's Docker and Colab usage, what JupyterLab Desktop installers bundle, Galaxy, napari hub, Fiji update sites, BioImage.IO, nbdev, PyInstaller, conda-pack, Streamlit/Gradio/Panel/Solara details.",
+  "Album bibliographic data are unstable (title and author list differ between the paper's citation and the current arXiv record); copying the wrong version would misattribute.",
+  "Project descriptions are volatile; without a schema and an explicit 'checked on' date in data/related-projects.yaml they will drift silently, and per-entry loud failures are required by the no-silent-fallbacks rule.",
+  "WebFetch summaries come from a small model; several statements above rest on README text I could not re-read in full (e.g. JupyterLab Desktop returned 503 once, DL4MicEverywhere Remote Connection page 404)."
+ ],
+ "open_questions": [
+  "Is the album-app/album GitHub repository the canonical home or a mirror of the GitLab project, and which album paper version should be cited?",
+  "Does DL4MicEverywhere document Singularity/Apptainer or SSH/HPC job submission in its Remote Connection page (path not found)? Needed before any HPC detail beyond the README sentence is published.",
+  "Does BiaPy's installation documentation list Docker images and notebooks as supported execution routes?",
+  "What does the JupyterLab Desktop installer bundle (its own Python environment?) per its current documentation?",
+  "Do the maintainers want Galaxy, napari hub or BioImage Model Zoo mentioned as bioimage-community distribution channels, and should Pinokio appear if the audience includes AI-model users? I did not verify these.",
+  "Should the Colab entry reuse the data/hosts.yaml 'services: colab' logo (allowed only with the name), or stay logo-free as the proposal says?",
+  "Which of the two LabConstrictor identifiers (arXiv DOI 10.48550/arXiv.2603.10704 versus the Zenodo software DOI in the template README) should the page cite, given the citation audit (planning input 3)?"
+ ]
+}
