@@ -12,7 +12,7 @@ find its type below and use that pattern; if there is no pattern, add one here f
 | Title | `<title>` is "Page name – LabConstrictor" (the home page has its tagline). |
 | Description | A meta description of 20-200 characters, **different on every page**. Guides use their opening paragraph; apps use the app's summary; other pages say it in their data file. |
 | Machine tags | `lang="en"`, canonical address, `og:title`, `og:description`; `noindex` while `extra.listed` is false. |
-| Menu | Exactly one top-menu entry is marked as the current one (apps → Apps; guides, Use and Build → Docs). |
+| Menu | Exactly one top-menu entry is marked as the current one (apps → Apps; guides, Use and Build → Docs; the demo → Demo). |
 | Edit | Every page except the home page ends with "Edit this page on GitHub", pointing to the file where its text is really written. |
 | Reach | Every page is reachable from the home page in at most 3 clicks. |
 | App header | The app's icon sits **next to its name** on one line; the summary, the badges (tier, kind, programs) and the pills (GitHub, Documentation and Website when the manifest gives `docs_url` and `homepage`) follow below. |

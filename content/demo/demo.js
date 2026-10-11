@@ -3,7 +3,7 @@
 (function () {
   var root = document.querySelector('[data-demo]');
   if (!root) { return; }
-  var FRESH = { view: 'notebook', step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
+  var FRESH = { view: 'notebook', launched: false, step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
                 fijiDialog: true, selected: '', vis: { reference: true, query: false, aligned: true, alignment: true },
                 opacity: { reference: 100, query: 100, aligned: 100, alignment: 80 } };
   var state = JSON.parse(JSON.stringify(FRESH));
@@ -30,6 +30,7 @@
   }
 
   function showNotebook() {
+    one('[data-launch]').hidden = state.launched; one('[data-shell]').hidden = !state.launched;
     var app = state.nbTab === 'app' && state.opened;
     one('#nb-doc-welcome').hidden = app; one('#nb-doc-app').hidden = !app;
     all('[data-nb-tab]').forEach(function (t) { var on = (t.dataset.nbTab === 'app') === app; t.setAttribute('aria-selected', on ? 'true' : 'false'); });
@@ -73,11 +74,12 @@
 
   function sync() { root.dataset.step = state.step; showViews(); showSteps(); showNotebook(); showLayers(); showFiji(); }
 
-  function runStep(n) { state.step = Math.max(state.step, n); if (n === 3) { state.selected = state.selected || 'aligned'; state.fijiDialog = false; state.opened = true; } }
+  function runStep(n) { state.step = Math.max(state.step, n); if (n === 3) { state.selected = state.selected || 'aligned'; state.fijiDialog = false; state.opened = true; state.launched = true; } }
 
   var actions = {
+    'launch': function () { state.launched = true; },
     'run-welcome': function () { state.welcomeRun = true; },
-    'open-app': function () { state.opened = true; state.nbTab = 'app'; },
+    'open-app': function () { state.launched = true; state.opened = true; state.nbTab = 'app'; },
     'run-step': function (el) { runStep(Number(el.dataset.step)); },
     'run-next': function () { if (state.nbTab === 'app' && state.opened) { runStep(Math.min(3, state.step + 1)); } else { state.welcomeRun = true; } },
     'toggle-code': function () { state.code = !state.code; },

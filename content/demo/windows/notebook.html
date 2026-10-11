@@ -1,4 +1,6 @@
 <div class="nb" data-window="notebook">
+<div class="nb__launch" data-launch><p><strong>NucleiSky is installed.</strong> Open it from the Start menu (Windows), the Applications folder (macOS) or your applications menu (Linux).</p><button type="button" class="nb__app" data-demo-sim data-act="launch"><span class="nb__appicon" aria-hidden="true">N</span> NucleiSky</button><p class="nb__note">A terminal window opens and has to stay open while you work: it runs JupyterLab on your computer, and your browser is only its window. Nothing runs in this preview.</p></div>
+<div class="nb__shell" data-shell hidden>
 <div class="nb__menu" aria-hidden="true"><span class="nb__logo"></span><span>File</span><span>Edit</span><span>View</span><span>Run</span><span>Kernel</span><span>Tabs</span><span>Settings</span><span>Help</span></div>
 <div class="nb__body">
 <div class="nb__side" aria-hidden="true"><div class="nb__filter">Filter files by name</div><div class="nb__path">/ NucleiSky</div><ul><li>notebooks</li><li class="is-open">Welcome.ipynb</li></ul></div>
@@ -52,6 +54,7 @@ display(widgets.HTML(STYLE_CSS))
 ...  # (excerpt of the real cell)</pre></div></div>
 <div class="nb__out nb__cards" data-from="3" hidden><div class="ns-card"><p class="ns-label">Result (precomputed example)</p><div class="lc-view" role="img" aria-label="The small image aligned inside the reference: the reference nuclei in green, the aligned small image in magenta, outlined in yellow." style="--q:{{query_width_pct}}%"><img class="lc-view__layer" data-layer="reference" src="assets/demo/reference_roi_green.webp" alt="" loading="lazy"><img class="lc-view__layer lc-view__blend" data-layer="aligned" src="assets/demo/aligned_roi_magenta.webp" alt="" loading="lazy"><svg class="lc-view__outline" viewBox="0 0 {{region_px}} {{region_px}}" aria-hidden="true"><polygon points="{{footprint}}"/></svg></div>
 <ul class="nb__facts"><li>Matcher: {{matcher}}</li><li>Rotation: {{rotation_short}}&deg;; scale {{scale}}</li><li>{{inliers}} of {{n_query}} nuclei of the small image agree with the match; mean error {{mean_error}} &micro;m</li></ul></div></div>
+</div>
 </div>
 </div>
 </div>

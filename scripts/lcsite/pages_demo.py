@@ -43,6 +43,15 @@ def static_figures() -> str:
     return f'<div class="lc-demo__static">{figs}</div>'
 
 
+def about_and_features(text: dict) -> str:
+    """The short note on the example app (NucleiSky) and the list of features the demo covers, each linked to its guide."""
+    a, f = text["about"], text["features"]
+    items = "".join(f'<li><strong>{esc(i["title"])}.</strong> {esc(i["text"])} <a href="{esc(i["href"])}">{esc(i["link"])}</a></li>' for i in f["items"])
+    c = text["credit"]
+    return (f'<section class="lc-demo__about"><h2>{esc(a["title"])}</h2><p>{esc(a["text"])} {github_badge(c["nucleisky_repo"])} '
+            f'<a href="apps/nucleisky/">{esc(a["app_link"])}</a></p><h2>{esc(f["title"])}</h2><ul>{items}</ul></section>')
+
+
 def how_it_works(text: dict) -> str:
     """The collapsible explanation of how the real bridge works, and what this page is not."""
     steps = "".join(f"<li>{esc(s)}</li>" for s in text["how"]["steps"])
@@ -64,10 +73,11 @@ def page_demo() -> None:
     text, example = d["text"], d["example"]
     shown = demo_media.values(example)
     demo_media.copy_assets()
-    p = Page("demo/index.md", title=text["title"], description=text["description"], layout="wide", menu="guides/",
+    p = Page("demo/index.md", title=text["title"], description=text["description"], layout="wide", menu="demo/",
              page_css=["assets/demo/demo.css"], page_js=["assets/demo/demo.js"], edit_url=f"{REPO}/edit/main/data/demo.yaml")
-    p.add(f'<section class="lc-pagehead"><p class="lc-crumb"><a href="guides/">&larr; Docs</a></p><h1>{esc(text["title"])}</h1>'
+    p.add(f'<section class="lc-pagehead"><h1>{esc(text["title"])}</h1>'
           f'<p class="lc-lead">{esc(text["lead"])}</p></section>')
+    p.add(about_and_features(text))
     p.add(f'<div class="lc-demo" data-demo data-search-exclude><p class="lc-demo__notice" role="note"><strong>Interactive preview</strong>{esc(text["notice"].removeprefix("Interactive preview"))}</p>'
           f'<div class="lc-demo__live">{tab_buttons()}<button type="button" class="lc-btn lc-btn--small lc-btn--ghost" data-demo-act="reset">Reset demo</button>'
           f'<p class="lc-demo__experimental" data-demo-experimental hidden>{esc(text["experimental"])}</p>{panels(shown, example)}</div>{static_figures()}</div>')

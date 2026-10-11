@@ -17,7 +17,7 @@ A static site made with Zensical (Material-compatible, `mkdocs.yml`), published 
 | Submit | `/submit/` | `pages_site.page_submit`, from `content/submit.md` |
 | Demo | `/demo/` | `pages_demo`, from `data/demo.yaml`, `content/demo/` (windows, script, style, images, `example.json`); home tile in `pages_site.page_home`, link in the Use hub |
 
-Navigation: the top menu is Home, Apps, **Docs**, Ecosystem, Submit your app (`mkdocs.yml` `nav`); the footer is in `overrides/main.html`. Every guide page and the Use/Build pages show the **same docs sidebar** (both tracks, collapsible, the current section open; on phones it folds into a "Docs menu" drawer) and highlight *Docs* in the menu. A guide belongs to a track, **use** or **build**; its crumb and pager stay inside the track.
+Navigation: the top menu is Home, Apps, **Docs**, **Demo**, Ecosystem, Submit your app (`mkdocs.yml` `nav`); the footer is in `overrides/main.html`. Every guide page and the Use/Build pages show the **same docs sidebar** (both tracks, collapsible, the current section open; on phones it folds into a "Docs menu" drawer) and highlight *Docs* in the menu. A guide belongs to a track, **use** or **build**; its crumb and pager stay inside the track.
 
 ## Sources of truth
 
