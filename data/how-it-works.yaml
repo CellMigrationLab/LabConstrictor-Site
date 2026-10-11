@@ -35,7 +35,7 @@ steps:
     know:
       - You need a GitHub account. A private repository cannot be listed in the App Centre.
       - Before you initialise it, complete the one-time template synchronisation setup, so that future template improvements can reach your repository.
-      - Have ready a project name, an initial version such as 0.1.0, a one-sentence summary and the kind of app. Installer images are optional.
+      - Have ready a project name, an initial version such as 0.1.0, a one-sentence summary and the kind of app. Your own logo and installer images are optional.
       - The form opens a pull request in your repository, which you accept.
     guides:
       - {href: guides/create-repository/, label: Create your repository}
@@ -47,7 +47,7 @@ steps:
     text: Upload your notebook and its requirements.yaml with the LabConstrictor web form, which opens a pull request in your repository.
     outcome: Your notebook and its requirements in the repository, checked by a workflow.
     know:
-      - The form asks for your repository address and a GitHub personal access token.
+      - The form asks for your repository address and a GitHub personal access token. You can add several notebooks in one pull request.
       - After you merge the pull request, a workflow checks the notebook and its dependencies.
       - If the check fails, the merge is undone automatically. Read the log, fix the notebook or its requirements and upload again.
     guides:
@@ -72,8 +72,8 @@ steps:
     text: Share the link to your release and anyone can install the app from it. To be found by others, describe the app and list it in the App Centre.
     outcome: An app that people can install, and optionally find in the App Centre.
     know:
-      - Users download the installer for their system from your release. The installers are not code-signed yet, so Windows warns about an unknown publisher.
-      - Describing the app takes one small file in your repository, labconstrictor-app.yaml, which the initialisation form creates for you.
+      - Users download the installer for their system from your release. The installers are not code-signed yet, so their system will warn them: tell them to download only from your release. Installing needs an internet connection.
+      - Describing the app takes one small file in your repository, labconstrictor-app.yaml. The initialisation form adds it if you fill in its summary and kind; otherwise you copy the example from the guide.
       - To be listed, the repository must be public and have a licence. Submit its address; a bot checks it and a maintainer adds it.
     guides:
       - {href: guides/app-manifest/, label: Describe your app for the App Centre}
