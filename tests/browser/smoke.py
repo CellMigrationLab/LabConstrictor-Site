@@ -15,7 +15,7 @@ import sys
 import threading
 from pathlib import Path
 
-from playwright.sync_api import Page, sync_playwright
+from playwright.sync_api import Browser, Page, sync_playwright
 
 SITE = Path(__file__).resolve().parents[2] / "site"
 PAGES = ("", "apps/", "demo/", "how-it-works/", "ecosystem/", "guides/", "use/", "build/", "submit/")
@@ -44,7 +44,7 @@ def serve() -> tuple[http.server.ThreadingHTTPServer, str]:
     return server, f"http://127.0.0.1:{server.server_port}/"
 
 
-def open_page(browser, base: str, path: str, width: int, js: bool = True) -> tuple[Page, list[str]]:
+def open_page(browser: Browser, base: str, path: str, width: int, js: bool = True) -> tuple[Page, list[str]]:
     """A fresh page at the given width, its script errors collected in the returned list."""
     context = browser.new_context(viewport={"width": width, "height": 900}, java_script_enabled=js)
     page, errors = context.new_page(), []
@@ -53,7 +53,7 @@ def open_page(browser, base: str, path: str, width: int, js: bool = True) -> tup
     return page, errors
 
 
-def no_sideways_scroll(browser, base: str) -> None:
+def no_sideways_scroll(browser: Browser, base: str) -> None:
     """Every main page fits its width, without script errors, at phone and desktop widths."""
     for label, width in WIDTHS.items():
         for path in PAGES:
@@ -63,7 +63,7 @@ def no_sideways_scroll(browser, base: str) -> None:
             page.context.close()
 
 
-def app_filter(browser, base: str) -> None:
+def app_filter(browser: Browser, base: str) -> None:
     """Typing in the App Centre search leaves fewer cards, and a word no app has leaves none and says so."""
     page, errors = open_page(browser, base, "apps/", 1280)
     total = page.locator("[data-app]").count() if page.locator("[data-app]").count() else page.locator(".lc-grid > li").count()
@@ -78,7 +78,7 @@ def app_filter(browser, base: str) -> None:
     page.context.close()
 
 
-def how_controls(browser, base: str) -> None:
+def how_controls(browser: Browser, base: str) -> None:
     """Every choice button of every How it works panel can be pressed and ends up pressed, with no script error."""
     page, errors = open_page(browser, base, "how-it-works/", 1280)
     buttons = page.locator(".how__panel [data-set], .how__panel [data-toggle]")
@@ -94,7 +94,7 @@ def how_controls(browser, base: str) -> None:
     page.context.close()
 
 
-def demo_flow(browser, base: str) -> None:
+def demo_flow(browser: Browser, base: str) -> None:
     """The demo: launch the app, run the notebook to its result, see the keyboard tabs work, and reset when the view changes."""
     page, errors = open_page(browser, base, "demo/", 1280)
     page.click("#demo-cat-tab-use")
@@ -112,7 +112,7 @@ def demo_flow(browser, base: str) -> None:
     page.context.close()
 
 
-def no_javascript(browser, base: str) -> None:
+def no_javascript(browser: Browser, base: str) -> None:
     """Without JavaScript the demo shows its static figures and no working-looking controls, and How it works shows its plain lists."""
     page, _ = open_page(browser, base, "demo/", 1280, js=False)
     check("No JavaScript, demo: the static figures are shown", page.locator(".lc-demo__static img").first.is_visible() or page.locator("noscript").count() > 0)
