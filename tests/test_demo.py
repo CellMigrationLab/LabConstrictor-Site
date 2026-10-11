@@ -134,6 +134,16 @@ class ScriptConsistencyTests(unittest.TestCase):
                     demo_media.installer_values()
                 self.assertIn("app_version", str(partial.exception))
 
+    def test_the_state_typedef_names_every_field_that_fresh_returns(self) -> None:
+        """The documented DemoState matches the object `fresh()` builds, field for field (they had drifted by nine fields)."""
+        code = (demo_media.SOURCE / "demo-state.js").read_text(encoding="utf-8")
+        documented = set(re.findall(r"@property \{[^}]+\} (\w+) -", code[: code.index("@typedef {Object} DemoContext")]))
+        body = code[code.index("return {", code.index("function fresh")): code.index("};", code.index("function fresh"))]
+        body = re.sub(r"\{[^{}]*\}", "{}", body)       # nested objects (acc, vis, opacity) count as one value
+        returned = set(re.findall(r"(\w+):", body))
+        self.assertEqual(returned - documented, set())
+        self.assertEqual(documented - returned, set())
+
     def test_no_window_uses_a_heading_element(self) -> None:
         """Simulated-window titles are not headings, so the page's own outline stays clean."""
         for name in ("notebook", "napari", "fiji", "installer"):

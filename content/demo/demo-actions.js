@@ -60,9 +60,11 @@
    * @param {DemoState} state - the state to change.
    * @param {HTMLElement} el - the play, Run or OK button.
    * @returns {Object} the reply.
+   * @throws {Error} when the button's data-step is not 1, 2 or 3.
    */
   function runStep(state, el) {
     var n = Number(el.dataset.step), host = !el.closest('.nb');
+    if (!(n >= 1 && n <= 3 && Math.floor(n) === n)) { throw new Error('demo: data-step "' + el.dataset.step + '" is not 1, 2 or 3'); }
     applyRun(state, n, host);
     return reply(host && n === 3 ? '[data-act="fiji-open"]' : '', host ? 'Example result shown.' : 'Cell ' + n + ' ran; its widget is shown below.', false);
   }
@@ -82,9 +84,11 @@
    * @param {DemoState} state - the state to change.
    * @param {HTMLElement} el - the eye button.
    * @returns {Object} the reply.
+   * @throws {Error} when its row names no napari layer.
    */
   function eye(state, el) {
     var key = el.parentNode.dataset.layerRow;
+    d.lookup(state.vis, key, 'napari layer');
     state.vis[key] = !state.vis[key];
     return reply('', '', false);
   }

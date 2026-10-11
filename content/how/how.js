@@ -8,13 +8,14 @@
    * Read a panel's starting choices from its data-state attribute ("group:value group2:value2").
    * @param {string} text - the attribute value.
    * @returns {Object<string, string>} the choices by group.
-   * @throws {Error} for a part that is not "group:value".
+   * @throws {Error} for a part that is not "group:value" or a group declared twice.
    */
   function parseState(text) {
     var state = {};
     text.split(/\s+/).filter(Boolean).forEach(function (pair) {
       var parts = pair.split(':');
       if (parts.length !== 2 || !parts[0] || !parts[1]) { throw new Error('how: "' + pair + '" is not group:value'); }
+      if (Object.prototype.hasOwnProperty.call(state, parts[0])) { throw new Error('how: the choice group "' + parts[0] + '" is declared twice in "' + text + '"'); }
       state[parts[0]] = parts[1];
     });
     return state;
@@ -25,11 +26,12 @@
    * @param {Object<string, string>} state - the current choices.
    * @param {string} alternatives - space-separated "group:value" tokens.
    * @returns {boolean} true when one of them is the current choice of its group.
-   * @throws {Error} when a token names a group the panel does not have.
+   * @throws {Error} when a token is not "group:value" or names a group the panel does not have.
    */
   function shows(state, alternatives) {
     return alternatives.split(/\s+/).filter(Boolean).some(function (token) {
       var parts = token.split(':');
+      if (parts.length !== 2 || !parts[0] || !parts[1]) { throw new Error('how: "' + token + '" in data-show="' + alternatives + '" is not group:value'); }
       return d.lookup(state, parts[0], 'choice group') === parts[1];
     });
   }

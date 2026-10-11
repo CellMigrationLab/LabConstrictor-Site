@@ -11,7 +11,8 @@ SOURCE = CONTENT / "how"
 OUT = DOCS / "assets" / "how"
 TOP_KEYS = {"title", "lead", "notice", "chapters"}
 CHAPTER_KEYS = {"id", "title", "text", "guide", "guide_label", "static"}
-SCRIPTS = ("assets/demo/demo-dom.js", "assets/how/how.js")
+SHARED = "demo-dom.js"   # the strict DOM helpers, shared with the demo
+SCRIPTS = (f"assets/demo/{SHARED}", "assets/how/how.js")
 
 
 def load() -> dict:
@@ -41,11 +42,13 @@ def read_panel(chapter_id: str) -> str:
 
 
 def copy_assets() -> None:
-    """Copy the page's script and style into docs/assets/how/ (generated); the shared helper script comes from the demo."""
+    """Copy the page's script and style into docs/assets/how/ (generated), and the one helper script it shares with the demo (demo-dom.js)
+    into docs/assets/demo/. Nothing else of the demo is copied, so this page never depends on the demo's images or numbers."""
     OUT.mkdir(parents=True, exist_ok=True)
     for name in ("how.js", "how.css"):
         shutil.copy2(SOURCE / name, OUT / name)
-    demo_media.copy_assets()
+    demo_media.OUT.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(demo_media.SOURCE / SHARED, demo_media.OUT / SHARED)
 
 
 def chapter_html(number: int, chapter: dict) -> str:

@@ -7,7 +7,7 @@ tile:
   title: Try the demo
   text: Open a simulated notebook, napari or Fiji and watch a real microscopy registration result appear. Nothing to install.
   link: Open the demo
-  alt: A microscopy field of green nuclei with the aligned small image outlined in yellow
+  alt: A microscopy field of nuclei shown in green
 about:
   title: About the example
   text: This demo uses NucleiSky as its example. NucleiSky is an open-source tool that aligns microscopy images by matching the arrangement of cell nuclei, like stars in a constellation. It finds where a small image sits inside a large one and estimates the rotation, scale and shift. The small image here is a random crop generated from the large one, so the correct answer is known. NucleiSky is one app built with LabConstrictor; every app has its own notebooks.
