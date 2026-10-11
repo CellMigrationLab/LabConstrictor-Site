@@ -15,7 +15,7 @@ find its type below and use that pattern; if there is no pattern, add one here f
 | Menu | Exactly one top-menu entry is marked as the current one (apps → Apps; guides, Use and Build → Docs; the demo → Demo). |
 | Edit | Every page except the home page ends with "Edit this page on GitHub", pointing to the file where its text is really written. |
 | Reach | Every page is reachable from the home page in at most 3 clicks. |
-| App header | The app's icon sits **next to its name** on one line; the summary, the badges (tier, kind, programs) and the pills (GitHub, Documentation and Website when the manifest gives `docs_url` and `homepage`) follow below. |
+| App header | The app's icon sits **next to its name** on one line; the summary, the badges (kind, development status when Experimental or Deprecated, programs with their plugin stage) and the pills (GitHub, Documentation and Website when the manifest gives `docs_url` and `homepage`) follow below. |
 | Back link | Apps: "← All apps". Guides and the Use and Build pages: "← Use an app" or "← Build an app". |
 
 ## Headings and text

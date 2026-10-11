@@ -1,11 +1,17 @@
 // LabConstrictor site: offers each visitor their own system's download, filters the App Centre
-// live, and copies pip commands. Everything also works without JavaScript (links go to the
+// live, copies pip commands and runs the phone menu. Everything also works without JavaScript (links go to the
 // app page, which lists every download). Re-runs after Zensical/Material instant navigation.
+// The same code rules as the demo's scripts apply (tests/test_js_rules.py): every function is documented, short, and has no catch or `|| default`.
 
 const lcFold = (s) => s.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase();
 
-/** The system ("windows", "macos", "linux") that a user agent, platform name and touch-point count describe, or null on phones,
- *  tablets, Chromebooks and anything unknown. An iPad reports a Mac, but a Mac has no touch screen. */
+/**
+ * The system ("windows", "macos", "linux") that a user agent, platform name and touch-point count describe. An iPad reports a Mac, but a Mac has no touch screen.
+ * @param {string} ua - the user agent text.
+ * @param {string} platform - the platform name the browser reports ("" when it reports none).
+ * @param {number} touchPoints - navigator.maxTouchPoints.
+ * @returns {(string|null)} the system, or null on phones, tablets, Chromebooks and anything unknown.
+ */
 function lcSystemFrom(ua, platform, touchPoints) {
   if (/android|iphone|ipad|cros/.test(ua.toLowerCase())) return null;
   const p = platform.toLowerCase();
@@ -15,25 +21,32 @@ function lcSystemFrom(ua, platform, touchPoints) {
   return null;
 }
 
-/** The visitor's system, read from the browser (see lcSystemFrom). */
+/**
+ * The visitor's system, read from the browser.
+ * @returns {(string|null)} see lcSystemFrom.
+ */
 function lcSystem() {
   const platform = navigator.userAgentData ? navigator.userAgentData.platform : navigator.platform;
   return lcSystemFrom(navigator.userAgent, platform, navigator.maxTouchPoints);
 }
 
-/** "arm", "x86" or null when the browser cannot say (only Chromium-based browsers can, through client hints). */
-async function lcArchitecture() {
-  if (!navigator.userAgentData) return null;
-  try {
-    const hints = await navigator.userAgentData.getHighEntropyValues(["architecture"]);
-    return hints.architecture === "" ? null : hints.architecture;
-  } catch (err) {
-    if (err.name === "NotAllowedError") return null;   // the page's permissions policy forbids the question: unknown, not an error
-    throw err;
-  }
+/**
+ * The processor family, when the browser can say (only Chromium-based browsers can, through client hints).
+ * @returns {Promise<(string|null)>} "arm", "x86" or null when it cannot say; a refusal by the page's permissions policy counts as "cannot say".
+ */
+function lcArchitecture() {
+  if (!navigator.userAgentData) return Promise.resolve(null);
+  return navigator.userAgentData.getHighEntropyValues(["architecture"]).then(
+    (hints) => (hints.architecture === "" ? null : hints.architecture),
+    (err) => { if (err.name === "NotAllowedError") return null; throw err; });
 }
 
-/** On a Mac whose chip is known, make the matching button the filled one (in place: nothing moves). */
+/**
+ * On a Mac whose chip is known, make the matching button the filled one (in place: nothing moves).
+ * @param {Element} tile - the Mac tile.
+ * @param {string} arch - "arm" or "x86".
+ * @returns {void}
+ */
 function lcMarkChip(tile, arch) {
   const mine = tile.querySelector(`[data-arch="${arch === "arm" ? "arm64" : "x86_64"}"]`);
   if (!mine) return;
@@ -41,8 +54,13 @@ function lcMarkChip(tile, arch) {
   mine.classList.remove("lc-btn--ghost");
 }
 
-/** Add a second line to a tile saying that this release has no installer for the visitor's ARM processor. */
+/**
+ * Add a second line to a tile saying that this release has no installer for the visitor's ARM processor (nothing for a tile with no installer at all).
+ * @param {Element} tile - the visitor's tile (data-arches lists the processors its installers are for).
+ * @returns {void}
+ */
 function lcWarnArm(tile) {
+  if (tile.dataset.arches === "") return;
   const offered = tile.dataset.arches.split(" ");
   if (offered.includes("arm64")) return;
   const note = document.createElement("p");
@@ -51,23 +69,33 @@ function lcWarnArm(tile) {
   tile.append(note);
 }
 
-/** Mark the visitor's tile ("Your system") in place and, where the browser says which chip, the matching button.
- *  Every tile stays visible and in its place: a wrong guess costs nothing and nothing jumps. */
-async function lcInitSystem() {
+/**
+ * Mark the visitor's tile ("Your system") in place and, where the browser says which chip, the matching button. Every tile stays visible and in
+ * its place: a wrong guess costs nothing and nothing jumps.
+ * @returns {Promise<void>} resolves when the processor question is answered.
+ */
+function lcInitSystem() {
   const grid = document.querySelector("[data-lc-osgrid]");
-  if (!grid) return;
+  if (!grid) return Promise.resolve();
   const system = lcSystem();
-  if (!system) { document.querySelectorAll("[data-lc-nosystem]").forEach((el) => { el.hidden = false; }); return; }
+  if (!system) {
+    document.querySelectorAll("[data-lc-nosystem]").forEach((el) => { el.hidden = false; });
+    return Promise.resolve();
+  }
   const tile = grid.querySelector(`[data-os="${system}"]`);
   tile.classList.add("is-yours");
-  const arch = await lcArchitecture();
-  if (system === "macos" && arch) lcMarkChip(tile, arch);
-  if (system !== "macos" && arch === "arm") lcWarnArm(tile);
+  return lcArchitecture().then((arch) => {
+    if (system === "macos" && arch) lcMarkChip(tile, arch);
+    if (system !== "macos" && arch === "arm") lcWarnArm(tile);
+  });
 }
 
-function lcInitDownloads() { lcInitSystem(); }
-
-/** True when a card passes the drop-downs and contains every word of the search text (so "nuclei segmentation" needs both words). */
+/**
+ * True when a card passes the drop-downs and contains every word of the search text (so "nuclei segmentation" needs both words).
+ * @param {HTMLElement} card - an app card.
+ * @param {{kind: string, route: string, host: string, words: string[]}} state - the filter values.
+ * @returns {boolean} whether the card stays visible.
+ */
 function lcMatches(card, state) {
   const has = (attr, want) => !want || card.dataset[attr].split(" ").includes(want);
   const folded = lcFold(card.dataset.search);
@@ -75,63 +103,124 @@ function lcMatches(card, state) {
     && state.words.every((w) => folded.includes(w));
 }
 
-/** The sentence under the filter: the apps shown of the apps in the main list, plus a note when the testing list has matches. */
+/**
+ * "1 app" or "4 apps".
+ * @param {number} n - the count.
+ * @returns {string} the count with its noun.
+ */
+function lcApps(n) {
+  return `${n} app${n === 1 ? "" : "s"}`;
+}
+
+/**
+ * The sentence under the filter: the apps shown of the apps in the main list, plus a note when the testing list has matches.
+ * @param {number} shown - main-list cards shown.
+ * @param {number} total - main-list cards.
+ * @param {number} testingShown - testing cards shown.
+ * @returns {string} the sentence.
+ */
 function lcCountText(shown, total, testingShown) {
   const more = testingShown ? `, and ${testingShown} more for testing and maintenance` : "";
-  return `Showing ${shown} of ${total} apps${more}`;
+  return `Showing ${shown} of ${lcApps(total)}${more}`;
 }
 
-/** The empty-state sentence, naming what is active ("No app matches "tracking" with these filters."). */
-function lcEmptyText(query, filtered) {
-  return `No app matches${query ? ` "${query}"` : ""}${filtered ? " with these filters" : ""}.`;
+/**
+ * The empty-state sentence, naming what is active ("No app matches "tracking" with these filters.").
+ * @param {string} query - the search text.
+ * @param {boolean} filtered - whether a drop-down is set.
+ * @param {number} testingShown - testing cards shown (they are listed below the main list).
+ * @returns {string} the sentence.
+ */
+function lcEmptyText(query, filtered, testingShown) {
+  const base = `No app matches${query ? ` "${query}"` : ""}${filtered ? " with these filters" : ""}.`;
+  return testingShown ? `${base} The apps for testing and maintenance below match.` : base;
 }
 
+/**
+ * The filter's fields that exist on this page (a drop-down is left out when no app offers a choice).
+ * @param {Element} form - the filter form.
+ * @returns {Array<[string, HTMLInputElement]>} pairs of the field's name and its element.
+ */
+function lcFilterFields(form) {
+  const names = { q: "[data-lc-search]", kind: "[data-lc-kind]", route: "[data-lc-route]", host: "[data-lc-host]" };
+  return Object.entries(names).map(([key, sel]) => [key, form.querySelector(sel)]).filter(([, el]) => el);
+}
+
+/**
+ * Put the address's parameters into the fields; a drop-down value that is not one of its options is cleared instead of leaving the box blank.
+ * @param {Array<[string, HTMLInputElement]>} fields - the fields.
+ * @param {URLSearchParams} params - the address's parameters.
+ * @returns {void}
+ */
+function lcReadParams(fields, params) {
+  fields.forEach(([key, el]) => {
+    el.value = params.has(key) ? params.get(key) : "";
+    if (el.tagName === "SELECT" && el.value !== params.get(key) && params.has(key)) el.value = "";
+  });
+}
+
+/**
+ * Show and hide the cards for the current fields and write the count, the empty state and the address.
+ * @param {Element} form - the filter form.
+ * @param {Array<[string, HTMLInputElement]>} fields - the fields.
+ * @param {{main: HTMLElement[], testing: HTMLElement[]}} cards - the cards of the main and the testing list.
+ * @returns {void}
+ */
+function lcApplyFilter(form, fields, cards) {
+  const state = Object.fromEntries(fields.map(([k, el]) => [k, el.value.trim()]));
+  state.words = lcFold(state.q).split(/\s+/).filter(Boolean);
+  const count = (list) => list.reduce((n, c) => { const ok = lcMatches(c, state); c.hidden = !ok; return n + ok; }, 0);
+  const shown = count(cards.main), testingShown = count(cards.testing);
+  form.querySelector("[data-lc-count]").textContent = lcCountText(shown, cards.main.length, testingShown);
+  document.querySelector("[data-lc-empty]").hidden = shown > 0;
+  document.querySelector("[data-lc-empty-text]").textContent = lcEmptyText(state.q, fields.some(([k]) => k !== "q" && state[k]), testingShown);
+  document.querySelectorAll("[data-lc-group]").forEach((g) => { g.hidden = !g.querySelector(".lc-card:not([hidden])"); });
+  const next = new URLSearchParams(fields.map(([k]) => [k, state[k]]).filter(([, v]) => v));
+  history.replaceState(null, "", `${location.pathname}${next.toString() ? `?${next}` : ""}${location.hash}`);
+}
+
+/**
+ * Make the App Centre filter live (once per page).
+ * @returns {void}
+ */
 function lcInitFilter() {
   const form = document.querySelector("[data-lc-filter]");
   if (!form || form.dataset.ready) return;
   form.dataset.ready = "1";
-  const mainCards = [...document.querySelectorAll("[data-lc-group]:not(.lc-testing) .lc-card")];
-  const testingCards = [...document.querySelectorAll(".lc-testing .lc-card")];
-  const fields = { q: form.querySelector("[data-lc-search]"), kind: form.querySelector("[data-lc-kind]"),
-                   route: form.querySelector("[data-lc-route]"), host: form.querySelector("[data-lc-host]") };
-  const present = Object.entries(fields).filter(([, el]) => el);
-  const params = new URLSearchParams(location.search);
-  present.forEach(([key, el]) => { el.value = params.get(key) || ""; });
-  const apply = () => {
-    const state = Object.fromEntries(present.map(([k, el]) => [k, el.value.trim()]));
-    state.words = lcFold(state.q).split(/\s+/).filter(Boolean);
-    const count = (list) => list.reduce((n, c) => { const ok = lcMatches(c, state); c.hidden = !ok; return n + ok; }, 0);
-    const shown = count(mainCards), testingShown = count(testingCards);
-    form.querySelector("[data-lc-count]").textContent = lcCountText(shown, mainCards.length, testingShown);
-    document.querySelector("[data-lc-empty]").hidden = shown + testingShown > 0;
-    document.querySelector("[data-lc-empty-text]").textContent = lcEmptyText(state.q, present.some(([k]) => k !== "q" && state[k]));
-    document.querySelectorAll("[data-lc-group]").forEach((g) => { g.hidden = !g.querySelector(".lc-card:not([hidden])"); });
-    const next = new URLSearchParams(present.map(([k]) => [k, state[k]]).filter(([, v]) => v));
-    history.replaceState(null, "", next.toString() ? `?${next}` : location.pathname);
-  };
-  present.forEach(([, el]) => el.addEventListener("input", apply));
-  form.querySelector("[data-lc-reset]").addEventListener("click", () => { present.forEach(([, el]) => { el.value = ""; }); apply(); });
+  const cards = { main: [...document.querySelectorAll("[data-lc-group]:not(.lc-testing) .lc-card")], testing: [...document.querySelectorAll(".lc-testing .lc-card")] };
+  const fields = lcFilterFields(form);
+  lcReadParams(fields, new URLSearchParams(location.search));
+  const apply = () => lcApplyFilter(form, fields, cards);
+  fields.forEach(([, el]) => el.addEventListener("input", apply));
+  form.querySelector("[data-lc-reset]").addEventListener("click", () => { fields.forEach(([, el]) => { el.value = ""; }); apply(); });
   form.hidden = false;
   apply();
 }
 
+/**
+ * Make the Copy buttons of the pip commands work; when the browser refuses to write to the clipboard, the button says so.
+ * @returns {void}
+ */
 function lcInitCopy() {
   document.querySelectorAll(".lc-code [data-copy]").forEach((btn) => {
     if (btn.dataset.ready) return;
     btn.dataset.ready = "1";
-    btn.addEventListener("click", async () => {
-      await navigator.clipboard.writeText(btn.parentElement.querySelector("code").textContent);
-      btn.textContent = "Copied";
-      setTimeout(() => { btn.textContent = "Copy"; }, 1500);
+    const say = (text) => { btn.textContent = text; setTimeout(() => { btn.textContent = "Copy"; }, 1500); };
+    btn.addEventListener("click", () => {
+      navigator.clipboard.writeText(btn.parentElement.querySelector("code").textContent).then(() => say("Copied"), () => say("Select and copy"));
     });
   });
 }
 
-/** The phone menu is a checkbox: Space toggles it natively; Enter toggles it too. It says whether it is expanded, and Escape from
- *  anywhere in the menu closes it and returns the focus to the checkbox. */
+/**
+ * The phone menu is a checkbox: Space toggles it natively; Enter toggles it too. It says whether it is expanded, and Escape from
+ * anywhere in the menu closes it and returns the focus to the checkbox. Runs once per page.
+ * @returns {void}
+ */
 function lcInitMenu() {
   const box = document.querySelector(".lc-menu-toggle");
-  if (!box) return;
+  if (!box || box.dataset.ready) return;
+  box.dataset.ready = "1";
   const sync = () => box.setAttribute("aria-expanded", box.checked ? "true" : "false");
   box.addEventListener("change", sync);
   box.addEventListener("keydown", (e) => { if (e.key === "Enter") { box.checked = !box.checked; sync(); e.preventDefault(); } });
@@ -139,12 +228,26 @@ function lcInitMenu() {
   sync();
 }
 
-function lcInit() { lcInitDownloads(); lcInitFilter(); lcInitCopy(); lcInitDrawer(); lcInitMenu(); }
-if (typeof document$ !== "undefined") document$.subscribe(lcInit);
-else document.addEventListener("DOMContentLoaded", lcInit);
-
-/** On phones the docs menu starts folded (it is open in the HTML so that it works without scripts). */
+/**
+ * On phones the docs menu starts folded (it is open in the HTML so that it works without scripts).
+ * @returns {void}
+ */
 function lcInitDrawer() {
   const drawer = document.querySelector(".lc-docs__drawer");
   if (drawer && window.matchMedia("(max-width: 56rem)").matches) drawer.open = false;
 }
+
+/**
+ * Start everything the page needs.
+ * @returns {void}
+ */
+function lcInit() {
+  lcInitSystem();
+  lcInitFilter();
+  lcInitCopy();
+  lcInitDrawer();
+  lcInitMenu();
+}
+
+if (typeof document$ !== "undefined") document$.subscribe(lcInit);
+else document.addEventListener("DOMContentLoaded", lcInit);
