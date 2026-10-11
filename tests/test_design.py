@@ -66,8 +66,10 @@ class HeroTests(unittest.TestCase):
 
     def test_the_line_is_escaped_text_without_links(self) -> None:
         """The hero's second line names the programs of data/hosts.yaml, promises nothing about timing and has no link in it."""
-        from lcsite import pages_site
-        out = pages_site.hero_also()
+        from unittest import mock
+        from lcsite import pages_site, projects
+        with mock.patch.object(projects, "host_status", return_value="Experimental"):   # the real status is read from fetched sources, which CI has not fetched yet when the tests run
+            out = pages_site.hero_also()
         for name in ("napari", "Fiji", "QuPath"):
             self.assertIn(name, out)
         self.assertNotIn("Soon", out)
