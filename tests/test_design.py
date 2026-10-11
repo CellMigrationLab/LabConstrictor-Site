@@ -61,20 +61,17 @@ class DesignTests(unittest.TestCase):
         self.assertIn("alt", report)
 
 
-class HeroTests(unittest.TestCase):
-    """The home page's second line is plain text."""
+class PluginStageTests(unittest.TestCase):
+    """The home page's plugin section names the stage the plugins' own files give."""
 
-    def test_the_line_is_escaped_text_without_links(self) -> None:
-        """The hero's second line names the programs of data/hosts.yaml, promises nothing about timing and has no link in it."""
+    def test_one_shared_stage_is_named_and_differing_stages_are_said_to_vary(self) -> None:
+        """All experimental gives "Experimental"; one different stage gives "Stages vary"."""
         from unittest import mock
         from lcsite import pages_site, projects
         with mock.patch.object(projects, "host_status", return_value="Experimental"):   # the real status is read from fetched sources, which CI has not fetched yet when the tests run
-            out = pages_site.hero_also()
-        for name in ("napari", "Fiji", "QuPath"):
-            self.assertIn(name, out)
-        self.assertNotIn("Soon", out)
-        self.assertTrue(out.startswith(("Experimental plugins", "Plugins")))
-        self.assertNotIn("<a", out)
+            self.assertEqual(pages_site.plugin_stage(), "Experimental")
+        with mock.patch.object(projects, "host_status", side_effect=["Experimental", "Available", "Experimental"]):
+            self.assertEqual(pages_site.plugin_stage(), "Stages vary")
 
 
 class StyleTests(unittest.TestCase):

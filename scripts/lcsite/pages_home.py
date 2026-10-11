@@ -1,59 +1,46 @@
-"""The home page's own sections: the comic with its two side tiles, and the "Packaged once, easy to install" tiles. Wording comes from the apps and data files."""
+"""The home page's sections after the hero: the three steps, the comic with its two tiles, the featured apps and the optional plugin section.
+Wording is in data/site.yaml and data/demo.yaml; the apps shown are the ones the catalogue marks as featured."""
 
-from . import catalogue_text
 from .text import esc
 
-
-def join_and(items: list[str]) -> str:
-    """["a"] -> "a"; ["a", "b"] -> "a and b"; ["a", "b", "c"] -> "a, b and c"."""
-    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+STEP_KEYS = {"title", "text"}
 
 
-def how_tile(steps: list[dict]) -> str:
-    """The "How it works" tile: the titles of data/site.yaml `steps` as one sentence, linked to the How it works page."""
-    titles = [s["title"] for s in steps]
-    sentence = ", ".join([titles[0]] + [t[0].lower() + t[1:] for t in titles[1:]]) + "."
-    return (f'<a class="lc-tile" href="how-it-works/"><span class="lc-tile__body"><strong>How it works</strong>'
-            f'<span>{esc(sentence)}</span><span class="lc-go">See it step by step</span></span></a>')
+def featured_apps(apps: list[dict]) -> list[dict]:
+    """The apps the home page features: marked `featured` in the registry and listed for users (never the ones kept apart under testing)."""
+    return [a for a in apps if a["featured"] and a["section"] == "apps"]
 
 
-def intro_row(comic: str, side: list[str]) -> str:
-    """The comic on the left and the tiles on its right (stacked under it on a phone)."""
-    return f'<section class="lc-intro"><div class="lc-intro__in"><div class="lc-intro__comic">{comic}</div><div class="lc-intro__side">{"".join(side)}</div></div></section>'
+def steps_band(site: dict) -> str:
+    """"From notebook to app": the three steps of data/site.yaml as a numbered row (the interactive version is the How it works page)."""
+    for step in site["steps"]:
+        if set(step) != STEP_KEYS:
+            raise SystemExit(f"data/site.yaml: a step needs exactly {sorted(STEP_KEYS)}, got {sorted(step)}")
+    items = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["text"])}</span></li>' for s in site["steps"])
+    return f'<section class="lc-band"><h2 class="lc-title">{esc(site["steps_title"])}</h2><ol class="lc-steps">{items}</ol></section>'
 
 
-def fact(title: str, text: str, href: str, link: str, extra: str = "") -> str:
-    """One tile of the "Packaged once" row: title, a sentence, optional extra HTML and a link."""
-    return f'<div class="lc-fact"><h3>{esc(title)}</h3><p>{esc(text)}</p>{extra}<a class="lc-go" href="{esc(href)}">{esc(link)}</a></div>'
+def how_tile(site: dict) -> str:
+    """The "How it works" tile, built like the demo tile: a picture, a title, a sentence and a link to the author tour."""
+    t = site["how_tile"]
+    return (f'<a class="lc-tile" href="how-it-works/"><img class="lc-icon" src="assets/images/logo.png" alt="" width="88" height="88" loading="lazy">'
+            f'<span class="lc-tile__body"><strong>{esc(t["title"])}</strong><span>{esc(t["text"])}</span><span class="lc-go">{esc(t["link"])}</span></span></a>')
 
 
-def install_fact(apps: list[dict]) -> str:
-    """The installers tile, with the systems that some app really has an installer for ("" when no app has an installer)."""
-    users = catalogue_text.listed(apps)
-    if "installer" not in catalogue_text.ways(users):
-        return ""
-    systems = catalogue_text.systems(users)
-    where = f" for {join_and(systems)}" if systems else ""
-    return fact("Install in a few clicks", f"Desktop installers{where}. No Python or pip needed.", "guides/install/", "How to install")
+def intro_band(comic: str, tiles: list[str]) -> str:
+    """The comic (smaller, centred) with the two equal tiles directly under it; tiles and the section titles share one left edge."""
+    return f'<section class="lc-band lc-band--tight"><div class="lc-intro__comic">{comic}</div><div class="lc-tiles">{"".join(tiles)}</div></section>'
 
 
-def notebook_fact(apps: list[dict]) -> str:
-    """The Colab and pip tile, naming only the ways that some app really offers ("" when none does)."""
-    found = [w for w in catalogue_text.ways(catalogue_text.listed(apps)) if w != "installer"]
-    names = {"colab": "Google Colab", "pip": "pip"}
-    phrases = {"colab": "open the notebooks in Google Colab", "pip": "install the package with pip"}
-    if not found:
-        return ""
-    text = " or ".join(phrases[w] for w in found)
-    return fact(join_and([names[w] for w in found]), text[0].upper() + text[1:] + ".", "apps/", "See the apps")
+def featured_band(featured: list[str], empty_text: str) -> str:
+    """"Featured apps": the given card HTML, or `empty_text` when no listed app is featured, then the link to every app."""
+    body = '<ul class="lc-grid">' + "\n".join(featured) + "</ul>" if featured else f"<p>{esc(empty_text)}</p>"
+    return f'<section class="lc-band"><h2 class="lc-title">Featured apps</h2>{body}<p class="lc-more"><a class="lc-go" href="apps/">See every app</a></p></section>'
 
 
-def host_fact(plugin_kind: str, pills: str) -> str:
-    """The image software tile: the plugin stage (taken from the plugins' own status) and the programs as pills."""
-    return fact("In your image software", f"{plugin_kind} let apps that declare tools run inside:", "guides/image-software/", "Use apps in your image software", pills)
-
-
-def works_band(apps: list[dict], plugin_kind: str, pills: str) -> str:
-    """The "Packaged once, easy to install" band: one tile per place an app is available."""
-    tiles = "".join([install_fact(apps), notebook_fact(apps), host_fact(plugin_kind, pills)])
-    return f'<section class="lc-band lc-band--soft"><h2 class="lc-title">Packaged once, easy to install, available where you need it</h2><div class="lc-facts">{tiles}</div></section>'
+def plugins_band(site: dict, stage: str, pills: str) -> str:
+    """The optional-integration section: what a plugin is, its stage (from the plugins' own status) and the programs, with one link to the Ecosystem page."""
+    p = site["plugins"]
+    return (f'<section class="lc-band lc-band--soft"><h2 class="lc-title">{esc(p["title"])}</h2><div class="lc-prose"><p class="lc-lead-text">{esc(p["text"])}</p>'
+            f'<p><span class="lc-badge lc-badge--status">{esc(stage)}</span> {esc(p["note"])}</p>{pills}'
+            f'<p class="lc-more"><a class="lc-go" href="ecosystem/">{esc(p["link"])}</a></p></div></section>')

@@ -1,47 +1,77 @@
-"""The home page's own sections: tiles that follow the apps and the steps, and say nothing no app offers."""
+"""The home page's sections after the hero: wording from the data files, only listed featured apps, an honest empty state, an optional plugin section."""
 
 import unittest
 
-from lcsite import pages_home as ph
-from test_catalogue_text import app
+from lcsite import pages_demo, pages_home as ph
+from lcsite.config import load_yaml, DATA
+
+SITE = {"steps_title": "From notebook to app",
+        "steps": [{"title": "Develop in a notebook", "text": "Run it step by step."}, {"title": "Package it", "text": "Start from the template."}, {"title": "Share the app", "text": "Publish a release."}],
+        "how_tile": {"title": "How it works", "text": "See how to turn a notebook workflow into an app.", "link": "See the steps"},
+        "plugins": {"title": "Use parts of your workflow in other software", "text": "Your notebook is still the main interface.", "note": "An entire notebook does not become a plugin.", "link": "Explore the ecosystem"}}
 
 
-class FactTests(unittest.TestCase):
-    """The "Packaged once" tiles are worked out from the apps."""
+class StepsTests(unittest.TestCase):
+    """The three steps come from data/site.yaml."""
 
-    def test_the_install_tile_names_the_systems_with_an_installer(self) -> None:
-        """Windows and macOS installers: both named; no installer at all: no tile."""
-        html = ph.install_fact([app(systems=("windows", "macos"))])
-        self.assertIn("Desktop installers for Windows and macOS.", html)
-        self.assertEqual(ph.install_fact([app(routes=("pip",), systems=())]), "")
+    def test_the_steps_are_a_numbered_list_with_their_title_and_text(self) -> None:
+        """Three steps in an ordered list under the band title."""
+        html = ph.steps_band(SITE)
+        self.assertIn("From notebook to app", html)
+        self.assertEqual(html.count("<li>"), 3)
+        self.assertIn("<strong>Package it</strong><span>Start from the template.</span>", html)
 
-    def test_the_notebook_tile_names_only_the_routes_some_app_offers(self) -> None:
-        """Colab only, then Colab and pip, then neither."""
-        self.assertIn("Open the notebooks in Google Colab.", ph.notebook_fact([app(routes=("colab",), systems=())]))
-        both = ph.notebook_fact([app(routes=("colab", "pip"), systems=())])
-        self.assertIn("<h3>Google Colab and pip</h3>", both)
-        self.assertIn("Open the notebooks in Google Colab or install the package with pip.", both)
-        self.assertEqual(ph.notebook_fact([app()]), "")
-
-    def test_the_band_leaves_out_a_tile_nothing_backs_and_keeps_the_host_tile(self) -> None:
-        """An installer-only catalogue has the install tile and the image software tile, nothing about Colab or pip."""
-        html = ph.works_band([app()], "Experimental plugins", '<p class="lc-pills"></p>')
-        self.assertIn("Install in a few clicks", html)
-        self.assertIn("In your image software", html)
-        self.assertNotIn("Colab", html)
+    def test_a_step_with_a_missing_or_extra_key_stops_the_build(self) -> None:
+        """A step without text, or with an unknown key, is an error."""
+        for bad in ({"title": "x"}, {"title": "x", "text": "y", "icon": "z"}):
+            with self.assertRaises(SystemExit):
+                ph.steps_band(dict(SITE, steps=[bad]))
 
 
-class TileTests(unittest.TestCase):
-    """The How it works tile repeats the steps of data/site.yaml, nothing more."""
+class RealDataTests(unittest.TestCase):
+    """The real data files fit the sections."""
 
-    def test_the_sentence_is_the_step_titles(self) -> None:
-        """Three titles become one sentence, the later ones in lower case."""
-        steps = [{"title": "Write notebooks"}, {"title": "Publish a release"}, {"title": "Share it"}]
-        self.assertIn("Write notebooks, publish a release, share it.", ph.how_tile(steps))
+    def test_the_real_site_data_builds_every_section(self) -> None:
+        """data/site.yaml gives the steps, the How it works tile and the plugin section; the real wording promises nothing the issue rules out."""
+        site = load_yaml(DATA / "site.yaml")
+        html = ph.steps_band(site) + ph.how_tile(site) + ph.plugins_band(site, "Experimental", "")
+        for banned in ("Packaged once", "runs everywhere", "no coding", "turn any notebook into a plugin", "one click"):
+            self.assertNotIn(banned.lower(), html.lower())
+        self.assertIn("notebook", site["hero"]["text"].lower())
 
-    def test_join_and(self) -> None:
-        """One, two and three items."""
-        self.assertEqual((ph.join_and(["a"]), ph.join_and(["a", "b"]), ph.join_and(["a", "b", "c"])), ("a", "a and b", "a, b and c"))
+    def test_both_tiles_have_a_picture_a_title_a_sentence_and_a_link(self) -> None:
+        """The How it works tile and the demo tile are built the same way, so they look equal."""
+        site = load_yaml(DATA / "site.yaml")
+        for tile in (ph.how_tile(site), pages_demo.home_tile()):
+            for part in ('class="lc-tile"', "<img ", "<strong>", 'class="lc-go"'):
+                self.assertIn(part, tile)
+
+
+class FeaturedTests(unittest.TestCase):
+    """Only listed, featured apps; and none is a statement, not an empty grid."""
+
+    def test_testing_apps_are_never_featured(self) -> None:
+        """A featured app kept apart under testing is not shown."""
+        apps = [{"featured": True, "section": "apps", "n": 1}, {"featured": True, "section": "testing", "n": 2}, {"featured": False, "section": "apps", "n": 3}]
+        self.assertEqual([a["n"] for a in ph.featured_apps(apps)], [1])
+
+    def test_no_featured_app_says_so_and_still_links_to_every_app(self) -> None:
+        """No card, a plain sentence, and the link to the App Centre."""
+        html = ph.featured_band([], "No app is featured yet.")
+        self.assertIn("No app is featured yet.", html)
+        self.assertNotIn("<ul", html)
+        self.assertIn('href="apps/"', html)
+
+
+class PluginTests(unittest.TestCase):
+    """The plugin section is optional, experimental and has one link."""
+
+    def test_the_section_names_the_stage_and_links_to_the_ecosystem_once(self) -> None:
+        """The stage badge, the note and one link to the Ecosystem page."""
+        html = ph.plugins_band(SITE, "Experimental", '<p class="lc-pills"></p>')
+        self.assertIn(">Experimental<", html)
+        self.assertIn("An entire notebook does not become a plugin.", html)
+        self.assertEqual(html.count('href="ecosystem/"'), 1)
 
 
 if __name__ == "__main__":

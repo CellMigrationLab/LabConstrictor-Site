@@ -2,20 +2,30 @@
 name: LabConstrictor
 hero:
   title: Notebooks in. Desktop apps out.
-  text: LabConstrictor turns Jupyter notebooks into installable apps for Windows, macOS and Linux. No Python or pip needed.
+  text: Build and test your workflow in a Jupyter notebook. LabConstrictor turns it into a desktop app that colleagues can install and run without setting up Python.
 links:
   template: https://github.com/CellMigrationLab/LabConstrictor
   init_form: https://labconstrictor-form.streamlit.app
   site_repo: https://github.com/CellMigrationLab/LabConstrictor-Site
   submit_issue: https://github.com/CellMigrationLab/LabConstrictor-Site/issues/new?template=submit-app.yml
   tools_docs: https://github.com/CellMigrationLab/LabConstrictor-Tools/tree/main/docs
+steps_title: From notebook to app
 steps:
-  - title: Write notebooks
-    text: Create your repository from the LabConstrictor template and upload your notebooks.
-  - title: Publish a release
-    text: One GitHub Release builds installers for Windows, macOS (Apple Silicon and Intel) and Linux.
-  - title: Share it
-    text: Users download and install in a few clicks. Add your app to this centre so others can find it.
+  - title: Develop in a notebook
+    text: Run the analysis step by step, check the results and make changes as you go.
+  - title: Package it with LabConstrictor
+    text: Start from the GitHub template and add your notebook, code and dependencies.
+  - title: Share the app
+    text: Publish a release to build installers. Others can open your notebook in the installed JupyterLab app.
+how_tile:
+  title: How it works
+  text: See how to turn a notebook workflow into an app.
+  link: See the steps
+plugins:
+  title: Use parts of your workflow in other software
+  text: Your notebook is still the main interface. If a particular step would also be useful in napari, Fiji or QuPath, you can make its Python function available through an experimental plugin.
+  note: Only the Python functions you declare as tools are available there; an entire notebook does not become a plugin automatically. So far these integrations have been tested on Linux only, not on Windows or macOS.
+  link: Explore the ecosystem
 # Copied from the "Citation" section of the template's README.md (build_site.py stops if the README no longer has this DOI).
 citation:
   lead: "If you use LabConstrictor in your research, please cite the project to support its development:"

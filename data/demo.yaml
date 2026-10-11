@@ -4,8 +4,8 @@ title: Try the demo
 description: A hands-on preview of a NucleiSky microscopy registration in a notebook, napari and Fiji. The result is precomputed and nothing runs in your browser.
 lead: Explore how the same NucleiSky microscopy workflow appears in a notebook, napari and Fiji.
 tile:
-  title: Try the demo
-  text: Open a simulated notebook, napari or Fiji and watch a real microscopy registration result appear. Nothing to install.
+  title: Explore an installed app
+  text: Preview what colleagues see when they open a LabConstrictor app. A simulation with a real, precomputed example; nothing to install.
   link: Open the demo
   alt: A microscopy field of nuclei shown in green
 about:

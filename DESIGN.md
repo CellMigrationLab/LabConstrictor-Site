@@ -66,8 +66,12 @@ One size (12 px, bold). Colour says the role: green = route (Desktop, Colab), gr
 
 ## Home page
 
-- Sections are left-aligned under their title so the cards and tiles line up with it: the hero, then the comic (about three fifths of the width) with two side tiles, **How it works** (the titles of `steps` in `data/site.yaml` as one sentence) and **Try the demo** (`data/demo.yaml` `tile`), each a whole-tile link; then Featured apps, then "Packaged once, easy to install, available where you need it" with up to three tiles (installers with the systems, Colab and pip, image software with the program pills), then the citation. The tiles are `pages_home`; each says only what some app offers, so one is left out when no app backs it. On a phone the comic is three stacked panels and the tiles follow it.
-- Section titles are larger than the titles of the tiles inside them. Every link that leaves a section is the green arrow link (`lc-go`).
+Order: the hero (the notebook-first sentence, then the two paths **find an app** and **make an app**, no list of programs), the three steps "From notebook to app" (`steps` in `data/site.yaml`), the comic (smaller, centred, 46rem) with **two equal tiles directly under it** (How it works, `how_tile`; Explore an installed app, the `tile` of `data/demo.yaml`), Featured apps, the optional plugin section, the citation. Section titles are left-aligned so the cards and tiles share their left edge, and each title is larger than the titles of the tiles inside it. On phones the tiles stack in the same order and the comic's three panels sit in a row that scrolls sideways (no script), each as legible as the strip.
+
+- Wording rules (issue #15): write as you would to another scientist; say notebook, workflow, app, install, Python function. Never "packaged once, runs everywhere", "no coding required", "turn any notebook into a plugin" or "one click on every operating system". Installers per system are separate build outputs. The author needs Python; colleagues who install the app do not.
+- Featured apps are the registry's `featured` apps that are listed for users (never testing apps); with none, a plain sentence replaces the grid.
+- The plugin section is short and plainly labelled with the plugins' own stage (taken from their project files): selected, declared Python functions only, not whole notebooks; tested on Linux only so far; one link, to the Ecosystem page. No microscope hardware control is claimed.
+- Every link that leaves a section is the green arrow link (`lc-go`).
 
 ## Citation
 

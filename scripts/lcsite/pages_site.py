@@ -18,11 +18,12 @@ PANEL_ALTS = ("A delighted scientist says: Finally, my ultimate notebook is read
 
 
 def comic_figure() -> str:
-    """The comic: the whole strip on wide screens, three stacked panels (cropped by CSS from the same image) on phones."""
+    """The comic: the whole strip on wide screens; on phones its three panels (cropped by CSS from the same image) in a row that scrolls sideways, each as legible as the strip."""
     panels = "".join(f'<span class="lc-comic__panel" role="img" aria-label="{esc(alt)}" style="--i:{i}"></span>'
                      for i, alt in enumerate(PANEL_ALTS))
     return (f'<figure class="lc-comic"><img class="lc-comic__strip" src="assets/images/comic.png" alt="{esc(COMIC_ALT)}" loading="lazy">'
-            f'<div class="lc-comic__panels">{panels}</div><figcaption>The problem LabConstrictor was made for.</figcaption></figure>')
+            f'<div class="lc-comic__panels" role="group" aria-label="The three panels of the comic" tabindex="0">{panels}</div>'
+            '<figcaption>The problem LabConstrictor was made for.<span class="lc-comic__hint"> Swipe to read all three panels.</span></figcaption></figure>')
 
 
 def choice(title: str, text: str, href: str, label: str, cls: str = "") -> str:
@@ -37,34 +38,27 @@ def program_pill_row() -> str:
     return '<p class="lc-pills">' + "".join(hosts.pill(k, table) for k in table) + "</p>"
 
 
-def plugin_kind() -> str:
-    """"Experimental plugins" when every plugin of data/hosts.yaml is experimental (or deprecated), otherwise "Plugins"; taken from the plugins' own status."""
+def plugin_stage() -> str:
+    """The stage every plugin of data/hosts.yaml has ("Experimental", "Available", ...), taken from the plugins' own project files;
+    "Stages vary" when they differ."""
     stages = {projects.host_status(key) for key in hosts.load()}
-    return f"{next(iter(stages))} plugins" if len(stages) == 1 and stages <= {"Experimental", "Deprecated"} else "Plugins"
-
-
-def hero_also() -> str:
-    """The second line of the hero: plain text saying that plugins let apps work inside the programs of data/hosts.yaml (their stage is on the Ecosystem page)."""
-    names = [h["name"] for h in hosts.load().values()]
-    return esc(f"{plugin_kind()} let apps that declare tools work inside {', '.join(names[:-1])} and {names[-1]}; the stage of each plugin is on the Ecosystem page.")
+    return next(iter(stages)) if len(stages) == 1 else "Stages vary"
 
 
 def page_home(site: dict, apps: list[dict]) -> None:
-    """index.md: hero with the logo, the two paths (use / make), the comic, featured apps, how it works, where apps run."""
+    """index.md: hero with the logo and the two paths (use / make), the three steps, the comic with its two tiles, featured apps, the optional plugin section and the citation."""
     hero = site["hero"]
-    featured = [a for a in apps if a["featured"]]
+    featured = pages_home.featured_apps(apps)
     p = Page("index.md", title="LabConstrictor", head_title=f"{site['name']}: {hero['title']}", description=hero["text"], template="home.html")
     p.add(f'<section class="lc-hero"><div class="lc-hero__in"><div><h1>{esc(hero["title"])}</h1><p>{esc(hero["text"])}</p>'
-          f'<p class="lc-hero__also">{hero_also()}</p>'
           '<div class="lc-choices">'
           + choice("I want to find an app", catalogue_text.home_find_text(apps), "apps/", "Open the App Centre")
           + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "build/", "Why and how to build one", "lc-choice--make") +
           '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256" loading="eager" fetchpriority="high"></div></div></section>')
-    p.add(pages_home.intro_row(comic_figure(), [pages_home.how_tile(site["steps"]), pages_demo.home_tile()]))
-    p.add('<section class="lc-band"><h2 class="lc-title">Featured apps</h2>',
-          '<ul class="lc-grid">' + "\n".join(card(a) for a in featured) + '</ul>',
-          '<p class="lc-more"><a class="lc-go" href="apps/">See every app</a></p></section>')
-    p.add(pages_home.works_band(apps, plugin_kind(), program_pill_row()))
+    p.add(pages_home.steps_band(site))
+    p.add(pages_home.intro_band(comic_figure(), [pages_home.how_tile(site), pages_demo.home_tile()]))
+    p.add(pages_home.featured_band([card(a) for a in featured], "No app is featured yet."))
+    p.add(pages_home.plugins_band(site, plugin_stage(), program_pill_row()))
     p.add(citation.cite_band(site))
     p.write()
 
