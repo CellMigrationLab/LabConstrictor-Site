@@ -40,7 +40,7 @@ def static_figures() -> str:
     """What a reader without JavaScript sees: the three real images with captions and descriptions."""
     figs = "".join(f'<figure class="lc-demo__fig"><img src="assets/demo/{f}" alt="{esc(alt)}" loading="lazy"><figcaption>{esc(cap)}</figcaption></figure>'
                    for f, alt, cap in STATIC)
-    return f'<div class="lc-demo__static">{figs}</div>'
+    return f'<noscript><p class="lc-demo__nojs">This is a static view. Turn on JavaScript to try the interactive version.</p><div class="lc-demo__static">{figs}</div></noscript>'
 
 
 def about_and_features(text: dict) -> str:
