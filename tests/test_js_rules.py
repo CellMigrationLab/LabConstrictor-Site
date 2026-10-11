@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FILES = sorted((ROOT / "content" / "demo").glob("*.js"))
+FILES = sorted(p for folder in ("demo", "how") for p in (ROOT / "content" / folder).glob("*.js"))
 MAX_FUNCTION_LINES, MAX_FILE_LINES = 30, 300
 STRING = re.compile(r"'(?:\\.|[^'\\\n])*'|\"(?:\\.|[^\"\\\n])*\"")
 COMMENT = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)

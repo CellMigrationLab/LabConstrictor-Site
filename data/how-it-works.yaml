@@ -1,0 +1,33 @@
+# The "How LabConstrictor works" page (/how-it-works/). Text only: each chapter's interactive part is content/how/<id>.html.
+# Every statement follows the template's guide named in `guide`; the page is an illustration with example files, nothing runs on it.
+title: How LabConstrictor works
+lead: From a notebook that works on your computer to an installed app, step by step. Try each part.
+notice: Interactive illustration with example files. Nothing runs on this page and nothing is uploaded.
+chapters:
+  - id: portable
+    title: Write notebooks that run in Colab and in JupyterLab
+    text: A LabConstrictor app opens your notebooks in JupyterLab on the user's computer, and many people also like to open them in Google Colab. Run Colab-only setup only on Colab, and the same notebook works in both.
+    guide: guides/notebook-portability/
+    guide_label: Write notebooks for Colab and JupyterLab
+    static:
+      - Colab-only setup (mounting Google Drive, installing packages with an exclamation mark) is guarded with a check for Google Colab, so it runs only there.
+      - A "# @title" line at the top of a code cell gives it a header in Colab and stays readable in JupyterLab.
+      - LabConstrictor can hide code cells so the notebook looks like an app; longer explanations belong in Markdown cells, which are always visible.
+  - id: code
+    title: Where the code lives
+    text: Helper code can sit in the repository's src folder, come from a package installed with pip, or both. Which one you pick changes what the notebook imports and what the installer carries.
+    guide: guides/external-code-upload/
+    guide_label: Upload external code
+    static:
+      - "Code in src: a folder under src with an __init__.py file becomes a package your notebooks import."
+      - "A pip package: its name goes into the notebook's requirements.yaml and is installed from PyPI."
+      - "Both: for example the desktop app uses the code in src while a Colab run installs the published package."
+  - id: requirements
+    title: Describe what the notebook needs
+    text: Each notebook comes with a requirements.yaml that lists its packages, its Python version and a short description. You can generate it from the notebook, or write it by hand and check it.
+    guide: guides/notebook-requirements/
+    guide_label: Generate the requirements of your notebook
+    static:
+      - "requirements.yaml has three fields: dependencies (packages with versions), python_version and description."
+      - "Option 1 generates the file from your notebook with the Requirements Generator notebook, run in the same environment as your notebook (locally) or in Colab."
+      - "Option 2 means writing the file by hand and checking it with the Requirements Validator notebook."

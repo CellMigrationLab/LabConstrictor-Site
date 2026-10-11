@@ -1,0 +1,25 @@
+/* /how-it-works/: chapters with a small interactive panel each. Simulated controls keep a plain, clearly pressed look. */
+.how__static[hidden] { display: none; }
+.how__rail { display: flex; flex-wrap: wrap; gap: .4rem .8rem; margin: 1rem 0 2rem; padding: 0; list-style: none; counter-reset: ch; }
+.how__rail li { counter-increment: ch; font-size: .72rem; }
+.how__rail a::before { content: counter(ch) ". "; font-weight: 700; }
+.how__chapter { margin: 2.6rem 0; padding-top: .4rem; border-top: 1px solid var(--lc-line); }
+.how__panel { margin: 1rem 0; padding: 1rem; background: var(--lc-soft); border: 1px solid var(--lc-line); border-radius: .5rem; }
+.how__panel[hidden], .how__panel [hidden] { display: none; }
+.how__controls { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: .2rem 0 .6rem; }
+.how__label { font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--lc-muted); }
+.how__btn { margin-right: .3rem; padding: .35rem .8rem; font: inherit; font-size: .72rem; color: var(--lc-strong); background: #fff; border: 1px solid var(--lc-muted); border-radius: 2rem; cursor: pointer; min-height: 1.9rem; }
+.how__btn[aria-pressed="true"] { color: #fff; background: var(--lc-accent-strong); border-color: var(--lc-accent-strong); }
+.how__cell { margin: .6rem 0; padding: .6rem .8rem; background: #fff; border: 1px solid var(--lc-line); border-radius: .4rem; }
+.how__code { margin: 0; padding: .5rem .7rem; overflow-x: auto; background: #f6f8fa; border: 1px solid var(--lc-line); border-radius: .3rem; font: .66rem/1.5 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; white-space: normal; }
+.how__line { display: block; min-height: 1.5em; white-space: pre; }
+.how__line.is-skipped { opacity: .4; text-decoration: line-through; text-decoration-thickness: 1px; }
+.how__out { margin: .5rem 0; font-size: .72rem; }
+.how__note { color: var(--lc-muted); font-size: .64rem; }
+.how__hidden { margin: .4rem 0; padding: .4rem .6rem; background: #f6f8fa; border-left: 3px solid var(--lc-muted); font-size: .72rem; }
+.how__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: .8rem 1.4rem; margin: .6rem 0; }
+.how__steps { margin: .4rem 0 .8rem 1.1rem; font-size: .74rem; }
+.how__yaml { display: flex; flex-direction: column; gap: .3rem; }
+.how__part { display: block; width: 100%; text-align: left; padding: .3rem .5rem; font: inherit; color: inherit; white-space: pre; background: transparent; border: 1px dashed var(--lc-muted); border-radius: .3rem; cursor: pointer; }
+.how__part[aria-pressed="true"] { background: #fff; border: 2px solid var(--lc-accent-strong); }
+@media (forced-colors: active) { .how__btn[aria-pressed="true"], .how__part[aria-pressed="true"] { border: 3px solid Highlight; } }

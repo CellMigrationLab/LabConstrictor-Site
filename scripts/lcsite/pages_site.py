@@ -61,7 +61,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
           '<p class="lc-more"><a href="apps/">See every app</a></p></section>')
     steps = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["text"])}</span></li>' for s in site["steps"])
     p.add(f'<section class="lc-band lc-band--soft"><h2 class="lc-title">How it works</h2><ol class="lc-steps">{steps}</ol>',
-          f'<p class="lc-more">{github_badge(site["links"]["template"].removeprefix("https://github.com/"), "Start from the template")} · <a href="build/">Read the guides</a></p></section>')
+          f'<p class="lc-more">{github_badge(site["links"]["template"].removeprefix("https://github.com/"), "Start from the template")} · <a href="how-it-works/">See it step by step</a> · <a href="build/">Read the guides</a></p></section>')
     p.add(pages_demo.tile_band())
     p.add('<section class="lc-band"><h2 class="lc-title">Works where you work</h2>',
           f'<p class="lc-center">Desktop installers, Google Colab and pip. Apps that declare tools also run inside {program_pills()}.</p>',
