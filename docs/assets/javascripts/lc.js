@@ -4,46 +4,65 @@
 
 const lcFold = (s) => s.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase();
 
-/** The visitor's system ("windows", "macos", "linux"), or null on phones, Chromebooks and anything unknown. */
-function lcSystem() {
-  const ua = navigator.userAgent.toLowerCase();
-  if (/android|iphone|ipad|cros/.test(ua)) return null;
-  const p = (navigator.userAgentData?.platform || navigator.platform || ua).toLowerCase();
+/** The system ("windows", "macos", "linux") that a user agent, platform name and touch-point count describe, or null on phones,
+ *  tablets, Chromebooks and anything unknown. An iPad reports a Mac, but a Mac has no touch screen. */
+function lcSystemFrom(ua, platform, touchPoints) {
+  if (/android|iphone|ipad|cros/.test(ua.toLowerCase())) return null;
+  const p = platform.toLowerCase();
+  if (p.includes("mac")) return touchPoints > 1 ? null : "macos";
   if (p.includes("win")) return "windows";
-  if (p.includes("mac")) return "macos";
   if (p.includes("linux") || p.includes("x11")) return "linux";
   return null;
 }
 
-/** "arm", "x86" or null. Only Chromium-based browsers can say (client hints); Safari and Firefox cannot. */
+/** The visitor's system, read from the browser (see lcSystemFrom). */
+function lcSystem() {
+  const platform = navigator.userAgentData ? navigator.userAgentData.platform : navigator.platform;
+  return lcSystemFrom(navigator.userAgent, platform, navigator.maxTouchPoints);
+}
+
+/** "arm", "x86" or null when the browser cannot say (only Chromium-based browsers can, through client hints). */
 async function lcArchitecture() {
+  if (!navigator.userAgentData) return null;
   try {
-    const hints = await navigator.userAgentData?.getHighEntropyValues(["architecture"]);
-    return hints?.architecture || null;
+    const hints = await navigator.userAgentData.getHighEntropyValues(["architecture"]);
+    return hints.architecture === "" ? null : hints.architecture;
   } catch (err) {
-    return null;
+    if (err.name === "NotAllowedError") return null;   // the page's permissions policy forbids the question: unknown, not an error
+    throw err;
   }
 }
 
-/** Mark the visitor's tile ("Your system") and, on a Mac where the browser says which chip, the matching button.
- *  Every tile stays visible: a wrong guess costs nothing. */
+/** On a Mac whose chip is known, make the matching button the filled one (in place: nothing moves). */
+function lcMarkChip(tile, arch) {
+  const mine = tile.querySelector(`[data-arch="${arch === "arm" ? "arm64" : "x86_64"}"]`);
+  if (!mine) return;
+  tile.querySelectorAll(".lc-btn").forEach((b) => b.classList.add("lc-btn--ghost"));
+  mine.classList.remove("lc-btn--ghost");
+}
+
+/** Add a second line to a tile saying that this release has no installer for the visitor's ARM processor. */
+function lcWarnArm(tile) {
+  const offered = tile.dataset.arches.split(" ");
+  if (offered.includes("arm64")) return;
+  const note = document.createElement("p");
+  note.className = "lc-small";
+  note.textContent = `This release has ${offered.join(" and ")} installers only; this device looks like ARM.`;
+  tile.append(note);
+}
+
+/** Mark the visitor's tile ("Your system") in place and, where the browser says which chip, the matching button.
+ *  Every tile stays visible and in its place: a wrong guess costs nothing and nothing jumps. */
 async function lcInitSystem() {
   const grid = document.querySelector("[data-lc-osgrid]");
+  if (!grid) return;
   const system = lcSystem();
-  if (!grid || !system) return;
+  if (!system) { document.querySelectorAll("[data-lc-nosystem]").forEach((el) => { el.hidden = false; }); return; }
   const tile = grid.querySelector(`[data-os="${system}"]`);
   tile.classList.add("is-yours");
-  grid.prepend(tile);
   const arch = await lcArchitecture();
-  if (system === "macos" && arch) {
-    const mine = tile.querySelector(`[data-arch="${arch === "arm" ? "arm64" : "x86_64"}"]`);
-    if (mine) {
-      tile.querySelectorAll(".lc-btn").forEach((b) => b.classList.add("lc-btn--ghost"));
-      mine.classList.remove("lc-btn--ghost");
-      tile.querySelector("h3").after(mine);
-    }
-  }
-  if (system !== "macos" && arch === "arm") tile.querySelector(".lc-small:last-child").textContent = "Only 64-bit Intel/AMD (x86_64) installers exist; this device looks like ARM.";
+  if (system === "macos" && arch) lcMarkChip(tile, arch);
+  if (system !== "macos" && arch === "arm") lcWarnArm(tile);
 }
 
 function lcInitDownloads() { lcInitSystem(); }
@@ -108,14 +127,16 @@ function lcInitCopy() {
   });
 }
 
-/** The phone menu is a checkbox: Space toggles it natively; Enter toggles it too and Escape closes it. */
+/** The phone menu is a checkbox: Space toggles it natively; Enter toggles it too. It says whether it is expanded, and Escape from
+ *  anywhere in the menu closes it and returns the focus to the checkbox. */
 function lcInitMenu() {
   const box = document.querySelector(".lc-menu-toggle");
   if (!box) return;
-  box.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") { box.checked = !box.checked; e.preventDefault(); }
-    if (e.key === "Escape") box.checked = false;
-  });
+  const sync = () => box.setAttribute("aria-expanded", box.checked ? "true" : "false");
+  box.addEventListener("change", sync);
+  box.addEventListener("keydown", (e) => { if (e.key === "Enter") { box.checked = !box.checked; sync(); e.preventDefault(); } });
+  box.closest("nav").addEventListener("keydown", (e) => { if (e.key === "Escape" && box.checked) { box.checked = false; sync(); box.focus(); } });
+  sync();
 }
 
 function lcInit() { lcInitDownloads(); lcInitFilter(); lcInitCopy(); lcInitDrawer(); lcInitMenu(); }

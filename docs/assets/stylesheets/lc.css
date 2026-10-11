@@ -352,3 +352,14 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 /* Keyboard focus and contrast repairs: the skip link shows above the header; the ring is white on the dark footer */
 .md-skip:focus { z-index: 30; }
 .lc-footer :focus-visible { outline-color: #fff; }
+
+/* Menu order in the page (tools first, for the keyboard) is kept visually: the list stays before the tools on wide screens */
+.lc-menu { order: 1; } .lc-header__tools { order: 2; min-width: 1.76rem; min-height: 1.76rem; }
+@media (forced-colors: active) { .lc-burger span { background: CanvasText; } }
+/* The filter is drawn from the first paint when scripts are on (lc.js un-hides it later), so nothing jumps */
+.lc-js .lc-filter[hidden] { display: flex; }
+.lc-filter__count { min-height: 1.2em; }
+/* Long filter options stay inside the field on a phone */
+.lc-filter label, .lc-filter select, .lc-filter input { min-width: 0; max-width: 100%; }
+.lc-facts dd { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 40rem) { .lc-facts { grid-template-columns: minmax(0, 1fr); gap: .1rem 0; } .lc-facts dd { margin-bottom: .5rem; } }

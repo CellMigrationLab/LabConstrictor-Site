@@ -48,7 +48,8 @@ def os_tile(system: str, options: list[dict]) -> str:
             else '<p class="lc-small">No installer in this release.</p>')
     hint = {"macos": "Not sure? Apple menu, About This Mac: Intel, or M1 and later (Apple Silicon).",
             "linux": "Run it with: bash &lt;file name&gt;", "windows": "If Windows warns you, choose More info, then Run anyway."}[system]
-    return f'<div class="lc-ostile" data-os="{system}"><h3>{SYSTEMS[system]}</h3>{body}<p class="lc-small">{hint}</p></div>'
+    arches = " ".join(sorted({o["arch"] for o in options}))
+    return f'<div class="lc-ostile" data-os="{system}" data-arches="{arches}"><h3>{SYSTEMS[system]}</h3>{body}<p class="lc-small">{hint}</p></div>'
 
 
 COLAB_FILE = re.compile(r"^https://colab\.research\.google\.com/github/([^/]+)/([^/]+)/blob/([^/]+)/(.+)$")
@@ -80,6 +81,8 @@ def get_section(app: dict) -> str:
     if app["release"] and dist.get("installer"):
         have = downloads(app)
         parts.append('<div class="lc-osgrid" data-lc-osgrid>' + "".join(os_tile(k, have[k]) for k in SYSTEMS) + "</div>")
+        colab = " or open a notebook in Colab below" if optional_list(dist, "colab") else ""
+        parts.append(f'<p class="lc-small" data-lc-nosystem hidden>Installers are for Windows, macOS and Linux computers{colab}.</p>')
         parts.append('<p class="lc-small">Need help installing? See the <a href="guides/install/">install guide</a>.</p>')
     if optional_list(dist, "colab"):
         parts.append(notebooks_list(optional_list(dist, "colab")))
