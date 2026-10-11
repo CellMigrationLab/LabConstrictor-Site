@@ -1,6 +1,6 @@
 """Home, ecosystem and submit pages."""
 
-from . import catalogue_text, citation, hosts, pages_demo, pages_related
+from . import catalogue_text, citation, hosts, pages_demo, pages_related, projects
 from .cards import card, github_badge
 from .config import CONTENT, DOCS, REPO, fail
 from .page import Page
@@ -41,7 +41,9 @@ def program_pills() -> str:
 def hero_also() -> str:
     """The second line of the hero: plain text saying that plugins let apps work inside the programs of data/hosts.yaml (their stage is on the Ecosystem page)."""
     names = [h["name"] for h in hosts.load().values()]
-    return esc(f"Plugins let apps that declare tools work inside {', '.join(names[:-1])} and {names[-1]}; the stage of each plugin is on the Ecosystem page.")
+    stages = {projects.host_status(key) for key in hosts.load()}
+    kind = f"{stages.copy().pop()} plugins" if len(stages) == 1 and stages <= {"Experimental", "Deprecated"} else "Plugins"
+    return esc(f"{kind} let apps that declare tools work inside {', '.join(names[:-1])} and {names[-1]}; the stage of each plugin is on the Ecosystem page.")
 
 
 def page_home(site: dict, apps: list[dict]) -> None:

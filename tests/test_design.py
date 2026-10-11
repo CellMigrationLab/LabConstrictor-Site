@@ -71,6 +71,7 @@ class HeroTests(unittest.TestCase):
         for name in ("napari", "Fiji", "QuPath"):
             self.assertIn(name, out)
         self.assertNotIn("Soon", out)
+        self.assertTrue(out.startswith(("Experimental plugins", "Plugins")))
         self.assertNotIn("<a", out)
 
 
