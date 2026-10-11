@@ -10,7 +10,7 @@ from .text import esc
 
 SOURCE = CONTENT / "demo"
 OUT = DOCS / "assets" / "demo"
-IMAGES = ("nucleisky-icon.png", "qc_figure.webp", "nuclei_outlines_roi.webp", "reference_full.webp", "reference_roi.webp", "reference_roi_green.webp", "aligned_roi.webp", "aligned_roi_magenta.webp",
+IMAGES = ("nucleisky-icon.png", "qc_figure.webp", "seg_figure.webp", "reference_full.webp", "reference_roi.webp", "reference_roi_green.webp", "aligned_roi.webp", "aligned_roi_magenta.webp",
           "query.webp")
 CODE = ("demo.js", "demo.css")
 MAX_BYTES = 400_000          # one image above this stops the build: the page must stay light

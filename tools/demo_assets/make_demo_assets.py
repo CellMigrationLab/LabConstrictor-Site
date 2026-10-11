@@ -17,6 +17,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import display  # noqa: E402
+import figures  # noqa: E402
 import registration  # noqa: E402
 
 MARGIN_PX = 150
@@ -65,7 +66,7 @@ def write_images(data: dict, exports: dict, origin: tuple[int, int], out: Path) 
     roi, aligned = stack[0], stack[1]
     inside = aligned > 0
     win_roi, win_full = display.window(roi), display.window(data["full"])
-    win_aligned, win_crop = display.window(aligned[inside]), display.window(data["crop"])
+    win_aligned, win_crop = display.window(aligned[inside], low=25.0), display.window(data["crop"])
     r8, a8 = display.to_uint8(roi, *win_roi), display.to_uint8(aligned, *win_aligned)
     alpha = (inside * 255).astype(np.uint8)
     s = display.ROI_SCALE
@@ -139,6 +140,7 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     lib = registration.import_pipeline(Path(args.nucleisky_src))
     data = load_inputs(args, lib)
+    figures.segmentation_figure(lib, data, OUT)
     work = Path(args.work_dir)
     data["each_matcher"] = registration.run_each_matcher(lib, data)
     log = io.StringIO()

@@ -162,7 +162,7 @@
     556.0
    ],
    "aligned": [
-    149.85982788085937,
+    159.01876831054688,
     517.7989067382828
    ],
    "query": [
@@ -173,8 +173,8 @@
   "bytes": {
    "reference_roi.webp": 60418,
    "reference_roi_green.webp": 54074,
-   "aligned_roi.webp": 7410,
-   "aligned_roi_magenta.webp": 8378,
+   "aligned_roi.webp": 6996,
+   "aligned_roi_magenta.webp": 8002,
    "query.webp": 10148,
    "reference_full.webp": 132908,
    "nuclei_outlines_roi.webp": 9042

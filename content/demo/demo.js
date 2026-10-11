@@ -3,7 +3,7 @@
 (function () {
   var root = document.querySelector('[data-demo]');
   if (!root) { return; }
-  var FRESH = { view: 'notebook', launched: false, done: 0, iconSelected: false, step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
+  var FRESH = { view: 'notebook', launched: false, done: 0, how: 1, iconSelected: false, busy: false, step: 0, welcomeRun: false, opened: false, nbTab: 'welcome', code: false, checked: false, scenario: false, updated: false,
                 fijiDialog: true, selected: '', vis: { reference: true, query: false, aligned: true, alignment: true },
                 opacity: { reference: 100, query: 100, aligned: 100, alignment: 80 } };
   var state = JSON.parse(JSON.stringify(FRESH));
@@ -17,6 +17,7 @@
       one('#demo-panel-' + t.dataset.view).hidden = !on;
     });
     one('[data-demo-experimental]').hidden = state.view === 'notebook';
+    one('[data-how]').hidden = state.view === 'notebook';
   }
 
   function showSteps() {
@@ -29,7 +30,7 @@
       if (b.closest('.nb')) { var n = Number(b.dataset.step); b.disabled = state.done < n - 1 || state.step >= n; b.title = state.step >= n ? 'Already run' : b.disabled ? 'Finish the step above first' : ''; }
     });
     all('#demo-panel-napari [data-act="run-step"], #demo-panel-fiji [data-dialog] [data-act="run-step"]').forEach(function (b) { b.disabled = state.step >= 3 && !b.closest('[data-dialog]'); b.title = b.disabled ? 'The example result is already shown; use Reset demo to start again' : ''; });
-    all('[data-status]').forEach(function (el) { if (el.dataset.done) { el.textContent = state.step >= 3 ? el.dataset.done : el.dataset.idle; } });
+    all('[data-status]').forEach(function (el) { if (el.dataset.done) { el.textContent = state.busy ? 'running\u2026' : state.step >= 3 ? el.dataset.done : el.dataset.idle; } });
   }
 
   function showNotebook() {
@@ -96,15 +97,43 @@
   function showNext() {
     all('.is-next').forEach(function (el) { el.classList.remove('is-next'); });
     var hint = next(), target = hint[0] ? one(hint[0]) : null;
-    if (target && !target.hidden && !target.disabled) { target.classList.add('is-next'); }
-    one('[data-next]').textContent = hint[1];
+    if (target && !target.hidden && !target.disabled && !state.busy) { target.classList.add('is-next'); }
+    one('[data-next]').textContent = (state.launched || state.view !== 'notebook') ? '' : hint[1];
+  }
+
+  var BOXES = { 1: [0], 2: [0], 3: [1], 4: [2], 5: [0, 1], 6: [2] };
+  var WHERE = { 4: ['#demo-panel-napari .np__form', '#demo-panel-fiji [data-dialog]'], 6: ['#demo-panel-napari .np__canvas', '#demo-panel-fiji .fj__win:nth-child(3)'] };
+  function showHow() {
+    all('.is-explain').forEach(function (el) { el.classList.remove('is-explain'); });
+    all('.lc-how__step').forEach(function (b) { b.setAttribute('aria-pressed', Number(b.dataset.i) === state.how ? 'true' : 'false'); });
+    all('.lc-how__box').forEach(function (b, i) { b.classList.toggle('is-active', BOXES[state.how].indexOf(i) >= 0); });
+    var where = WHERE[state.how];
+    if (where && state.view !== 'notebook') { var el = one(where[state.view === 'napari' ? 0 : 1]); if (el && !el.hidden) { el.classList.add('is-explain'); } }
   }
 
   function showFiji() { one('[data-dialog]').hidden = !state.fijiDialog; }
 
-  function sync() { root.dataset.step = state.step; showViews(); showSteps(); showNotebook(); showLayers(); showFiji(); showNext(); }
+  function sync() { root.dataset.step = state.step; showViews(); showSteps(); showNotebook(); showLayers(); showFiji(); showHow(); showNext(); }
 
   function runStep(n, fromHost) { state.step = Math.max(state.step, n); if (fromHost) { state.done = 3; } if (n === 3 && fromHost) { state.selected = state.selected || 'aligned'; state.fijiDialog = false; state.opened = true; state.launched = true; } }
+
+  var pending = null;
+  function delayFor(el) {
+    var a = el.dataset.act;
+    if (a === 'run-step') { return el.closest('.nb') ? 600 : 1500; }
+    if (a === 'widget') { return [0, 900, 900, 2200][Number(el.dataset.n)]; }
+    return { 'run-welcome': 700, 'test-connection': 900, 'update': 700 }[a] || 0;
+  }
+  function clearBusy() {
+    if (pending) { clearTimeout(pending); pending = null; }
+    state.busy = false; delete root.dataset.busy;
+    all('.is-busy').forEach(function (el) { el.classList.remove('is-busy'); el.removeAttribute('aria-busy'); });
+  }
+  function runLater(el, ms) {
+    state.busy = true; root.dataset.busy = 'true'; el.classList.add('is-busy'); el.setAttribute('aria-busy', 'true');
+    one('[data-announce]').textContent = 'Running\u2026'; sync();
+    pending = setTimeout(function () { clearBusy(); var out = actions[el.dataset.act](el); sync(); settle(out); }, ms);
+  }
 
   function settle(out) {
     if (!out) { return; }
@@ -114,6 +143,7 @@
   }
 
   var actions = {
+    'how': function (el) { state.how = Number(el.dataset.i); },
     'launch': function () { state.launched = true; return ['#nb-tab-welcome', 'NucleiSky is open in JupyterLab with the Welcome notebook.']; },
     'run-welcome': function () { state.welcomeRun = true; return ['[data-act="test-connection"]', 'Cell ran: the list of notebooks and the update check are shown.']; },
     'open-app': function () { state.launched = true; state.opened = true; state.nbTab = 'app'; },
@@ -135,11 +165,15 @@
     var el = e.target.closest('[data-act], [data-nb-tab], [data-demo-act]');
     if (!el || !root.contains(el) || el.disabled) { return; }
     if (el.dataset.demoAct === 'view') { state.view = el.dataset.view; sync(); return; }
-    if (el.dataset.demoAct === 'reset') { state = JSON.parse(JSON.stringify(FRESH)); sync(); one('#demo-tab-notebook').focus(); return; }
+    if (state.busy && el.dataset.demoAct !== 'reset') { return; }
+    if (el.dataset.demoAct === 'reset') { clearBusy(); state = JSON.parse(JSON.stringify(FRESH)); sync(); one('#demo-tab-notebook').focus(); return; }
     if (el.dataset.nbTab) { state.nbTab = el.dataset.nbTab; sync(); return; }
     if (el.dataset.act === 'launch' && e.detail === 1) { state.iconSelected = true; el.classList.add('is-selected'); sync(); return; }
     if (el.tagName === 'INPUT' && el.type !== 'checkbox') { return; }
-    if (actions[el.dataset.act]) { var out = actions[el.dataset.act](el); sync(); settle(out); }
+    if (!actions[el.dataset.act]) { return; }
+    var ms = delayFor(el);
+    if (ms) { runLater(el, ms); return; }
+    var out = actions[el.dataset.act](el); sync(); settle(out);
   });
   root.addEventListener('input', function (e) { if (e.target.dataset.act === 'opacity') { actions.opacity(e.target); sync(); } });
   root.addEventListener('keydown', function (e) {

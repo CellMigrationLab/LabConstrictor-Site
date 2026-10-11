@@ -81,7 +81,7 @@ class PageTests(unittest.TestCase):
 
     def test_static_figures_have_real_alt_text(self) -> None:
         """What a reader without JavaScript sees: every image has a description and a caption."""
-        html = pages_demo.static_figures()
+        html = pages_demo.static_figures(pages_demo.load()["text"])
         self.assertEqual(len(re.findall(r'alt="[^"]{20,}"', html)), len(pages_demo.STATIC))
         self.assertEqual(html.count("<figcaption>"), len(pages_demo.STATIC))
 

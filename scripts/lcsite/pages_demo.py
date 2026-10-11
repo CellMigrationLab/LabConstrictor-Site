@@ -36,11 +36,11 @@ def panels(shown: dict[str, str], example: dict) -> str:
     return "".join(out)
 
 
-def static_figures() -> str:
+def static_figures(text: dict) -> str:
     """What a reader without JavaScript sees: the three real images with captions and descriptions."""
     figs = "".join(f'<figure class="lc-demo__fig"><img src="assets/demo/{f}" alt="{esc(alt)}" loading="lazy"><figcaption>{esc(cap)}</figcaption></figure>'
                    for f, alt, cap in STATIC)
-    return f'<noscript><p class="lc-demo__nojs">This is a static view. Turn on JavaScript to try the interactive version.</p><div class="lc-demo__static">{figs}</div></noscript>'
+    return f'<noscript><p class="lc-demo__nojs">This is a static view. Turn on JavaScript to try the interactive version.</p><div class="lc-demo__static">{figs}</div>{how_plain(text)}</noscript>'
 
 
 def about_and_features(text: dict) -> str:
@@ -53,10 +53,19 @@ def about_and_features(text: dict) -> str:
 
 
 def how_it_works(text: dict) -> str:
-    """The collapsible explanation of how the real bridge works, and what this page is not."""
-    steps = "".join(f"<li>{esc(s)}</li>" for s in text["how"]["steps"])
-    return (f'<details class="lc-demo__how"><summary>{esc(text["how"]["title"])}</summary><ol>{steps}</ol><p>{esc(text["how"]["note"])} '
-            f'{github_badge(text["credit"]["tools_repo"], "LabConstrictor-Tools")}</p></details>')
+    """The six steps of how the real bridge works, as a clickable list with a three-box diagram. Shown only for the napari and Fiji views."""
+    steps = "".join(f'<li><button type="button" class="lc-how__step" data-demo-sim data-act="how" data-i="{i}" aria-pressed="{"true" if i == 1 else "false"}">{esc(s)}</button></li>'
+                    for i, s in enumerate(text["how"]["steps"], 1))
+    boxes = "".join(f'<span class="lc-how__box" data-box="{i}">{esc(label)}</span>' for i, label in enumerate(("Installed app and its Python environment", "LabConstrictor-Tools bridge", "napari or Fiji")))
+    return (f'<section class="lc-how" data-how hidden><h2>{esc(text["how"]["title"])}</h2><p class="lc-small">Click a step to see where it happens.</p>'
+            f'<div class="lc-how__diagram" aria-hidden="true">{boxes}</div><ol>{steps}</ol>'
+            f'<p>{esc(text["how"]["note"])} {github_badge(text["credit"]["tools_repo"], "LabConstrictor-Tools")}</p></section>')
+
+
+def how_plain(text: dict) -> str:
+    """The same steps as a plain list, for readers without JavaScript."""
+    items = "".join(f"<li>{esc(s)}</li>" for s in text["how"]["steps"])
+    return f'<h2>{esc(text["how"]["title"])}</h2><ol>{items}</ol><p>{esc(text["how"]["note"])}</p>'
 
 
 def credits(text: dict) -> str:
@@ -80,8 +89,8 @@ def page_demo() -> None:
     p.add(about_and_features(text))
     p.add(f'<div class="lc-demo" data-demo data-search-exclude><p class="lc-demo__notice" role="note"><strong>Interactive preview</strong>{esc(text["notice"].removeprefix("Interactive preview"))}</p>'
           f'<div class="lc-demo__live"><p class="lc-demo__next" data-next></p>{tab_buttons()}<button type="button" class="lc-btn lc-btn--small lc-btn--ghost" data-demo-act="reset">Reset demo</button>'
-          f'<p class="lc-demo__experimental" data-demo-experimental hidden>{esc(text["experimental"])}</p>{panels(shown, example)}</div>{static_figures()}</div>')
-    p.add(how_it_works(text), credits(text))
+          f'<p class="lc-demo__experimental" data-demo-experimental hidden>{esc(text["experimental"])}</p>{panels(shown, example)}{how_it_works(text)}</div>{static_figures(text)}</div>')
+    p.add(credits(text))
     p.write()
 
 
