@@ -9,6 +9,9 @@ steps:
   - id: step-1
     title: Build your notebook(s)
     text: Start with a notebook that already works for you. It is what your colleagues open in the installed app, so there is no separate interface to write.
+    figure:
+      file: step-1.webp
+      alt: "A notebook file, a Python helper file and an icon image: the things an author prepares."
     customise:
       - The notebook is your app's interface: its text, widgets and layout are entirely yours.
     know:
@@ -22,6 +25,9 @@ steps:
   - id: step-2
     title: Define your requirements
     text: Each notebook comes with a requirements.yaml that lists the packages it needs, its Python version and a short description.
+    figure:
+      file: step-2.webp
+      alt: "The Requirements Generator notebook scans the notebook and its helper code and writes a requirements.yaml file listing the Python version and the packages."
     customise: []
     know:
       - Generate it with the Requirements Generator notebook, in the environment where your notebook runs without errors, on your computer or in Colab.
@@ -33,6 +39,9 @@ steps:
   - id: step-3
     title: Create your repository
     text: Start from the LabConstrictor template on GitHub, then fill in a short form that gives your project its name and version.
+    figure:
+      file: step-3.webp
+      alt: "The LabConstrictor template on GitHub is used to make a custom repository; an initialiser form takes a project name, a version and an optional icon, and sends the changes to the repository as a pull request."
     customise:
       - Your app's name and version.
       - Your own logo, banner and header images for the installer and the desktop app. You can also add them later.
@@ -50,6 +59,9 @@ steps:
   - id: step-4
     title: Add your notebook
     text: Upload your notebook and its requirements.yaml with the LabConstrictor web form, which opens a pull request in your repository.
+    figure:
+      file: step-4.webp
+      alt: "A form takes the notebook and the requirements.yaml file and creates a pull request in the custom repository, which starts the automatic checks."
     customise: []
     know:
       - The form asks for your repository address and a GitHub personal access token. You can add several notebooks in one pull request.
@@ -62,6 +74,9 @@ steps:
   - id: step-5
     title: Create a release
     text: Publishing a release on GitHub starts a workflow that builds the installers.
+    figure:
+      file: step-5.webp
+      alt: "A new release with a version tag in the custom repository starts the automation, which attaches installers for Windows, macOS and Linux to the release's assets."
     customise: []
     know:
       - Before you start, check the Actions tab of your repository. No workflow should be running.
@@ -75,6 +90,9 @@ steps:
   - id: step-6
     title: Share your app
     text: Share the link to your release and anyone can install the app from it. To be found by others, describe the app and list it in the App Centre.
+    figure:
+      file: step-6.webp
+      alt: "What users get: an installer for each system, the installed app with its icon, and JupyterLab opening a Welcome notebook that lists the notebooks, with code hidden and widgets shown."
     customise:
       - How the App Centre describes your app: its summary, kind, status, screenshots and the paper to cite.
     know:
@@ -84,6 +102,10 @@ steps:
     guides:
       - {href: guides/app-manifest/, label: Describe your app for the App Centre}
       - {href: submit/, label: Submit your app}
+figure_credit:
+  text: "Adapted from Figure 2 of the LabConstrictor preprint (CC BY 4.0):"
+  link: Hidalgo-Cenalmor et al., 2026
+  href: https://doi.org/10.48550/arXiv.2603.10704
 later:
   title: When you need more
   links:

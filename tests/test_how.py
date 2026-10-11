@@ -65,6 +65,20 @@ class PageTests(unittest.TestCase):
             self.assertEqual("Make it yours" in pages_how.step_html(data, i), bool(step["customise"]), step["id"])
         self.assertEqual([bool(s["customise"]) for s in data["steps"]], [True, False, True, False, False, True])
 
+    def test_every_step_has_its_picture_with_alt_text_size_and_credit(self) -> None:
+        """Each step shows a crop of the preprint's figure with a description, its size and the CC BY credit; a missing picture file stops the build."""
+        data = pages_how.load()
+        for i, step in enumerate(data["steps"]):
+            html = pages_how.step_html(data, i)
+            self.assertIn(f'src="assets/how/figures/{step["figure"]["file"]}"', html)
+            self.assertRegex(html, r'alt="[^"]{40,}" width="\d+" height="\d+"')
+            self.assertIn(data["figure_credit"]["href"], html)
+        self.assertIn("CC BY 4.0", data["figure_credit"]["text"])
+        broken = copy.deepcopy(data["steps"])
+        broken[0]["figure"]["file"] = "no-such-picture.webp"
+        with self.assertRaises(SystemExit):
+            pages_how.check_steps(broken)
+
     def test_there_is_no_code_and_no_interactive_control(self) -> None:
         """The overview shows no code block and no button: the guides do the detail."""
         data = pages_how.load()

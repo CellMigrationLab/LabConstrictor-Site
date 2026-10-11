@@ -19,6 +19,9 @@
 [dir] .md-typeset .how__step { margin: 0 0 2rem; padding: 1.6rem 1.8rem; border: 1px solid var(--lc-line); border-radius: 12px; background: #fff; scroll-margin-top: 4.5rem; }
 .how__step > h2 { display: flex; align-items: center; gap: .8rem; margin: 0 0 .8rem; outline: none; }
 .md-typeset .how__text { max-width: 44rem; font-size: 1.02rem; }
+.how__figure { max-width: 44rem; margin: 1.2rem 0; }
+.md-typeset .how__figure img { display: block; width: 100%; height: auto; border: 1px solid var(--lc-line); border-radius: .5rem; background: #fff; }
+.md-typeset .how__figure figcaption { margin-top: .4rem; text-align: left; font-size: .72rem; color: var(--lc-muted); }
 .md-typeset .how__custom { max-width: 44rem; margin: 1.2rem 0; padding: .7rem 1rem .5rem; border-left: 4px solid var(--lc-orange, #f28c28); border-radius: 0 .4rem .4rem 0; background: var(--lc-orange-soft, #fff1e0); }
 .md-typeset .how__custom h3 { margin: 0 0 .4rem; font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--lc-strong); }
 .md-typeset .how__custom h3 span { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--lc-muted); }

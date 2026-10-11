@@ -4,13 +4,16 @@ No code and no panels: every step says what to do and what to remember, and link
 import shutil
 
 from .config import CONTENT, DATA, DOCS, REPO, fail, load_yaml
+from .images import pixel_size
 from .page import Page
 from .text import esc
 
 SOURCE = CONTENT / "how"
 OUT = DOCS / "assets" / "how"
-TOP_KEYS = {"title", "lead", "steps_title", "steps", "later", "handoff"}
-STEP_KEYS = {"id", "title", "text", "customise", "know", "guides"}
+TOP_KEYS = {"title", "lead", "steps_title", "steps", "figure_credit", "later", "handoff"}
+STEP_KEYS = {"id", "title", "text", "figure", "customise", "know", "guides"}
+FIGURE_KEYS = {"file", "alt"}
+CREDIT_KEYS = {"text", "link", "href"}
 LINK_KEYS = {"href", "label"}
 LATER_KEYS = {"title", "links"}
 HANDOFF_KEYS = {"text", "link", "href"}
@@ -42,12 +45,16 @@ def check_steps(steps: object) -> None:
         if not isinstance(step["know"], list) or not step["know"] or not isinstance(step["customise"], list):
             fail(f"data/how-it-works.yaml: step {step['id']} needs a list of things to remember and a list (possibly empty) of things to customise")
         check_links(f"step {step['id']}", step["guides"])
+        check_keys(f"the figure of step {step['id']}", step["figure"], FIGURE_KEYS)
+        if not (SOURCE / "figures" / step["figure"]["file"]).is_file():
+            fail(f"{SOURCE / 'figures' / step['figure']['file']} is missing (step {step['id']} of data/how-it-works.yaml)")
 
 
 def load() -> dict:
     """data/how-it-works.yaml, checked: the exact keys everywhere, unique step ids, things to remember and guides for every step."""
     data = load_yaml(DATA / "how-it-works.yaml")
     check_keys("the top level", data, TOP_KEYS)
+    check_keys("figure_credit", data["figure_credit"], CREDIT_KEYS)
     check_keys("later", data["later"], LATER_KEYS)
     check_keys("handoff", data["handoff"], HANDOFF_KEYS)
     check_steps(data["steps"])
@@ -60,6 +67,7 @@ def copy_assets() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for name in ("how.js", "how.css"):
         shutil.copy2(SOURCE / name, OUT / name)
+    shutil.copytree(SOURCE / "figures", OUT / "figures", dirs_exist_ok=True)
 
 
 def links_html(links: list[dict], cls: str) -> str:
@@ -88,6 +96,14 @@ def last_step_extras(data: dict) -> str:
             f'<aside class="how__handoff"><p>{esc(h["text"])}</p><a class="lc-btn lc-btn--primary" href="{esc(h["href"])}">{esc(h["link"])}</a></aside>')
 
 
+def figure_html(data: dict, step: dict) -> str:
+    """The step's picture (a crop of a figure of the preprint, which is CC BY 4.0) with the credit under it; its size is read from the file."""
+    width, height = pixel_size(SOURCE / "figures" / step["figure"]["file"])
+    c = data["figure_credit"]
+    return (f'<figure class="how__figure"><img src="assets/how/figures/{esc(step["figure"]["file"])}" alt="{esc(step["figure"]["alt"])}" width="{width}" height="{height}" loading="lazy">'
+            f'<figcaption>{esc(c["text"])} <a href="{esc(c["href"])}">{esc(c["link"])}</a></figcaption></figure>')
+
+
 def customise(step: dict) -> str:
     """The "Make it yours" box of a step: what the author can customise there, or nothing when there is nothing to customise."""
     if not step["customise"]:
@@ -103,7 +119,7 @@ def step_html(data: dict, i: int) -> str:
     know = "".join(f"<li>{esc(k)}</li>" for k in s["know"])
     extras = last_step_extras(data) if i + 1 == len(steps) else ""
     return (f'<section class="how__step" id="{esc(s["id"])}"><h2 tabindex="-1"><span class="how__num">{i + 1}</span> {esc(s["title"])}</h2>'
-            f'<p class="how__text">{esc(s["text"])}</p>{customise(s)}'
+            f'<p class="how__text">{esc(s["text"])}</p>{figure_html(data, s)}{customise(s)}'
             f'<h3>Good to know</h3><ul class="how__know">{know}</ul><h3>Guides</h3>{links_html(s["guides"], "how__guides")}{extras}{step_nav(steps, i)}</section>')
 
 
