@@ -1,6 +1,6 @@
 # Credits for the LabConstrictor logo and comic
 
-Draft template for a `CREDITS.md` file at the root of the template's `doc_source` branch (the branch that holds the pictures the documentation and the website use). Nothing here is filled in: each field is for the maintainer to complete. Leave a field empty or write "unknown" rather than guess. Name a person only if they agree to be named.
+Draft template for a `CREDITS.md` file at the root of the template's `doc_source` branch (the branch that holds the pictures the documentation and the website use). Only the creator is filled in so far (told by the project lead); every other field is for the maintainer to complete. Leave a field empty or write "unknown" rather than guess. Name a person only if they agree to be named.
 
 Why this file exists: the website and apps built from the template show the logo and the comic, but the repository does not say who made them, who holds the rights, or under which licence they may be reused.
 
@@ -12,7 +12,7 @@ Copy one block per artwork.
 
 - Name of the work:
 - File in the repository (path on `doc_source`):
-- Creator (named only if they agree; otherwise write "not named at the creator's request"):
+- Creator (named only if they agree; otherwise write "not named at the creator's request"): Iván (first name given by the project lead on 2026-10-11; confirm the full name, probably Iván Hidalgo-Cenalmor as in the citation, and that he agrees to be named)
 - Rights holder (person, lab or institution):
 - Licence (name and link; "all rights reserved" if none was granted):
 - Year created:
@@ -25,7 +25,7 @@ Copy one block per artwork.
 
 - Name of the work:
 - File(s) in the repository (path on `doc_source`):
-- Creator (named only if they agree; otherwise write "not named at the creator's request"):
+- Creator (named only if they agree; otherwise write "not named at the creator's request"): Iván (first name given by the project lead on 2026-10-11; confirm the full name, probably Iván Hidalgo-Cenalmor as in the citation, and that he agrees to be named)
 - Rights holder (person, lab or institution):
 - Licence (name and link; "all rights reserved" if none was granted):
 - Year created:
