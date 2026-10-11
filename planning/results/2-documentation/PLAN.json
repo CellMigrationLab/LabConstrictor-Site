@@ -1,0 +1,292 @@
+{
+ "headline": "The docs have the right shape: two tracks, no broken links, an honest install guide. What is missing is a working path from \"installed\" to \"first result\", symptom-worded help that search can find, and a handful of wrong UI labels. All of that is mostly small edits in the template repo plus 4 small site changes, not new machinery.",
+ "implement_now": [
+  {
+   "order": 1,
+   "title": "Fix wrong or stale UI labels and typos in the template guides",
+   "what": "One small PR in CellMigrationLab/LabConstrictor, .tools/docs only, each label re-checked against the code at edit time (the local checkouts are on stale branches; read origin/main). (1) notebook_upload.md:143: 'Click **Validate submission**' becomes 'Click **Validate & Add Submission**' (form app.py:1029); one sentence that the notebook then appears in the 'Submission list' and several notebooks can be added before 'Upload it to GitHub' / 'Create pull request'; use the real label '🚀 Create pull request' in step 6. (2) notebook_usage.md: 'Ctrl + C or Cmd + C' becomes 'press Ctrl+C in the terminal window' (on macOS Cmd+C copies; Ctrl+C is the interrupt); 'Open the Notebook' becomes 'Open the notebook' (Welcome_template.ipynb); fix 'finnisehd' and 'LabConstrisctor'. (3) workflow_status.md lines 17-20: the log artifact is a plain .log file ('archive: false' in release_constructor.yml and update_on_notebook_change.yml), so replace 'usually a .zip, unzip it' with 'download the log file'. (4) personal_access_token.md: remove the 'repo > contents' sub-bullets and the invented classic-token 'Resource owner' step; tell the reader to tick 'repo'; add 'The repository form accepts only a classic token (it starts with ghp_)'; drop or honestly rename the 'Read-Only Access' recipe (a classic repo-scope token is read+write). (5) initialise_repository.md: use 0.0.1 as the example version (form app.py:870 and release guide), and say the section is titled 'Initialise GitHub repository' (app.py:838), not 'Initialise a repository'. (6) accept_pull_request.md: 'Got to' becomes 'Go to'. (7) before_getting_started.md line 27 and executable_creation.md line 21: repair the garbled sentences. (8) template_synchronization.md: 'the following video' becomes 'the GIFs', and change its footer to the standard '[← Previous] | [🏠 Home] | [Next →]' form so the site strips it (today it prints as literal Markdown on /guides/template-synchronization/). (9) .tools/templates/Welcome_template.ipynb line 21: 'Test Connection' becomes 'Load Private GitHub Repo'. Do not touch the GitHub release-form wording or the screenshots until someone has looked at GitHub's current UI.",
+   "why": "Benchmark s6 (UI accuracy) and s1 ('exactly what do I click'). Every item was checked against the source by the auditor and the skeptic (app.py lines, workflow YAML, Welcome template, built site/guides/template-synchronization/index.html:309-311, guides.py:23 NAV_BLOCK needs the words Previous/Next/Home). Wrong labels in a first-time guide are a stop point for a novice, and they are free to fix.",
+   "repo_and_files": [
+    "CellMigrationLab/LabConstrictor: .tools/docs/notebook_upload.md, notebook_usage.md, workflow_status.md, personal_access_token.md, initialise_repository.md, accept_pull_request.md, before_getting_started.md, executable_creation.md, template_synchronization.md",
+    "CellMigrationLab/LabConstrictor: .tools/templates/Welcome_template.ipynb"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "tests": "No new code. Run scripts/check_site.py and check_design.py on a site build against the PR checkout (build_site.py --template-dir). Add a site test that no built guide contains literal '](' outside code blocks (see item 8); this guards the template-synchronization footer defect. If a template page is renamed, add a data/redirects.yaml line (none needed here)."
+  },
+  {
+   "order": 2,
+   "title": "Site: fix hub text, alt text, pager order and the Docs home help link",
+   "what": "All in labconstrictor-site. (a) data/hubs.yaml lines 23 and 50: alt text 'an orange Open the Notebook button' becomes 'orange header cells and a blue Open the notebook button' (check the picture first). (b) data/hubs.yaml card 'Open it and work': replace 'a Welcome notebook that lists its notebooks' with 'run its first cell to list them'. (c) data/guides.yaml 'Install and open' order: install -> notebook-usage -> using-apps -> troubleshooting-installed-app. This makes the pager agree with install.md's own '## Next' (Use notebooks after installation) without editing the template. (d) data/hubs.yaml: fix the YAML bug in the first build.flow step ('text: From the template, with one click.' inside a flow mapping is split by the comma, so 'with one click.' becomes an ignored null key); quote it, and make hubs.py fail on unknown keys. (e) data/hubs.yaml build: add a help block (for example 'Something went wrong while building?' linking guides/troubleshooting/, link text 'Troubleshooting repository setup'); write_hub already renders help. (f) scripts/lcsite/hubs.py write_docs_home: render the existing use.help and build.help blocks under the Docs home choice cards through one shared helper extracted from write_hub (no new docs.help key, so wording is written once). (g) data/hubs.yaml build.flow becomes five steps that match the guides: Create your repository, Initialise it (guides/initialise-repository/), Add your notebooks, Publish a release, Share it (submit/). Leave the card/flow render order alone for now.",
+   "why": "Benchmark s5 (Previous/Next in task order; Docs home troubleshooting link) and s6. Verified: install's own Next vs pager Next mismatch; Docs home has no help line; build flow skips Initialise; the YAML comma bug (yaml.safe_load result quoted by skeptic). Docs-only data edits plus one small helper, no new structure.",
+   "repo_and_files": [
+    "labconstrictor-site: data/hubs.yaml, data/guides.yaml, scripts/lcsite/hubs.py",
+    "labconstrictor-site: tests/ (new test for Docs home help block, and for hub key validation)"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "tests": "New unit tests: write_docs_home output contains the help line with link to troubleshooting; hubs.py raises on an unknown hub key (failure case); pager order test for the Use track. Existing check_site.py (anchors) and check_design.py must stay at 0 problems. Keep functions at or under 30 lines and hubs.py under 300 lines."
+  },
+  {
+   "id": "3",
+   "order": 3,
+   "title": "Site: per-OS 'step by step' links on the app page download tiles",
+   "what": "labconstrictor-site scripts/lcsite/pages_apps.py, os_tile (lines 66-68). Keep each hint and append a distinct link: Windows 'If Windows warns you, choose More info, then Run anyway. Windows steps' -> ../../guides/install/#windows; macOS keeps 'Not sure? Apple menu, About This Mac' and adds 'If macOS refuses to open the file, see the macOS steps' -> ../../guides/install/#macos; Linux adds 'Linux steps' -> ../../guides/install/#linux. The three link texts differ, so check_design's generic-link rule passes. Leave the generic 'Need help installing? See the install guide' line. No lc.js rewriting.",
+   "why": "Benchmark s5 last paragraph: a visitor from a download tile lands on instructions for their OS. Verified: site/apps/nucleisky/index.html has plain-text hints and only anchor-less links to ../../guides/install/, while the install page has #windows/#macos/#linux ids. check_site.py already fails on dead anchors, so a template rename of those headings cannot rot the link silently.",
+   "repo_and_files": [
+    "labconstrictor-site: scripts/lcsite/pages_apps.py, tests/ (os_tile test)"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "tests": "Unit test that each OS tile contains its anchor link; check_site.py dead-anchor check covers the target. Note: if the template renames 'Windows/macOS/Linux' headings in install.md (item 5 proposes 'Install on Windows' etc.), anchors change; do item 3 after item 5 lands, or in the same release, and re-run check_site.py."
+  },
+  {
+   "id": "4",
+   "order": 4,
+   "title": "Site: rewrite using-apps.md and hub card minimally (no invented walkthrough)",
+   "what": "labconstrictor-site content/guides/using-apps.md (hand-written, slug unchanged, no redirect). (a) Delete the duplicated 'Open it' list (it repeats notebook_usage.md sections 1-2) and link to notebook-usage. (b) Replace line 11 ('It lists the notebooks the app contains. Pick one and follow the instructions written in it.') with the true statement: the Welcome notebook shows its table of notebooks after you run its first cell; then 'Look for an example in the app's documentation (the Documentation or README link on its page); if it has one, run it first and compare with the result it describes.' (c) Add a short section 'Keep your results': 'Where a notebook writes its results is set in that notebook; note the folder it names before you close JupyterLab, and copy what you want to keep.' Name no app and state no default folder (the root_dir is home only for per-user installs, install prefix otherwise; do not state it). (d) Change the journey sentence to 'Install, open, try the app's example, then use your own data'. (e) End with an explicit 'Next' (the app's own documentation). Keep 'Something went wrong'. Do not add a 'Try an example' reference to the app page until the manifest example exists.",
+   "why": "Benchmark s2 (Track A: run an example, save results) and s5. The skeptics of A1 and G3 agree the gap is real but reject a full invented walkthrough: the launcher's root_dir logic (launch_jupyter.py:203-220), 'Right-click > Download' and per-app result folders are unverified or wrong generically. This is the proportionate generic fix.",
+   "repo_and_files": [
+    "labconstrictor-site: content/guides/using-apps.md"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "tests": "check_site.py and check_design.py at 0 problems; guides.describe still finds a lead paragraph. Add the page to the critical-sections check (item 9) only if it keeps the 'What you need' wording; otherwise exclude."
+  },
+  {
+   "id": "5",
+   "order": 5,
+   "title": "Template: install.md, troubleshooting_installed_app.md and uninstall fix (symptom-first, only verified claims)",
+   "what": "CellMigrationLab/LabConstrictor, .tools/docs only. install.md: (a) rename headings to '## Install on Windows', '## Install on a Mac', '## Install on Linux' (anchors #install-on-windows etc.; coordinate with item 3 and re-run check_site.py). (b) Add 'Before you start': internet is needed while installing (post_install.bat/.sh run pip install -r requirements); installer sizes and the systems/architectures offered are listed on the app's page in the App Centre; one line 'allow about 10 GB free disk space (approximate)' from the Tools clean-test report (8.8 GB install plus 4.5 GB cache). Do not state OS versions, admin rights or the macOS install location (untested). (c) Add one 'Check that it worked' paragraph before '## Next': a terminal window opens, then your browser opens JupyterLab with the Welcome notebook (can take a little while the first time; wording taken from notebook_usage.md section 2), with a link to Troubleshooting an installed app. (d) Add the literal words 'SmartScreen' and 'unidentified developer' next to the existing Windows/macOS step text ONLY if a maintainer confirms that Windows/macOS actually display them. troubleshooting_installed_app.md: (e) fix line 7: the 'uninstalling guide' link goes to download_executable.md, which on the template is the 'Sorry, but no executable files are available yet' stub; do NOT repoint to install.md (the same file is copied into every app repo where install.md does not exist and where download_executable.md has real per-app text, e.g. NucleiSky/.tools/docs/download_executable.md:188). Instead remove the link and state the path the entry already uses (Settings > Apps > Installed apps, select the app, Uninstall). (f) Retitle entries as what the person sees and add a short 'Find your problem' list at the top. (g) ASN.1 section: lead with the dialog the launcher really shows ('<App> could not start', launch_jupyter.py _show_error_dialog; log path from LOG_PATH in plain words, per OS from the code), keep 'ASN.1' as the technical message; move TLS-resilient launcher, Tornado, pip-system-certs, --self-test and MY_PROJECT_CA_BUNDLE under a final heading 'For IT administrators and maintainers'. (h) Add 'Welcome says Not checking versions' (message exists in Welcome_template.ipynb). (i) Add macOS and 'browser stays empty' entries ONLY after a maintainer reproduces them; for 'macOS will not open the installer' write a one-line pointer to install.md#install-on-a-mac instead of copying the steps (nothing written twice; but note install.md does not exist in app repos, so use a site-neutral absolute link if the page is also copied). (j) Do not add macOS/Linux uninstall steps or 'how to update' until someone states what really happens (macOS .pkg uninstall is undocumented anywhere).",
+   "why": "Benchmark s1, s3, s5, priority 3 (symptom-worded troubleshooting, no TLS/jargon first). Skeptic-verified: 0 search hits for macOS refuses/damaged/unidentified/SmartScreen; dead uninstall link; the ASN.1 section is maintainer prose. Scoped to claims backed by code or already in docs, as the skeptics demanded.",
+   "repo_and_files": [
+    "CellMigrationLab/LabConstrictor: .tools/docs/install.md",
+    "CellMigrationLab/LabConstrictor: .tools/docs/troubleshooting_installed_app.md"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "tests": "check_site.py anchor check on a build against the PR checkout (heading renames change anchors); the guide-shape check (item 9) once it lands. A maintainer must run one clean install per OS and sign off every user-visible string; record the OS/version in the PR description."
+  },
+  {
+   "id": "6",
+   "order": 6,
+   "title": "Template: add failure links and 'Next' where the target exists; initialise guide as numbered steps",
+   "what": "CellMigrationLab/LabConstrictor, .tools/docs. (a) initialise_repository.md: turn the dense paragraph into a numbered list using only verified facts: open the form; if it shows the sleep page click 'Yes, get this app back up!'; under 'Initialise GitHub repository' click 'Start initialisation'; the form lists its own fields (name the groups only: project name, initial version, optional App Centre description, optional images, link installer_images.md; do not copy every label); 'Validate submission'; give the repository URL and a classic Personal Access Token (starts ghp_, link personal_access_token.md, say it is not the sync token); 'Create pull request'. Add 'Check that it worked' (a new pull request appears in the repository's Pull requests tab; after merging, the README is moved into .tools/docs), 'If it fails' (a fine-grained github_pat_ token is rejected: create a classic ghp_ token; sleeping page: wake it) and 'Next: Accept a pull request'. Either add the promised GIF or delete 'bellow you can find a GIF' (no image exists on the page); fix 'bellow'. (b) notebook_upload.md: fix the 'Run the bottom cell' wording after asking the authors which notebook is meant; add under 'Merge and Verify' the workflow name 'Updates on notebook change' (update_on_notebook_change.yml:1) and a link to workflow_status.md; say what the Welcome notebook lists only after running the workflow once. (c) executable_creation.md: add a failure link to workflow_status.md section '2. How to Debug a Failure' (anchor exists), say installers appear under the release Assets, one per system, named like Name-1.0.0-Windows-x86_64.exe (no count), and add a prerequisite line that notebooks are uploaded (check the sync-secret requirement in the workflow before stating it). Do not invent a CI duration. (d) notebook_requirements.md and notebook_upload.md: add a short '## Next' (requirements -> upload, upload -> executable creation, initialise -> accept pull request). (e) notebook_usage.md: add 'If something goes wrong: Troubleshooting an installed app'. (f) troubleshooting.md: add one first line that for any red workflow run the log artifact is the first thing to read (the existing AI-ready prompt route). Add new symptom headings only when a maintainer supplies real failures with real messages.",
+   "why": "Benchmark s1 'Did it work / what if it fails' and s3. Skeptic verdicts for B3, B4, G2, G4, IA-2: real, but scoped to the verified gaps and no invented outputs, no boilerplate sections, no moving of the 115-line code cell, no scope list in the PAT page.",
+   "repo_and_files": [
+    "CellMigrationLab/LabConstrictor: .tools/docs/initialise_repository.md, notebook_upload.md, executable_creation.md, notebook_requirements.md, notebook_usage.md, troubleshooting.md"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "tests": "check_site.py anchor check (workflow_status#2-how-to-debug-a-failure must resolve); guide-shape check (item 9) for the critical guides after this lands. A human walk-through of the initialise form with a throwaway repository to confirm the labels."
+  },
+  {
+   "id": "7",
+   "order": 7,
+   "title": "Site: help page 'Find your problem' and a search-words mechanism",
+   "what": "labconstrictor-site. (a) New hand-written content/guides/help.md ('Find your problem'), claimed as a Use-track guide in data/guides.yaml (placed after the troubleshooting guide) and linked from the Use hub help block. It is a table 'You see ... -> go to' containing only links to existing anchors and only strings verified against the real UI or guide text: 'Windows protected your PC' -> install#install-on-windows (or #windows until item 5 renames it), 'Open Anyway' / macOS refuses to open -> install#install-on-a-mac, 'JupyterLab does not start' -> troubleshooting-installed-app, a red cross or 'workflow failed' in Actions -> workflow-status#2-how-to-debug-a-failure, 'app not in napari/Fiji/QuPath' -> each host guide's 'If something does not work'. Because its text is indexed, symptom words become searchable without hiding anything. (b) Small search-words module after item 5/9 are in: data/search_terms.yaml (about 10 entries {guide, section, words}, each with a comment naming the visible sentence that justifies it) and scripts/lcsite/search_terms.py appending <span hidden> at the end of the named section when guides.py assembles the page; build fails naming file and entry if the guide or heading is gone. Only true synonyms or proper names of things the section already describes (SmartScreen next to its dialog, ImageJ for Fiji, Mac for macOS); never symptoms the page does not answer. Add a DESIGN.md 'Search words' pattern first. (c) Search-index hygiene: wrap hub card grids of /use/, /build/ and the Docs home in data-search-exclude (keep the lead sentence), and wrap the generated pager nav in guides.py pager() in data-search-exclude so neighbour page titles stop matching. Add a test that these elements carry the attribute and that search.json holds no text from those grids (so a Zensical upgrade that stops honouring it fails loudly). Leave /apps/ list text alone for now. Skip the overrides/ no-results message until someone checks whether the theme supports it.",
+   "why": "Benchmark s5 'search understands the problem' and priority 3. Skeptics: S1 proportionate if kept small and visible-first, S3 proportionate for hubs only, G2 proportionate (help page, no theme override). Verified: 0 index hits for damaged, unidentified, Gatekeeper, SmartScreen, ImageJ, build failed; pager text is indexed (snippet shows '<- PreviousCheck the status of GitHub workflowsNext ->'); the exclusion mechanism worked in the auditor's scratch build only, hence the loud test.",
+   "repo_and_files": [
+    "labconstrictor-site: content/guides/help.md (new), data/guides.yaml, data/hubs.yaml",
+    "labconstrictor-site: data/search_terms.yaml (new), scripts/lcsite/search_terms.py (new), scripts/lcsite/guides.py (call site and pager wrapper), scripts/lcsite/hubs.py, DESIGN.md",
+    "labconstrictor-site: tests/test_search_terms.py (new), tests/test_site.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "tests": "tests/test_search_terms.py with failure case (missing guide or heading fails the build, naming the entry); test that hub grids and pager carry data-search-exclude; check_site.py for the anchors in help.md; a plain data/search_queries.yaml (query -> expected URL) maintained as a pre-release manual checklist, plus an offline term-match test limited to queries that work now. guides.py is at 258 of 300 lines: put new logic in the new module and keep the guides.py call sites to one-liners; tests/test_code_rules.py enforces 30-line functions and 300-line files."
+  },
+  {
+   "id": "8",
+   "order": 8,
+   "title": "Template: README order and footers for the Build path, and sync demoted from a gate (only if maintainers agree)",
+   "what": "CellMigrationLab/LabConstrictor .tools/docs/README.md plus the hand-written Previous/Next footers of the pages that move, so GitHub readers see the same order as the site pager. Order for 'From zero to installed notebooks': Before getting started, Create repository, Initialise, Accept a pull request, Notebook requirements, Add or update a notebook, Create installer files, then 'Customise and share (optional)': Customise installer images, Describe your app for the App Centre (ending with a Next link to /submit/), Upload external code; template_synchronization.md listed once, in 'GitHub management' or right after executable_creation.md. If (and only if) the maintainers confirm sync can wait, replace the three gates (create_repository.md line 34 section, initialise_repository.md line 9-10 note, before_getting_started.md line 37 clause) by a one-line recommendation and add one line under 'After the release' in executable_creation.md; otherwise keep the gate and add its reason in one sentence ('without the token the scheduled run reports Synchronization setup required'). Do NOT claim the weekly failure is harmless and do NOT state a time estimate. Add to template_synchronization.md a 'Check that it worked' line (Actions > Sync with Template Repository > Run workflow) only after running it once and recording what it prints. Leave personal_access_token.md at the end of the order (it is not the sync token's guide). Do not change install.md's '## Next' (using-apps exists only on the site).",
+   "why": "Benchmark s5 (task order) and s2 Track B ('sync appears exactly when relevant'). Skeptic verdicts B1 and B2: real, but reduce to README order plus footers; the auditor's 'workflow-status Next loops to template-synchronization' is false and must not be repeated; the sync gate is a deliberate maintainer decision (commit ba9ec8e, template already at 0.1.15), so it needs the user's call (see ask_user).",
+   "repo_and_files": [
+    "CellMigrationLab/LabConstrictor: .tools/docs/README.md, initialise_repository.md, accept_pull_request.md, installer_images.md, app_manifest.md, external_code_upload.md, executable_creation.md, template_synchronization.md, create_repository.md, before_getting_started.md (footers and gates)"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "tests": "Site build against the PR checkout: check_site.py must pass; pager test confirms the new order (site pager is derived from the README, nothing written twice). Land together with the site change in item 2(g) so the hub flow and the pager tell the same story."
+  },
+  {
+   "id": "9",
+   "order": 9,
+   "title": "Site: guide-shape report for critical guides (warning first, fail later) and a literal-Markdown check",
+   "what": "labconstrictor-site. (a) data/guides.yaml gets a top-level `critical:` list of slugs: install, initialise-repository, notebook-requirements, notebook-upload, executable-creation (plus a plain content check of content/submit.md). New scripts/lcsite/guide_shape.py: pure function missing_sections(markdown, wanted) -> list[str]; wanted H2s on critical guides are 'What you need' (or 'Before you start'), 'Check that it worked', 'If something does not work' (the plugin guides' existing wording). No time regex, no 'Next' heading requirement. It is called from check_site.py (not from guides.py, which is at 258/300 lines) and reports 'WARNING <guide>: missing section <heading>' and writes build/problems.md, like warn_unlisted. Switch it to fail() only after the template pages comply (after items 5, 6, 8 are merged and the daily build has fetched them). The three plugin guides and image-software are not on the list. (b) check_site.py: fail when rendered <main> contains literal '](' outside <pre>/<code> (would have caught the template-synchronization footer). (c) DESIGN.md: document the three headings under the guide pattern first.",
+   "why": "Benchmark s7 'guide completeness' as an automated checklist, in the form the standing rules allow: author-controlled list, report not silent, no failing deploys because another repo edited a heading. Verdicts G1 (acceptance and guide-structure) both say: smaller check, warning first. Critic: a hard gate would let a heading rename in another repo stop Pages for everyone.",
+   "repo_and_files": [
+    "labconstrictor-site: data/guides.yaml, scripts/lcsite/guide_shape.py (new), scripts/check_site.py, DESIGN.md",
+    "labconstrictor-site: tests/test_guide_shape.py (new), tests/test_site.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "tests": "tests/test_guide_shape.py: a markdown with all three sections passes; one missing section is reported by name; an unknown critical slug raises (no silent fallback); a check_site test for literal '](' with a failure case. Obey tests/test_code_rules.py (annotations, docstrings, 30-line functions, 300-line files; check_site.py is 187 lines)."
+  },
+  {
+   "id": "10",
+   "order": 10,
+   "title": "Template and form repos: short PR checklist for user-visible label changes",
+   "what": "Add .github/PULL_REQUEST_TEMPLATE.md to CellMigrationLab/LabConstrictor (three checkboxes: 'Changes a button label, form field, workflow or artifact name, installer name or file path? Update the .tools/docs page that names it and say which: ___'; 'Bumped template_version if users must act'; 'Screenshots still valid') and extend the CONTRIBUTING.md line 'Update documentation as needed' with the same prompt. Add the same one-question template to LabConstrictor_streamlit (pointing at the template guides that quote its labels: notebook_upload.md, initialise_repository.md) and to napari-labconstrictor, LabConstrictor-Fiji, LabConstrictor-QuPath, LabConstrictor-Tools (pointing at docs/user-guide.md). Also fix the stale sidebar texts in LabConstrictor_streamlit app.py about lines 804-831 ('coming soon', 'Update workflow details will live here soon') as its own small PR. No CODEOWNERS, no ui-labels registry, no per-repo label tests (a label registry would be a second copy of the labels).",
+   "why": "Benchmark s6 'process: a user-affecting change triggers review of the guide'. Skeptic A4: real but proportionate version is a checkbox; the template has no PR template or CODEOWNERS today (git ls-tree on origin/main). The A1 label fixes remove the only drift actually observed.",
+   "repo_and_files": [
+    "CellMigrationLab/LabConstrictor: .github/PULL_REQUEST_TEMPLATE.md (new), .github/CONTRIBUTING.md",
+    "CellMigrationLab/LabConstrictor_streamlit: .github/PULL_REQUEST_TEMPLATE.md (new), app.py (sidebar text)",
+    "CellMigrationLab/napari-labconstrictor, LabConstrictor-Fiji, LabConstrictor-QuPath, LabConstrictor-Tools: .github/PULL_REQUEST_TEMPLATE.md (new)"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "tests": "None needed for the template files. For the form's sidebar edit run the form's existing tests (tests/test_app_manifest.py, test_manifest_form.py)."
+  },
+  {
+   "id": "11",
+   "order": 11,
+   "title": "Site: make rewrite_links fail on links to unpublished template .md pages",
+   "what": "labconstrictor-site scripts/lcsite/guides.py rewrite_links (lines 65-76): when a relative link targets a .md file under .tools/docs that is neither a site guide nor listed in SKIP, call fail() naming the guide and the target instead of silently rewriting it to a GitHub blob link. Links to other file types (workflows, images, yaml) keep going to the GitHub blob. Ship in the same change as item 5(e) (the only current offender is the download_executable.md link in troubleshooting_installed_app.md), otherwise the build breaks. Put the logic in a small helper so guides.py does not grow past 300 lines (move it into a new module if needed).",
+   "why": "AGENTS.md 'no silent fallbacks'. Skeptic A2 verified: guides.py:65-76 silently produces the dead uninstall link; tests/test_site.py:36 tests only the pass case. The skeptic rejected the external-link checker and form-repo changes in this item.",
+   "repo_and_files": [
+    "labconstrictor-site: scripts/lcsite/guides.py (rewrite_links) or a new helper module",
+    "labconstrictor-site: tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "tests": "New failing-case test: a template guide with a relative link to an unpublished .tools/docs/*.md page makes the build fail naming the file; a pass-case test for a link to a workflow file. Keep functions at or under 30 lines and annotated."
+  },
+  {
+   "id": "12",
+   "order": 12,
+   "title": "App repos: one real example per featured app via existing quickstart and docs_url (no site code)",
+   "what": "Work in each app's own repository, one app at a time, using fields that already exist in the manifest and are already rendered by pages_apps.using_section (quickstart as an ordered list, docs_url as the Documentation link). (1) CellMigrationLab/CellTracksColab first: add `quickstart` (2-4 plain-text steps) and `docs_url` to labconstrictor-app.yaml, and a README/docs/example.md section for the TrackMate test dataset: the notebook's 'Use test dataset' checkbox downloads Zenodo record 8413510, state its size (the zip is about 373 MB per the auditor; do not call it small), that record 8420011 is the other format and is not used by the TrackMate notebook, the folder layout, and the counts, dimensionality and units plus one or two expected plots, all taken from a real run. (2) CellMigrationLab/NucleiSky: publish a small synthetic example (Zenodo with a real DOI, or examples/make_example_data.py from the bridge-test lc_tests/make_fixtures.py, labelled synthetic), run the 2D app notebook on it in a clean install, record the actual output numbers, folder and versions, then write docs/example-2d.md; fix the two stale links in docs/2D/workflow.md (line 13 '../../notebooks/NucleiSky2D_API_Workflow_Example.ipynb' and line 47 Colab URL 'notebooks/NucleiSky2DApp.ipynb', both missing their subfolder); do not copy the bridge-test numbers (rotation 12, offsets 700/606) because they come from the relocalize tool, not the app; do not reuse docs/assets/2D_QC.jpg as 'expected result'; correct the two API-example description texts in requirements.yaml; fix the NucleiSky-test URLs in .tools/docs/download_executable.md lines 13, 51, 111 after checking whether the app's workflow regenerates that file from the template. Then set quickstart/docs_url. (3) LabConstrictor-VLab4Mic and GuessTheCondition: optional, at the authors' discretion (GuessTheCondition is not featured; its README already documents the demo-experiment tool for napari/Fiji/CLI; if a notebook cell is added, release with a CHANGELOG entry; publish no expected verdict until produced by a run). In the template, edit .tools/docs/app_manifest.md line 31 to name 'quick start' as the field that makes the app page useful (a docs-only change).",
+   "why": "Benchmark s4 and priority 4 (scientific example owned by the app repo, linked from the App Centre). Verified: all 6 manifests have quickstart and docs_url null; NucleiSky has no data; CellTracksColab has the only real test-data route. Skeptics A2, G1, G2, G4: real, large, so do it in the app repos without site code and without the Verified redefinition or the build warning.",
+   "repo_and_files": [
+    "CellMigrationLab/CellTracksColab: labconstrictor-app.yaml, README.md or docs/example.md",
+    "CellMigrationLab/NucleiSky: labconstrictor-app.yaml, docs/example-2d.md (new), docs/2D/workflow.md, notebooks/*/requirements.yaml, .tools/docs/download_executable.md",
+    "CellMigrationLab/LabConstrictor-VLab4Mic, GuessTheCondition (optional)",
+    "CellMigrationLab/LabConstrictor: .tools/docs/app_manifest.md"
+   ],
+   "effort": "L",
+   "needs_other_repo": true,
+   "tests": "Existing check_app_manifest workflow validates the manifests (max 6 quickstart steps of 5-200 characters); site catalogue tests unchanged. A person must run each example on a clean install and compare with the stated values before the text is published; record the app release used in the PR description."
+  },
+  {
+   "id": "13",
+   "order": 13,
+   "title": "Plugin guides: honest first-run line, ImageJ word, tested host versions (in their own repos)",
+   "what": "Edits in the owning repos' docs/user-guide.md only; links stay absolute (importer rule). LabConstrictor-Fiji: write 'Fiji (ImageJ)' in the opening sentence (a safe fact; gives search the visible word). Same in LabConstrictor-Tools docs/user-guide.md next to Fiji. napari-labconstrictor: state 'tested with napari 0.9.2' (its ci.yml:75 pins napari==0.9.2 and magicgui==0.10.2); keep the existing 'Tested on Linux, Windows and macOS untested' and 'Under heavy construction' banners. Fiji and QuPath: state a tested host version only if their CI or build file pins one (check first). Replace the hard-coded jar names (labconstrictor-fiji-0.1.0.jar, labconstrictor-qupath-0.1.0.jar) by 'the .jar in target/' to remove drift without CI. In each of the three host guides make the first bullet of 'If something does not work' a plain symptom line such as 'An app is missing from the list: check it is installed, then run labconstrictor-tools doctor', added only once the host maintainers confirm the discovery behaviour; keep the heading '## If something does not work' (do not retitle it to 'My app does not show up': that misstates the section, which covers the failure dialog and log path). Fix the napari guide's hard-coded site URL (cellmigrationlab.github.io/LabConstrictor-Site/apps/?host=napari) by confirming the canonical address with the site owner. Confirm the napari menu path ('Plugins > LabConstrictor tools' versus 'Plugins > LabConstrictor > LabConstrictor tools') in a real napari run before changing LabConstrictor-Tools/docs/user-guide.md line 17.",
+   "why": "Benchmark s6 (tested version where compatibility matters) and s5 (host failures). Skeptics S4 and A3 narrowed to safe, factual edits; the 'last checked' footer and template-version stamp were rejected.",
+   "repo_and_files": [
+    "CellMigrationLab/LabConstrictor-Fiji: docs/user-guide.md",
+    "CellMigrationLab/LabConstrictor-QuPath: docs/user-guide.md",
+    "CellMigrationLab/napari-labconstrictor: docs/user-guide.md",
+    "CellMigrationLab/LabConstrictor-Tools: docs/user-guide.md"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "tests": "Site build fetches the guides and check_site.py anchors must stay green (the 'If something does not work' heading and its anchor are unchanged). The existing guide-importer checks (H1 present, absolute links) apply."
+  }
+ ],
+ "guide_convention": "Lightweight convention for the five critical how-to guides only (install, initialise-repository, notebook-requirements, notebook-upload, executable-creation) and the /submit/ page; explanation and reference pages and the three plugin guides are not required to follow it. Three H2 headings, written in the owning repo (template .tools/docs for the first five, content/submit.md for submit): 'What you need' (or 'Before you start'), 'Check that it worked', 'If something does not work' (the plugin guides' existing wording). No new required 'Next' or time heading: install already has a measured time, and 'Next' is handled by the pager and by hand-written sections where the target exists. Every guide still has an outcome-bearing opening paragraph (already enforced by guides.describe). Time or expected output are stated only when measured or observed. Enforcement: data/guides.yaml gets a `critical:` slug list (author-controlled, in the site repo); a new scripts/lcsite/guide_shape.py with a pure missing_sections(markdown, wanted) is called from scripts/check_site.py, not from the build, and reports 'WARNING <guide>: missing section <heading>' into build/problems.md, like warn_unlisted. Failure becomes fail() naming the file and heading only after the template pages comply, so another repo's edit cannot stop the Pages deploy while the guides are still being brought up to the standard. Tests: tests/test_guide_shape.py covers a pass case, a missing-section case and an unknown slug (raises). DESIGN.md documents the three headings first. A second small check in check_site.py fails on literal Markdown '](' in rendered text.",
+ "later": [
+  "Build a first-class Reference area: generate an 'App manifest fields' page from schema/labconstrictor-app.schema.json in a new scripts/lcsite/reference.py and add a short template reference.md (requirements.yaml fields, tag format X.Y.Z, installer file name pattern per OS); needs a DESIGN.md table-page pattern first.",
+  "If app owners actually use quickstart/docs_url, add one optional manifest object `example` ({guide_url, data_url, tested_with}) with a 'Try an example' section; schema authority is the site repo and must be copied to LabConstrictor .tools/schema and .template_sync/resources and LabConstrictor_streamlit schemas/, with DESIGN.md first and tests.",
+  "Move the numbered build flow above the benefit cards on /build/ (layout choice; needs DESIGN.md note and a decision on Use hub symmetry).",
+  "A GitHub Actions docs-check in the template triggered by PRs that touch .tools/docs/** and calls the site's existing build with --template-dir against the PR checkout; defer until the label fixes and PR template have shown whether drift recurs.",
+  "A weekly non-blocking external-link report written to build/problems.md (182 external URLs, 119 on github.com); the sandbox 403/429 results are unverified and may be proxy blocking.",
+  "Screenshot hygiene on the template doc_source branch: crop PR_tab.png, Use_Template.png, Welcome_Notebook.png, shrink Customisation_Default.png; function-style alt text; replace the five long GIFs (18 MB of 21 MB) with step screenshots or deep links (template_synchronization.md already uses one); then amend DESIGN.md (Formats are PNG, JPEG, GIF) and add check_design warnings for alt equal to filename, images over 500 KB, GIFs over 1 MB; re-encode guide images like hub images and write width/height in copy_images.",
+  "A banner in LabConstrictor/.tools/docs/README.md that copies in app repos may be out of date, with the current guide link on the site (all 6 app repos carry stale .tools/docs; template_version 0.1.3 to 0.1.14 versus 0.1.15 on main).",
+  "One help line in the Welcome notebook (template Welcome_template.ipynb has no mention of help, issues or documentation) pointing at the App Centre page's Report a problem; propagates through template sync.",
+  "Stable address policy for links shipped inside software (the Welcome notebook hard-codes a template blob/main personal_access_token.md URL; the form hard-codes 9 template doc URLs): record in the template README that doc renames need a migration note.",
+  "Optional per-repo CODEOWNERS and per-release docs review checklist (docs/RELEASE_CHECKLIST.md) listing the critical walkthroughs, with the date, person and versions of the last run; and a pre-merge contract check (H1 present, absolute links, opening paragraph) in each plugin repo's CI.",
+  "A real tester pass (about 5 people, as a pilot to find failures, not as a pass mark) on the two first-success journeys: install an app and run its example; create, initialise, release and download an installer. Time the real durations (CI wait, token set-up) and then put the measured numbers into the guides.",
+  "Plugin first-run section ('See a result in 5 minutes' with the existing screenshots F3/N5) in LabConstrictor-Tools docs/user-guide.md once the plugins leave 'Under heavy construction'; plus OPERATIONS.md troubleshooting facts surfaced in image-software.",
+  "Decide whether a missing sync token should make the weekly sync workflow skip rather than fail (template workflow change, maintainers' call)."
+ ],
+ "reject": [
+  {
+   "item": "A mandatory standard template (audience chips, estimated time, tested version, Before/Instructions/Check/If it fails/Next) on every guide",
+   "why": "The benchmark itself limits it to task guides; imported guides have no metadata channel (title is the first H1, description the opening paragraph, links must be absolute); chips would be a new badge role needing DESIGN.md first. The three headings on five critical guides give most of the value."
+  },
+  {
+   "item": "Tested-version stamps, 'Written for template version X' footers and 'Last checked: YYYY-MM' lines in guides",
+   "why": "Nothing written twice: the version already lives in the release tag, verified_version and template manifest; the template version is not a test statement, the docs are copied into all app repos, and a stale hand-typed date is worse than none. Use the existing per-app 'Verified for X on date' mechanism when a maintainer really verifies an app."
+  },
+  {
+   "item": "PR previews for the plugin and guide repos via the site build, and a reusable site workflow for all repos",
+   "why": "scripts/fetch_guides.py --ref applies one ref to every repo it reads (including napari/napari, fiji/fiji, simple-icons), GitHub Pages has no per-PR URL, and the guides are 29-40 lines. A pre-merge contract check in each repo is the right-sized alternative (in 'later')."
+  },
+  {
+   "item": "Hard CI gate failing the build when a critical guide lacks a heading",
+   "why": "A heading rename in another repo would stop the daily Pages deploy while the issue opens in the site repo. Report first, fail later (item 9)."
+  },
+  {
+   "item": "Sample data and a scientific example required for every app or for listing an app, and redefining 'Verified' as 'maintainer ran the documented example'",
+   "why": "Author-controlled exposure and tiers: Community means automatic checks only; apps differ in kind (VLab4Mic simulates, no input data). The Verified definition is a policy decision for the user (see ask_user). A featured-app-without-quickstart build warning would fire daily on all three featured apps and open noise about repos the team does not own."
+  },
+  {
+   "item": "A site-side 'First run' block, a 'Try an example' section and a new `examples` array in the manifest now",
+   "why": "Site already renders `quickstart` and `docs_url` (pages_apps.py:108-120); no app has used them yet. Duplicating the facts (format, dimensions, size) into the manifest writes them twice and risks silent drift. Revisit only if apps adopt the existing fields."
+  },
+  {
+   "item": "Treat the LabConstrictor Demo app as the generic first-analysis tutorial",
+   "why": "Its only notebook (Image_Preview) is an upload-an-image preview with no sample image, no result, and its README is the template stub; calling it a tutorial would overstate it."
+  },
+  {
+   "item": "Replacing GIFs by MP4/WebM",
+   "why": "DESIGN.md 'Images' allows PNG, JPEG, GIF; the pictures live on the template doc_source branch and are copied as bytes. Prefer fewer GIFs, step screenshots and deep links; amend DESIGN.md first if video is ever wanted."
+  },
+  {
+   "item": "Site-injected 'Check that it worked', 'If something fails' or 'Next' blocks, or a per-guide Next that overrides the generated pager, or a site-held synonym table in data/*.yaml replacing source edits",
+   "why": "Source of truth lives in each repo and the Edit-this-page link must point at the file containing the text. The pager already exists and must derive from the README order (Build) and data/guides.yaml (Use). The hidden-search-words file in item 7 is limited to about 10 justified synonyms, not a replacement for visible text."
+  },
+  {
+   "item": "Uninstall, update and macOS/Linux steps and exact macOS dialog titles written from memory",
+   "why": "No source in the repos documents the macOS .pkg uninstall or update procedure, and Gatekeeper wording varies by macOS version. Write them only after a maintainer reproduces them on real machines."
+  },
+  {
+   "item": "Moving the 115-line version cell out of notebook_upload.md into a new template file, and a 'Reference' manifest page now",
+   "why": "Adds a file that must stay in sync with the guide; low benefit versus the label fixes. Reference page is in 'later'."
+  },
+  {
+   "item": "External-link checker in the deploy path and form-repo changes for the install-stub link (app.py:685) or a filename test",
+   "why": "AGENTS.md: build never goes online; the form line writes into the generated app README a relative link to that app's own download_executable.md, which is correct per app. The audit's premise was wrong."
+  },
+  {
+   "item": "A GitHub Pages overrides/ no-results panel and a Playwright CI search test",
+   "why": "Depends on hashed theme internals and shadow DOM; fragile on theme updates and heavy for a small team. The help page and visible wording fix the zero-result cases instead."
+  },
+  {
+   "item": "Analytics-based failure signals (visitor repeatedly opening troubleshooting pages), language selector, version selector, AI chatbot",
+   "why": "Site has no analytics and is unlisted; English-only is proportionate; benchmark's own 'do not build' list excludes the rest."
+  },
+  {
+   "item": "Retitling the host guides' 'If something does not work' to 'My app does not show up in napari/Fiji/QuPath' and a hard tested-version stamp on plugin guides",
+   "why": "The section covers the failure dialog and log path, not only an unlisted app; discovery behaviour is unverified for each host; renaming also changes the anchor (redirects do not cover anchors)."
+  }
+ ],
+ "ask_user": [
+  {
+   "question": "Should template synchronisation (fine-grained token, repository secret, about 15 GitHub actions) stay a mandatory step before the first initialisation, or move after the first release as an optional 'Keep your app up to date' guide?",
+   "recommendation": "Ask the template maintainers, then move it after the first release and replace the three gates with one recommendation sentence. A missing token only affects the weekly sync (sync_template.yml needs it only when a sync is required), but do not say the failure is harmless. If they want it early, keep the gate and add the one-sentence reason. Do the README reorder (item 8) either way."
+  },
+  {
+   "question": "Do you want to redefine the 'Verified' tier (content/submit.md) as 'a maintainer ran the documented example', and should featured apps without a quickstart or docs_url get a build warning?",
+   "recommendation": "No, not yet. First get CellTracksColab and NucleiSky to publish a real example using the existing quickstart and docs_url fields (item 12). Revisit the Verified wording once one app has run its example, and keep any warning informational only after at least one app has a quickstart."
+  },
+  {
+   "question": "Who can run clean installs on Windows, macOS and Linux and one throwaway initialise-to-release run on GitHub so labels, durations, expected outputs and macOS/Windows dialog wording can be confirmed before they are written down?",
+   "recommendation": "One maintainer, one afternoon, per OS and release; record OS, app release and date in the PR descriptions. This one run unlocks the held-back items in 5, 6 and 12: the macOS and 'browser stays empty' entries, the SmartScreen/unidentified-developer wording, install durations, the 'Check that it worked' texts, the NucleiSky and CellTracksColab example outputs. Until then, those lines stay unwritten, not guessed."
+  },
+  {
+   "question": "Is the hard-coded canonical site address in the napari guide (cellmigrationlab.github.io/LabConstrictor-Site/...) the one to keep?",
+   "recommendation": "Confirm the canonical production URL and either use it everywhere or use a stable relative-free link; the fix belongs in napari-labconstrictor docs/user-guide.md (item 13)."
+  }
+ ],
+ "acceptance_results": "Persona runs (Playwright, Chromium, built site; the :8765 preview was down mid-run so a static server on site/ was used). Persona 3, someone seeing 'Windows protected your PC': PASS in 3 actions, about 5 s. Search for the exact dialog text returns /guides/install/#windows first, with the More info / Run anyway screenshot and alt text. Persona 1, finding an app: 2 clicks to the NucleiSky page, 'Your system' badge on the matching tile; but the journey STALLS after install. notebook-usage ends at 'Open the Notebook', nothing says what data to use, what the result looks like or where it is saved; NucleiSky ships no example images; 0 of 6 manifests use quickstart or docs_url. The 15-minute first-result target is unreachable today. Persona 2, building an app: 2 clicks to the first Build guide, but not completable without guessing. The template-synchronisation step is about 15 GitHub actions with no check or failure route; initialise has no numbered steps; the pager from executable-creation goes to the Colab authoring guide, not test/submit; template-synchronization prints its own footer as literal Markdown. A heading scan of 15 critical guides found check-style headings in 3, failure routes in 5, next-step headings in 2, time estimates in 1. Persona 4, Fiji user: reaches the Fiji guide in 3 clicks or by search ('Fiji'), but cannot finish: build-with-Maven or copy-a-script, no result shown, no ready file. Honest 'Under heavy construction' warnings mean nobody is misled. Search on the benchmark's nine queries: 5 of 9 reach an actionable page (Windows protected your PC, JupyterLab does not start, how to run a notebook, requirements.yaml, use inside Fiji); 4 fail with a blank panel or the wrong page: 'put my notebook online', 'GitHub build failed', 'app not showing in napari' return 0, 'Mac cannot open app' returns create-repository only. Zero hits in the index for damaged, unidentified, Gatekeeper, SmartScreen, ImageJ. Automated checks: scripts/check_site.py and check_design.py both report 38 pages, 0 problems; internal links, anchors, descriptions, h1 and alt presence are already guarded; the green result also proves the build does not detect guide completeness, literal Markdown in prose, or search outcomes. Human-only and not run here: 4-of-5 tester completion, the 15-minute first analysis, per-OS routes, screen-reader and keyboard checks; nothing was installed or run on a real OS and no measured durations exist. Skeptic notes: the claim that workflow-status Next loops to template-synchronization is false (it goes to troubleshooting); the guides' premise that download_executable.md should hold uninstall steps is only right per app repo, not for the template stub.",
+ "overlaps_with_app_centre_benchmark": [
+  "Example data and a quickstart owned by the app repo: the manifest's existing quickstart (max 6 steps) and docs_url fields, which no listed app sets (item 12; later: a single optional `example` object).",
+  "Manifest field documentation and the template's app_manifest.md, including the 'quick start' line at line 31; the duplicated manifest example between content/submit.md and app_manifest.md (later: generate a Reference page from the schema).",
+  "Install deep links from the app page tiles to per-OS anchors in the install guide (item 3), and the install guide's 'Before you start' that points to the App Centre page for sizes and supported systems (item 5); the Intel-versus-Apple-Silicon facts are per-app (smoke_install.yml says Intel Macs are informational only), so the generic guide must not state them.",
+  "Trust and verification: the Verified tier definition in content/submit.md, the unused verified_version/verified_on mechanism (all 6 apps null), and the unsigned-installer notice in install.md.",
+  "Hub help blocks and the Submit step at the end of the Build path (data/hubs.yaml flow ends at /submit/); search-index noise from /apps/ card text (left alone for now).",
+  "Plugin and host integration: image-software and host guides' first-run line and 'ImageJ/Fiji' wording; the Intel/OS platform matrix shown on the app page."
+ ]
+}

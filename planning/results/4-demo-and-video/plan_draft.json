@@ -1,0 +1,281 @@
+{
+ "headline": "Ship a notebook-first, honest NucleiSky example now (precomputed fixture results, native controls only, no re-drawn desktop apps), then add stamped real captures, then a 75-90 s user video. napari/Fiji views wait on facts outside this repository.",
+ "decisions": [
+  {
+   "question": "Which example leads?",
+   "decision": "NucleiSky 2D registration on the make_nucleisky.py fixture (1600x1600 reference at 0.65 um/px, 520x520 query at 0.325 um/px, 12 degree rotation), notebook-first. Real recorded outputs only: rotation 12.1721, scale 1.0024, offset 700.3293 / 605.5654, 429 and 9 nuclei, matcher quad.",
+   "reason": "It is the only candidate whose released product (0.1.1, manifest hosts [notebook]) matches what is shown. The investigators reproduced the screenshot numbers to every printed digit from the fixture, so one coherent dataset serves page, tile and video. The Playground Feature tour sits in 'Testing and maintenance', is flat discs, has an inert threshold slider (identical results 0.05-0.76), no real captures and no notebook cell. 2D_QC.jpg is a different dataset with unstated provenance and a confusing SSIM=0.305 headline."
+  },
+  {
+   "question": "What is interactive, given that nothing may be fabricated?",
+   "decision": "Only native form controls that switch between stored real results: layer checkboxes (reference, aligned small image, footprint outline), an opacity range for the aligned layer, a radio 'Whole field / Zoom to the footprint', and a radio 'Matching method' (auto, quad, hashing succeed; triangles, graph show the tool's real 'No match found' notice). No Run button, no upload, no <button> at all in the page.",
+   "reason": "Every state is a real output (quad and hashing give identical numbers; triangles and graph fail with the exact message). Using only radio/checkbox/range means the existing check_design button rule stays untouched (it permits only copy and clear-filter buttons). All other controls would need results that do not exist."
+  },
+  {
+   "question": "Re-draw JupyterLab, napari and Fiji windows in HTML/CSS (spec C)?",
+   "decision": "No. Stage 1 draws no host UI. Stage 2 adds stamped real captures of the installed NucleiSky app in JupyterLab. napari/Fiji appear only as one sentence plus a link until Stage 4 preconditions are met.",
+   "reason": "Three look-alike UIs decay silently, create dozens of dead focusable controls, copy Linux/Xvfb artefacts (PyQt5 toast, narrow viewport, older form than bridge-test HEAD), imply parity for NucleiSky that its manifest denies, and raise unresolved third-party mark questions. The real notebook (Steps 0-3, Option A/B, hidden code cells, new-tab open) does not match the spec's five invented steps, so a re-draw would be fiction."
+  },
+  {
+   "question": "Staging",
+   "decision": "Stage 1 launch page and tile (developer only). Stage 2 real captures (needs a human on a real desktop). Stage 3 user video 75-90 s (needs a human or licence-safe TTS). Stage 4 host views, conditional on external preconditions. Each stage has a go/no-go gate.",
+   "reason": "Different readers and decay rates; Stage 1 needs nothing outside the site repository and nothing that only a human can produce except wording review and author consent. The video must reuse Stage 2 frames or it would show things nobody has captured."
+  },
+  {
+   "question": "Where do numbers, wording and images live (single source of truth)?",
+   "decision": "Offline generator tools/demo_assets/ (fixture, pinned NucleiSky commit, real calls) writes content/demo/media/* and content/demo/example.json (recorded outputs, fixture sha256, source commit SHAs, library versions, sha256 of every media file, latest release at generation time). data/demo.yaml holds only wording, alt texts, notices, tile text. Python renders the results table and static state from example.json at build time; JS only toggles. Media are committed vendored artefacts with provenance; docs/demo and docs/assets/demo are generated and git-ignored.",
+   "reason": "No second hand-maintained description: numbers are never retyped in HTML or JS. A test verifies media hashes against example.json, so hand edits fail. The site build never imports numpy/scipy (requirements.txt has none)."
+  },
+  {
+   "question": "Where does the HTML live and how does it render without JavaScript?",
+   "decision": "pages_demo.py builds the page (Page layout wide, menu guides/, crumb '<- Docs', no Docs sidebar). One static, balanced root element <section data-demo> with all states in the HTML; JS adds a class that hides the non-selected panels. Without JS every panel is visible, stacked, each with its own caption.",
+   "reason": "check_design and check_site audit real HTML; the first state is readable without JS; avoids Markdown raw-HTML pitfalls (one balanced root, no blank-line siblings) and keeps Python files under the 30/300 limits."
+  },
+  {
+   "question": "Is the 2D_QC.jpg used?",
+   "decision": "No. The notebook-style QC figure is regenerated from the fixture with the notebook's own plotting call and shown with its real SSIM values (0.660 and 0.869) and a one-line explanation that SSIM is low because the region of interest extends beyond the small image's footprint.",
+   "reason": "2D_QC.jpg has other data, no stated provenance or licence, and would mix two datasets. Cropping out the real low SSIM would change real output, so it is shown and explained."
+  },
+  {
+   "question": "How is 'scale' and the ground truth displayed?",
+   "decision": "Show scale 1.0024 with the note 'physical scale; both images cover the same physical size, so about 1', next to the pixel sizes 0.65 and 0.325 um/px ('the small image is sampled twice as finely'). Ground truth shown only as a labelled row 'Rotation used to make the test image: 12 degrees'. No ground-truth scale 2.0 as a result. No run duration is shown.",
+   "reason": "The generator's 2.0 is pixel zoom, NucleiSky's 1.0024 is calibrated; the recorded 12.0 s is one machine's timing and must not read as a promise."
+  },
+  {
+   "question": "Video: length, audience, hosting, narration",
+   "decision": "One user video of 75-90 s (install, open, run, result, App Centre) built from Stage 2 captures. Self-hosted MP4 (H.264, 720p, CRF 26-28, AAC 64 kbps mono, faststart), <video controls preload=none poster> with WebVTT captions and a transcript generated from the .vtt, no autoplay, no YouTube embed. Size cap 10 MB, enforced in the build. Narration: a human voice if available, otherwise Piper with en_US-ljspeech-high (public domain) or en_US-libritts_r-medium (CC BY 4.0, credited); never the lessac voice (research licence). The builders' video is a later optional item.",
+   "reason": "260-300 words (2 min) cannot carry eight topics and two audiences; 75-90 s is about 190-225 words. A YouTube iframe would be the site's first third-party request. Measured sizes: 3-9 MB depending on motion; restrained motion keeps it low. Piper is GPL-3.0 so it is a build tool outside the repo."
+  },
+  {
+   "question": "Host views (napari, Fiji, QuPath)",
+   "decision": "Out of Stage 1-3. Stage 1 carries one sentence: 'NucleiSky runs in a notebook today. Plugins for napari, Fiji and QuPath are a prototype; their guide says they are untested and unlikely to be stable.' with a link to /guides/image-software/. Stage 4 only after: NucleiSky main ships its tools module and a release, its manifest lists the hosts, and captures exist from a real Windows or macOS desktop.",
+   "reason": "NucleiSky's Relocalize 2D exists only on unmerged bridge-test; release 0.1.1 and manifest hosts [notebook] predate it; hooks are not in template main; nothing is on PyPI, no Fiji update site; evidence is one AI-agent run on Xvfb with verdict 'Not yet'; the NucleiSky app page shows no host chips."
+  },
+  {
+   "question": "Is the Playground Feature tour used?",
+   "decision": "Not as the front door. It is the preferred candidate for Stage 4 (it ships tools on main, release 0.0.1, hosts notebook/napari/fiji/qupath), conditional on a Playground notebook cell and real captures.",
+   "reason": "Honest about hosts and fully precomputable (85 distinct results, about 21 KB gzip), but a test fixture on synthetic discs with no screenshots and no notebook step."
+  },
+  {
+   "question": "Design-rule changes: scope",
+   "decision": "Narrow and bound to a data-demo root: native radio/checkbox/range allowed only inside it, each with a label inside a fieldset with legend; no <button> in the root; the root must say it is precomputed and synthetic; role=status present; no headings inside the viewer; no autoplay. New module scripts/check_design_demo.py; check_design.py grows by about 4 lines; failure tests prove the exemption does not leak.",
+   "reason": "Standing rules require DESIGN.md to change first and the gate to stay strict; the narrow marker avoids weakening the global lc-btn rule."
+  },
+  {
+   "question": "Home tile and other entry points",
+   "decision": "One secondary card-link band after the comic, text from data/demo.yaml, image derived from the overlay image with images.shrink (alt text required). Plus one sentence in content/guides/using-apps.md and a line in llms.txt. No sixth top-menu entry, no Use-hub card (hubs.py has no local-picture source).",
+   "reason": "The hero's two entry cards ('find an app', 'make an app') must not be outranked; reuse existing generation paths."
+  },
+  {
+   "question": "Exposure and launch",
+   "decision": "Do not flip extra.listed. Show the page to the NucleiSky authors first (author-controlled exposure) and flip listed as a separate launch decision after the Stage 1 gate and the five-person check.",
+   "reason": "The page is the site's description of someone else's app; the site is currently unlisted (noindex everywhere)."
+  },
+  {
+   "question": "JS/CSS size and conventions",
+   "decision": "demo.js at most 120 lines, demo.css at most 150 lines, loaded only on /demo/ through page_css/page_js front matter in overrides/main.html (not mkdocs extra_css/extra_javascript). Written in AGENTS.md as a reviewed 300-lines-per-file convention (lc.css is already 338). tools/demo_assets Python is added to test_code_rules SOURCES.",
+   "reason": "Per-page loading keeps home and other pages free of demo weight; instant navigation is off so the script runs once per load."
+  }
+ ],
+ "corrected_facts": [
+  "NucleiSky2DApp is Step 0 (initialise), Step 1 (load images and extract features, with 'Select Images & Configuration' and 'Segmentation & Feature Extraction'), Step 2 (matching, Option A ' Run NucleiSky2D' or Option B ' Run adaptive NucleiSky2D', QC plots inside), Step 3 (apply saved transform). There is no 'Run matching' button, no five-step list, no 'Inspect the registration result' step. Real buttons: ' Load & Process', ' Run Segmentation', ' Run NucleiSky2D'. Vocabulary is Full/Crop, while napari and Fiji say Reference/Query.",
+  "No example data ships with NucleiSky and the notebook has no 'select the included example' control. Step 1 asks for a path (default is a private Colab Drive path). The fixture TIFFs carry no pixel-size metadata, so the real notebook shows a red 'Missing Metadata' card and 0.65 / 0.325 must be typed in. 'Generate Random Crop' exists but its random angle and zoom cannot reproduce exactly 12 degrees and 2x.",
+  "'Open the notebook' in the Welcome notebook opens a new browser tab (window.open _blank), not an in-page tab; the hidden code cell must be run first; the launcher also opens a terminal that must stay open. The intro's 'Test Connection' button does not exist; the Welcome notebook contains a GitHub token flow that must not be mimicked. The table description rows contain copy-paste typos.",
+  "Welcome_Notebook.png on doc_source is outdated ('Welcome to NotebookApp!', header 'Click to Open the Notebook'; current is 'Welcome to NucleiSky!' and 'Open Notebook'). The site's existing alt text ('an orange Open the Notebook button') is wrong: headers are orange, the button is blue. hubs.yaml also calls the N2 napari picture 'a test app', but it shows NucleiSky Relocalize 2D from a branch.",
+  "NucleiSky's Relocalize 2D (and the other bridge tools) exist only on unmerged branch bridge-test (28 commits ahead). NucleiSky main's manifest says hosts [notebook]; release 0.1.1 (2026-07-07) predates the bridge. Only Playground (main, release 0.0.1) and GuessTheCondition (release 0.0.0) ship host tools; CellTracksColab only on a branch; VLab4Mic unverified.",
+  "'The installer registers the application' is true only for apps that carry their own post-install hook. The hook is not in the template main (v0.1.15); it lives on the template's unmerged bridge-test branch and in apps that copied it. labconstrictor-tools and napari-labconstrictor return 404 on PyPI, Fiji has no update site, no host plugin has a release.",
+  "The bridge's own guides say 'Under heavy construction ... untested and unlikely to be stable', tested on Linux only, Windows .bat hooks never run on real Windows, macOS untested. That is stronger than 'Experimental integration, currently under testing'. Real-app evidence is one AI-agent run on Xvfb (2026-10-06) with verdict 'Not yet'.",
+  "The napari/Fiji screenshots are Linux/Xvfb widget grabs (napari 0.9.2, PyQt5 deprecation toast, Fiji 2.18, Java 21) of the same fixture, older than bridge-test HEAD (they show 2 result layers; HEAD returns 7 outputs plus device and Cellpose controls). napari's default post-run view (N4) is a black canvas with 9 dots; the overlay needs additive blending and hiding 'query'. Fiji's result is a separate RGB window 'Alignment overlay (green = reference, magenta = query)', and Fiji has chooser dialogs and no Rescan/Restart/Details; napari's two dropdowns have no visible labels.",
+  "2D_QC.jpg is the matplotlib QC figure of a different real dataset (SSIM=0.305 and 0.995), not an interface and not the fixture; its data provenance and licence are unstated.",
+  "Reported scale 1.0024 is the calibrated physical scale; the generator's ground-truth 'scale: 2.0' is pixel zoom. The recorded result (12.1721, 700.3293, 605.5654, 429/9, quad) differs slightly from ground truth (12.0, 700.06, 606.11), and 12.0 s is one machine's timing (10.7-14.5 s measured).",
+  "Fixture generation needs numpy, scipy and tifffile (not only numpy/Pillow) and is deterministic (sha256 reference 2f3e168d..., query 67ed77fc..., ground truth 14b8f149...). Query holds only 9 detected nuclei; synthetic Gaussian blobs, not realistic microscopy; exact overlap shows white, so a footprint outline is needed.",
+  "Matcher outcomes are real and recorded: auto, quad, hashing succeed with identical numbers; triangles and graph raise 'No match found with the 'triangles' matcher. This is not an error in the images: try Matcher = auto, or another matcher.' This is specific to the sparse fixture.",
+  "The Playground notebook has no Feature tour cell; the tool's README 'blobs in two parts' is false for the built-in image (14 discs plus 2 rings = 16 objects); Playground is listed under 'Testing and maintenance'.",
+  "Storyboard wording: the manifest has doi and docs_url, not 'citation'; and it does not list an app (the author must submit a public repo). Pinned versions come from requirements.yaml (notebook_requirements.md), not the portability guide. Release builds Windows .exe/.msi, macOS .pkg/.sh, Linux .sh, not code-signed; Intel Mac is stated as unsupported for NucleiSky. A two-minute narration holds only 260-300 words.",
+  "Site: poster= is neither rewritten by page.py nor checked by check_site; <video> and <track> pass check_design silently; check_design allows content buttons only for copy and clear-filters; Docs menu highlight needs front matter menu: guides/; per-page CSS/JS needs main.html support; instant navigation is off. Video size is motion-driven (about 3 MB near-static to 12 MB with continuous zoom at 1080p); the bundled Chromium cannot play H.264, so MP4 playback must be checked in real browsers; the local preview server has no HTTP Range support.",
+  "Local clones are stale (template working tree 31 files behind origin/main; NucleiSky checkout lacked labconstrictor-app.yaml). Read origin/main or the GitHub tools, not working trees, when verifying anything for this plan."
+ ],
+ "stages": [
+  {
+   "name": "Stage 1: Recorded example page and home tile (smallest launch-worthy stage)",
+   "goal": "A newcomer sees the task (find where a small image sits in a larger one using the pattern of nuclei), sees a real recorded result, can toggle real stored states, and cannot mistake it for a live app, an upload tool, or a validated napari/Fiji integration.",
+   "deliverables": [
+    "tools/demo_assets generator that runs the fixture and NucleiSky's real code at a pinned commit and writes media plus example.json with provenance and hashes",
+    "content/demo/media: reference (800x800 JPEG q80, about 38 KB), small query (about 13 KB), aligned-query layer (transparent PNG), footprint outline layer, whole-field and zoomed pairs, QC figure at 1200 px wide (about 73 KB); total about 215 KB, no TIFFs",
+    "/demo/ page: task sentence, three images, precomputed viewer (layer checkboxes, opacity range, view radio, matching-method radio with the real failure notice), results table rendered from example.json, QC figure with SSIM explanation, 'what you are not seeing' paragraph, links to app page, install guide, notebook usage guide, image-software guide, and the manifest-derived citation row",
+    "One-sentence host note with the bridge's own words",
+    "Home tile (secondary card link), using-apps guide sentence, llms.txt line",
+    "Staleness line and named build warning when the recorded release differs from the snapshot's latest NucleiSky release",
+    "hubs.yaml alt-text fixes for the Welcome picture (blue button under orange headers) and the napari picture (NucleiSky Relocalize 2D prototype)",
+    "Narrow design-rule change with DESIGN.md/AGENTS.md/README.md updated in the same pull request",
+    "Tests including leakage and failure cases"
+   ],
+   "files": [
+    "labconstrictor-site: tools/demo_assets/make_example.py (about 90 lines, orchestrator), render.py (about 110, JPEG/PNG layers, footprint from the recovered transform, QC figure via the notebook's own plotting call), provenance.py (about 70, hashes, SHAs, versions), requirements.txt (pinned: numpy, scipy, tifffile, scikit-image, matplotlib, numba, Pillow), README.md (regeneration command and source SHAs: NucleiSky pinned commit, Tools make_nucleisky.py 314185d, 2DApp notebook 5941a05, Welcome.ipynb 8a9e562; not copied into the site)",
+    "labconstrictor-site: content/demo/media/* (about 215 KB) and content/demo/example.json (about 6 KB) and content/demo/example.schema.json (about 50 lines)",
+    "labconstrictor-site: data/demo.yaml (about 45 lines: page text, tile text, captions, alt texts, exact notices)",
+    "labconstrictor-site: scripts/lcsite/pages_demo.py (about 130 lines: load, viewer_html, results_table, page_demo, tile_html, each function at most 30 lines) and scripts/lcsite/demo_media.py (about 90: copy_assets with named-file and size-cap checks, load_example with jsonschema, verify_hashes, staleness_warning, no silent fallbacks)",
+    "labconstrictor-site: scripts/lcsite/config.py (+2 GENERATED entries: demo, assets/demo), scripts/build_site.py (+4, call page_demo after page_ecosystem and demo data before page_home), scripts/lcsite/pages_site.py (+about 14 for the tile), scripts/lcsite/llms.py (+1), scripts/lcsite/__init__.py (docstring)",
+    "labconstrictor-site: overrides/main.html (+3 lines looping page_css and page_js from front matter), content/demo/demo.js (at most 120 lines), content/demo/demo.css (at most 150 lines, scoped under .lc-demo)",
+    "labconstrictor-site: scripts/check_design.py (+4 lines) and scripts/check_design_demo.py (about 90 lines)",
+    "labconstrictor-site: tests/test_demo.py (about 150 lines; test_site.py is already 271) and tests/test_code_rules.py (SOURCES also covers tools/)",
+    "labconstrictor-site: .gitignore (+docs/demo/, docs/assets/demo/), content/guides/using-apps.md (+1 sentence), data/hubs.yaml (2 alt texts), DESIGN.md, AGENTS.md, README.md"
+   ],
+   "effort": "About 4-5 developer days, plus half a day of human review of wording and author consent.",
+   "needs_other_repo": "none. (Read-only checkout of NucleiSky at a pinned commit and of LabConstrictor-Tools for the fixture; nothing is committed there.)",
+   "needs_human": "Written consent or at least notice to the NucleiSky authors before exposure; review of the exact notices; a five-person comprehension check before extra.listed is flipped (not before merge); decision on the matcher control wording.",
+   "gate": "All of: build_site, zensical build --strict, check_site, check_design and unit tests green; tests prove media hashes match example.json, the data-demo exemption fails on a page without the root, the root fails without 'precomputed' and 'synthetic' text, no <button> in the root, one checked radio per group in static HTML; Playwright run shows zero requests to any host except the site, no horizontal scroll at 390 px, full keyboard operation, all panels visible with JS disabled, nothing animates (reduced motion); staleness warning fires on a faked newer release; every displayed number equals example.json; generator re-run reproduces identical hashes. Pre-launch: at least 4 of 5 biologists answer 'finds where a small image sits in a big one' and 'runs in the installed app on my computer, not on this site', 0 of 5 believe it analysed their data or that it works in napari/Fiji today; any miss changes wording and the test is rerun with fresh participants."
+  },
+  {
+   "name": "Stage 2: Real captured frames of the installed app",
+   "goal": "Show what a visitor will really see (installer result, launched app, Welcome notebook, opened notebook, load, result) with real, stamped captures instead of drawings.",
+   "deliverables": [
+    "Six cropped frames from NucleiSky 0.1.1 on a real Windows or macOS desktop (app icon or launch, Welcome notebook after running its hidden cell, Open the notebook, Step 1 load incl. the Missing Metadata card and manual pixel sizes, run, result), captured with the fixture TIFFs",
+    "frames.yaml stamp per frame: app version, OS, JupyterLab version, capture date, review date six months out",
+    "Section 'What it looks like in the app' on /demo/ as an ordered list of figures with captions (no JS, no buttons)",
+    "Derived 'Captured with X; latest release is Y' line and named build warning, also after the review date"
+   ],
+   "files": [
+    "labconstrictor-site: content/demo/frames/*.jpg (about 6 x 120 KB) and content/demo/frames/frames.yaml (about 40 lines)",
+    "labconstrictor-site: scripts/lcsite/pages_demo.py (+about 40 lines; split into pages_demo_frames.py if it nears 300 lines) and demo_media.py (+20: stamp check)",
+    "labconstrictor-site: tests/test_demo.py (+40 lines: stamp present, review-date warning, alt text present, image size cap)",
+    "labconstrictor-site: DESIGN.md (one line on stamped frames)"
+   ],
+   "effort": "About 1 developer day plus 0.5-1 day for the person capturing.",
+   "needs_other_repo": "Optional, separate pull requests: NucleiSky adds the frames to its manifest 'screenshots' so its app page shows them; LabConstrictor-Tools docs/img may host them only if the lab wants the existing {repo, path} pipeline. Neither is required.",
+   "needs_human": "Install NucleiSky 0.1.1 on a clean real Windows or macOS machine (someone other than its developer), capture the frames, avoid showing tokens, personal paths or the Jupyter-news toast; confirm numbers on screen equal example.json or update the recorded result.",
+   "gate": "Captured on a real desktop (not Xvfb); each frame has its stamp; the numbers visible in the result frame match example.json (otherwise regenerate it); no personal data visible; alt text and captions reviewed; all Stage 1 checks still pass."
+  },
+  {
+   "name": "Stage 3: User video (75-90 s), self-hosted",
+   "goal": "Add motion the stills cannot show (installer, app icon, terminal and browser opening, code hidden, the run, the App Centre) for biologists, with captions and a transcript.",
+   "deliverables": [
+    "MP4 720p H.264 with AAC 64 kbps mono, faststart, size at most 10 MB; optional VP9 WebM source",
+    "labconstrictor-overview.vtt captions, poster, transcript generated from the .vtt, tile image reused",
+    "Video section on /demo/ (and optional link from the tile) with controls, preload=none, poster, captions track, transcript, no autoplay",
+    "Poster path rewriting and checking; video rules in check_design_demo; size cap in demo_media",
+    "Build script and sources in the repo; only the final encode is committed"
+   ],
+   "files": [
+    "labconstrictor-site: tools/demo_assets/video/build_video.py (about 120 lines, ffmpeg concat/zoompan with d=1, per-sentence TTS durations via ffprobe to derive VTT timings) and storyboard.yaml (about 60 lines, one source for script, captions and transcript)",
+    "labconstrictor-site: content/demo/media/labconstrictor-overview.mp4, overview.vtt, poster.jpg",
+    "labconstrictor-site: scripts/lcsite/page.py (one regex: href|src|poster), scripts/check_site.py (one tuple: poster), scripts/lcsite/pages_demo.py (+30: video_html, transcript from vtt), demo_media.py (+25: parse_vtt, size cap)",
+    "labconstrictor-site: scripts/check_design_demo.py (+30: controls, no autoplay, poster, captions track), tests/test_demo.py (+50), DESIGN.md and AGENTS.md (one paragraph each)"
+   ],
+   "effort": "About 2-3 developer days plus 2-3 days human production (captures, narration, review).",
+   "needs_other_repo": "none",
+   "needs_human": "Narration (a person, or approve a Piper ljspeech/libritts_r render and credit CC BY voices); real captures of the installer, launch and run on a real desktop; listening review; playing the MP4 on real Chrome, Firefox, Safari and a phone (the bundled test Chromium cannot decode H.264); decision whether the final binary lives in git.",
+   "gate": "Every on-screen label and spoken claim matches current docs (corrected wording: semantic-version release tag, unsigned installers, 6-8 minute install, terminal stays open, no Intel Mac claim, doi and docs_url not 'citation'); captions equal narration; mute viewing is understandable; plays and seeks on a real Range-capable host (GitHub Pages) and on a phone; no autoplay; size at most 10 MB; transcript present; host integration appears only as an end-card sentence with a link."
+  },
+  {
+   "name": "Stage 4: Host views (conditional, may never happen)",
+   "goal": "Show the same tool in napari and Fiji only when that is true of released software, using real captures and the bridge's own status words.",
+   "deliverables": [
+    "Per-host stamped real screenshots in figures labelled inside the frame 'napari (prototype)' and 'Fiji (prototype)'",
+    "Either NucleiSky (after its tools ship) or the Playground Feature tour (ships on main; needs a notebook cell) as the example",
+    "A precomputed Feature-tour grid (deduplicated, about 21 KB gzip) only if that route is chosen"
+   ],
+   "files": [
+    "labconstrictor-site: content/demo/frames/ host captures plus frames.yaml entries; pages_demo.py (+30); DESIGN.md (host label rule); tests (+30)",
+    "labconstrictor-site (only if Feature tour is chosen): tools/demo_assets/tour_grid.py (about 100 lines, run with the pinned Playground stack) and content/demo/tour.json"
+   ],
+   "effort": "About 2-3 developer days after the preconditions are met; the preconditions are weeks of other repositories' work.",
+   "needs_other_repo": "Separate pull requests, none included here: NucleiSky merges bridge-test (nucleisky_lc_tools plus the post-install hook), publishes a release and lists hosts in labconstrictor-app.yaml; the LabConstrictor template merges or documents the register hook; napari-labconstrictor, LabConstrictor-Fiji and LabConstrictor-QuPath publish installable releases; the bridge guides drop 'untested and unlikely to be stable'. Playground adds a 'Step 3: Feature tour' notebook cell, notebook version bump, changelog and release 0.0.2 (and fixes the 'blobs in two parts' wording); LabConstrictor-Tools fixes HOST_FEATURES.md:30 and the stale 'First run still pending' workflow comments.",
+   "needs_human": "Captures from a real Windows or macOS desktop with the plugins installed; maintainers' confirmation of status wording; decision on third-party marks.",
+   "gate": "All four external preconditions true on the day (NucleiSky or Playground main ships the tools and a release; manifest hosts agree with the app page chips; real-desktop captures exist; guide status raised); the app page and the demo state the same host support; label sits inside each figure frame."
+  }
+ ],
+ "rule_changes": [
+  "DESIGN.md, Menu row: change to '(apps -> Apps; guides, Use, Build and the demo -> Docs)'. Back link row: add 'The demo: \"<- Docs\".' The page uses layout wide and no Docs sidebar on purpose (a sidebar would leave about 930 px at a 1280 px viewport, too narrow for a 800 px image plus controls).",
+  "DESIGN.md, new section 'Demo controls': 'The demo page (/demo/) has one root element carrying data-demo. Inside it, and nowhere else, the page may use native radio buttons, checkboxes and range inputs that switch between stored results. Each control has a visible label, lives in a fieldset with a legend, and has a stored result for every state. The page has no <button> in the demo root and no control that would need a result that does not exist. The root says in visible text that the results are precomputed and that the image is synthetic. A status region (role=status) announces the current state. Nothing animates and nothing starts by itself. The first state and all states are readable without JavaScript. A <video> has native controls, a poster and a captions track, never autoplays, and comes with a transcript. A figure of a host application is a real, stamped capture, never a drawing, and carries its status label inside the figure frame.'",
+  "scripts/check_design_demo.py (new, about 90 lines) called from check_design.py (+4 lines): input type=range or radio or checkbox is allowed only inside a data-demo root; every such input has a label and sits in a fieldset with a legend; each radio group has exactly one checked input in the static HTML; a range has min, max and value; the root contains the words 'precomputed' and 'synthetic' and an element with role=status; no <button> inside the root; no h1-h6 inside the viewer; no autoplay attribute; (Stage 3) every <video> has controls, a poster and a <track kind=captions src>. Failure tests: a page without the root using a range input fails; a root without the notice fails; the existing copy and clear-filter button rule is unchanged.",
+  "scripts/lcsite/config.py GENERATED, .gitignore, README.md ('Files under docs/') and the AGENTS.md 'Generated and git-ignored' bullet: add docs/demo/ and docs/assets/demo/. New test in tests/test_demo.py that every GENERATED path is covered by .gitignore (the inventory is kept by hand in four places).",
+  "AGENTS.md: Pages table row 'Demo | /demo/ | pages_demo, from data/demo.yaml, content/demo/ and the recorded example'. Hand-written list: data/demo.yaml, content/demo/ (script, style, example.json, media), tools/demo_assets/. 'Preserve public addresses': add /demo/. New bullet 'Recorded assets': 'content/demo/media and example.json are produced offline by tools/demo_assets from a pinned source commit and committed as vendored artefacts with provenance; tests fail if a hash, a source SHA or the fixture hashes are missing or wrong. The build never recomputes them and never imports numpy or scipy.' Code rules: 'tools/ Python follows the same limits (tests/test_code_rules.py covers it); JS and CSS written for a page stay under 300 lines each (reviewed, not enforced).'",
+  "overrides/main.html: if page.meta.page_css or page.meta.page_js lists exist, emit link tags in extrahead and defer script tags after the bundle in the scripts block (3 lines); do not use mkdocs.yml extra_css or extra_javascript, which are global. Add a comment that instant navigation is off and page scripts run once per load.",
+  "Stage 3 only: scripts/lcsite/page.py:268 regex becomes (href|src|poster); scripts/check_site.py:56 tuple gains 'poster'; test with a deliberately wrong poster. This fixes a reproduced silent 404.",
+  "Stage 3 only: AGENTS.md and DESIGN.md video paragraph (self-hosted, captions, transcript, size cap 10 MB, commit the final encode only)."
+ ],
+ "honesty_labels": [
+  "Precomputed label (inside the figure frame, a band above the viewer image, part of the same element so it survives cropping, and again in the figure caption): 'Precomputed example. NucleiSky computed these results beforehand on a synthetic test image made by a script, not by a microscope. Nothing is calculated in your browser, you cannot add images here, and the controls only switch between stored results.'",
+  "Per-state chip next to the status text (role=status): 'Recorded result' for success states; for failure states: 'Recorded result: no match found'. Status text for success: 'Found the small image: rotation 12.17 degrees, scale 1.0024, matcher quad.' (values from example.json). For triangles/graph: the tool's exact sentence, 'No match found with the 'triangles' matcher. This is not an error in the images: try Matcher = auto, or another matcher.' followed by: 'On this sparse test image (9 nuclei in the small image) two of the four methods find no match. This says nothing about other images.'",
+  "Scale note directly under the results table: 'Scale 1.0024 is the physical scale. Both images cover the same physical size, so it is about 1, even though the small image is sampled twice as finely (0.325 against 0.65 um per pixel).' Ground-truth row label: 'Rotation used to make the test image (for checking, not a result)'. No run duration is displayed; a sentence says 'How long a run takes depends on your computer.'",
+  "Provenance line under the table (derived from example.json): 'Recorded with NucleiSky code at commit <sha>, on a test image generated by LabConstrictor-Tools make_nucleisky.py (seeded, reproducible). Recorded <date>.' Derived staleness line only when needed: 'Recorded when the latest NucleiSky release was <x>; the latest release is now <y>.'",
+  "QC figure caption: 'The QC figure the notebook itself draws for this test image. The similarity scores (SSIM) are low in the top row because the region of interest is much larger than the small image.' (explanation, not a hidden metric).",
+  "Experimental label (Stage 1 host sentence, placed after the viewer and in the page lede only as a pointer): 'NucleiSky runs in a notebook today. Plugins that bring apps into napari, Fiji and QuPath are a prototype: their guide says they are \"untested and unlikely to be stable\".' (link: Image software guide). Do not write 'Experimental integration, currently under testing' and do not write 'works in napari/Fiji'.",
+  "Stage 2 frame stamp inside each figure frame: 'NucleiSky <version> - <OS> - captured <date>'. Stage 4 host figure band, in the figure heading too ('napari (prototype)'): 'Prototype, not released. Tested on Linux only. The guide says: \"untested and unlikely to be stable\".' Third-party marks: show host names as text; logos only via data/hosts.yaml under the existing 'logos belong to their owners' line; no copied icon sets.",
+  "Notebook steps are described in the page only as links to the app's own guides, not paraphrased step lists. The Welcome notebook is not simulated, and no field that resembles a token entry appears anywhere."
+ ],
+ "video_cut": "Do not make the two-minute, eight-topic cut. At 130-150 words per minute 120 s holds 260-300 words, which cannot carry install, notebook, packaging, release, manifest and host bridge, nor serve biologists and app builders together. Produce one 75-90 s user video (about 190-225 words) in Stage 3 from the Stage 2 real captures. Storyboard with corrected claims: (1) 0-10 s: the precomputed images from the page (reference, small image, overlay), caption 'synthetic test image'; voice: 'Some analyses find where a small image sits inside a larger one. Here is one, packaged as an app anyone can install.' (2) 10-25 s: real capture of the releases page and an installer download; 'Download the installer for your system. It is not code-signed, so your computer will warn you; the install takes several minutes.' Do not mention Intel Mac. (3) 25-40 s: real capture of launching the installed app: 'A terminal window opens and has to stay open, and your browser opens a notebook on your own computer.' Welcome notebook, run its cell, open the notebook (it opens in a new tab). (4) 40-60 s: NucleiSky2DApp: choose the two images, enter the pixel sizes, run the segmentation, run the matching; code is hidden. (5) 60-72 s: the result and the QC figure; read the numbers that are actually on screen, say they come from a test image. (6) 72-85 s: 'More apps are in the App Centre. If you want to build your own, start from the Build guide.' End card text only, no narration: 'Plugins for napari, Fiji and QuPath are a prototype: see the image software guide.' Out of this cut: reusable-package design, requirements.yaml, portability rules, release and manifest details; these go to an optional later builders' video (90-120 s: notebook, template and web form, release builds installers, labconstrictor-app.yaml with doi and docs_url, 'the file does not list your app, submit it'). Honest limits of production: ffmpeg assembly, captions, poster, Piper narration and recorded browser footage of the site can be automated here; narration approval, captures of the real installed app, GitHub, Colab and installer dialogs, listening review and playback tests on real browsers and a phone need a person. napari cannot even run in the authoring container; Fiji runs only generically.",
+ "visual_spec_summary": "Interface 1, the only thing drawn in Stage 1: the recorded-example viewer. A figure frame in the site's own design tokens (no desktop chrome, no fake window). Top band: the precomputed notice. Left or above: one square 800x800 px stack on black, scaled to the column (about 358 px at 390 px width): layer 1 reference in green (matching the NucleiSky convention green = reference, magenta = aligned query; overlap reads white), layer 2 aligned small image in magenta with screen blending and an opacity range (default 80 percent), layer 3 footprint outline (box rotated 12.17 degrees, bbox rows 637-963, columns 597-923 in the reference frame, drawn from the recovered transform, not ground truth). The view radio swaps to a zoom of a 400x400 reference-pixel region around the footprint shown at 800x800. Controls column (stacked under the image on phones): fieldset 'Layers' (three checkboxes), a range 'Opacity of the aligned image', fieldset 'View' (whole field, zoom to the footprint), fieldset 'Matching method' (auto default, quad, hashing, triangles, graph), a role=status line with a 'Recorded result' chip. In failure states the aligned and outline layers are disabled (native disabled) and the status shows the tool's real sentence. Below: results table from example.json (inputs: reference 1600x1600 at 0.65, small image 520x520 at 0.325, 429 and 9 nuclei; result: rotation 12.1721, scale 1.0024 with note, offsets 700.3293 and 605.5654, bbox [637, 963, 597, 923], matcher quad), then the QC figure (2x4 matplotlib figure from the notebook's own call, SSIM 0.660 and 0.869, width 1200 px, alt text describing the eight panels). No animation, no progress bar. Without JS all panels show stacked. Interface 2, Jupyter/NucleiSky notebook (Stage 2, captured, never drawn): facts for captions and alt text: the launcher opens a terminal and then JupyterLab 4 on Welcome.ipynb in the browser; the hidden code cell must be run to list six notebooks (NucleiSky2DApp, 2DBenchmarking, 2D_API_Workflow_Example, 3DApp, 3DBenchmarking, 3D_API_Workflow_Example; orange #ff6600 headers, blue #2196F3 'Open the notebook' button) and 'Open the notebook' opens a new tab; NucleiSky2DApp uses its own palette (page #F1F5F9, card white, accent #2563EB), Full/Crop wording, Load & Process, Missing Metadata card for the fixture TIFFs, Step 1b 'Auto-threshold (Classic CV)' (default is Cellpose), Step 2 Option B ' Run adaptive NucleiSky2D'. Interface 3, napari and Fiji (not drawn; Stage 4 captures only): napari dock title 'LabConstrictor tools (LabConstrictor)', two unlabeled dropdowns, Run/Cancel/Rescan apps/Restart worker/Details, greyed inapplicable fields; Fiji: Plugins > LabConstrictor > LabConstrictor Tools..., chooser dialogs, one SciJava dialog with OK/Cancel, fields never greyed, results in a separate RGB window 'Alignment overlay (green = reference, magenta = query)', a 'NucleiSky:query_aligned' window and a Log line. Both: say 'prototype' inside the frame. Reference only, if a lab designer ever wants a napari recreation: measured napari dark theme tokens background #23242B, panel #2E333E, controls #424A54, selected #4560C4, text #F0F1F2, canvas black, but this plan does not recreate it.",
+ "acceptance": [
+  "Stage 1: python scripts/build_site.py, zensical build --strict, write_sitemap, finish_site, check_site, check_design and the whole unit test suite pass offline with the new files; check_site reports /demo/ reachable in one click from home; page title equals the h1, description 20-200 characters and unique.",
+  "Every number on /demo/ and in the tile is produced from example.json; a test greps the built page for each recorded value and finds none typed by hand in HTML, JS or YAML.",
+  "Media hashes, fixture hashes (reference 2f3e168d..., query 67ed77fc..., ground truth 14b8f149...), source commit SHAs and library versions are present in example.json and verified by a test; re-running tools/demo_assets on the pinned inputs reproduces identical hashes.",
+  "Static HTML with JS disabled shows every state stacked with its caption; with JS the first state is auto, layers all on, whole field.",
+  "Playwright at 1280 and 390 px: requests only to the site origin, no horizontal scroll, every control reachable and operable by keyboard alone, each change announced once in the role=status region, prefers-reduced-motion respected (nothing animates), focus visible.",
+  "The demo root text contains 'precomputed' and 'synthetic'; the exact notices from honesty_labels appear; no <button>, no headings inside the viewer, no autoplay; check_design_demo failure tests demonstrate leakage cannot occur.",
+  "The failure states show the tool's exact 'No match found' sentence; no state shows a number that example.json lacks; no duration is displayed; scale note is present beside the table.",
+  "The host sentence uses the bridge's own words and links /guides/image-software/; no napari, Fiji or QuPath window is drawn anywhere; NucleiSky's app page and the demo agree on hosts.",
+  "Home tile is a single card link below the two entry cards' band, with alt text, lazy image and the text from data/demo.yaml; llms.txt lists /demo/; using-apps guide links it; the two hubs.yaml alt texts are corrected.",
+  "Staleness: a test with a faked newer release produces the derived line and a named entry in build/problems.md.",
+  "Pre-launch (not blocking merge): NucleiSky authors informed and agree; five-person check meets the thresholds in the Stage 1 gate; extra.listed flip is a separate decision.",
+  "Stage 2: each frame has a stamp and review date, captured on a real desktop, numbers match example.json, no personal paths or tokens visible.",
+  "Stage 3: MP4 at most 10 MB, plays and seeks on real browsers and a phone from a Range-capable host, captions and transcript match narration, poster resolves (poster rewriting and check_site test present), no autoplay, no external request.",
+  "Stage 4 starts only when all four external preconditions are verified from origin/main and releases on the day, not from stale clones."
+ ],
+ "risks": [
+  "Matcher control may be misread as 'two matchers are weak'. Mitigation: caption states it is this sparse test image only. If the pinned released NucleiSky code cannot produce the single-matcher outcomes (they were produced with the bridge-test tool function at 78c7f0a), fall back to omitting the matcher radio, not to inventing states; provenance must name the commit used.",
+  "Recorded numbers were reproduced with library versions different from the notebook pins and via library calls, not by running the shipped installer; they match the screenshots and protocol exactly, but Stage 2 must confirm the same numbers appear in the real notebook or example.json is regenerated.",
+  "Synthetic blobs look like a toy and the small image has only 9 nuclei; real nuclei need an owner-approved real image (open question). Do not mix 2D_QC.jpg or its SSIM headline with the fixture.",
+  "Low SSIM values on a visually perfect overlay confuse visitors; they are shown and explained, not cropped.",
+  "A drawn or interactive page may be read as 'upload and run here'. Mitigation: no upload, no Run button, the notice sits inside the figure frame, and the five-person check includes that question.",
+  "Exposure of someone else's app: NucleiSky authors must agree; the site is unlisted, so the page is not discoverable until a separate launch decision.",
+  "Design-gate erosion: the exemption must be bound to the data-demo root with failure tests; never relax the global button/alt checks. Empty-alt images in main fail check_design, so every layer image needs a real alt, which makes screen readers read stacked layers; the status region must carry the meaning and the developer should confirm the layer images' reading behaviour in the Playwright keyboard/ARIA pass.",
+  "Vendored artefacts go stale: mitigated by hashes, provenance, the staleness warning and a six-month review date; host application UI drift cannot be detected, only dated.",
+  "Video: weight is motion-driven (3-12 MB); repeated re-encodes inflate git history forever; the bundled Chromium cannot decode H.264 and the preview server lacks Range support, so playback and seeking need real-browser checks. Voice licences: Piper is GPL-3.0 (build tool only), lessac voice is research-licensed, libritts_r needs CC BY credit.",
+  "Third-party marks and licences: napari logo terms and the UI trademark position are unread; recreation avoided on purpose. Segoe UI must never be embedded; the site's Inter and Bricolage fonts are OFL.",
+  "The repository has no content licence statement and QuPath has no LICENSE; images generated from MIT code are fine, but the lab should state a content licence (separate decision).",
+  "Claims in the bridge docs move daily (merges on 2026-10-10); re-verify NucleiSky bridge-test merge status, template hook status, plugin releases and nightly CI before Stage 4 and before any wording that says 'soon'.",
+  "Scope creep: the original spec touched about fifteen files plus three window recreations; this plan keeps Stage 1 to one page module, one checker module, one data file and one generator, and defers everything else."
+ ],
+ "ask_user": [
+  {
+   "question": "Are you content that the first public example uses the synthetic fixture (9 query nuclei, Gaussian blobs), clearly labelled, rather than waiting for a real, licensed microscopy image?",
+   "recommendation": "Yes for Stage 1. In parallel ask the NucleiSky authors for one small real field image with a licence; swapping it in later only means re-running the generator."
+  },
+  {
+   "question": "Will the NucleiSky authors agree to be shown on the site this way, and may the page cite their paper from the manifest doi?",
+   "recommendation": "Ask before merge and again before flipping listed. Offer to add the Stage 2 frames to their manifest 'screenshots' in a separate pull request."
+  },
+  {
+   "question": "Who captures the six real frames on a real Windows or macOS desktop with NucleiSky 0.1.1 installed (Stage 2)?",
+   "recommendation": "Someone other than the developer of NucleiSky, with the fixture TIFFs from LabConstrictor-Tools make_nucleisky.py, showing the Missing Metadata step truthfully."
+  },
+  {
+   "question": "Narration for the video: a person, or a synthetic voice?",
+   "recommendation": "A person if available; otherwise Piper en_US-ljspeech-high (public domain), with sentence-level timing so captions are exact. Avoid the lessac voice. Decide only at Stage 3."
+  },
+  {
+   "question": "Keep the matching-method radio, which shows two real 'No match found' outcomes?",
+   "recommendation": "Keep it with the stated caption, because it is the one control with genuinely different recorded outcomes; drop it if the pinned code cannot reproduce them."
+  },
+  {
+   "question": "May the final MP4 (cap 10 MB) live in the site's git repository, and should the site stay unlisted until the Stage 1 gate and the five-person check pass?",
+   "recommendation": "Yes to both: commit the final encode once, and treat flipping extra.listed as its own launch decision."
+  },
+  {
+   "question": "Should host (napari, Fiji, QuPath) views wait until released software and real-desktop captures exist?",
+   "recommendation": "Yes. Until then use one sentence with the bridge's own 'untested and unlikely to be stable' wording; revisit when NucleiSky or Playground ships tools on main with a release."
+  }
+ ],
+ "overlaps_with_other_plans": [
+  "App Centre plan (planning/results/1-app-centre): optional manifest fields inputs, outputs, limitations, quickstart and captioned screenshots are the scalable, author-controlled form of the same idea. Build /demo/ as the rich version of that pattern: reuse its stamped-frame approach and, once those fields render, read NucleiSky's own entries instead of data/demo.yaml where possible; do not duplicate 'Works with' or 'Produces' text by hand.",
+  "Citation plan (planning/results/3-citation): the NucleiSky doi comes from the manifest and is kept visibly separate from the LabConstrictor citation (data/site.yaml citation_doi); the unresolved NucleiSky banner/logo provenance means the banner is not used as a scientific image here.",
+  "Docs 'run an example' tutorial: one folder of stamped frames (Stage 2) should serve that tutorial, the demo and the video instead of being captured three times.",
+  "Use hub (hubs.py/hubs.yaml): only the two alt-text corrections are touched; a Use-hub card would need a local-picture source in hubs.py and is deferred.",
+  "Pending check_design/DESIGN.md changes elsewhere: the Demo controls section and check_design_demo.py module must be merged in coordination so the Menu and Back-link rows are edited once.",
+  "Site launch plan: extra.listed false/true, sitemap and noindex behave automatically for /demo/; the flip stays a separate decision.",
+  "Playground repository work (notebook Feature-tour cell, release 0.0.2, wording fix) and NucleiSky/template bridge merges belong to other repositories' plans and only unblock Stage 4.",
+  "VLab4Mic: the snapshot says hosts napari/fiji while the local clone shows no manifest or tools module on origin/main; not relied on here."
+ ]
+}

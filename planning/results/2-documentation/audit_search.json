@@ -1,0 +1,107 @@
+{
+ "dimension": "SEARCH (benchmark section 5, second half: search understands the problem, not just terminology)",
+ "already_met": [
+  "Search exists and is the theme's client-side search (Zensical 0.0.65, `plugins: - search` in /home/user/labconstrictor-site/mkdocs.yml, index /search.json, 181 items, one per page intro and per h2/h3 section). Results show section title plus the guide name as breadcrumb and a highlighted snippet, and deep-link to the section.",
+  "Benchmark query 'Windows protected your PC' -> exactly 1 result, /guides/install/#windows (the install.md Windows step quotes the dialog text and shows the screenshot). Correct first result.",
+  "'requirements.yaml' -> first 3 results are notebook-requirements sections ('1. Create a requirements.yaml File', ...). Correct. The literal filename in the h3 headings does the work.",
+  "'how to run a notebook' -> first result /guides/notebook-usage/#3-how-to-run-notebooks ('3. How to Run Notebooks?'). Correct page (arguably better than the benchmark's 'Open and use an app').",
+  "'JupyterLab does not start' -> /guides/troubleshooting-installed-app/#jupyterlab-does-not-start-because-windows-reports-an-asn1-certificate-error, the only result. Right page; the section is written for maintainers (TLS launcher, self-test) and is the only cause listed.",
+  "Tool and host names are fine: 'Fiji', 'QuPath', 'napari', 'Fiji plugin' each put the matching 'Install the ... plugin/extension' guide first and image-software second (checked in Playwright with the first-character-loss problem of my first harness fixed).",
+  "'uninstall' and 'remove the app' -> first result is troubleshooting-installed-app#app-still-appears-in-the-windows-installed-apps-list-after-uninstalling. 'run without installing' -> using-apps#use-it-without-installing. 'where do I download the installer' -> /guides/install/ first. 'no internet' -> before-getting-started#offline-usage. 'token expired' -> template-synchronization#renewing-an-expired-token. 'Mac' -> install#macos first.",
+  "Build-track vocabulary is found well: 'create release' -> executable-creation sections, 'workflow failed' reaches workflow-status#2 (second), 'requirements' -> notebook-requirements.",
+  "The generator already gives every page a unique description (guides.py describe(): opening paragraph) and DESIGN.md enforces it; these are used for meta tags and cards. Nothing is broken there, but note they are NOT part of the search index (verified: a token placed in front-matter `description` was absent from search.json)."
+ ],
+ "gaps": [
+  {
+   "id": "S1",
+   "requirement": "Search should understand the problem: symptom phrasing such as 'Mac cannot open app', 'put my notebook online', 'GitHub build failed', 'app not showing in napari' must reach an actionable page (benchmark section 5; findability within 60 s, section 7).",
+   "current": "Playwright against the built /site (static copy at :8766; the :8765 preview was down), typed at 60 ms/key, waiting for stable results. Of the 9 benchmark queries: 'Mac cannot open app' = 0 results; 'put my notebook online' = 0; 'GitHub build failed' = 0; 'app not showing in napari' = 0; 'use inside Fiji' = hub /guides/image-software/ first, /ecosystem/#hosts 2nd, /use/ 3rd, the Fiji guide not in the top 5; 3 clean passes (Windows protected your PC, requirements.yaml, how to run a notebook) and 'JupyterLab does not start' right page but jargon section. Extra invented queries with 0 results: 'share my app with colleagues', 'app is damaged and can't be opened', 'Gatekeeper', 'SmartScreen', 'unidentified developer', 'installation failed', 'save my results', 'make an app from my notebook', 'turn my notebook into an app', 'browser does not open', 'I cannot find my notebooks', 'plugin menu missing', 'which Python version', 'build failed', 'publish my notebook as an app', 'GitHub Actions error', 'how do I open my notebook'. Behaviour I inferred from results: every typed word must match (with prefix/typo tolerance) inside ONE indexed chunk (a page intro or one h2/h3 block), so one word the site never uses, or two words that live in different sections, gives a blank panel (no message at all, see /tmp/.../search/base_zero.png). Zensical's search config only accepts `enabled` and `separator` (zensical/config.py:1737), there is no boost or synonym option. What I verified in a scratch build (copy of docs/ built with /home/user/labconstrictor-site/.venv/bin/zensical in the scratchpad): text inside `<span hidden>` (also sr-only, aria-hidden, display:none) IS indexed into the section chunk; HTML comments, front-matter `keywords`, `search_terms`, `description` and `search: boost` are NOT indexed. Front-matter `tags` are indexed as a `tags` array but render as visible md-tag chips and a Filters panel. Simulation: hidden symptom words added to 9 sections (install#macos, install#windows, executable-creation intro, workflow-status#2, napari#if-something-does-not-work, fiji, troubleshooting-installed-app, using-apps#something-went-wrong, notebook-usage#3) turned 'Mac cannot open app' 0 -> install#macos, 'put my notebook online' 0 -> executable-creation, 'GitHub build failed' 0 -> workflow-status#2, 'app not showing in napari' 0 -> napari#if-something-does-not-work, 'SmartScreen' 0 -> install#windows, 'unidentified developer' 0 -> install#macos, 'ImageJ' (fuzzy junk first) -> Fiji guide, 'share my app with colleagues' 0 -> executable-creation, 'installation failed' 0 -> using-apps#something-went-wrong. 'use inside Fiji' did NOT improve (hub still first, see S3).",
+   "severity": "major",
+   "proposal": "In the site generator add a small module (e.g. scripts/lcsite/search_terms.py, functions <=30 lines) reading data/search_terms.yaml, a list of {guide: <slug>, section: <heading text or 'intro'>, words: 'Mac cannot open app. App is damaged. Unidentified developer...'}. guides.py/hubs.py call it after assembling each guide and append `<span hidden>words</span>` at the end of the named section (end, so result snippets show the visible text; I checked the snippet in a screenshot, it reads normally). Fail the build, naming the file and entry, when the guide or heading no longer exists (no silent fallback), and add a test with its failure case. This is the cheap lever because it needs no template edit and survives template re-imports. Keep the words to symptom phrasings readers type, not stuffing. Add data/search_queries.yaml (query -> expected URL) and a Playwright check (CI only, optional) so the nine benchmark queries and the invented ones stay green; scripts/check_site.py cannot run the JS engine.",
+   "repo_and_files": [
+    "labconstrictor-site: data/search_terms.yaml (new), scripts/lcsite/search_terms.py (new), scripts/lcsite/guides.py (call site), tests/test_search_terms.py (new), data/search_queries.yaml (new), DESIGN.md (add a 'Search words' pattern first, as AGENTS.md demands)"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "Mild tension with 'source of truth': synonyms for pages that live in the template and the host repos are stored in the site repo. Defensible because they are search metadata, not guide content, and the build fails when they go stale; the visible fix is S2/S4 in the source repos. Do not use front matter in template files: GitHub renders it as a table, and the importer would need new parsing."
+  },
+  {
+   "id": "S2",
+   "requirement": "Troubleshooting organised by recognisable symptoms and reachable from search; the answer must exist before search can find it (benchmark sections 1, 5, 8.3).",
+   "current": "Several likely non-programmer questions have no page text at all. /guides/install/#macos step 2 only says 'If macOS refuses to open it ... click Open Anyway'; no 'cannot be opened', 'damaged', 'unidentified developer' wording. /guides/troubleshooting-installed-app/ has exactly two sections: a Windows 'still appears in Installed apps' glitch and 'JupyterLab does not start because Windows reports an ASN.1 certificate error' (written for maintainers: 'TLS-resilient launcher', 'launcher_debug.log', '--self-test'). Nothing for 'the app does not open / the browser stays empty / the terminal closed', 'installation failed', 'how to update an installed app' ('update the app' -> first result is the Fiji plugin guide, wrong), or how to uninstall: the troubleshooting page links 'uninstalling guide' to .tools/docs/download_executable.md on GitHub, which on origin/main is the placeholder 'Sorry, but no executable files are available yet', so there are no uninstall steps anywhere. 'share my app with colleagues' / 'put my notebook online': executable_creation.md '3. After the release' is two bullets (try the installer, list in App Centre) and never says 'send people the release link or the App Centre page'. 'my app won't open' -> only result is 'Create your repository' (wrong track). 'terminal window opens' -> only /build/ although notebook-usage#2 explains the terminal.",
+   "severity": "major",
+   "proposal": "Edit the template's source pages, in the readers' words, one h2/h3 per symptom: (a) .tools/docs/troubleshooting_installed_app.md: add '## macOS says the app cannot be opened or is damaged', '## Windows says \"Windows protected your PC\"' (short, linking to install), '## The app does not open, or the browser stays empty', '## Installation failed', '## How to uninstall an app' (Windows Settings > Apps, macOS Applications folder drag, Linux uninstall folder), '## How to update an installed app'. Move the ASN.1 section's maintainer text (self-test, env variables) below a one-sentence symptom lead-in. (b) install.md macOS step 2: quote the real macOS dialog titles. (c) executable_creation.md: add '3. Share the installer' naming the release page URL and the App Centre page. (d) Either publish download_executable.md as a real page or delete the dead link from troubleshooting_installed_app.md. Because the importer already places these pages in the Use track, no site change is needed; add each new heading to the README order only if a new file is created.",
+   "repo_and_files": [
+    "LabConstrictor (template) origin/main: .tools/docs/troubleshooting_installed_app.md, .tools/docs/install.md, .tools/docs/executable_creation.md, .tools/docs/download_executable.md, .tools/docs/README.md"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "rule_conflicts": "none"
+  },
+  {
+   "id": "S3",
+   "requirement": "Search results should be actionable pages, not overviews (benchmark section 5: 'Searches that should reach an actionable page').",
+   "current": "Hub and list pages are indexed with all their card text and outrank or pollute guide results. /guides/ (Docs) is one 1525-character chunk containing the title of every guide; /use/ (886 chars) and /build/ (1585 chars) contain their card copy; /apps/ (2094 chars) contains every app card. Observed: 'terminal window opens' -> only /build/; 'what is a notebook' -> #1 /apps/; 'how to run notebooks' -> #4 /use/, #5 /; 'use inside Fiji' -> #1 image-software hub, #2 /ecosystem/#hosts, #3 /use/ (the Fiji guide is not in the top 5); 'run a notebook' places notebook-portability (a Colab authoring guide) first. In the scratch build both exclusion mechanisms worked: front matter `search:\\n  exclude: true` removed /use/ from search.json entirely, and wrapping the card list in `<div data-search-exclude markdown=\"1\">` reduced /build/'s indexed text to 0 characters.",
+   "severity": "major",
+   "proposal": "In scripts/lcsite/hubs.py wrap the card grids of /use/, /build/ and the Docs home (hubs.write_docs_home) in an element with data-search-exclude, keeping the one-sentence lead indexed so the pages still match their own names. Do the same for the App Centre list in scripts/lcsite/pages_apps.py (the per-app pages stay searchable). Re-run the nine benchmark queries afterwards; I did not test this change end-to-end, only that the mechanism removes the text. This is not a content change in any source repo.",
+   "repo_and_files": [
+    "labconstrictor-site: scripts/lcsite/hubs.py, scripts/lcsite/pages_apps.py, tests/ (a test that hub pages carry the attribute), DESIGN.md"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "none (a page's own sidebar and nav are not indexed already; this only trims duplicated card copy)"
+  },
+  {
+   "id": "S4",
+   "requirement": "Headings that contain the symptom or the reader's own words (benchmark section 3: title is a concrete action or user question; section 5: understand the problem).",
+   "current": "Results are displayed as the section heading plus breadcrumb, and the headings are generic: install.md 'Windows', 'macOS', 'Linux', 'Next'; host guides 'What you need', 'Install', 'Open it', 'If something does not work' (the same heading three times, in /guides/napari/, /guides/fiji/ and /guides/qupath/, so 'Fiji' lists three look-alike 'If something does not work' rows; 'install on Mac' puts 'Install the napari plugin' first and install#macos second). 'ImageJ' (the word a non-programmer who knows only ImageJ would type) appears nowhere in the Fiji guide: the first result is 'Customise the installer images' by fuzzy matching 'image'. 'app not showing in napari' is answered only by the bullet 'labconstrictor-tools doctor shows which apps are registered and why one might be skipped' under 'If something does not work'. The one title written as a symptom is the ASN.1 one.",
+   "severity": "minor",
+   "proposal": "Rename headings in the files that own them: LabConstrictor/.tools/docs/install.md '## Windows' -> '## Install on Windows' with the dialog name in the step as today; '## macOS' -> '## Install on a Mac (Apple Silicon or Intel)'; napari-labconstrictor/docs/user-guide.md '## If something does not work' -> '## My app does not show up in napari'; LabConstrictor-Fiji/docs/user-guide.md -> '## My app does not show up in Fiji' and add 'Fiji (ImageJ)' to the opening sentence; LabConstrictor-QuPath/docs/user-guide.md -> '## My app does not show up in QuPath'. Keep bullets as they are; add a first bullet 'An app is listed only after you installed it with its installer' only if the host maintainers confirm it (I did not verify the discovery behaviour). The menu titles are page H1s so no site change is needed; hub card and anchor links to these sections should be re-checked by scripts/check_site.py after the rename (it already fails on dead anchors).",
+   "repo_and_files": [
+    "LabConstrictor (template): .tools/docs/install.md",
+    "napari-labconstrictor: docs/user-guide.md",
+    "LabConstrictor-Fiji: docs/user-guide.md",
+    "LabConstrictor-QuPath: docs/user-guide.md",
+    "LabConstrictor-Tools: docs/user-guide.md (image-software overview: add 'ImageJ' next to Fiji)"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "rule_conflicts": "none; this is the intended path (each repo owns its content). Renaming a heading changes its anchor, so add a data/redirects.yaml line only if some external page links to the old anchor (redirects work per page, not per anchor)."
+  },
+  {
+   "id": "S5",
+   "requirement": "When search finds nothing, the reader is not left at a dead end (Good Docs / Diataxis findability; benchmark section 7 'found within 60 s').",
+   "current": "A query with no match leaves a blank result panel: no 'no results' text, no hint to remove words, no links (screenshot base_zero.png for 'put my notebook online'; the count header h3 is simply absent). Because every typed word must match, longer natural questions fail more often: 'how to run a notebook' (5 words) worked only because all five words occur in one heading+paragraph; 'how do I open my notebook' = 0; 'run notebook' = 14 results while 'run a notebook' ranks a Colab authoring guide first. The panel lives in the theme's open shadow DOM (document.querySelectorAll('*') -> element.shadowRoot), so site CSS cannot style it.",
+   "severity": "minor",
+   "proposal": "In overrides/ or assets/javascripts/lc.js add a small observer on the search host's shadowRoot that, when the result list is empty and the input is non-empty, inserts a block 'No page matches every word. Try fewer words, or start here: Install an app, Troubleshooting an installed app, Build an app' with links built from the same data/hubs.yaml entries. Treat it as optional: it depends on the theme's internal class names (hashed, e.g. h3.B, ol.b) so it needs a pinned-version note and a test that fails loudly when the structure changes (no silent fallback). Cheaper first step: S1 plus S3 remove most zero-result cases for the benchmark list.",
+   "repo_and_files": [
+    "labconstrictor-site: assets/javascripts/lc.js (or overrides/main.html), tests/, DESIGN.md (document the pattern first)"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "Fragile coupling to theme internals; AGENTS.md 'no silent fallbacks' requires the check to break loudly. Weigh against 'Do not build' list item 'a large documentation platform' (this is small)."
+  },
+  {
+   "id": "S6",
+   "requirement": "Ranking and index hygiene: the first result should be the right page (benchmark section 5), and what is indexed should be decided by the author (AGENTS.md: author-controlled exposure).",
+   "current": "Index content has avoidable noise: (1) every page's footer pager text is indexed into its last section (e.g. '← PreviousOpen and use an appNext →Troubleshooting an installed app' at the end of guides/notebook-usage/#4-accessing-your-notebooks), so a title word typed by a reader matches unrelated neighbouring pages; (2) emoji headings from the template ('🖥️ Cross-Platform Installers', '📱 Offline Usage') are fine but typos in source headings such as 'finnisehd', 'LabConstrisct' in notebook_usage.md make fuzzy matches the only route for those words; (3) page descriptions are cut mid-sentence with an ellipsis ('...or from the app's…' for /guides/install/) and are not searchable; (4) 'M1' -> app pages' 'Get it' blocks rather than the install guide's macOS step; (5) no boost exists (front-matter `search: boost: 5` leaves no trace in search.json) so ranking can only be tuned by words and headings, not by weight. Ranking was otherwise sensible: title matches precede body matches in all queries I ran.",
+   "severity": "minor",
+   "proposal": "In scripts/lcsite/guides.py, put the `lc-pager` nav inside an element with data-search-exclude (one-line change where pager() builds the nav). Cut descriptions at a sentence boundary in guides.describe() (it already fails the build when there is no paragraph). Fix the typos in LabConstrictor/.tools/docs/notebook_usage.md ('finnisehd', 'LabConstrisct...'). Do not rely on a boost; document in DESIGN.md that Zensical 0.0.65 offers only `enabled` and `separator` and re-test the nine queries when the theme is upgraded (the engine is Zensical's own, not lunr, and version-bound).",
+   "repo_and_files": [
+    "labconstrictor-site: scripts/lcsite/guides.py (pager, describe), DESIGN.md",
+    "LabConstrictor: .tools/docs/notebook_usage.md"
+   ],
+   "effort": "S",
+   "needs_other_repo": true,
+   "rule_conflicts": "none"
+  }
+ ],
+ "unverified": [
+  "I did not read the minified worker (assets/javascripts/workers/search.7d14d953.min.js) in full: 'all words must match inside one chunk, with prefix and typo tolerance' is inferred from ~80 query results, not from source. Fuzzy behaviour (e.g. 'ImageJ' matching 'image', 'QuPath' once matching 'path') is observed only.",
+  "The preview server at http://localhost:8765/ was not responding (curl returned 000). I served the same /home/user/labconstrictor-site/site/ with python -m http.server on :8766 (search.json timestamp 2026-10-10 08:48); I did not check whether site/ is older than docs/.",
+  "My first harness runs lost the first typed character (the dialog was not focused yet; the input read 'iji' for 'Fiji'), which made results look random. I discarded those and re-ran all queries with a 700 ms wait after opening the dialog and a stability poll; I did not check input values in every discarded run. Final tables come only from the corrected runs (out3.txt, 46 queries). The earlier file names in the scratchpad search folder (q0.txt, shot.js, exp/) came from a previous attempt and were not used.",
+  "The 'after' numbers come from a scratch copy of docs/ built with the repo's own zensical binary, with hidden text typed by hand into 9 sections. The page-level insertions for executable-creation, fiji and troubleshooting-installed-app landed in unintended chunks (e.g. 'put my notebook online' resolved to executable-creation#3-after-the-release, not the intro), so treat them as 'the right guide is reachable', not as a final ranking. Not tested: the generator implementation, a CI Playwright check, the exclusion of hub card lists on the full benchmark list, mobile search behaviour, keyboard behaviour of the search dialog.",
+  "I did not verify what macOS or Windows actually show (dialog titles) or how the napari/Fiji/QuPath plugins discover apps; the proposed heading wording in S2 and S4 must be confirmed by the owners of those repos.",
+  "Template source state: /home/user/LabConstrictor is checked out on branch claude/festive-cannon-epptr4, which lacks install.md and troubleshooting_installed_app.md; I read origin/main (git show) for the proposals. build/template, which the publish workflow uses, was not present locally."
+ ]
+}

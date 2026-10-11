@@ -1,0 +1,91 @@
+{
+ "verdict": "needs_changes",
+ "problems": [
+  {
+   "problem": "The numbers and the matcher control come from unreleased bridge-test code, but the plan sells the page as showing the released notebook product (0.1.1). I checked git in /home/user/NucleiSky. Tag 0.1.1 is an ancestor of origin/bridge-test, and `git diff 0.1.1 origin/main -- src notebooks` is empty. `git diff 0.1.1 origin/bridge-test -- src/nucleisky` changes pipeline.py and segmentation.py. It adds the `matcher_order` argument to run_adaptive_matching_and_export, and nothing in 0.1.1 or main accepts it. So the 'triangles' and 'graph' failure states, the 'quad only' and 'hashing' states, and the sentence 'No match found with the 'triangles' matcher ... try Matcher = auto' exist only in the napari/Fiji tool on bridge-test. The released notebook has no 'Matcher' dropdown (Option A runs all four; Option B uses an automatic order). A visitor will believe the installed notebook has this control and this message. The plan's fallback ('omit the radio if released code cannot produce it') is already triggered. The recorded rotation, scale and offsets were also produced by the bridge-test tool function, and nobody has confirmed that the 0.1.1 notebook prints them.",
+   "severity": "blocker",
+   "fix": "Remove the matcher radio from the notebook-first Stage 1 page. If it is kept, move it to a separate figure labelled 'from the napari/Fiji prototype, unreleased', not 'the app'. Have the generator run one code path that exists in the released tag (notebook calls at 0.1.1 or main), and record in example.json which commit produced each number. State that matcher=quad came from adaptive matching. Before launch, diff the numbers from 0.1.1 against the bridge-test numbers. Do not display offset names such as offset_y_px unless the notebook shows them."
+  },
+  {
+   "problem": "The 'bbox' in the results table is not the small image's footprint. export.py (bbox_full_px_from_similarity_um with margin_um) shows that [637,963,597,923] is the export and QC region of interest with a margin added. It is 326x326 px. The tight rotated footprint spans about 646-954 by 606-914. The plan draws the outline from the recovered transform, so the table row 'bbox [637, 963, 597, 923]' will not match the drawn outline. The plan's visual spec even describes the outline as 'bbox rows 637-963'. A skeptic who overlays the two will see the mismatch.",
+   "severity": "major",
+   "fix": "Label the row 'Region exported for the QC figure (includes a margin)', or drop it. Derive the outline coordinates separately and call them 'footprint drawn from the recovered transform'. Add a test that the outline lies inside the bbox with margin. Name the axis order (row y, column x) for every coordinate shown."
+  },
+  {
+   "problem": "The 'offset 700.3293 / 605.5654' values are shown without a meaning. The ground-truth b_px is the pixel position of the query's top-left corner after rotation (the query centre is at about 800, 760), not its centre. A reader will take these numbers as the location of the small image. They are given as y then x, but the plan's table says only 'offsets 700.3293 and 605.5654'.",
+   "severity": "major",
+   "fix": "Label them 'row / column in reference pixels of the small image's top-left corner' and add 'centre of the small image: about row 800, column 760' derived from the transform. Mark that derived value as computed by the site."
+  },
+  {
+   "problem": "The plan says the small image is 'sampled twice as finely (0.325 against 0.65 um per pixel)'. The generator makes the query by bilinear resampling of the same synthetic array (zoom 2.0, map_coordinates, plus gain and noise). It is an interpolated, blurry copy of the same data, not a finer acquisition, so it adds no detail. The DOI row next to this demo says 'NucleiSky enables cross-scale multimodal registration'. A skeptical scientist would conclude that the demo supports the paper's cross-scale, multimodal claim. It does not: it is a self-crop of one synthetic field, the easiest case, with only 9 query nuclei.",
+   "severity": "major",
+   "fix": "Say 'made by resampling the reference at twice the pixel density; it contains no extra detail'. Next to the paper citation add 'This synthetic example does not reproduce the paper's results; the paper evaluates real images.' Put the citation after the synthetic notice, not beside the result."
+  },
+  {
+   "problem": "The page does not show which settings produced 429 and 9 nuclei, and reproducibility depends on them. The notebook defaults to Cellpose (GPU), but the recorded numbers come from otsu thresholding, blur sigma 1.0, watershed on and peak distance 5. Min area is 5 in the tool and 80 in the notebook. Other real runs give 12.2927 / 425 (li) and 12.1876 / 378 (no watershed). Someone who follows the real notebook with its default method gets different numbers. The plan's results table lists only inputs and outputs.",
+   "severity": "major",
+   "fix": "Add a 'Settings used' block to the table, taken from example.json (method, sigma, min area, watershed, peak distance, seed 0, adaptive). Add one sentence: 'The notebook's default segmentation is Cellpose; other settings give slightly different values.'"
+  },
+  {
+   "problem": "The provenance label 'Recorded result' and the staleness logic are wrong for how the results were made. The values were computed by calling library functions in a scratch venv, with different library versions and from bridge-test commit 78c7f0a. They were not recorded from the installed app, and they are not tied to the release tag 0.1.1. The staleness warning compares against the latest release, so it will either never fire or fire permanently. The chip and the phrase 'NucleiSky computed these results' blur this. Two code paths are also stitched into one 'recorded run': the bridge-tool function for the scalars and the notebook's plotting calls for the QC figure.",
+   "severity": "major",
+   "fix": "Use 'Precomputed by running NucleiSky's code (commit X, library versions Y); not a recording of an app session'. Record in example.json the release tag or the commit that contains the code, and key the staleness check on whether that code differs from the latest release. Add a Stage 2 gate requiring that the real installed notebook shows the same numbers, or regenerate."
+  },
+  {
+   "problem": "Without JavaScript the plan leaves radios, checkboxes and a range slider visible and inert. The plan requires one checked radio per group in the static HTML and says all panels are stacked, but it never hides the controls. That is exactly 'a control that does something it does not'. It is also a trap for assistive technology and for reader-mode or print views.",
+   "severity": "major",
+   "fix": "Emit the control fieldsets with `hidden` in the static HTML, and let demo.js remove it. Add a no-JS Playwright check that no enabled input is visible. Teach check_design_demo that this hidden-until-JS pattern is the only form allowed."
+  },
+  {
+   "problem": "Accessibility of the layered viewer is unresolved. check_design forces a real alt on every img, so three or four stacked images are read out as separate pictures ('reference', 'aligned', 'outline'). The plan defers this to a 'Playwright ARIA pass'. Toggling a layer off changes meaning for sighted users only, because the role=status text is the sole equivalent. The range input has no aria-valuetext. Touch targets and thin outline strokes at 358 px width (a 0.45x scale of 800 px) are not specified. The zoom state exists partly to compensate for the footprint being only about 20 percent of the field. The status text never says where the small image is, so blind users cannot learn the result.",
+   "severity": "major",
+   "fix": "Use one accessible name for the viewer (a single figure or role=img with a state-dependent label), with the layers as CSS backgrounds or aria-hidden images, and write the exception into check_design_demo. Put a text equivalent in the status line: position, rotation, and 'the small image covers about a fifth of the width'. Add aria-valuetext='80 percent'. Set minimum 44 px targets, an outline stroke of at least 2 px at display size, and a 390 px screenshot check that the outline is visible."
+  },
+  {
+   "problem": "The video plan hides facts that would make a visitor's install fail. The storyboard says 'Download the installer for your system' and 'Do not mention Intel Mac'. The NucleiSky 0.1.1 release does contain MacOSX-x86_64 .pkg and .sh files, while the Tools protocol says Intel Macs are unsupported for NucleiSky. The same sources give about 25 GB free disk and about 9 GB installed. Cellpose, the notebook default, wants a GPU. The '6-8 minute install' figure comes from the generic template doc, not from this 9 GB app. Stage 1 also contains no requirements statement.",
+   "severity": "major",
+   "fix": "State requirements on the page and in the video: Apple Silicon only for macOS, disk space, GPU optional but slower, and the install time labelled 'for a typical app; NucleiSky is large'. Check the actual release asset sizes. Do not pass over the Intel installer in silence."
+  },
+  {
+   "problem": "The video is not accessible without narration or sight. The only captions are a sidecar WebVTT, which is off by default, so a muted viewer sees nothing explanatory. The transcript is generated from the .vtt, so it contains only narration and omits what is on screen: the Missing Metadata card, the typed pixel sizes, the numbers. That fails the audio description and media alternative expectations for pre-recorded video. A synthetic voice is also not disclosed.",
+   "severity": "minor",
+   "fix": "Add a visual-description field per scene in storyboard.yaml and render it into the transcript. Burn in short on-screen labels (the plan already allows lower-thirds) so mute viewing works. Set the caption track to default or show a visible 'Captions' hint. State in the transcript if the voice is synthetic."
+  },
+  {
+   "problem": "The SSIM caption is stated as fact but is only partly right. export.py computes SSIM over the whole ROI using warp mode='constant', cval=0.0, so the area outside the footprint scores low. That part is correct. 'Much larger' is not: ROI 326x326 is about 106k px against a footprint of about 68k px, roughly 1.6 times. The small image is also an interpolated, noisy, gain-changed copy, and that lowers SSIM too. The plan's caption therefore over-explains one cause.",
+   "severity": "minor",
+   "fix": "Word it as: 'SSIM is computed over the whole exported region, including the margin and corners the small image does not cover, where the warped image is zero, so the first-row score is low even though the overlay is good.' Do not claim the ROI is much larger."
+  },
+  {
+   "problem": "Accuracy is shown only through a cherry-picked rotation row. The plan shows 'Rotation used to make the test image: 12 degrees' but not the localisation error. The agent's own numbers give an offset error of about 0.12 reference px at the centre and up to 0.8 px at the corners, plus a mean error of 0.350 um. A skeptic asks for exactly those numbers, and omitting them is a one-sided display. The generator already knows them.",
+   "severity": "minor",
+   "fix": "Show a small derived row 'Difference from the known transform: 0.17 degrees; about 0.1 px at the centre, at most about 0.8 px at the corners', computed in the generator, labelled as the site's comparison and not a NucleiSky output."
+  },
+  {
+   "problem": "Display processing of the images is undisclosed: uint16 TIFFs are windowed to 8 bits, the reference is downsampled from 1600 to 800 px, JPEG q80 is lossy, and the zoom view is a 2x upsample. A scientist treats these as raw data. The aligned layer is also rendered by the generator and blended by CSS screen blending, not an output of NucleiSky. The green/magenta colours are borrowed from the tool's convention.",
+   "severity": "minor",
+   "fix": "Add to the provenance line and the figure caption: 'Images are reduced to 8 bits and 800 px for the web. The overlay layer and outline are drawn from the transform NucleiSky found; the colours are a display choice.' Record the windowing in example.json."
+  },
+  {
+   "problem": "Several gates cannot be met as written. 'Generator re-run reproduces identical hashes' will fail across machines for JPEG/PNG encoders, matplotlib fonts and library versions, even though the TIFF fixture hashes were stable across three library sets. Another gate requires 4 of 5 biologists to pass with a 'rerun with fresh participants' loop, but it assumes people the plan cannot recruit. 'Every displayed number equals example.json' is circular and does not prove the numbers match the real app.",
+   "severity": "minor",
+   "fix": "Gate on the fixture hashes plus numeric equality of the recorded outputs within tolerance, and hash only the committed media. Split the human gates from the CI gates. Make the Stage 2 real-desktop comparison the external check on the numbers."
+  },
+  {
+   "problem": "Small wording slips remain. The fieldset legend says 'Matching method' while the quoted tool message says 'Matcher = auto', so the quoted advice refers to a label that does not exist on the page. The plan uses 'recorded' and 'precomputed' interchangeably. The host sentence is fine, but 'NucleiSky runs in a notebook today' sits next to a host note that links the image-software guide, which names plugins the app's manifest does not support.",
+   "severity": "minor",
+   "fix": "Settle on 'precomputed' throughout. If the matcher radio survives anywhere, name the fieldset 'Matcher' to match the quoted text, or drop the quoted 'Matcher = auto' clause. Keep the host sentence as written and add 'not available for NucleiSky yet'."
+  }
+ ],
+ "missing": [
+  "Confirmation that the 0.1.1 notebook itself prints rotation, scale and offsets, and that the same numbers come out with 0.1.1 code instead of bridge-test (nobody ran 0.1.1 end to end). Unverified.",
+  "A statement of system requirements (disk, GPU, Intel Mac) in Stage 1 and the video.",
+  "A text equivalent for blind users of where the small image sits in the field.",
+  "The settings block (segmentation method, sigma, min area, watershed, peak distance, seed) in the results table.",
+  "Display-processing disclosure (8-bit windowing, downsampling, JPEG, 2x zoom, drawn overlay and outline).",
+  "Visual description in the video transcript and on-screen labels for muted viewing.",
+  "No-JS handling that hides the controls, plus a test for it.",
+  "Cross-machine reproducibility criteria for the generator that do not depend on byte-identical images.",
+  "Not verified here: whether the napari or Jupyter marks require permission, real-browser H.264 playback, contrast of any dark UI, and the human comprehension test results."
+ ]
+}
