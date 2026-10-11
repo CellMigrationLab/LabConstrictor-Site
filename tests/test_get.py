@@ -108,3 +108,13 @@ class DownloadBlockTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TileLinkTests(unittest.TestCase):
+    """Each system tile links to its own section of the install guide."""
+
+    def test_each_tile_has_its_own_steps_link(self) -> None:
+        """Windows, macOS and Linux tiles point at their own anchors."""
+        html = pages_get.get_section(app([ASSET, MAC]))
+        for system in ("windows", "macos", "linux"):
+            self.assertIn(f'guides/install/#{system}"', html)

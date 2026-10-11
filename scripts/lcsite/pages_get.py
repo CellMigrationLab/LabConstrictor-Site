@@ -7,11 +7,15 @@ from .cards import CHIPS, SYSTEM_LABELS, SYSTEMS, downloads, offered_assets, rel
 from .text import esc, long_date, megabytes
 from .validate import optional_list
 
-GUIDE = '<a href="guides/install/">install guide</a>'
+def steps_link(system: str, label: str) -> str:
+    """A link to the install guide's section for one system (the guide's own headings are Windows, macOS and Linux)."""
+    return f'<a href="guides/install/#{system}">{label}</a>'
+
+
 HINTS = {
-    "windows": f"The installer is not code-signed, so Windows may warn you. Run files only from this app's GitHub release. See the {GUIDE}.",
-    "macos": f"Not sure which? Apple menu, About This Mac: Intel, or M1 and later (Apple Silicon). If macOS refuses to open it, see the {GUIDE}.",
-    "linux": f"Needs a terminal. Run it with: bash &lt;file name&gt;. See the {GUIDE}.",
+    "windows": f"The installer is not code-signed, so Windows may warn you. Run files only from this app's GitHub release. See the {steps_link('windows', 'Windows steps')}.",
+    "macos": f"Not sure which? Apple menu, About This Mac: Intel, or M1 and later (Apple Silicon). If macOS refuses to open it, see the {steps_link('macos', 'macOS steps')}.",
+    "linux": f"Needs a terminal. Run it with: bash &lt;file name&gt;. See the {steps_link('linux', 'Linux steps')}.",
 }
 COLAB_FILE = re.compile(r"^https://colab\.research\.google\.com/github/([^/]+)/([^/]+)/blob/([^/]+)/(.+)$")
 COLAB_NOTE = ("These run on Google's servers in Google Colab: you need an internet connection and a Google account, and any data you load into "
