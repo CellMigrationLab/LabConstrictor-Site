@@ -7,7 +7,7 @@
 
   /**
    * Draw everything from the state.
-   * @param {Object} ctx - the controller context ({root, state, pending, installTimer}).
+   * @param {DemoContext} ctx - the controller context ({root, state, pending, installTimer}).
    * @returns {void}
    */
   function sync(ctx) {
@@ -26,7 +26,7 @@
 
   /**
    * Stop the processing delay of a simulated run and clear its busy look.
-   * @param {Object} ctx - the controller context ({root, state, pending, installTimer}).
+   * @param {DemoContext} ctx - the controller context ({root, state, pending, installTimer}).
    * @returns {void}
    */
   function clearBusy(ctx) {
@@ -39,7 +39,7 @@
 
   /**
    * Stop the simulated install's progress timer.
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @returns {void}
    */
   function stopInstall(ctx) {
@@ -49,7 +49,7 @@
 
   /**
    * Announce a text to screen readers.
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @param {string} text - what to say.
    * @returns {void}
    */
@@ -59,7 +59,7 @@
 
   /**
    * After an action: announce its text and move the focus to the control it names, when that control can take it.
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @param {{focus: string, say: string}} result - the action's reply.
    * @returns {void}
    */
@@ -72,7 +72,7 @@
 
   /**
    * Start the simulated install: progress grows until it reaches 100, then Next is enabled and focused.
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @returns {void}
    */
   function startInstall(ctx) {
@@ -89,7 +89,7 @@
 
   /**
    * Run the action of a control now: change the state, redraw, announce, and start the install when the action asks.
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @param {HTMLElement} el - the control.
    * @returns {void}
    */
@@ -102,7 +102,7 @@
 
   /**
    * Run the action of a control after a short delay that mimics the processing, with the control shown as busy meanwhile.
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @param {HTMLElement} el - the control.
    * @param {number} ms - the delay in milliseconds.
    * @returns {void}
@@ -119,7 +119,7 @@
 
   /**
    * Start again from the first state, with every field back to its written value.
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @returns {void}
    */
   function restart(ctx) {
@@ -131,7 +131,7 @@
 
   /**
    * Show another view; changing the view always restarts the demo.
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @param {string} view - 'notebook', 'napari' or 'fiji'.
    * @returns {void}
    */
@@ -142,7 +142,7 @@
 
   /**
    * Handle a press on one of the demo's own controls (part tabs, view tabs, Reset).
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @param {HTMLElement} el - the control (it has data-demo-act).
    * @returns {void}
    * @throws {Error} for an unknown data-demo-act value.
@@ -159,7 +159,7 @@
 
   /**
    * Handle a press on a control inside a window: a notebook tab, a first click on a double-click target, or an action.
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @param {HTMLElement} el - the control.
    * @param {number} clicks - the click count of the event (1 for a single click, 0 for the keyboard).
    * @returns {void}
@@ -179,7 +179,7 @@
 
   /**
    * The click handler of the demo root.
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @param {MouseEvent} e - the click.
    * @returns {void}
    */
@@ -206,7 +206,7 @@
 
   /**
    * The key handler of the demo root: arrow keys move between the tabs of a tab list.
-   * @param {Object} ctx - the controller context.
+   * @param {DemoContext} ctx - the controller context.
    * @param {KeyboardEvent} e - the key event.
    * @returns {void}
    */

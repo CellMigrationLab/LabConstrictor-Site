@@ -37,7 +37,7 @@
    * Go to an installer page; the "Installing" page starts the simulated install.
    * @param {DemoState} state - the state to change.
    * @param {HTMLElement} el - the pressed button (data-go names the page).
-   * @returns {Object} the reply.
+   * @returns {ActionReply} the reply.
    */
   function inst(state, el) {
     state.page = el.dataset.go;
@@ -48,7 +48,7 @@
   /**
    * Open the installed app from the Start menu: the Use part, Welcome notebook.
    * @param {DemoState} state - the state to change.
-   * @returns {Object} the reply.
+   * @returns {ActionReply} the reply.
    */
   function openStart(state) {
     Object.assign(state, { cat: 'use', view: 'notebook', launched: true });
@@ -59,7 +59,7 @@
    * Run notebook Step 0, or a cell of the napari or Fiji dialog.
    * @param {DemoState} state - the state to change.
    * @param {HTMLElement} el - the play, Run or OK button.
-   * @returns {Object} the reply.
+   * @returns {ActionReply} the reply.
    * @throws {Error} when the button's data-step is not 1, 2 or 3.
    */
   function runStep(state, el) {
@@ -72,7 +72,7 @@
   /**
    * The Run button of the toolbar: Step 0, the next cell, or the Welcome cell, whichever is next.
    * @param {DemoState} state - the state to change.
-   * @returns {Object} the reply.
+   * @returns {ActionReply} the reply.
    */
   function runNext(state) {
     if (!(state.nbTab === 'app' && state.opened)) { state.welcomeRun = true; } else if (!state.init) { state.init = true; } else { applyRun(state, Math.min(3, state.step + 1), false); }
@@ -83,7 +83,7 @@
    * Toggle the napari layer's visibility (its row is the eye button's parent).
    * @param {DemoState} state - the state to change.
    * @param {HTMLElement} el - the eye button.
-   * @returns {Object} the reply.
+   * @returns {ActionReply} the reply.
    * @throws {Error} when its row names no napari layer.
    */
   function eye(state, el) {
@@ -97,7 +97,7 @@
    * Set the selected napari layer's opacity from the slider.
    * @param {DemoState} state - the state to change.
    * @param {HTMLInputElement} el - the opacity slider.
-   * @returns {Object} the reply.
+   * @returns {ActionReply} the reply.
    * @throws {Error} when no layer is selected (the slider is disabled then).
    */
   function opacity(state, el) {
