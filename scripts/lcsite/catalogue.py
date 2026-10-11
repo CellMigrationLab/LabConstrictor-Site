@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from . import completeness
-from .assets import check_image, parse_assets
+from .assets import check_image, identities, parse_assets
 from .config import BUILD, MANIFEST_NAME, RESERVED_SLUGS, SNAPSHOT_FORMAT, AppProblem
 from .github import MAX_FILE, GitHub, NotFound
 from .images import check_square
@@ -64,7 +64,7 @@ def read_release(gh: GitHub, name: str, manifest: dict) -> dict | None:
         if claims:
             raise AppProblem("manifest promises installers but the repository has no release")
         return None
-    assets = parse_assets(name, raw["tag_name"], raw["assets"])
+    assets = parse_assets(name, raw["tag_name"], raw["assets"], identities(name, manifest["name"]))
     if claims and not assets:
         raise AppProblem(f"manifest promises installers but release {raw['tag_name']} has none")
     check_platforms(name, manifest, assets)

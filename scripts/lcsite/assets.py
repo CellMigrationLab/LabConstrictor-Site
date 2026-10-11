@@ -27,13 +27,39 @@ def sha256_of(raw: dict) -> str | None:
     return hexdigest
 
 
-def parse_asset(repo: str, tag: str, raw: dict) -> dict | None:
+def squash(name: str) -> str:
+    """A project name compared loosely: lower case, letters and digits only ("Guess the Condition" -> "guessthecondition")."""
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def identities(repo: str, manifest_name: str) -> set[str]:
+    """The project names an installer of this app may carry: the manifest's name, the repository's name, and the repository's name
+    without its "LabConstrictor" prefix (so `LabConstrictor-VLab4Mic` may publish `VLab4Mic-...` installers), all compared loosely."""
+    base = repo.split("/")[-1]
+    names = {squash(manifest_name), squash(base)}
+    stripped = re.sub(r"^labconstrictor[-_ ]?", "", base, flags=re.I)
+    if stripped and stripped != base:
+        names.add(squash(stripped))
+    return names
+
+
+def check_identity(raw_name: str, tag: str, m: re.Match, allowed: set[str]) -> None:
+    """Raise AppProblem unless the installer's project is one of the app's names and its version is the release tag (a leading "v" is ignored)."""
+    if squash(m["project"]) not in allowed:
+        raise AppProblem(f"asset {raw_name} is named for the project {m['project']}, which is not this app (expected one of {sorted(allowed)})")
+    if m["version"] != tag.removeprefix("v"):
+        raise AppProblem(f"asset {raw_name} carries version {m['version']} but the latest release is {tag}")
+
+
+def parse_asset(repo: str, tag: str, raw: dict, allowed: set[str]) -> dict | None:
     """One release asset as an installer record, or None when its name is not an installer
     (checksums and notes may sit beside installers). Raises AppProblem if the download
-    address is not on github.com for this repo and tag."""
+    address is not on github.com for this repo and tag, or if the installer is named for another
+    project or another version than the release (`allowed` are the project names from `identities`)."""
     m = INSTALLER.match(raw["name"])
     if not m:
         return None
+    check_identity(raw["name"], tag, m, allowed)
     url = raw["browser_download_url"]
     if not url.lower().startswith(download_prefix(repo, tag).lower()):
         raise AppProblem(f"asset {raw['name']} is not served from {download_prefix(repo, tag)}")
@@ -42,9 +68,9 @@ def parse_asset(repo: str, tag: str, raw: dict) -> dict | None:
             "url": url, "primary": m["ext"] == PREFERRED[system], "sha256": sha256_of(raw)}
 
 
-def parse_assets(repo: str, tag: str, raws: list[dict]) -> list[dict]:
+def parse_assets(repo: str, tag: str, raws: list[dict], allowed: set[str]) -> list[dict]:
     """Every installer among a release's assets, sorted by system, architecture, then format."""
-    parsed = [a for a in (parse_asset(repo, tag, r) for r in raws) if a]
+    parsed = [a for a in (parse_asset(repo, tag, r, allowed) for r in raws) if a]
     return sorted(parsed, key=lambda a: (a["os"], a["arch"], not a["primary"], a["ext"]))
 
 

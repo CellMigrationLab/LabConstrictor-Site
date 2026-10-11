@@ -6,9 +6,10 @@ from lcsite import assets, catalogue, validate
 from lcsite.config import AppProblem
 from lcsite.github import NotFound
 
-OK = {"schema": 1, "name": "Demo App", "summary": "A demo app that does something useful.", "kind": "analysis",
+OK = {"schema": 1, "name": "Demo", "summary": "A demo app that does something useful.", "kind": "analysis",
       "distribution": {"installer": True}}
 REPO = "o/demo-app"
+ALLOWED = assets.identities(REPO, "Demo")
 ENTRY = {"repo": REPO, "repo_id": 7, "owner_id": 9, "added": "2026-10-09"}
 
 
@@ -39,24 +40,42 @@ class FakeGitHub:
         return (self.manifest or "").encode()
 
 
-MANIFEST = "schema: 1\nname: Demo App\nsummary: A demo app that does something useful.\nkind: analysis\ndistribution:\n  installer: true\n"
+MANIFEST = "schema: 1\nname: Demo\nsummary: A demo app that does something useful.\nkind: analysis\ndistribution:\n  installer: true\n"
 
 
 class AssetTests(unittest.TestCase):
     def test_installer_names_are_parsed(self) -> None:
         """Installer names are parsed."""
-        a = assets.parse_asset(REPO, "1.0.0", release()["assets"][0])
+        a = assets.parse_asset(REPO, "1.0.0", release()["assets"][0], ALLOWED)
         self.assertEqual((a["os"], a["arch"], a["ext"], a["primary"]), ("windows", "x86_64", "exe", True))
 
     def test_non_installer_assets_are_ignored(self) -> None:
         """Non installer assets are ignored."""
         raw = {"name": "checksums.txt", "size": 1, "browser_download_url": "x"}
-        self.assertIsNone(assets.parse_asset(REPO, "1.0.0", raw))
+        self.assertIsNone(assets.parse_asset(REPO, "1.0.0", raw, ALLOWED))
 
     def test_download_from_another_repo_is_refused(self) -> None:
         """Download from another repo is refused."""
         with self.assertRaises(AppProblem):
-            assets.parse_assets(REPO, "1.0.0", release("evil/repo")["assets"])
+            assets.parse_assets(REPO, "1.0.0", release("evil/repo")["assets"], ALLOWED)
+
+    def test_an_installer_for_another_project_or_version_is_refused(self) -> None:
+        """OtherProgram-1.0.0 in this app's release, or Demo-0.9.0 in release 1.0.0, is a problem naming the file; a leading v on the tag is ignored."""
+        other = dict(release()["assets"][0], name="OtherProgram-1.0.0-Windows-x86_64.exe")
+        old = dict(release()["assets"][0], name="Demo-0.9.0-Windows-x86_64.exe")
+        for raw in (other, old):
+            raw["browser_download_url"] = f"https://github.com/{REPO}/releases/download/1.0.0/{raw['name']}"
+            with self.assertRaises(AppProblem):
+                assets.parse_asset(REPO, "1.0.0", raw, ALLOWED)
+        tagged = dict(release()["assets"][0], browser_download_url=f"https://github.com/{REPO}/releases/download/v1.0.0/Demo-1.0.0-Windows-x86_64.exe")
+        self.assertIsNotNone(assets.parse_asset(REPO, "v1.0.0", tagged, ALLOWED))
+
+    def test_names_that_differ_from_the_repository_are_allowed_when_documented(self) -> None:
+        """VLab4Mic installers from LabConstrictor-VLab4Mic, and a manifest name with spaces, match; an unrelated name does not."""
+        self.assertIn("vlab4mic", assets.identities("o/LabConstrictor-VLab4Mic", "VLab4Mic"))
+        self.assertIn("guessthecondition", assets.identities("o/GuessTheCondition", "Guess the Condition"))
+        self.assertIn("labconstrictorplayground", assets.identities("o/LabConstrictor-Playground", "LabConstrictor Playground"))
+        self.assertNotIn("other", assets.identities("o/LabConstrictor-VLab4Mic", "VLab4Mic"))
 
     def test_images_must_be_png_jpeg_or_gif(self) -> None:
         """Images must be png jpeg or gif."""
