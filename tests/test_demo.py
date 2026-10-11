@@ -120,7 +120,7 @@ class ScriptConsistencyTests(unittest.TestCase):
         got = demo_media.installer_values(apps)
         shown = dict(demo_media.values(example()), **got)
         html = demo_media.render(demo_media.read_window("installer"), shown, "installer.html")
-        self.assertIn("303 MB", html)
+        self.assertIn("317.5 MB", html)
         self.assertNotIn("{{", html)
         with self.assertRaises(SystemExit):
             demo_media.installer_values([dict(apps[0], release=None)])

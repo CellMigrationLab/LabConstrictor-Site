@@ -2,7 +2,7 @@
 
 import unittest
 
-from lcsite import hosts, pages_apps
+from lcsite import hosts, pages_get
 
 
 class NotebookTests(unittest.TestCase):
@@ -11,12 +11,12 @@ class NotebookTests(unittest.TestCase):
     def test_github_address_is_derived_from_a_colab_github_link(self) -> None:
         """A Colab link into a GitHub repository gives the notebook's GitHub address; any other Colab link gives none."""
         url = "https://colab.research.google.com/github/o/r/blob/main/notebooks/App/App.ipynb"
-        self.assertEqual(pages_apps.github_view(url), "https://github.com/o/r/blob/main/notebooks/App/App.ipynb")
-        self.assertEqual(pages_apps.github_view("https://colab.research.google.com/drive/abc"), "")
+        self.assertEqual(pages_get.github_view(url), "https://github.com/o/r/blob/main/notebooks/App/App.ipynb")
+        self.assertEqual(pages_get.github_view("https://colab.research.google.com/drive/abc"), "")
 
     def test_each_listed_notebook_gets_a_row_and_nothing_else_does(self) -> None:
         """One row per listed notebook with Open in Colab and View on GitHub; a Drive notebook has no GitHub link; the label is escaped."""
-        html = pages_apps.notebooks_list([
+        html = pages_get.notebooks_list([
             {"label": "2D <b>", "url": "https://colab.research.google.com/github/o/r/blob/main/a.ipynb"},
             {"label": "3D", "url": "https://colab.research.google.com/drive/abc"}])
         self.assertEqual(html.count("<li>"), 2)

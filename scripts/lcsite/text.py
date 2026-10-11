@@ -53,8 +53,8 @@ def long_date(iso: str) -> str:
 
 
 def megabytes(size: int) -> str:
-    """A byte count as whole megabytes: 217506050 -> "207 MB"."""
-    return f"{round(size / 2**20)} MB"
+    """A byte count in megabytes (10**6 bytes, as GitHub and file managers show them): 317528492 -> "317.5 MB"."""
+    return f"{size / 10**6:.1f} MB"
 
 
 def plural(n: int, word: str) -> str:

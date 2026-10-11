@@ -16,6 +16,12 @@ def download_prefix(repo: str, tag: str) -> str:
     return f"https://github.com/{repo}/releases/download/{tag}/"
 
 
+def sha256_of(raw: dict) -> str | None:
+    """The SHA-256 digest GitHub lists for a release asset ("sha256:<hex>"), or None when GitHub gives none (older releases)."""
+    digest = raw["digest"] if "digest" in raw and raw["digest"] else ""
+    return digest.removeprefix("sha256:") if digest.startswith("sha256:") else None
+
+
 def parse_asset(repo: str, tag: str, raw: dict) -> dict | None:
     """One release asset as an installer record, or None when its name is not an installer
     (checksums and notes may sit beside installers). Raises AppProblem if the download
@@ -28,7 +34,7 @@ def parse_asset(repo: str, tag: str, raw: dict) -> dict | None:
         raise AppProblem(f"asset {raw['name']} is not served from {download_prefix(repo, tag)}")
     system = OS_NAMES[m["os"]]
     return {"name": raw["name"], "os": system, "arch": m["arch"], "ext": m["ext"], "size": raw["size"],
-            "url": url, "primary": m["ext"] == PREFERRED[system]}
+            "url": url, "primary": m["ext"] == PREFERRED[system], "sha256": sha256_of(raw)}
 
 
 def parse_assets(repo: str, tag: str, raws: list[dict]) -> list[dict]:

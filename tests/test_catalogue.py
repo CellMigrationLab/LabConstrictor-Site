@@ -28,7 +28,7 @@ class FakeGitHub:
     def repo(self, name: str) -> dict:
         """Repository metadata."""
         return {"id": self.repo_id, "owner": {"id": 9}, "archived": False, "private": False, "default_branch": "main",
-                "html_url": "https://github.com/" + name, "license": {"spdx_id": "MIT"}}
+                "html_url": "https://github.com/" + name, "license": {"spdx_id": "MIT"}, "has_issues": True}
 
     def latest_release(self, name: str) -> dict | None:
         """The release, or None."""

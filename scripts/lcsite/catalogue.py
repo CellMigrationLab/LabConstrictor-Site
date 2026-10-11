@@ -47,6 +47,14 @@ def read_manifest(gh: GitHub, name: str, branch: str, manifest_dir: Path | None)
     return manifest
 
 
+def check_platforms(name: str, manifest: dict, assets: list[dict]) -> None:
+    """Raise AppProblem when the manifest lists a platform (distribution.platforms) for which the release has no installer."""
+    dist = manifest["distribution"]
+    for platform in (dist["platforms"] if "platforms" in dist else []):
+        if not any(f"{a['os']}-{a['arch']}" == platform and a["primary"] for a in assets):
+            raise AppProblem(f"{name}: the manifest lists the platform {platform} but the latest release has no installer for it")
+
+
 def read_release(gh: GitHub, name: str, manifest: dict) -> dict | None:
     """The latest release with its installers. A release is required when the manifest
     claims installers; otherwise an app without one simply has no release (optional)."""
@@ -59,6 +67,7 @@ def read_release(gh: GitHub, name: str, manifest: dict) -> dict | None:
     assets = parse_assets(name, raw["tag_name"], raw["assets"])
     if claims and not assets:
         raise AppProblem(f"manifest promises installers but release {raw['tag_name']} has none")
+    check_platforms(name, manifest, assets)
     return {"tag": raw["tag_name"], "published_at": raw["published_at"], "url": raw["html_url"], "assets": assets}
 
 
@@ -101,7 +110,7 @@ def resolve(entry: dict, gh: GitHub, manifest_dir: Path | None) -> dict:
     warnings += completeness.missing(manifest, section, licence)
     icon = manifest.get("icon")
     return {"warnings": warnings,
-        "slug": slug, "repo": name, "html_url": repo["html_url"],
+        "slug": slug, "repo": name, "html_url": repo["html_url"], "has_issues": bool(repo["has_issues"]),
         "featured": bool(entry.get("featured")), "section": section, "manifest": manifest, "license": licence,
         "release": read_release(gh, name, manifest),
         "icon": read_icon(gh, name, branch, icon, slug, warnings) if icon else None,

@@ -22,11 +22,17 @@
       "description": "Where the app's tools can be used besides its own window (the LabConstrictor-Tools bridge)."
     },
     "distribution": {
-      "type": "object", "additionalProperties": false, "minProperties": 1,
+      "type": "object", "additionalProperties": false,
+      "anyOf": [{"required": ["installer"]}, {"required": ["colab"]}, {"required": ["pip"]}],
+      "dependentRequired": {"platforms": ["installer"]},
       "description": "How people get the app. At least one route is required.",
       "properties": {
         "installer": {"const": true, "description": "The latest GitHub release carries LabConstrictor installers (Name-version-OS-arch.ext)."},
         "colab": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/link"}, "description": "Google Colab notebooks."},
+        "platforms": {
+          "type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["windows-x86_64", "macos-arm64", "macos-x86_64", "linux-x86_64"]},
+          "description": "The systems you support. Only these installers are offered; leave it out to offer every installer of your release."
+        },
         "pip": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$", "description": "Name of the package on PyPI."}
       }
     },

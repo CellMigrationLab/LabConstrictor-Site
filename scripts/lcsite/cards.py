@@ -10,8 +10,8 @@ KINDS = {"analysis": "Analysis", "segmentation": "Segmentation", "simulation": "
 HOSTS = {"notebook": "Notebook", "napari": "napari", "fiji": "Fiji", "qupath": "QuPath"}
 ROUTES = {"installer": "Desktop", "colab": "Colab", "pip": "pip"}
 ROUTE_LABELS = {"installer": "On my computer (Windows, macOS, Linux)", "colab": "In the browser (Colab)", "pip": "Python package (pip)"}
-SYSTEM_LABELS = {("windows", "x86_64"): "Windows", ("macos", "arm64"): "macOS (Apple Silicon)",
-                 ("macos", "x86_64"): "macOS (Intel)", ("linux", "x86_64"): "Linux"}
+SYSTEM_LABELS = {("windows", "x86_64"): "Windows 64-bit (Intel/AMD, x86_64)", ("windows", "arm64"): "Windows (ARM)", ("macos", "arm64"): "macOS (Apple Silicon)",
+                 ("macos", "x86_64"): "macOS (Intel)", ("linux", "x86_64"): "Linux 64-bit (x86_64)", ("linux", "arm64"): "Linux (ARM)"}
 PLUGIN_STAGES = {"Experimental": "experimental", "Available": "available", "Install from GitHub": "install from GitHub", "Deprecated": "deprecated"}
 SYSTEMS = {"windows": "Windows", "macos": "macOS", "linux": "Linux"}   # one download tile each, in this order
 CHIPS = {"arm64": "Apple Silicon (M1 or later)", "x86_64": "Intel"}     # macOS buttons are named by chip
@@ -108,16 +108,23 @@ def release_line(app: dict) -> str:
     return f'v{esc(release["tag"])} · {long_date(release["published_at"])}' if release else "No release yet"
 
 
+def offered_assets(app: dict) -> list[dict]:
+    """The installers of the latest release the app offers: all of them, or only the platforms its manifest lists (distribution.platforms)."""
+    if app["release"] is None:
+        return []   # an app without a release (Colab or pip only) has no installers
+    dist = app["manifest"]["distribution"]
+    if "platforms" not in dist:
+        return app["release"]["assets"]
+    return [a for a in app["release"]["assets"] if f"{a['os']}-{a['arch']}" in dist["platforms"]]
+
+
 def downloads(app: dict) -> dict[str, list[dict]]:
     """The recommended installer per system and architecture, grouped by system, for the buttons.
     {"windows": [{"label", "arch", "url", "size", "ext"}], "macos": [...], "linux": [...]}"""
     out: dict[str, list[dict]] = {system: [] for system in SYSTEMS}   # every system is present, possibly empty
-    if app["release"] is None:
-        return out   # an app without a release (Colab or pip only) has no installers
-    for a in app["release"]["assets"]:
+    for a in offered_assets(app):
         if a["primary"]:
-            label = SYSTEM_LABELS[(a["os"], a["arch"])]
-            out[a["os"]].append({"label": label, "arch": a["arch"], "url": a["url"], "size": a["size"], "ext": a["ext"]})
+            out[a["os"]].append({"label": SYSTEM_LABELS[(a["os"], a["arch"])], "arch": a["arch"], "url": a["url"], "size": a["size"], "ext": a["ext"]})
     return out
 
 

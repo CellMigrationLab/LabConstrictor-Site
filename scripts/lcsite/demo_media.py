@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path
 
 from .config import CONTENT, DOCS, fail
-from .text import esc
+from .text import esc, megabytes
 
 SOURCE = CONTENT / "demo"
 OUT = DOCS / "assets" / "demo"
@@ -81,7 +81,7 @@ def installer_values(apps: list[dict]) -> dict[str, str]:
     if not licence.is_file():
         fail(f"{licence} is missing")
     return {"app_name": esc(app["manifest"]["name"]), "app_version": esc(app["release"]["tag"]), "exe_name": esc(exe["name"]),
-            "exe_size": f"{exe['size'] / 1048576:.0f} MB", "license_text": esc(licence.read_text(encoding="utf-8").strip())}
+            "exe_size": megabytes(exe["size"]), "license_text": esc(licence.read_text(encoding="utf-8").strip())}
 
 
 def footprint_points(example: dict) -> str:
