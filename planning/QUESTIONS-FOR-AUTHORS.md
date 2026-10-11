@@ -26,3 +26,10 @@ Collected from the audits; none blocks the demo build. Send them on, then record
 15. **napari guide** hard-codes `cellmigrationlab.github.io/LabConstrictor-Site/...`: which is the canonical address to keep?
 16. **Related projects**: a courtesy note to DL4MicEverywhere, ZeroCostDL4Mic and BiaPy, and an outside reader before listing? Confirm open facts (BiaPy Docker/Colab routes, what JupyterLab Desktop bundles, whether DL4MicEverywhere is maintained).
 17. **Launch**: `extra.listed` stays false until at least the four non-testing apps show Works with, Produces and a real screenshot.
+
+## Added 2026-10-11 (after the 15 questions)
+18. **Template sync** (decision 17): the template's Build path will move the synchronisation setup after the first release; the template maintainers need to agree before the pull request is merged.
+19. **Intel Macs** (decision 18): each app owner states whether Intel Macs are supported (GuessTheCondition, LabConstrictor-Playground, LabConstrictor-VLab4Mic; NucleiSky 0.1.1).
+20. **napari plugin tested version**: the plugin's CI only type-checks against napari 0.9.2; which napari version has been run by hand? Pin it in the test job or say what was tested.
+21. **Fiji and QuPath**: which host versions were tested, and does the QuPath guide show the first-run message when no app is registered?
+22. **Smart-microscopy guide** (NucleiSky): is it fine for the site to show it as "Connect NucleiSky to a microscope", and does the paper describe this use case (so it may be cited)?
