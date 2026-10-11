@@ -1,0 +1,153 @@
+{
+ "source": {
+  "nucleisky_commit": "c8f8735",
+  "entry_point": "nucleisky.nucleisky2d.pipeline.run_adaptive_matching_and_export",
+  "mode": "Load Existing Masks, then Option B (adaptive matching), default configuration, seed 0"
+ },
+ "inputs": {
+  "reference": {
+   "file": "28e8a724-Image1.tif",
+   "sha256": "46920462ceb7e29c7b20502d28a3af1a819409a292396d7aede6f98c33d5755c"
+  },
+  "query": {
+   "file": "71e9ba15-random_crop.tif",
+   "sha256": "6d8c39cab40e1174ced6617b2b241bb75e8dd84ed0ddbde788e68305ab233e7b"
+  },
+  "masks_reference": {
+   "file": "d73f0e6b-masks_full_original_scale.tif",
+   "sha256": "38dff86757c48549ac1d956a596b021e222d64b5d24a233588356ed633299432"
+  },
+  "masks_query": {
+   "file": "890395c9-masks_crop_original_scale.tif",
+   "sha256": "5db535450b102b0c797a964203d05d5bd5fd081048ed98e8759dc070dbc312d9"
+  }
+ },
+ "images": {
+  "reference_px": [
+   2970,
+   1266
+  ],
+  "query_px": [
+   200,
+   200
+  ],
+  "reference_um_per_px": 1.3205469177114393,
+  "query_um_per_px": 1.1621528649392427
+ },
+ "nuclei": {
+  "reference": 4387,
+  "query": 30
+ },
+ "result": {
+  "matcher": "quad",
+  "scale": 0.9989369009979542,
+  "rotation_deg": -49.07320243349471,
+  "t_um_yx": [
+   723.0970660150134,
+   774.8575613518858
+  ],
+  "A_px": [
+   [
+    0.5759055597790759,
+    0.6642155755805731
+   ],
+   [
+    -0.6642155755805731,
+    0.5759055597790761
+   ]
+  ],
+  "b_px": [
+   547.5739304046612,
+   586.7701866244518
+  ],
+  "inlier_fraction": 0.8666666666666667,
+  "mean_error_um": 0.26405536314525246,
+  "inliers": 26,
+  "bbox_reference_px_y0y1x0x1": [
+   543,
+   800,
+   450,
+   706
+  ]
+ },
+ "attempts": [
+  {
+   "matcher": "triangles",
+   "success": false,
+   "frac_inliers": 0.0
+  },
+  {
+   "matcher": "graph",
+   "success": false,
+   "frac_inliers": 0.06666666666666667
+  },
+  {
+   "matcher": "quad",
+   "success": true,
+   "frac_inliers": 0.8666666666666667
+  }
+ ],
+ "region": {
+  "origin_yx": [
+   397,
+   303
+  ],
+  "size_px": [
+   549,
+   549
+  ],
+  "margin_px": 150,
+  "display_scale": 2,
+  "footprint_corners_yx": [
+   [
+    149.95,
+    283.81
+   ],
+   [
+    282.8,
+    399.0
+   ],
+   [
+    397.98,
+    266.15
+   ],
+   [
+    265.13,
+    150.97
+   ]
+  ]
+ },
+ "display": {
+  "windows_percentiles": [
+   1.0,
+   99.8
+  ],
+  "windows": {
+   "reference_roi": [
+    146.0,
+    610.0
+   ],
+   "reference_full": [
+    127.0,
+    556.0
+   ],
+   "aligned": [
+    149.85982788085937,
+    517.7989067382828
+   ],
+   "query": [
+    149.0,
+    528.0
+   ]
+  },
+  "bytes": {
+   "reference_roi.webp": 60418,
+   "reference_roi_green.webp": 54074,
+   "aligned_roi.webp": 7410,
+   "aligned_roi_magenta.webp": 8378,
+   "query.webp": 10148,
+   "reference_full.webp": 132908,
+   "nuclei_outlines_roi.webp": 9042
+  }
+ }
+}
