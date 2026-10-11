@@ -1,6 +1,6 @@
 """Home, ecosystem and submit pages."""
 
-from . import catalogue_text, hosts, pages_demo
+from . import catalogue_text, citation, hosts, pages_demo
 from .cards import card, github_badge
 from .config import CONTENT, DOCS, REPO, fail
 from .page import Page
@@ -65,6 +65,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
     p.add('<section class="lc-band"><h2 class="lc-title">Works where you work</h2>',
           f'<p class="lc-center">Desktop installers, Google Colab and pip. Apps that declare tools also run inside {program_pills()}.</p>',
           '<p class="lc-more"><a href="guides/image-software/">Use apps in your image software</a> · <a href="guides/">Read the docs</a> · <a href="ecosystem/">Explore the ecosystem</a></p></section>')
+    p.add(citation.cite_band(site))
     p.write()
 
 

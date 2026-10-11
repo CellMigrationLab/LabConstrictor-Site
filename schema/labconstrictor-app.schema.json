@@ -33,7 +33,7 @@
     "authors": {"type": "array", "items": {"$ref": "#/$defs/author"}},
     "license": {"type": "string", "description": "SPDX identifier, for example MIT."},
     "categories": {"type": "array", "uniqueItems": true, "maxItems": 6, "items": {"type": "string", "maxLength": 30}},
-    "doi": {"type": "string", "pattern": "^10\\.\\d{4,9}/\\S+$", "description": "DOI of the paper or archive to cite."},
+    "doi": {"type": "string", "pattern": "^10\\.\\d{4,9}/\\S+$", "description": "DOI of the paper to cite (not a software archive)."},
     "homepage": {"$ref": "#/$defs/https"},
     "docs_url": {"$ref": "#/$defs/https"},
     "icon": {"$ref": "#/$defs/repoPath", "description": "Square PNG in the repository (SVG is not accepted: it can carry scripts)."},

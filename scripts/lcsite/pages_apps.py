@@ -4,7 +4,7 @@ import json
 import re
 
 from .cards import CHIPS, HOST_GUIDES, HOSTS, KINDS, ROUTES, SYSTEM_LABELS, SYSTEMS, badge, card, downloads, github_badge, host_badge, icon, is_verified, link_pill, release_line, testing_badge, tier_badge
-from . import catalogue_text, hosts
+from . import catalogue_text, citation, hosts
 from .page import Page
 from .validate import optional_list
 from .text import esc, long_date, megabytes, paragraphs
@@ -137,7 +137,7 @@ def install_help() -> str:
 
 
 def details_list(app: dict) -> str:
-    """The facts: kind, version, license, authors, categories, links, verification."""
+    """The facts: kind, version, license, authors, categories, links, verification (the citation has its own section)."""
     m = app["manifest"]
     verified = (f"Verified for {esc(app['verified_version'])}" + (f" on {long_date(app['verified_on'])}" if app["verified_on"] else "")
                 if is_verified(app) else "Community listing: not verified by a maintainer, and not a security audit")
@@ -148,8 +148,6 @@ def details_list(app: dict) -> str:
         rows.append(("Authors", ", ".join(esc(a["name"]) for a in m["authors"])))
     if m.get("categories"):
         rows.append(("Topics", ", ".join(esc(c) for c in m["categories"])))
-    if m.get("doi"):
-        rows.append(("Cite", f'<a href="https://doi.org/{esc(m["doi"])}">doi:{esc(m["doi"])}</a>'))
     links = [("Report a problem", app["html_url"] + "/issues"), ("Homepage", m.get("homepage")), ("Documentation", m.get("docs_url"))]
     rows.append(("Links", " · ".join(f'<a href="{esc(u)}">{t}</a>' for t, u in links if u)))
     return '<h2 id="details">Details</h2><dl class="lc-facts">' + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows) + "</dl>"
@@ -200,7 +198,7 @@ def page_app(app: dict) -> None:
         p.add('<h2 id="about">About</h2>', paragraphs(m["description"]))
     for i, s in enumerate(app["screenshots"], 1):
         p.add(f'<figure class="lc-shot"><img class="lc-shot__img" src="assets/shots/{app["slug"]}-{i}.jpg" alt="" loading="lazy"><figcaption>{esc(s["caption"])}</figcaption></figure>')
-    p.add(using_section(app))
+    p.add(using_section(app), citation.app_section(app))
     if app["release"] and m["distribution"].get("installer"):
         p.add(downloads_table(app), install_help())
     p.add(details_list(app))

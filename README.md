@@ -62,3 +62,10 @@ In `mkdocs.yml`, `extra: listed: false` keeps the site out of search engines. Se
 ## For developers and agents
 
 Read [AGENTS.md](AGENTS.md): how the site is built, the coding rules (they are checked by the tests), and how untrusted input is handled. [DESIGN.md](DESIGN.md) says how every kind of title, link, button, card and image must look and behave.
+
+## Licence
+
+- **Site code** (`scripts/`, `tests/`, `tools/`, `overrides/`, styles and scripts): MIT, see [LICENSE](LICENSE).
+- **Text written for this site and the demo images** ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): the demo images come from a CC BY 4.0 deposit, with their credit in `content/demo/README.md`. Text and images fetched from other repositories keep the licence of the repository they come from.
+- **The logo and the comic** are not covered by the licence above: their terms are not stated yet.
+- Fonts (Inter, Bricolage Grotesque): SIL Open Font License, see `docs/assets/fonts/`. Logos of other projects and services belong to their owners and are shown only to identify them.

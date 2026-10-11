@@ -64,6 +64,11 @@ One size (12 px, bold). Colour says the role: green = tier or route (Community, 
 - Without JavaScript the live windows are hidden and three real figures with captions are shown instead.
 - The page loads its own style and script through the `page_css` and `page_js` front matter, so no other page pays for them.
 
+## Citation
+
+- **Home block** (`#cite`, `citation.cite_band`): the heading "Cite LabConstrictor", the template README's sentence and reference as plain prose, the preprint's DOI as a text link and one action link ("Read the preprint"), and one small line saying that each app page names what to cite. Its text is `citation:` in `data/site.yaml`, copied from the template README; `build_site.py` stops if the README no longer has that DOI. The footer's "Cite LabConstrictor" is an internal link to this block. The site shows the preprint only, not a software archive.
+- **App page** (`#cite`, `citation.app_section`, right after "Using it"): "How to cite" with the manifest's `doi` as a text link and an action link ("Read the paper"), then the latest release as the version to name. Without a `doi` it says only that the listing names no publication to cite (a testing app without one has no section). The site never builds a reference from a DOI registry.
+
 ## Interactions
 
 - Hover: text links underline; cards lift; pills change border colour. Focus: one visible outline for everything (`:focus-visible`). Everything works from the keyboard.

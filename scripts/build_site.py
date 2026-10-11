@@ -20,7 +20,7 @@ import argparse
 import shutil
 from pathlib import Path
 
-from lcsite import guides, hosts, hubs, llms, pages_apps, pages_demo, pages_site, projects, redirects
+from lcsite import citation, guides, hosts, hubs, llms, pages_apps, pages_demo, pages_site, projects, redirects
 from lcsite.config import BUILD, DATA, DOCS, GENERATED, SITE_URL, SNAPSHOT, SNAPSHOT_FORMAT, fail, load_json, load_yaml
 from lcsite.images import ICON_PX, SHOT_PX, shrink
 
@@ -74,6 +74,7 @@ def main() -> None:
         fail(f"no {SNAPSHOT}: run scripts/fetch_catalogue.py first")
     apps = load_apps()
     site, ecosystem = (load_yaml(DATA / f"{n}.yaml") for n in ("site", "ecosystem"))
+    citation.check_template_readme(site, args.template_dir)
     clean()
     copy_media(apps)
     hosts.prepare(hosts.load())
