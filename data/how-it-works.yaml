@@ -59,6 +59,15 @@ chapters:
       - "Check that no workflow is running, then draft a new release with a tag like 0.0.1 and publish it."
       - "Publishing starts the workflow that creates the installer files; follow it in the Actions tab."
       - "When it finishes, the installers are in the release's Assets list."
+  - id: installer
+    title: What the installer does on your users' computers
+    text: The installer sets up a private environment for the app, installs its requirements, and adds a launcher. Your users do not need Python, pip or a terminal. A short demo shows the Windows steps.
+    guide: guides/install/
+    guide_label: Install an app
+    static:
+      - "The installer asks where to install (Windows: just for you, or all users) and then sets up the app's own environment."
+      - "A post-install script installs the app's requirements (GPU versions when an NVIDIA GPU is detected, otherwise the CPU ones) and the app's own package from src."
+      - "It then adds the app to the Start menu or Applications folder; opening it starts JupyterLab with a Welcome notebook."
   - id: manifest
     title: Describe the app for the App Centre
     text: A small file in your repository, labconstrictor-app.yaml, says what the app is and how people get it. The App Centre reads it from your repository, so there is nothing to copy.
@@ -68,6 +77,15 @@ chapters:
       - "labconstrictor-app.yaml has a name, a one-sentence summary, a kind and the ways to get the app (installer, Colab notebooks, pip)."
       - "Optional fields add what the app works with and produces, its limitations, status, screenshots and a DOI."
       - "A workflow checks the file; it never blocks building installers."
+  - id: share
+    title: Share it in the App Centre
+    text: When the release exists, tell the App Centre where your repository is. It checks the file and the release, and reads everything else from your repository from then on.
+    guide: submit/
+    guide_label: Submit your app
+    static:
+      - "Add labconstrictor-app.yaml to your repository and make sure the repository is public and has a license."
+      - "Send the repository address with the submission form; a bot checks the manifest and your release and tells you what to fix."
+      - "A maintainer merges the pull request that adds a pointer to your repository, and the app appears at the next daily build."
   - id: bridge
     title: Once installed, how the bridge works
     text: Apps can also declare tools, scientific functions with typed inputs. A plugin for napari, Fiji or QuPath builds a form from each declaration and runs the tool in the app's own environment. This part is experimental.
