@@ -6,9 +6,9 @@ notice: Interactive illustration with example files. Nothing runs on this page a
 chapters:
   - id: portable
     title: Write notebooks that run in Colab and in JupyterLab
-    text: A LabConstrictor app opens your notebooks in JupyterLab on the user's computer, and many people also like to open them in Google Colab. Run Colab-only setup only on Colab, and the same notebook works in both.
+    text: A LabConstrictor app opens your notebooks in JupyterLab on the user's computer, and collaborators and reviewers sometimes prefer Google Colab. Running Colab-only setup only on Colab is the first step to a notebook that works in both.
     guide: guides/notebook-portability/
-    guide_label: Write notebooks for Colab and JupyterLab
+    guide_label: Write notebooks that run in both Google Colab and JupyterLab
     static:
       - Colab-only setup (mounting Google Drive, installing packages with an exclamation mark) is guarded with a check for Google Colab, so it runs only there.
       - A "# @title" line at the top of a code cell gives it a header in Colab and stays readable in JupyterLab.
@@ -20,8 +20,8 @@ chapters:
     guide_label: Upload external code
     static:
       - "Code in src: a folder under src with an __init__.py file becomes a package your notebooks import."
-      - "A pip package: its name goes into the notebook's requirements.yaml and is installed from PyPI."
-      - "Both: for example the desktop app uses the code in src while a Colab run installs the published package."
+      - "A pip package (an option beyond the guide): its name goes into the notebook's requirements.yaml and pip installs it."
+      - "Both: for example the desktop app uses the code in src while a Colab run installs the published package; NucleiSky is built this way."
   - id: requirements
     title: Describe what the notebook needs
     text: Each notebook comes with a requirements.yaml that lists its packages, its Python version and a short description. You can generate it from the notebook, or write it by hand and check it.
@@ -33,19 +33,19 @@ chapters:
       - "Option 2 means writing the file by hand and checking it with the Requirements Validator notebook."
   - id: deposit
     title: Deposit the notebook and its requirements
-    text: A web form checks your notebook and requirements.yaml and opens a pull request in your repository; an automatic workflow then checks the notebook again after you merge it.
+    text: A web form checks your requirements.yaml, adds your notebook and its requirements to a list, and opens a pull request in your repository; an automatic workflow then checks the notebook and its dependencies after you merge it.
     guide: guides/notebook-upload/
     guide_label: Add or update a notebook
     static:
       - "Open the LabConstrictor form, choose Upload/Update notebook, and upload the .ipynb file and its requirements.yaml."
-      - "Click Validate & Add Submission; a notebook that passes is added to the Submission list (you can add several)."
+      - "Click Validate & Add Submission; the form checks that both files are there and that the requirements file is valid, and adds the notebook to the Submission list (you can add several)."
       - "Give your repository address and a personal access token, then click Create pull request."
       - "Merge the pull request; an automatic workflow checks the notebook and its dependencies."
   - id: tools
-    title: Declare tools for napari, Fiji and QuPath (the plugin manifest)
-    text: If you want your app's functions to appear as forms in napari, Fiji or QuPath, you declare them once in Python. The type hints of a function are the whole declaration. This is experimental.
+    title: Declare tools for napari, Fiji and QuPath
+    text: "If you want your app's functions to appear as forms in napari, Fiji or QuPath, you declare them once in Python: a function with type hints, marked with @tool, in a module with a fixed name. The type hints say what the form looks like. This is experimental."
     guide: guides/image-software/
-    guide_label: Use apps in your image software
+    guide_label: Use apps inside napari, Fiji and QuPath
     static:
       - "A tool is a normal Python function with type hints, marked with @tool, in a module named <package>_lc_tools next to your app's package."
       - "A float or int becomes a number box, a bool a check box, a Literal or Enum a dropdown, an Image an image chosen in the host, a Table a CSV file."
@@ -61,12 +61,12 @@ chapters:
       - "When it finishes, the installers are in the release's Assets list."
   - id: installer
     title: What the installer does on your users' computers
-    text: The installer sets up a private environment for the app, installs its requirements, and adds a launcher. Your users do not need Python, pip or a terminal. A short demo shows the Windows steps.
+    text: The installer sets up a private environment for the app, installs its requirements, and adds a launcher. Your users do not need to install Python or pip. On Linux they run the installer from a terminal, and a terminal window stays open while the app runs. A short demo shows the Windows steps.
     guide: guides/install/
     guide_label: Install an app
     static:
-      - "The installer asks where to install (Windows: just for you, or all users) and then sets up the app's own environment."
-      - "A post-install script installs the app's requirements (GPU versions when an NVIDIA GPU is detected, otherwise the CPU ones) and the app's own package from src."
+      - "On Windows the installer asks where to install and for whom (just you, or all users); it then sets up the app's own environment."
+      - "A post-install script installs the app's requirements (on Windows and Linux the GPU versions when an NVIDIA GPU is found, otherwise the CPU ones; on macOS the CPU ones) and the app's own package from src. This needs an internet connection."
       - "It then adds the app to the Start menu or Applications folder; opening it starts JupyterLab with a Welcome notebook."
   - id: manifest
     title: Describe the app for the App Centre
@@ -75,24 +75,24 @@ chapters:
     guide_label: Describe your app for the App Centre
     static:
       - "labconstrictor-app.yaml has a name, a one-sentence summary, a kind and the ways to get the app (installer, Colab notebooks, pip)."
-      - "Optional fields add what the app works with and produces, its limitations, status, screenshots and a DOI."
+      - "Further fields add what the app works with and produces, its limitations, status, screenshots and a DOI; the Submit page says which are recommended."
       - "A workflow checks the file; it never blocks building installers."
   - id: share
     title: Share it in the App Centre
-    text: When the release exists, tell the App Centre where your repository is. It checks the file and the release, and reads everything else from your repository from then on.
+    text: When the release exists, tell the App Centre where your repository is, with a short GitHub form. A bot checks the file and the release, and the App Centre reads everything else from your repository from then on.
     guide: submit/
     guide_label: Submit your app
     static:
       - "Add labconstrictor-app.yaml to your repository and make sure the repository is public and has a license."
-      - "Send the repository address with the submission form; a bot checks the manifest and your release and tells you what to fix."
+      - "Send the repository address with the GitHub submission form; a bot checks the manifest and your release and tells you what to fix."
       - "A maintainer merges the pull request that adds a pointer to your repository, and the app appears at the next daily build."
   - id: bridge
     title: Once installed, how the bridge works
-    text: Apps can also declare tools, scientific functions with typed inputs. A plugin for napari, Fiji or QuPath builds a form from each declaration and runs the tool in the app's own environment. This part is experimental.
+    text: "Apps can also declare tools, scientific functions with typed inputs. A plugin for napari, Fiji or QuPath builds a form from each declaration and runs the tool in the app's own environment. This part is experimental: it is under heavy construction and exists only in a development version of the installer."
     guide: guides/image-software/
-    guide_label: Use apps in your image software
+    guide_label: Use apps inside napari, Fiji and QuPath
     static:
       - "An author writes tools as Python functions with type hints, in a module named <package>_lc_tools next to the app's package."
-      - "The installer registers the app's tools on the computer; a failure to register never fails the installation."
+      - "In the experimental version of the installer, an app that ships a tools module is also registered for the plugins; the installer of the released template does not do this yet. A failure to register never fails the installation."
       - "The host builds a form from the declaration, the tool runs in the app's own Python environment in a separate process, and the results come back as layers, tables, points or files."
-      - "The plugins are experimental and untested on some systems; each plugin's guide says what stage it is at."
+      - "The plugins are under heavy construction: untested and unlikely to be stable. Each plugin's guide says what stage it is at."

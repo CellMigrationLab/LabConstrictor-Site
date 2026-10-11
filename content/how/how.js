@@ -51,6 +51,21 @@
   }
 
   /**
+   * Flip an on/off choice; a panel whose data-min-on lists some choices keeps at least one of them on.
+   * @param {Element} panel - the panel root.
+   * @param {Object<string, string>} state - the choices (changed in place).
+   * @param {string} group - the on/off group to flip.
+   * @returns {void}
+   */
+  function toggle(panel, state, group) {
+    var next = d.lookup(state, group, 'choice group') === 'on' ? 'off' : 'on';
+    var kept = panel.dataset.minOn ? panel.dataset.minOn.split(/\s+/) : [];
+    var others = kept.filter(function (g) { return g !== group && state[g] === 'on'; });
+    if (next === 'off' && kept.indexOf(group) >= 0 && others.length === 0) { return; }
+    state[group] = next;
+  }
+
+  /**
    * Handle a press on a panel's choice button (data-set picks a value, data-toggle flips on and off).
    * @param {Element} panel - the panel root.
    * @param {Object<string, string>} state - the choices (changed in place).
@@ -61,7 +76,7 @@
     var button = e.target.closest('[data-set], [data-toggle]');
     if (!button || !panel.contains(button)) { return; }
     if (button.dataset.toggle) {
-      state[button.dataset.toggle] = d.lookup(state, button.dataset.toggle, 'choice group') === 'on' ? 'off' : 'on';
+      toggle(panel, state, button.dataset.toggle);
     } else {
       d.lookup(state, button.dataset.set, 'choice group');
       state[button.dataset.set] = button.dataset.value;

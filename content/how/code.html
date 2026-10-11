@@ -16,6 +16,6 @@
 <span class="how__line" data-show="where:pip where:both">import celltools   # installed with pip</span></pre></div>
 </div>
 <p class="how__out" data-show="where:src"><strong>In src:</strong> upload the folder to <code>src</code> in your repository. Every folder you import needs its own <code>__init__.py</code> (it can be empty). Your notebooks then import it as a package, and the app's installer carries it.</p>
-<p class="how__out" data-show="where:pip"><strong>As a pip package:</strong> the package is published somewhere pip can find it, and its name goes into the notebook's <code>requirements.yaml</code> (next chapter) so it is installed with the app's other packages.</p>
+<p class="how__out" data-show="where:pip"><strong>As a pip package</strong> (an option beyond the guide, which covers <code>src</code>): the package is published somewhere pip can find it, and its name goes into the notebook's <code>requirements.yaml</code> (next chapter) so it is installed with the app's other packages.</p>
 <p class="how__out" data-show="where:both"><strong>Both:</strong> the desktop app can use the code in <code>src</code> while a Colab run installs the published package (for example with a <code>pip install</code> in a Colab-only cell, as in the first chapter). NucleiSky is built this way: its code is in <code>src</code> and a Colab run installs it from PyPI.</p>
 </div>

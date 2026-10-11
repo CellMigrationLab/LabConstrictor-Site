@@ -12,11 +12,11 @@
 <span class="how__line" data-ran="jupyterlab">    print("⚠️ Not running in Colab. Please ensure dependencies are installed and data paths are set.")</span></pre>
 <p class="how__out" data-show="runtime:colab"><strong>Output:</strong> 🚀 Detected Google Colab. Starting installation… then ✅ Colab setup done <span class="how__note">(the output of pip and of the Drive prompt is not shown)</span></p>
 <p class="how__out" data-show="runtime:jupyterlab"><strong>Output:</strong> ⚠️ Not running in Colab. Please ensure dependencies are installed and data paths are set.</p>
-<p class="how__note">Lines that do not run in the chosen place are dimmed. The guard makes the Colab-only lines (the Drive mount, the pip install) skipped in JupyterLab instead of failing there.</p></div>
+<p class="how__note">Abridged from the guide's example. Lines that do not run in the chosen place are dimmed. The guard makes the Colab-only lines (the Drive mount, the pip install) skipped in JupyterLab instead of failing there.</p></div>
 <p class="how__controls"><span class="how__label" id="how-code-label">Code cells in an installed app</span><span role="group" aria-labelledby="how-code-label"><button type="button" class="how__btn" data-demo-sim data-set="code" data-value="shown" aria-pressed="true">Shown</button><button type="button" class="how__btn" data-demo-sim data-set="code" data-value="hidden" aria-pressed="false">Hidden</button></span></p>
 <div class="how__cell how__cell--small"><pre class="how__code" data-show="code:shown"><span class="how__line"># @title Data input</span>
 <span class="how__line">folder = "data"</span>
 <span class="how__line">files = sorted(Path(folder).glob("*.tif"))</span></pre>
-<p class="how__hidden" data-show="code:hidden">▶ Data input <span class="how__note">(the cell's code is hidden; the play button runs it)</span></p>
+<p class="how__hidden" data-show="code:hidden">▶ Data input <span class="how__note">(the cell's code is hidden)</span></p>
 <p class="how__note">With code hidden, the user sees an app. Put anything the user must read in a Markdown cell: it stays visible whether the code is shown or hidden.</p></div>
 </div>
