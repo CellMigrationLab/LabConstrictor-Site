@@ -27,6 +27,7 @@ Find the thing you want to change; edit it **there**, never in the site's genera
 | A card on the **Ecosystem** page (name, summary, status) | `docs/labconstrictor-project.yaml` | the project's own repository |
 | What an **app says about itself** (name, summary, downloads, screenshots) | `labconstrictor-app.yaml` | the app's own repository |
 | Which apps are listed; featured on the home page; shown under *Testing and maintenance* | `registry/<owner>__<repo>.yaml` (`featured`, `section: testing`) | this repository |
+| The **Related projects** section of the Ecosystem page | `data/related-projects.yaml` | this repository |
 | The picture cards on the **Use** and **Build** pages | `data/hubs.yaml` | this repository |
 | *Open and use an app* | `content/guides/using-apps.md` | this repository |
 | *Install an app* (steps for each system) | `.tools/docs/install.md` | LabConstrictor |

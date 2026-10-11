@@ -1,6 +1,6 @@
 """Home, ecosystem and submit pages."""
 
-from . import catalogue_text, citation, hosts, pages_demo
+from . import catalogue_text, citation, hosts, pages_demo, pages_related
 from .cards import card, github_badge
 from .config import CONTENT, DOCS, REPO, fail
 from .page import Page
@@ -84,14 +84,15 @@ def ecosystem_card(card: dict) -> str:
             f'<span class="lc-card__badges"><span class="lc-badge">{esc(card["status"])}</span></span></a>{card_foot(card)}</li>')
 
 
-def page_ecosystem(tiers: list[dict]) -> None:
-    """ecosystem.md: the projects around LabConstrictor by tier, resolved from their own repositories (projects.resolve)."""
-    p = Page("ecosystem.md", title="Ecosystem", description="Hosts, tools and templates around LabConstrictor.", layout="wide",
+def page_ecosystem(tiers: list[dict], related: dict) -> None:
+    """ecosystem.md: the projects around LabConstrictor by tier, resolved from their own repositories (projects.resolve), then the related projects (data/related-projects.yaml)."""
+    p = Page("ecosystem.md", title="Ecosystem", description="Hosts, tools and templates around LabConstrictor, plus other open-source ways to share and reproduce scientific software.", layout="wide",
              edit_url=f"{REPO}/edit/main/data/ecosystem.yaml")
     p.add('<section class="lc-pagehead"><h1>Ecosystem</h1><p class="lc-lead">Everything around the apps: where they run and what builds them.</p></section>')
     for tier in tiers:
         items = "".join(ecosystem_card(c) for c in tier["cards"])
         p.add(f'<h2 class="lc-tier" id="{esc(tier["key"])}">{esc(tier["title"])}</h2><p>{esc(tier["text"])}</p><ul class="lc-grid">{items}</ul>')
+    p.add(pages_related.section(related))
     names = [h["name"] for h in hosts.load().values()] + [s["name"] for s in hosts.load_services().values()]
     p.add(f'<p class="lc-small">The logos of {", ".join(names[:-1])} and {names[-1]} belong to their owners and are shown only to identify them.</p>')
     p.write()

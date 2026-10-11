@@ -76,6 +76,13 @@ One size (12 px, bold). Colour says the role: green = route (Desktop, Colab), gr
 - **Development status** is a Details row, "Development status (stated by the authors)", reading the manifest's `status` or "Not stated". A grey chip in the header appears only for Experimental and Deprecated. The status is never inferred from a version number.
 - Every value is escaped plain text; a missing recommended fact is a warning in `build/problems.md`, never a reason to unlist an app.
 
+## Related-project list
+
+- Lives on `/ecosystem/#related` (`pages_related.section`, from `data/related-projects.yaml`, checked by `related.py`): an `h2`, an intro, a **visible disclosure sentence** (not a footnote), `h3` groups in a fixed order, entries alphabetical within a group, nothing ranked.
+- Each entry has the same parts in the same order: the name (bold text, **not a link**), what it does in the project's own terms, "A good fit when", an optional paper line with a DOI text link, a plain "Shares authors with LabConstrictor" note where it applies, "Checked <date>", then pills.
+- Links are only pills: the GitHub pill for a repository, the Documentation and Website pills for its pages (these two pills may be used for third-party projects here), plus the DOI text link. Prose holds no address, bracket or volatile word (popular, fastest, best, stars, downloads), and makes no maintenance, popularity or superiority claim. No logos.
+- The closing paragraph says it is our view, and the helper line links to the home `#cite` block, to "Edit this list on GitHub" (the second edit link of a page written from two files) and to the issues.
+
 ## Interactions
 
 - Hover: text links underline; cards lift; pills change border colour. Focus: one visible outline colour for all links (white in the dark footer; content links keep the theme's ring), and the skip link shows above the header. Everything works from the keyboard.
@@ -89,6 +96,7 @@ One size (12 px, bold). Colour says the role: green = route (Desktop, Colab), gr
 | Titles, descriptions, tags, one `h1`, heading order, links (new tab, generic text, GitHub pill), buttons, images, nested links | `scripts/check_design.py` |
 | Dead links and anchors, edit links, menu state, reachability, unescaped author text | `scripts/check_site.py` |
 | Annotations, docstrings, function and file size in the code | `tests/test_code_rules.py` |
+| Related projects: keys, links, wording, dates | `scripts/lcsite/related.py`, `tests/test_related.py` |
 | Everything else in this file | review; change this file in the same pull request as the change |
 
 Known breaks of a rule in content that comes from another repository are listed, with the reason, in `KNOWN_EXCEPTIONS` in `scripts/check_design.py`.
