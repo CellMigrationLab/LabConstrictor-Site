@@ -62,3 +62,7 @@ Legend: DONE = on the site (feature branch; `main` has everything up to commit 2
 
 ## Launch
 Unlisted until `LAUNCH-CHECKLIST.md` is ticked (decision 25).
+
+## Reviews done (read-only reviewers, reports in `planning/results/`)
+- `9-how-it-works-factcheck.md`: 12 findings on the How it works page, all fixed (installer registration is experimental, notice wording, deposit checks, packaging and installer details, manifest panel, link labels).
+- `10-app-centre-review.md`: 27 findings. Fixed: platform tiles and Colab sentence, code-signing wording, systems and JSON-LD, release tag, links row, digest and Colab-link checks, related-projects wording rules (domains, lower-case fit, alphabetical order, closing paragraph), help page, hero/hub/home plugin wording, schema patterns (trailing newline, credentials in addresses, ARM platforms), unsafe-link and search-index checks, escaped title, `lc.js` under the code rules (clipboard errors, empty ARM list, bad URL parameters, counts, once-only init), figure caption read twice, table caption, hashes and filter excluded from search. Not changed on purpose: one-argument `.get(key)` and `x or default` for optional data (nine uses, all optional or display text), `aria-expanded` on the menu checkbox, search unreachable on phones (pre-existing), the critical-guide report staying a warning.
