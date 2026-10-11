@@ -1,6 +1,7 @@
 """The How it works page: the data is checked strictly, and the page is one step at a time with a guide behind every step."""
 
 import copy
+from html import escape as html_escape
 import unittest
 
 from lcsite import pages_how
@@ -73,11 +74,19 @@ class PageTests(unittest.TestCase):
             self.assertIn(f'src="assets/how/figures/{step["figure"]["file"]}"', html)
             self.assertRegex(html, r'alt="[^"]{40,}" width="\d+" height="\d+"')
             self.assertIn(data["figure_credit"]["href"], html)
+            self.assertIn(html_escape(step["figure"]["caption"]), html)
         self.assertIn("CC BY 4.0", data["figure_credit"]["text"])
         broken = copy.deepcopy(data["steps"])
         broken[0]["figure"]["file"] = "no-such-picture.webp"
         with self.assertRaises(SystemExit):
             pages_how.check_steps(broken)
+
+    def test_a_line_that_yaml_turned_into_a_mapping_stops_the_build(self) -> None:
+        """An unquoted "a: b" in a list is read as a mapping; the build names the step instead of printing a dict."""
+        steps = copy.deepcopy(pages_how.load()["steps"])
+        steps[0]["know"].append({"The notebook is your app's interface": "its text is yours."})
+        with self.assertRaises(SystemExit):
+            pages_how.check_steps(steps)
 
     def test_there_is_no_code_and_no_interactive_control(self) -> None:
         """The overview shows no code block and no button: the guides do the detail."""

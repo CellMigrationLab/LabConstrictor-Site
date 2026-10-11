@@ -12,8 +12,9 @@ SOURCE = CONTENT / "how"
 OUT = DOCS / "assets" / "how"
 TOP_KEYS = {"title", "lead", "steps_title", "steps", "figure_credit", "later", "handoff"}
 STEP_KEYS = {"id", "title", "text", "figure", "customise", "know", "guides"}
-FIGURE_KEYS = {"file", "alt"}
+FIGURE_KEYS = {"file", "alt", "caption"}
 CREDIT_KEYS = {"text", "link", "href"}
+SHOWN = 0.5   # a picture is saved at twice its drawn size and shown at that drawing size (as wide as fits), so the text in every picture has the same size
 LINK_KEYS = {"href", "label"}
 LATER_KEYS = {"title", "links"}
 HANDOFF_KEYS = {"text", "link", "href"}
@@ -44,6 +45,9 @@ def check_steps(steps: object) -> None:
         check_keys(f"step {step['id']}", step, STEP_KEYS)
         if not isinstance(step["know"], list) or not step["know"] or not isinstance(step["customise"], list):
             fail(f"data/how-it-works.yaml: step {step['id']} needs a list of things to remember and a list (possibly empty) of things to customise")
+        for line in step["know"] + step["customise"]:
+            if not isinstance(line, str):
+                fail(f"data/how-it-works.yaml: step {step['id']} has a line that is not plain text (a colon followed by a space in unquoted YAML makes a mapping): {line!r}")
         check_links(f"step {step['id']}", step["guides"])
         check_keys(f"the figure of step {step['id']}", step["figure"], FIGURE_KEYS)
         if not (SOURCE / "figures" / step["figure"]["file"]).is_file():
@@ -84,7 +88,7 @@ def stepper(data: dict) -> str:
 
 def step_nav(steps: list[dict], i: int) -> str:
     """Back and Next links to the neighbouring steps (the last step has the hand-over to the demo instead of Next)."""
-    back = f'<a class="how__back" href="#{esc(steps[i - 1]["id"])}">Back: {esc(steps[i - 1]["title"])}</a>' if i > 0 else "<span></span>"
+    back = f'<a class="how__back" href="#{esc(steps[i - 1]["id"])}">&larr; Back: {esc(steps[i - 1]["title"])}</a>' if i > 0 else "<span></span>"
     nxt = f'<a class="how__next lc-go" href="#{esc(steps[i + 1]["id"])}">Next: {esc(steps[i + 1]["title"])}</a>' if i + 1 < len(steps) else ""
     return f'<p class="how__nav">{back}{nxt}</p>'
 
@@ -92,16 +96,17 @@ def step_nav(steps: list[dict], i: int) -> str:
 def last_step_extras(data: dict) -> str:
     """What closes the last step: the optional later parts, as links to guides, and the hand-over to the installed-app demo."""
     h, later = data["handoff"], data["later"]
-    return (f'<h3>{esc(later["title"])}</h3>{links_html(later["links"], "how__guides")}'
+    return (f'<h3>{esc(later["title"])}</h3>{links_html(later["links"], "how__guides how__guides--wide")}'
             f'<aside class="how__handoff"><p>{esc(h["text"])}</p><a class="lc-btn lc-btn--primary" href="{esc(h["href"])}">{esc(h["link"])}</a></aside>')
 
 
 def figure_html(data: dict, step: dict) -> str:
-    """The step's picture (a crop of a figure of the preprint, which is CC BY 4.0) with the credit under it; its size is read from the file."""
+    """The step's picture (a crop of a figure of the preprint, which is CC BY 4.0) with what it shows and the credit under it; its size is read from the file."""
     width, height = pixel_size(SOURCE / "figures" / step["figure"]["file"])
     c = data["figure_credit"]
-    return (f'<figure class="how__figure"><img src="assets/how/figures/{esc(step["figure"]["file"])}" alt="{esc(step["figure"]["alt"])}" width="{width}" height="{height}" loading="lazy">'
-            f'<figcaption>{esc(c["text"])} <a href="{esc(c["href"])}">{esc(c["link"])}</a></figcaption></figure>')
+    f = step["figure"]
+    return (f'<figure class="how__figure"><img src="assets/how/figures/{esc(f["file"])}" alt="{esc(f["alt"])}" width="{width}" height="{height}" style="--w:{round(width * SHOWN)}" loading="lazy">'
+            f'<figcaption><span class="how__caption">{esc(f["caption"])}</span> <span class="how__credit">{esc(c["text"])} <a href="{esc(c["href"])}">{esc(c["link"])}</a></span></figcaption></figure>')
 
 
 def customise(step: dict) -> str:
@@ -113,14 +118,14 @@ def customise(step: dict) -> str:
 
 
 def step_html(data: dict, i: int) -> str:
-    """One step: its number and title, what you do, where you can customise (when there is something), what to remember, its guides, and the way to the next step."""
+    """One step: its number and title, what you do, the picture, then two columns (what to remember; what to customise and the guides) and the way on."""
     steps = data["steps"]
     s = steps[i]
     know = "".join(f"<li>{esc(k)}</li>" for k in s["know"])
     extras = last_step_extras(data) if i + 1 == len(steps) else ""
     return (f'<section class="how__step" id="{esc(s["id"])}"><h2 tabindex="-1"><span class="how__num">{i + 1}</span> {esc(s["title"])}</h2>'
-            f'<p class="how__text">{esc(s["text"])}</p>{figure_html(data, s)}{customise(s)}'
-            f'<h3>Good to know</h3><ul class="how__know">{know}</ul><h3>Guides</h3>{links_html(s["guides"], "how__guides")}{extras}{step_nav(steps, i)}</section>')
+            f'<p class="how__text">{esc(s["text"])}</p>{figure_html(data, s)}<div class="how__cols"><div><h3>Good to know</h3><ul class="how__know">{know}</ul></div>'
+            f'<div>{customise(s)}<h3>Guides</h3>{links_html(s["guides"], "how__guides")}</div></div>{extras}{step_nav(steps, i)}</section>')
 
 
 def page_how() -> None:

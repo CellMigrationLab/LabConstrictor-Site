@@ -12,8 +12,9 @@ steps:
     figure:
       file: step-1.webp
       alt: "A notebook file, a Python helper file and an icon image: the things an author prepares."
+      caption: "What you bring: your notebook, optional helper code and an optional icon."
     customise:
-      - The notebook is your app's interface: its text, widgets and layout are entirely yours.
+      - The notebook is your app's interface, so its text, widgets and layout are entirely yours.
     know:
       - Make it run in Google Colab and in JupyterLab. Setup that only works in Colab is guarded, so it runs only there.
       - Add a small version cell at the top (current_version and notebook_name), and raise the version whenever the notebook's logic changes. Installed apps use it to tell users about updates.
@@ -28,6 +29,7 @@ steps:
     figure:
       file: step-2.webp
       alt: "The Requirements Generator notebook scans the notebook and its helper code and writes a requirements.yaml file listing the Python version and the packages."
+      caption: "The Requirements Generator notebook scans your notebook and its helper code, then writes requirements.yaml."
     customise: []
     know:
       - Generate it with the Requirements Generator notebook, in the environment where your notebook runs without errors, on your computer or in Colab.
@@ -42,6 +44,7 @@ steps:
     figure:
       file: step-3.webp
       alt: "The LabConstrictor template on GitHub is used to make a custom repository; an initialiser form takes a project name, a version and an optional icon, and sends the changes to the repository as a pull request."
+      caption: "Use the template to get your own repository. The initialiser form (name, version, optional icon) proposes the changes as a pull request."
     customise:
       - Your app's name and version.
       - Your own logo, banner and header images for the installer and the desktop app. You can also add them later.
@@ -62,6 +65,7 @@ steps:
     figure:
       file: step-4.webp
       alt: "A form takes the notebook and the requirements.yaml file and creates a pull request in the custom repository, which starts the automatic checks."
+      caption: "The form opens a pull request. Merging it starts automation A, which checks the notebook and its requirements and undoes the merge if something fails."
     customise: []
     know:
       - The form asks for your repository address and a GitHub personal access token. You can add several notebooks in one pull request.
@@ -73,10 +77,11 @@ steps:
       - {href: guides/workflow-status/, label: Check the status of workflows}
   - id: step-5
     title: Create a release
-    text: Publishing a release on GitHub starts a workflow that builds the installers.
+    text: Publish a release on GitHub, and a workflow builds the installers.
     figure:
       file: step-5.webp
       alt: "A new release with a version tag in the custom repository starts the automation, which attaches installers for Windows, macOS and Linux to the release's assets."
+      caption: "A release with a version tag starts automation B, which builds one installer for each system and attaches the three files to the release's assets."
     customise: []
     know:
       - Before you start, check the Actions tab of your repository. No workflow should be running.
@@ -93,10 +98,11 @@ steps:
     figure:
       file: step-6.webp
       alt: "What users get: an installer for each system, the installed app with its icon, and JupyterLab opening a Welcome notebook that lists the notebooks, with code hidden and widgets shown."
+      caption: "What your users get: an installer for their system, the app on their computer, and notebooks that open in JupyterLab with code hidden."
     customise:
-      - How the App Centre describes your app: its summary, kind, status, screenshots and the paper to cite.
+      - Choose how the App Centre describes your app, from its summary and kind to screenshots and the paper to cite.
     know:
-      - Users download the installer for their system from your release. The installers are not code-signed yet, so their system will warn them: tell them to download only from your release. Installing needs an internet connection.
+      - Users download the installer for their system from your release. The installers are not code-signed yet, so their system will warn them. Tell them to download only from your release. Installing needs an internet connection.
       - Describing the app takes one small file in your repository, labconstrictor-app.yaml. The initialisation form adds it if you fill in its summary and kind; otherwise you copy the example from the guide.
       - To be listed, the repository must be public and have a licence. Submit its address; a bot checks it and a maintainer adds it.
     guides:
