@@ -98,13 +98,16 @@ def repo_license(repo: dict) -> str | None:
     return repo["license"]["spdx_id"] if repo["license"] else None
 
 
-def resolve(entry: dict, gh: GitHub, manifest_dir: Path | None) -> dict:
-    """Everything the site shows about one registered app (raises AppProblem)."""
+def resolve(entry: dict, gh: GitHub, manifest_dir: Path | None, taken: dict[str, str]) -> dict:
+    """Everything the site shows about one registered app (raises AppProblem). `taken` holds the web addresses and names of the apps
+    already accepted; the app's own are checked against it BEFORE any image is downloaded, so a rejected duplicate can never overwrite
+    the media of the app that kept the address. It is not changed here: `build` reserves the names once the whole app resolved."""
     name = entry["repo"]
     repo = gh.repo(name)
     check_identity(entry, repo)
     manifest = read_manifest(gh, name, repo["default_branch"], manifest_dir)
     slug, branch, warnings = slugify(name.split("/")[1]), repo["default_branch"], []
+    check_free(slug, manifest["name"], taken)
     section = entry["section"] if "section" in entry else "apps"
     licence = manifest["license"] if "license" in manifest else repo_license(repo)
     warnings += completeness.missing(manifest, section, licence)
@@ -119,14 +122,19 @@ def resolve(entry: dict, gh: GitHub, manifest_dir: Path | None) -> dict:
     }
 
 
-def check_unique(app: dict, taken: dict[str, str]) -> None:
-    """Slugs (web addresses) and display names must be unique, and a slug may not be empty or reserved;
-    the first app registered keeps them."""
-    if not app["slug"] or app["slug"] in RESERVED_SLUGS:
-        raise AppProblem(f"{app['slug']!r} cannot be used as a web address (empty or reserved)")
-    for key in (app["slug"], app["manifest"]["name"].lower()):
+def check_free(slug: str, display_name: str, taken: dict[str, str]) -> None:
+    """Raise AppProblem when the slug (web address) is empty, reserved or already used, or the display name is already used;
+    the first app registered keeps them. Nothing is reserved here."""
+    if not slug or slug in RESERVED_SLUGS:
+        raise AppProblem(f"{slug!r} cannot be used as a web address (empty or reserved)")
+    for key in (slug, display_name.lower()):
         if key in taken:
             raise AppProblem(f"{key!r} is already used by {taken[key]}")
+
+
+def check_unique(app: dict, taken: dict[str, str]) -> None:
+    """`check_free` for a resolved app, then reserve its slug and name for it."""
+    check_free(app["slug"], app["manifest"]["name"], taken)
     taken[app["slug"]] = taken[app["manifest"]["name"].lower()] = app["repo"]
 
 
@@ -136,7 +144,7 @@ def build(entries: list[dict], gh: GitHub, manifest_dir: Path | None = None) -> 
     apps, problems, warnings, taken = [], [], [], {}
     for entry in entries:
         try:
-            app = resolve(entry, gh, manifest_dir)
+            app = resolve(entry, gh, manifest_dir, taken)
             check_unique(app, taken)
             apps.append(app)
             warnings += [f"{entry['repo']}: {w}" for w in app.pop("warnings")]

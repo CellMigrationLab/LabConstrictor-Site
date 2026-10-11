@@ -1,6 +1,9 @@
 """Catalogue rules: what is listed, what is left out, and that nothing is hidden."""
 
+import tempfile
 import unittest
+from pathlib import Path
+from unittest import mock
 
 from lcsite import assets, catalogue, validate
 from lcsite.config import AppProblem
@@ -109,18 +112,18 @@ class ValidationTests(unittest.TestCase):
 class ResolveTests(unittest.TestCase):
     def test_a_good_app_resolves(self) -> None:
         """A good app resolves."""
-        app = catalogue.resolve(ENTRY, FakeGitHub(manifest=MANIFEST), None)
+        app = catalogue.resolve(ENTRY, FakeGitHub(manifest=MANIFEST), None, {})
         self.assertEqual((app["slug"], app["release"]["tag"]), ("demo-app", "1.0.0"))
 
     def test_changed_repo_id_needs_re_review(self) -> None:
         """Changed repo id needs re review."""
         with self.assertRaises(AppProblem):
-            catalogue.resolve(ENTRY, FakeGitHub(repo_id=8, manifest=MANIFEST), None)
+            catalogue.resolve(ENTRY, FakeGitHub(repo_id=8, manifest=MANIFEST), None, {})
 
     def test_promised_installers_need_a_release(self) -> None:
         """Promised installers need a release."""
         with self.assertRaises(AppProblem):
-            catalogue.resolve(ENTRY, FakeGitHub(rel=False, manifest=MANIFEST), None)
+            catalogue.resolve(ENTRY, FakeGitHub(rel=False, manifest=MANIFEST), None, {})
 
     def test_one_bad_app_is_reported_and_does_not_stop_the_others(self) -> None:
         """One bad app is reported and does not stop the others."""
@@ -137,6 +140,34 @@ class ResolveTests(unittest.TestCase):
         self.assertEqual(len(snapshot["apps"]), 1)
         self.assertIn("already used", snapshot["problems"][0])
 
+    def test_a_rejected_duplicate_never_overwrites_the_media_of_the_app_that_kept_the_address(self) -> None:
+        """Two valid apps with the same repository name from different owners: the second is refused before it downloads anything,
+        so the first app's published picture is unchanged (also when the second fails later)."""
+        shot = "schema: 1\nname: Demo\nsummary: A demo app that does something useful.\nkind: analysis\ndistribution:\n  installer: true\nscreenshots:\n  - path: s.png\n    caption: A caption\n"
+
+        class Pictures(FakeGitHub):
+            """Serves a different picture to each owner."""
+
+            def repo(self, name: str) -> dict:
+                """Repository metadata with this repository's own id."""
+                return dict(super().repo(name), id=7)
+
+            def latest_release(self, name: str) -> dict | None:
+                """A release carrying installers named for the app."""
+                return release(name)
+
+            def raw(self, name: str, ref: str, path: str, limit: int = 0) -> bytes:
+                """The manifest, or a picture whose bytes name the owner."""
+                return shot.encode() if path.endswith(".yaml") else b"\x89PNG\r\n\x1a\n" + name.encode()
+
+        twin = {**ENTRY, "repo": "p/demo-app"}
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(catalogue, "BUILD", Path(tmp)):
+            snapshot = catalogue.build([ENTRY, twin], Pictures())
+            written = (Path(tmp) / "media" / "demo-app" / "shot-1.png").read_bytes()
+        self.assertEqual([a["repo"] for a in snapshot["apps"]], [REPO])
+        self.assertTrue(written.endswith(REPO.encode()), written)
+        self.assertIn("already used", snapshot["problems"][0])
+
     def test_a_missing_manifest_says_what_to_add_and_where(self) -> None:
         """A repository without labconstrictor-app.yaml gets a message that names the file, the branch and the way forward."""
         class NoManifest(FakeGitHub):
@@ -147,7 +178,7 @@ class ResolveTests(unittest.TestCase):
                 raise NotFound("404")
 
         with self.assertRaises(AppProblem) as ctx:
-            catalogue.resolve(ENTRY, NoManifest(), None)
+            catalogue.resolve(ENTRY, NoManifest(), None, {})
         self.assertIn("labconstrictor-app.yaml", str(ctx.exception))
         self.assertIn("default branch (main)", str(ctx.exception))
 

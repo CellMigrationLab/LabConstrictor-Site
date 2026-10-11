@@ -51,7 +51,7 @@ def check(body: str, gh: GitHub, today: str) -> tuple[dict | None, list[str]]:
         if any(e["repo"].lower() == name.lower() for e in registry.load_all()):
             raise AppProblem(f"{name} is already in the registry")
         entry = new_entry(gh.repo(name), today)
-        app = catalogue.resolve(entry, gh, None)
+        app = catalogue.resolve(entry, gh, None, {})
     except AppProblem as err:
         return None, [f"- ✘ {one_line(err)}"]
     lines = [f"- ✔ `{code(app['manifest']['name'])}`: manifest is valid", f"- ✔ latest release: {app['release']['tag'] if app['release'] else 'none (Colab or pip only)'}"]
