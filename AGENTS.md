@@ -87,5 +87,6 @@ The one deliberate exception is per-app: an app that cannot be resolved is left 
     zensical build --strict
     python scripts/write_sitemap.py && python scripts/finish_site.py
     python scripts/check_site.py && python scripts/check_design.py
+    python tests/browser/smoke.py        # optional, by hand: real-browser checks of the built site (needs Playwright and Chromium; not run in CI)
 
 Changes to other repositories (the template, plugins, projects) go in a pull request there; check out a fresh branch from that repository's `main` with an explicit refspec (`git fetch origin +refs/heads/main:refs/remotes/origin/main`), because a shallow clone's `origin/main` can be stale. Do not push to `main` here before the pull requests the build depends on are merged: the daily build reads those repositories' default branches.
