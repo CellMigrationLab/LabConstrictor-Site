@@ -1,0 +1,119 @@
+{
+ "dimension": "Technical and accessibility standards (benchmark section 5, excluding persona tasks)",
+ "already_met": [
+  "No-JS (Playwright javaScriptEnabled=false, 1280px and 390px, all 38 pages): catalogue shows all 6 cards as plain links to app pages (the JS-only filter form is hidden, not dead); every app page shows its 11 release-asset links (tiles plus the 'All downloads' table) and Colab links; Use/Build/Docs/Ecosystem/Submit pages render fully; the phone menu is a CSS checkbox and opens on click without JS (5 links visible); the docs drawer stays open. The only dead control without JS is the pip 'Copy' button on /apps/nucleisky/ (visible, does nothing).",
+  "Horizontal overflow: 0 of 228 page x viewport combinations (38 pages x 320/360/390 px x JS on/off) have scrollWidth > clientWidth or an unclipped element past the viewport edge.",
+  "Touch targets (WCAG 2.5.8): at 390 and 360 px every target under 24x24 (footer links 16px high, 'Edit this page', file-name links 17px, 'Soon in napari' chips 22px, ghost-small buttons) has no neighbour inside a 24px circle, so all pass by spacing; only exception is one inline link in a sentence (exempt). Primary download buttons and Copy (57x25) are large enough. Note: passing by spacing only, footer/menu links are 16px tall.",
+  "Contrast: of 106 distinct text/background/size combinations computed from rendered styles on all 38 pages, only 'Analysis'-style card kind labels fail for real text (3.34:1). Muted text #5b6a61 is 5.71:1 on white and 5.30:1 on the #f3f8f1 soft band; pills: verified 6.78, host/napari 5.90, testing 8.13; the new hero line (.lc-hero__also) 5.30:1; filter labels 5.30:1; placeholder 4.61:1; ghost buttons and action links 6.9-7.2:1; white-on-#1c5f1c buttons 7.4:1.",
+  "Semantics: exactly one h1 per page and no skipped heading level (apps: h1, h2 Get it/About/Using it/All downloads/How to install/Details, h3 per OS); landmarks present (header, nav aria-label=Main, main, aside aria-label=Docs, footer); all filter controls are wrapped in visible <label>s, form has role=search, result count is aria-live=polite, Clear filters is a real <button>; menu checkbox has aria-label=Menu and aria-controls; lang=en; every <img> has an alt attribute.",
+  "Keyboard (625 Tab stops logged on 9 page types at 1280 and 390): every real control gets a visible 2px solid outline (no stop without an outline except the one invisible div noted in the gaps), including filter input and the three selects (outline offset 0), Clear filters, whole-card links (offset 4px, dark ink ring), OS-tile download buttons, Copy, burger (focus ring drawn on .lc-burger via :has), and no focus lands off-screen. Hidden controls (search at narrow width, closed menu) are correctly removed from the tab order. Skip link does navigate (#__skip, scrollY changes).",
+  "Performance on the local lab run (unthrottled desktop): LCP 132-336 ms on all 13 sampled page types; page weight 610-1130 KB uncompressed, of which gzip would cut CSS 189->~30 KB, JS 171->~55 KB, search.json 110->27 KB. Fonts are self-hosted woff2 with font-display: swap and the Inter latin file preloaded. Phone-width CLS is 0 on all sampled pages. Icons and hub images carry width/height."
+ ],
+ "gaps": [
+  {
+   "id": "T1",
+   "requirement": "CLS <= 0.1 (benchmark section 5, performance); no late-revealed layout",
+   "current": "Playwright layout-shift entries on desktop (1280px, no throttling), three JS-triggered shifts: (a) /apps/: form.hidden=false at lc.js:79 (form is emitted hidden by pages_apps.py:25) pushes the grid from y=239 to y=434, CLS 0.099; (b) every app page: lcInitSystem does grid.prepend(tile) at lc.js:36, so the three OS tiles jump horizontally (40->442 px), CLS 0.100 on /apps/celltrackscolab/, /labconstrictor-demo/, etc.; simulated Mac+Chrome (CDP UA override, arch=arm) adds the tile moves again, total 0.126 on /apps/nucleisky/ (h3.after(mine) at lc.js:43 is a further reflow inside the tile); (c) every page: the Material search button is display:none until JS adds class 'js' (header height 67 px with JS off, 72.19 px with JS on, menu moves 728->646 px), CLS 0.059 on all page types and 0.330 on the home page (reproduced twice). Totals measured: home 0.330, /apps/ 0.158, /apps/nucleisky/ 0.159, /apps/labconstrictor-vlab4mic/ 0.159, /apps/celltrackscolab/ 0.100. Phone width measured 0 because search is hidden there, so field p75 depends on the visitor's device mix.",
+   "severity": "major",
+   "proposal": "Remove the three late reflows without losing the no-JS behaviour. (1) Header: reserve the search slot (e.g. .lc-header__tools {min-width/min-height fixed} and, for .no-js, hide the dead button with visibility:hidden instead of display:none) so the header is 72 px before and after JS. (2) Filter: keep the markup 'hidden' for no-JS but reserve its box: `.lc-filter[hidden]{display:flex!important;visibility:hidden}` plus `<noscript><style>.lc-filter{display:none!important}</style></noscript>` in overrides/main.html extrahead, so the layout is identical before and after JS. (3) OS tiles: stop moving DOM nodes; either only mark the tile in place (is-yours border and label already exist, no prepend) or set CSS `order` from a 3-line inline <head> script that runs before first paint; on Macs swap the ghost/filled style in place instead of h3.after(mine). Re-measure with the same Playwright script; target < 0.05 on every page type.",
+   "files": [
+    "docs/assets/javascripts/lc.js",
+    "scripts/lcsite/pages_apps.py",
+    "overrides/main.html",
+    "docs/assets/stylesheets/lc.css"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "None with AGENTS.md/DESIGN.md. Must keep the lc.js header promise 'everything also works without JavaScript' and 'every tile stays visible' (DESIGN.md downloads rules). lc.css is already 338 lines; the 300-line rule is enforced only for Python (tests/test_code_rules.py:9), but consider splitting lc.css (e.g. lc-header.css) rather than growing it."
+  },
+  {
+   "id": "T2",
+   "requirement": "WCAG 2.2 AA keyboard: visible focus (2.4.7), focus not obscured (2.4.11), non-text contrast 3:1 (1.4.11)",
+   "current": "(a) The first Tab stop on every page ('Skip to content', a.md-skip) is hidden: Material gives it z-index 10, .lc-header is z-index 20 (lc.css:50); at focus elementFromPoint at its centre returns IMG/A.lc-brand at both 1280 and 390 px, and the screenshot of the focused state shows only the header (tech2/skip-phone.png). 38 of 38 pages. (b) Footer links (10 stops per page) use :focus-visible ring #1c5f1c (lc.css:40) on the #0f2214 footer: 2.15:1, screenshot shows a barely visible dark-green box. (c) DESIGN.md says 'one visible outline for everything', but content links, cards and buttons get Material's ring (2px #10211a, offset 4px) while header/footer get lc.css's (2px #1c5f1c, offset 3px): two different focus styles. (d) After the last footer link every page has one more Tab stop on an unlabelled empty fixed div (outerHTML: <div class=\"focus-visible\" style=\"position: fixed; height: 100%; top: 0; z-index: 4\">, width 0, outline none), e.g. stop 44 on /apps/nucleisky/ and stop 25 on /apps/ at 390px.",
+   "severity": "major",
+   "proposal": "In lc.css: `.md-skip:focus{z-index:30}` (or lower the header below it) so the skip link shows over the header; `.lc-footer :focus-visible{outline-color:#fff}` (about 15:1); define the ring once as a token (`--lc-focus`) and force it on all elements with `[dir] .md-typeset :focus-visible` so there is one style. For (d), find the source (likely a Material sidebar scroller; not verified) and give it display:none or remove it in overrides/main.html. Re-run the Tab walk and assert every stop has an outline of >= 3:1 against its local background.",
+   "files": [
+    "docs/assets/stylesheets/lc.css",
+    "overrides/main.html"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "Fixes a conflict: DESIGN.md Interactions 'Focus: one visible outline for everything (:focus-visible)' is currently untrue. No conflict otherwise."
+  },
+  {
+   "id": "T3",
+   "requirement": "Contrast: >= 4.5:1 normal text, >= 3:1 for UI component boundaries",
+   "current": "(a) Card kind label (<small> in .lc-card__title, lc.css:151, text 'Analysis', 'Simulation', 'Training', 'Utility') renders at rgb(132,143,137) on white = 3.34:1, 12.8px/400 uppercase: lc.css sets colour #5b6a61 (5.71:1) but Material's `.md-typeset small` opacity .75 still applies (computed opacity 0.75). On every app card on /, /apps/ and /build/. (b) Filter text input and the three selects use `border:1px solid #cfcfcf` (lc.css:166) = 1.56:1 on white fill, about 1.4:1 against the #f3f8f1 filter band: the control boundary fails 1.4.11. (c) Monogram icons (N, G, V, L; span.lc-icon--mono, lc.css:157): white letter on a gradient that starts at #1fb221 = 2.82:1 (aria-hidden and beside the app name, so arguably decorative, but visible on every card).",
+   "severity": "major",
+   "proposal": "lc.css: `.lc-card__title small{opacity:1}` (gives 5.71:1); filter controls `border:1px solid #767f79` or var(--lc-muted) (>= 4.5:1); monogram gradient from var(--lc-accent-strong) to var(--lc-accent-deep) (7.4:1 to 11.4:1). Add the pairs to an offline contrast check (see T6) so opacity and border regressions are caught.",
+   "files": [
+    "docs/assets/stylesheets/lc.css"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "rule_conflicts": "None."
+  },
+  {
+   "id": "T4",
+   "requirement": "Above-the-fold images load eagerly with known dimensions; LCP <= 2.5 s; no needless weight",
+   "current": "(a) DESIGN.md (Images): 'images above the fold do not [load lazily]', but the home hero logo is `loading=\"lazy\"` (site/index.html; it is the measured LCP element: 3.04 s on the lab phone profile, 390px, DPR 3, slow-4G 1.6 Mbps/150 ms, CPU 4x) and every hub card image is lazy (hubs.py:48; LCP element on /use/ 2.96 s and /build/ 3.37 s). All other phone LCPs are 2.3-2.5 s and are the lead paragraph, i.e. render-blocked by 3 stylesheets (main.css 146 KB raw / 23 KB gz + palette + lc.css) rather than by images. (b) Missing width/height: pages_apps.py:203 (the only screenshot on the site, nucleisky-1.jpg, 1200x509, lazy, also alt=\"\"), pages_site.py:24 (home comic.png 424 KB, lazy, no dimensions; 0.026 shift when fonts are slow), and 38 imported guide images (e.g. /guides/notebook-usage/ CLS 0.266, /guides/install/ CLS 0.193 on desktop, from Welcome_Notebook.png and Windows_Protected_your_PC.png). (c) Material fetches search.json (110 KB raw / 27 KB gz) plus a worker on every page load, including phones where search is display:none (XHR 110 KB in all 26 runs). Compression was not applied by the local preview server, so absolute transfer and phone LCP are overstated; relative findings hold.",
+   "severity": "major",
+   "proposal": "Emit loading=eager and fetchpriority=high for the home hero logo and the first hub image (hubs.py: first card eager); write width/height for screenshots in pages_apps.py (Pillow is already used in images.py to resize; return the size from shrink()) and for the comic; add width/height to imported guide images in finish_site.py using Pillow (build-time, offline). Convert comic.png to WebP/JPEG or reduce it. Optionally preload the Bricolage font that styles the brand and every h1 (only Inter is preloaded). Re-measure phone LCP with gzip on (e.g. serve with a gzip-capable server) before deciding about the render-blocking CSS.",
+   "files": [
+    "scripts/lcsite/hubs.py",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/pages_site.py",
+    "scripts/lcsite/images.py",
+    "scripts/finish_site.py",
+    "overrides/main.html"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "Fixes a break of DESIGN.md Images rule. Note DESIGN.md also says screenshots 'have a description in alt', while check_design.py:27 whitelists lc-shot__img as decorative (alt=\"\" accepted because a figcaption exists) and the manifest schema's screenshots have only file and caption; making alt an optional author field is an author-controlled schema change (schema/labconstrictor-app.schema.json, plus the initialiser form in LabConstrictor_streamlit to expose it), otherwise amend DESIGN.md to say the caption is the description."
+  },
+  {
+   "id": "T5",
+   "requirement": "Phone with keyboard/assistive tech: every navigation control operable in a logical order; works in forced-colours; labelled controls and useful headings",
+   "current": "(a) overrides/main.html:36-45 puts <ul class=lc-menu> before .lc-header__tools (which holds the checkbox), so at 390px, after opening the menu with Space, Tab from the toggle goes to '← All apps' in the page and the menu links are reached only by Shift+Tab twice (verified with JS on and off). The toggle is a bare checkbox with aria-controls but no aria-expanded/role. (b) In forced-colors mode (Playwright forcedColors:active, 390px) the burger bars are backgrounds (lc.css:64) that become Canvas colour: the menu button is invisible (screenshot shows header with logo only, bar background rgb(255,255,255)). (c) Site search is display:none from 900px down (checked at 900/820/768/600/390): phones and tablets have no site search, while its index is still downloaded (T4c). (d) On /apps/ the heading outline is only h1 + h2 'Testing and maintenance': card names are <strong> inside the card link, so heading navigation skips every app, and each card link's accessible name is the whole card text (name, kind, summary, badges, footer). (e) 7 horizontally scrollable tables at 390px (div.lc-scroll on every app page, plus /guides/installer-images/) have no tabindex; links inside make them reachable, so this is minor.",
+   "severity": "major",
+   "proposal": "Move .lc-header__tools before the menu list in the DOM and place it visually with flex `order` (the pattern the CSS already uses elsewhere), add aria-expanded to the toggle in lcInitMenu and keep the CSS-only state working; add `@media (forced-colors:active){.lc-burger span{background:CanvasText}}`; either show a Search link/button on narrow screens that goes to a no-JS-safe page, or stop shipping search.json and the worker on narrow screens; wrap each card name in <h2>/<h3> inside the link (valid HTML) so the outline lists apps without changing the 'card is one link' rule; add tabindex=0 and an aria-label to .lc-scroll wrappers.",
+   "files": [
+    "overrides/main.html",
+    "docs/assets/stylesheets/lc.css",
+    "docs/assets/javascripts/lc.js",
+    "scripts/lcsite/cards.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "DESIGN.md says 'A card is one link (the whole card)'; a heading inside the link keeps that true. DESIGN.md 'Everything works from the keyboard' is the rule being repaired. lc.js Enter handler (lines ~97-100) must still work with the checkbox's native Space behaviour."
+  },
+  {
+   "id": "T6",
+   "requirement": "P2 'measure ... accessibility, performance (regression checks)' and 'content integrity' checks in the build",
+   "current": "scripts/check_site.py guards: internal links/anchors, unescaped author text, edit links, one current menu entry, 3-click reach, required files. scripts/check_design.py guards: one h1, lang, meta/OG/canonical, description length and uniqueness, heading order, link target/rel/generic text, button use, alt present, nested links, GitHub pill. CI (publish.yml:80-95) runs only these two after `zensical build --strict`. Not guarded at all: contrast, focus ring contrast/skip-link visibility, image width/height and loading=lazy on the first images (so the T4a rule break shipped), overflow at phone widths, no-JS reachability, CLS, forced-colours. check_design.py:27 even exempts the screenshot class from the empty-alt rule. No test exercises any measurement above.",
+   "severity": "major",
+   "proposal": "Add one offline stdlib script scripts/check_a11y.py, run next to the other two, with these gates (all static, no browser, no network): (1) contrast: parse the :root tokens in lc.css and check a short declared list of (foreground, background, opacity, size) pairs, failing under 4.5:1 (3:1 for borders and the focus ring); include .lc-card__title small at opacity 1 and the footer ring; (2) every <img> in the HTML has width and height, except an explicit KNOWN_EXCEPTIONS entry with a reason; (3) the first image inside main, and any element tagged hero, is not loading=lazy; (4) no page needs JS for its links: the filter form and every [hidden] element are the only JS-revealed nodes (whitelist), every app page contains >= 1 releases/download link in static HTML; (5) skip link target #__skip exists; (6) hidden form reserves space (CSS rule present). Then an optional Playwright script scripts/measure_site.py (skipped with a printed reason, not silently, when chromium is absent) for the measurements that need a layout engine: overflow at 320/360/390, Tab walk with focus-ring contrast and obscured-focus test, layout-shift budget < 0.1, forced-colours screenshot diff of the burger. Add unit tests with a failing case for each gate (AGENTS.md: every new behaviour gets a test).",
+   "files": [
+    "scripts/check_a11y.py (new)",
+    "scripts/check_design.py",
+    "scripts/check_site.py",
+    ".github/workflows/publish.yml",
+    "tests/test_a11y.py (new)",
+    "DESIGN.md"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "rule_conflicts": "New code must follow AGENTS.md: annotations and docstrings, <= 30 lines per function, <= 300 lines per file (put the contrast math in its own module), no `.get(key, default)`, named exceptions, and no silent skip: a missing browser must print and exit non-zero or be an explicit optional flag. Update the 'Where this is enforced' table in DESIGN.md in the same change."
+  }
+ ],
+ "unverified": [
+  "INP (<= 200 ms) was not measured; the only JS interaction code is the filter apply() over 6 cards, so risk is low but untested.",
+  "All performance numbers are lab data from a local preview server without gzip/brotli and without a CDN; field p75 for LCP/CLS is unknown. Phone LCP of 2.3-3.4 s used 1.6 Mbps/150 ms/CPU 4x on uncompressed assets; with GitHub Pages compression it is likely lower, but this was not re-measured.",
+  "macOS behaviour was only simulated with a CDP user-agent override (platform macOS, architecture arm) in Chromium; real Safari/Firefox on a Mac (no client hints) and real Windows were not tested. Whether Safari shifts the tile identically was not measured.",
+  "Browsers tested: Chromium only. No screen-reader run (NVDA, VoiceOver) was done; announcements of the aria-live count, the checkbox menu and card link names are inferred from markup.",
+  "The origin of the final invisible Tab stop (fixed zero-width full-height div, class 'focus-visible') was not traced to a template or theme file.",
+  "Why the lc.css rule `.lc-header .md-search__button{width:1.76rem;height:1.76rem}` (lc.css:69) does not take effect (computed 82x35 px incl. 0 44px 0 38px padding, search icon is drawn at about 14 px) was not investigated; the 82x35 hit area is fine for touch but the header size depends on it (T1c).",
+  "WCAG 2.2 criteria that need human judgement (consistent help, redundant entry, 3.3.x error handling for the /submit form, which is a GitHub issue template outside the site) and zoom/reflow at 400% and text-spacing overrides were not tested; 320 px overflow was tested, 400% zoom was not.",
+  "Dark mode and prefers-reduced-motion were not measured beyond reading lc.css (light only; reduced-motion rule present at lc.css:~268)."
+ ]
+}

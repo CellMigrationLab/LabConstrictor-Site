@@ -1,0 +1,435 @@
+{
+ "headline": "Do the cheap, derivable truth fixes first (host wording, search, a11y, CLS, download hints), then add five optional manifest fields (inputs, outputs, limitations, status, distribution.platforms) with visible 'Not stated' lines and warnings in build/problems.md, never delisting the 6 apps. Other repos need the vendored schema copies, the initialiser, the template Intel opt-out and the app manifests, in that order. Controlled task vocabularies, tiered completeness schemas, per-app host status, example_data, hard requirements and field Core Web Vitals are rejected or deferred.",
+ "implement_now": [
+  {
+   "order": 1,
+   "title": "One host phrase derived from the plugin's own status (replace hard-coded 'Soon in X')",
+   "what": "In scripts/lcsite/cards.py add one pure function host_phrase(host_key, project_status) used by host_chip (tooltip and sr-only text, cards.py:62-65), host_badge (header, cards.py:68-71) and details_list 'Works in' (pages_apps.py:146-147, 170-173). Status comes from the host's `plugin` repo via data/hosts.yaml -> projects.load_project(...)['status'] (build/sources/*/docs/labconstrictor-project.yaml; all three are 'Experimental' today). Strings: 'napari plugin: experimental', 'napari plugin: available', 'napari plugin: install from GitHub', 'napari plugin: deprecated' (same for Fiji, QuPath); the status text is shown as written and never reworded to a stronger claim. A missing or unknown status stops the build with an error naming the host (no fallback to 'Soon'). It describes the plugin, not a tested claim about the app. Rename the filter label and Details row 'Works in' to 'Also in' / 'Also in (plugins)'. Replace data/site.yaml:8 and pages_site.py:65 by one identical neutral sentence: 'Plugins let apps that declare tools run in napari, Fiji and QuPath; the stage of each plugin is shown on its card.' Update DESIGN.md:32,45,49 and AGENTS.md:29 first, in the same change. Do NOT drop napari/Fiji from the VLab4Mic manifest: the live CellMigrationLab repo has src/vlab4mic_lc_tools; the stale local clone misled one auditor.",
+   "why": "Three labels disagree on one fact: cards say 'Soon in napari', the filter and Details row say 'Works in', the Ecosystem page says Experimental. cards.py:63-71 hard-codes 'Soon'. Confirmed by 4 audit dimensions and the skeptics (verdict: fix the wording, not the filter; never imply per-app testing).",
+   "files": [
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/hosts.py",
+    "scripts/lcsite/projects.py",
+    "data/site.yaml",
+    "scripts/lcsite/pages_site.py",
+    "DESIGN.md",
+    "AGENTS.md",
+    "tests/test_site.py",
+    "tests/test_design.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "tests": "Unit test host_phrase for the four statuses plus an unknown status raising an error that names the host; test that card chip, header badge and Details row render the same phrase for one fixture app; update the existing tests at tests/test_site.py:213 and tests/test_design.py:61-62; grep check that the string 'Soon in' no longer exists in scripts/ or data/."
+  },
+  {
+   "order": 2,
+   "title": "Search by every word, search the visible labels, build filter options from the data",
+   "what": "docs/assets/javascripts/lc.js lcMatches (lines 52-56): fold the query, split on whitespace, require every token to occur in data-search (AND). scripts/lcsite/cards.py search_text (lines 120-123): also append the kind label, the route labels (Desktop, Colab, pip) and the host names (napari, Fiji, QuPath, Notebook) taken from the same dicts the card uses; once item 7 lands also append inputs and outputs. In pages_apps.py select()/filter_bar (lines 17-27) take the listed non-testing apps and print only values present, with counts in the option text ('In the browser (Colab) (3)'); this removes the dead Kind options 'Segmentation' and 'Game' and the no-op 'Notebook'. Relabel the route select 'How do you want to run it?' with 'On my computer (Windows, macOS, Linux)' / 'In the browser (Colab)' / 'Python package (pip)' (only if some app has it). Count only the main grid ('Showing 3 of 4 apps' plus ', 1 more for testing and maintenance' only when that group has a match). Empty state: name what is active ('No app matches \"nuclei segmentation\" with these filters.'), include a Clear filters control and a link 'Missing an app for this task? Add yours' to submit/. Do not add a synonym table or a controlled task vocabulary.",
+   "why": "Measured with the real six: 'tracking cell', 'nuclei registration', 'microscope simulation', 'analysis', 'colab', 'pip' return 0 or a wrong subset because lc.js tests the whole phrase and search_text lacks the visible labels; offline replay shows the AND fix turns them into correct hits. Acceptance test T1 ('nuclei segmentation') ends in a bare dead end. Dead options are offered (Segmentation, Game). Skeptic verdicts: build now, defer synonyms.",
+   "files": [
+    "docs/assets/javascripts/lc.js",
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "tests": "Python test of search_text (kind label, route labels and host names lower-cased and present). A test that every option of every built filter matches at least one card in the generated /apps/ HTML. A small Playwright or node check (optional, printed skip reason) for 'tracking cell' -> CellTracksColab, 'microscope simulation' -> VLab4Mic, 'nuclei segmentation' -> empty state with the reset and submit link."
+  },
+  {
+   "order": 3,
+   "title": "Screenshots: real alt text, dimensions, eager first images, one consistent rule",
+   "what": "pages_apps.py:203 emit alt=esc(caption) instead of alt=\"\" and add width/height (return the size from images.shrink() with Pillow); remove lc-shot__img from DECORATIVE_IMAGE_PARENTS in scripts/check_design.py:22-27 so an empty alt on a screenshot fails; keep DESIGN.md:54 as written (screenshots have a description in alt). Home hero logo (pages_site.py) loading=\"eager\" fetchpriority=\"high\" and the first hub card image eager in hubs.py:48 (pass an is_first flag), all other images stay lazy as DESIGN.md Images requires. Write width/height for the home comic (pages_site.py:24) and, in scripts/finish_site.py, for imported local guide images (read with Pillow at build time; skip the 3 remote shields.io badges). Do not add an alt field to the manifest schema and do not add a `shows` enum. Content, by the app owners: replace NucleiSky's banner.jpg by one panel of docs/assets/2D_QC.jpg and list CellTracksColab's Wiki/Screenshot1..N.png with the README captions; the site never pulls README images itself.",
+   "why": "Built NucleiSky page has <img class=\"lc-shot__img\" alt=\"\"> for a banner captioned 'NucleiSky banner.'; DESIGN.md:54, the schema text 'captions double as alt text' and check_design.py:22 contradict each other. The home hero logo is lazy although it is the LCP element, against DESIGN.md Images. 28 of 258 images lack width/height; /guides/notebook-usage/ shifts 0.266. Skeptics (G2, T4) accepted exactly this scope.",
+   "files": [
+    "scripts/lcsite/pages_apps.py",
+    "scripts/check_design.py",
+    "scripts/lcsite/images.py",
+    "scripts/lcsite/pages_site.py",
+    "scripts/lcsite/hubs.py",
+    "scripts/finish_site.py",
+    "tests/test_site.py",
+    "tests/test_design.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "tests": "Figure markup test (present with caption -> alt equals escaped caption and has width/height; absent -> no figure). check_design test with a failing case: screenshot image with empty alt. Static check in check_design: the first <img> inside main and the hero image are not loading=lazy; every local <img> has width and height (explicit KNOWN_EXCEPTIONS list with reasons for remote badges)."
+  },
+  {
+   "order": 4,
+   "title": "Keyboard focus and contrast repairs in lc.css",
+   "what": "docs/assets/stylesheets/lc.css: (a) `.md-skip:focus{z-index:30}` so the skip link shows above the header (z-index 20, lc.css:50); verify by screenshot at 1280 and 390 px. (b) `.lc-footer :focus-visible{outline-color:#fff}` (the current #1c5f1c on #0f2214 is 2.15:1; white is 16.7:1). (c) `.lc-card__title small{opacity:1}` (Material's .75 opacity makes the kind label 3.34:1; the token #5b6a61 is 5.71:1). (d) Filter control borders (lc.css:166) from #cfcfcf to var(--lc-muted) (about 5.2:1 on the filter band; the existing token, no new grey). (e) Optional design choice: start the monogram gradient at var(--lc-accent-strong) instead of --lc-accent. Change the DESIGN.md Interactions sentence to 'one visible outline colour for all links, white in the footer' because content links keep Material's ring. Do NOT force one global ring with `[dir] .md-typeset :focus-visible` and do NOT patch the phantom fixed div after the footer (reproduced only in headless Chromium).",
+   "why": "Reproduced: first Tab stop (skip link) hidden on 38 of 38 pages; footer ring 2.15:1; kind labels 3.34:1; input borders 1.56:1 fail WCAG 1.4.11 (3:1). Skeptics confirmed (T2, T3) and trimmed the speculative parts.",
+   "files": [
+    "docs/assets/stylesheets/lc.css",
+    "DESIGN.md"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "tests": "Static contrast pairs for the changed rules in scripts/check_design.py (or a stdlib helper) computed from the :root tokens: card kind label, footer focus ring, filter border at >= 4.5:1 / 3:1 as appropriate; failing-case unit test. One-off manual Tab-walk screenshot of the skip link recorded in the PR."
+  },
+  {
+   "order": 5,
+   "title": "Phone menu: DOM order matches visual order, aria-expanded, forced-colours burger",
+   "what": "overrides/main.html:32-43: put the burger checkbox (.lc-header__tools) before <ul class=\"lc-menu\"> and keep the desktop layout with flex `order`; lc.js lcInitMenu sets aria-expanded on the toggle on change; move the Escape handler (lc.js:95-101) to the nav so Escape from any menu link closes the drawer and returns focus to the toggle; lc.css `@media (forced-colors:active){.lc-burger span{background:CanvasText}}`. Keep the CSS-only open state working without JS.",
+   "why": "Reproduced at 390 px: after opening the menu with Space, the next Tab goes to the page content, the menu links need Shift+Tab; 28 key presses to reach a download, 4 of them Shift+Tab. Burger bars vanish in forced-colours. Skeptic verdict: real and proportionate.",
+   "files": [
+    "overrides/main.html",
+    "docs/assets/stylesheets/lc.css",
+    "docs/assets/javascripts/lc.js"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "tests": "check_design/check_site still pass (menu structure). Add a Playwright check (optional, with a printed skip reason when Chromium is absent) at 390 px: open the menu with Space, one Tab reaches the first menu link, Escape closes and refocuses the toggle."
+  },
+  {
+   "order": 6,
+   "title": "Remove the three late layout shifts (header, filter form, OS tiles)",
+   "what": "(1) lc.css: reserve the header search slot (.lc-header__tools min-width/min-height 1.76rem), show .md-search__button always and use `.no-js .lc-header .md-search__button{visibility:hidden}` (Material puts class no-js on <html> and removes it in bundle.js), so the header is 72 px before and after JS. (2) Filter: keep `hidden` in pages_apps.py:25 for no-JS; add one inline line in overrides/main.html extrahead `document.documentElement.classList.add('lc-js')` and CSS `.lc-js .lc-filter[hidden]{display:flex}`; give .lc-filter__count a min-height. No !important, no noscript block. (3) lc.js:36 and :43: stop `grid.prepend(tile)` and `h3.after(mine)`; mark the visitor's tile in place (the 'Your system' label and border already exist) and swap the ghost/filled button classes in place on a Mac. The tile order stays static. Do not add a second OS-sniffing script in <head>.",
+   "why": "Measured (Chromium 1280 px, no throttling): home 0.330 cold, /apps/ 0.099, every app page 0.100 from lc-ostile, 0.126 on a simulated Mac+Chrome; the 0.1 limit is the benchmark's CLS requirement and the figure is lab data, not field data. Skeptic verdict: fix with simpler CSS, no !important and no duplicated detection.",
+   "files": [
+    "docs/assets/stylesheets/lc.css",
+    "docs/assets/javascripts/lc.js",
+    "overrides/main.html",
+    "scripts/lcsite/pages_apps.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "tests": "Python test that the filter form is still emitted with `hidden` (no-JS stays clean) and that the 'Your system' markup is present only in lc.js, not in the static HTML. One-off Playwright layout-shift measurement script saved under scripts/ is optional (later list); record before/after numbers (target < 0.05) in the PR description."
+  },
+  {
+   "order": 7,
+   "title": "Additive optional manifest fields: inputs, outputs, limitations, status, distribution.platforms (schema first)",
+   "what": "schema/labconstrictor-app.schema.json (schema stays const 1, nothing new is required, the 6 apps stay listed): `inputs`, `outputs`, `limitations`: arrays of 1-6 plain-text strings, 5-200 characters each, description 'A short summary, not README copy; use docs_url for the rest. Say what the app accepts / produces / cannot do.'; `status`: enum Experimental | Available | Deprecated (the same words as schema/labconstrictor-project.schema.json, so the site keeps one maturity vocabulary); `distribution.platforms`: array of enum windows-x86_64, macos-arm64, macos-x86_64, linux-x86_64 ('the systems you support'). Add a schema description for `categories`: 'Words a scientist would search for: synonyms, methods, tools.' Registry: schema/registry-entry.schema.json gets dependentRequired verified_on with verified_version. catalogue.resolve (new small function in a new module scripts/lcsite/completeness.py, <= 30 lines per function) collects WARNINGS only, one line per app in build/problems.md 'Warnings (apps still listed)': missing inputs or outputs for kinds analysis, segmentation, simulation; missing status, quickstart, screenshots for every non-testing app; no licence from the manifest or GitHub. The list of recommended fields is one tuple in config.py that names schema properties so it cannot drift. Warnings never unlist an app. Read optional fields with `in`/optional_list, no `.get(k, default)`. Update content/submit.md: a short Required / Recommended (shown as 'Not stated' when missing) / Optional table, add `categories` to the sample, and a test that the sample manifest validates. scripts/submit_app.py: missing licence is an error in the bot (the Submit page already promises 'has a license'); the recommended-field list is printed as non-blocking warnings. Rollout: publish this schema first, then vendored copies (item 13), then apps.",
+   "why": "No field exists for what a scientist needs before downloading (works with, produces, limits, maturity); the facts exist only in READMEs (CellTracksColab 'Required File Format' CSV or XML, NucleiSky docs/limitations.md, GuessTheCondition .tif layout). Verified with a scratch schema that the 6 current manifests still validate and the current schema rejects the new keys (additionalProperties false). Making them required would delist 6 of 6 apps (0/6 have inputs, outputs, quickstart, docs_url; 1/6 screenshots), which AGENTS.md:62 forbids as a silent exception; BMZ also only warns (FAIR ALERT). Skeptics cut example_data, integrations, requirements.gpu, shows, tiers.",
+   "files": [
+    "schema/labconstrictor-app.schema.json",
+    "schema/registry-entry.schema.json",
+    "scripts/lcsite/completeness.py (new)",
+    "scripts/lcsite/catalogue.py",
+    "scripts/lcsite/config.py",
+    "scripts/submit_app.py",
+    "scripts/lcsite/validate.py",
+    "content/submit.md",
+    "DESIGN.md",
+    "AGENTS.md",
+    "README.md",
+    "tests/test_catalogue.py",
+    "tests/test_submit.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "tests": "Schema tests: all 6 real manifests (from build/snapshot.json) still validate; new fields present/absent/over-length (201 chars, 7 items, bad status, bad platform) with named errors. completeness tests: each warning is produced for the right kinds and never for testing apps, none leaves the app unlisted. Test that the content/submit.md sample validates. Registry test for verified_on dependentRequired. submit_app test: missing licence errors, missing recommended fields only warn."
+  },
+  {
+   "order": 8,
+   "title": "App page: 'Works with', 'Produces', 'Limitations', development status, with visible 'Not stated'",
+   "what": "New module scripts/lcsite/pages_facts.py (pages_apps.py is 208 of 300 lines; every function <= 30 lines, annotated). Under the header and before 'Get it' render a 'Works with' and a 'Produces' list from inputs/outputs ('The authors say it works with' wording, plain text via esc, no markdown). When inputs or outputs is absent and the kind is analysis, segmentation or simulation show one muted line 'Input and output formats: not stated by the author'; show nothing for game, training, utility or testing apps. 'Limitations' h2 after 'Using it', only when present (no 'Not stated' line). Details: row 'Development status (stated by the authors)' with the status or 'Not stated'; a chip only for Experimental and Deprecated; rename today's 'Status' row (pages_apps.py:145, which holds the listing tier) to 'Listing'. Add `inputs, outputs` text to search_text (item 2). Add the DESIGN.md patterns first (facts block, status row, chip) in the same change. Seed drafts (seed/manifests/*.yaml, marked DRAFT): copy only statements that are literally in each README (CellTracksColab CSV or XML; NucleiSky pixel size in um/px mandatory, no Z-stack/time-series in the 2D workflow per docs/limitations.md; GuessTheCondition .tif/.tiff one folder per condition and repeat) so the preview shows real blocks; the owners confirm them in their own repos (item 13). Do not infer or invent a value from the site side.",
+   "why": "Answers benchmark Q2 and Q3 (will it work with my data, what do I get) and acceptance test T2, which fails today: no page states an input format, output or limitation. Author-controlled and no second description: short capped statements in the app's own manifest, absence shown honestly. 'Status' row currently mislabels the verification tier.",
+   "files": [
+    "scripts/lcsite/pages_facts.py (new)",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/cards.py",
+    "docs/assets/stylesheets/lc.css",
+    "DESIGN.md",
+    "seed/manifests/*.yaml",
+    "tests/test_site.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "tests": "Rendering tests: fields present (list items escaped, HTML in a string is escaped), absent for an analysis app (muted line), absent for a utility app (nothing), limitations absent (nothing), status present/absent. check_design and check_site must pass on the regenerated pages. Test that page_app is <= 30 lines (tests/test_code_rules.py already enforces it)."
+  },
+  {
+   "order": 9,
+   "title": "Page order and download block: facts beside the buttons, labelled routes, Colab sentence, derived support links",
+   "what": "Reorder page_app (a function that stays <= 30 lines) to: header (add cards.route_badges next to the kind and tier chips; do NOT derive a 'task' from categories), Works with / Produces, first screenshot (if the 'Get it' tiles would fall below the fold at 1280x800, put the screenshot directly after the tiles instead; check), Get it, Using it, Limitations, About, All downloads, Details. Under the 'Get it' h2 one line from release_line(app) and app['repo']: 'v0.1.1 · 7 July 2026 · Community listing, not verified by a maintainer · files come from github.com/<owner>/<repo>/releases' (shown only when a release exists). Tile hints in os_tile (pages_apps.py:62-68): Windows 'The installer is not code-signed, so Windows may warn you. Run files only from this app's GitHub release. See the install guide.' linking to /guides/install/ (which already holds the steps; do not restate them); Windows and Linux tiles print 'Windows 64-bit (Intel/AMD, x86_64)' / 'Linux 64-bit (x86_64)' from assets[].arch; Linux adds 'Needs a terminal.'; macOS adds one sentence 'If macOS refuses to open it, see the install guide.' Label the pip block 'Python package (advanced)', outside the 'Notebooks to open in your browser' h3, with the exact command and 'The package named by the author on PyPI; its version may differ from the desktop app.' and a link to https://pypi.org/project/<name>/ (no PyPI fetch). Under the Colab list one generic sentence about the service only: 'These run on Google's servers in Google Colab: you need an internet connection and a Google account, and any data you load into the notebook is handled by Google. The desktop app runs on your computer.' Print no claim about any app's own data flow. megabytes() (text.py:55-57) divides by 2**20 but prints 'MB': divide by 10**6 and update the docstring and tests. Quickstart: when absent print 'The authors have not given first-run steps.' above the generic Start Menu paragraph and label that paragraph 'For any LabConstrictor desktop app:'. Details: add a 'Repository owner' row (from app['repo'], e.g. CellMigrationLab; never called 'maintainer'). Update DESIGN.md:18 (App header) and add an 'App page order' row first (AGENTS.md rule).",
+   "why": "Measured on NucleiSky at 1280x800: Get it at y=383 but version and date only in 'All downloads' at y=1968; pip command sits unlabelled under a Colab heading; 'unsigned' appears nowhere on the app page; no Colab data statement on any page although 3 of 6 apps offer Colab and all five listed notebooks mount Google Drive; PyPI nucleisky is 0.0.1 while the release is 0.1.1; the generic Using-it paragraph stands in for a missing quickstart. Skeptics trimmed D2/D3/G4 to this derivable, non-inventive scope.",
+   "files": [
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/pages_facts.py",
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/text.py",
+    "docs/assets/stylesheets/lc.css",
+    "DESIGN.md",
+    "tests/test_site.py",
+    "tests/test_text.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "tests": "Tests: facts line present with a release and absent without; Colab sentence rendered whenever a Colab route exists; pip block label; quickstart present/absent branches (no quickstart test exists today, against AGENTS.md); megabytes boundary values (317528492 -> 317.5 MB); repository owner row. check_site and check_design pass. Manual: 390 px screenshot of NucleiSky first screen."
+  },
+  {
+   "order": 10,
+   "title": "Snapshot additions: has_issues and SHA-256 digests",
+   "what": "scripts/lcsite/github.py and catalogue.py: store repo['has_issues'] from the GitHub repo API and each release asset's `digest` (GitHub returns `sha256:...`; confirmed for NucleiSky 0.1.1 with gh api; the snapshot now drops it) in build/snapshot.json; bump SNAPSHOT_FORMAT in config.py (2 to 3). details_list: render 'Report a problem' only when has_issues is true, otherwise 'No issue tracker on GitHub'. downloads_table: add a 'SHA-256' column; when an asset has no digest print 'not published'. Do not store or show download counts.",
+   "why": "/apps/labconstrictor-vlab4mic/ links to .../issues while gh api reports has_issues=false: a dead link. The unsigned installers have no integrity information; the digest costs the authors nothing. Skeptic verdict on S3 accepted the has_issues fix; the digest was named by the critic and verified by the auditor.",
+   "files": [
+    "scripts/lcsite/github.py",
+    "scripts/lcsite/catalogue.py",
+    "scripts/lcsite/config.py",
+    "scripts/lcsite/pages_apps.py",
+    "tests/test_catalogue.py",
+    "tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "tests": "Tests with has_issues true/false and with a digest present/absent; snapshot loader rejects the old format with a named error (existing behaviour) and the new fixture loads; no network in the tests."
+  },
+  {
+   "order": 11,
+   "title": "Author-declared platforms: stop offering unsupported installers; derive JSON-LD from what is offered",
+   "what": "cards.downloads() (cards.py:107-117) and downloads_table(): when distribution.platforms is present keep only the listed primary assets (explicit `in` test). A listed platform with no asset in the release raises an AppProblem naming the app and the platform (like catalogue.read_release). When the macOS arm64 platform is listed and macos-x86_64 is not, the macOS tile shows 'Intel Macs: not supported by this app's authors.' in place of the Intel button, and the All downloads table drops the unlisted rows. When platforms is absent behaviour is exactly as today with no new wording (documented in the schema description and content/submit.md). lc.js needs no change (it reads data-arch). jsonld() (pages_apps.py:176-185) derives operatingSystem from the systems actually offered, and applicationCategory is omitted for section: testing apps. Do not edit data/site.yaml:20 (it describes what the template builds). Do not write platforms for any app from the site side.",
+   "why": "GuessTheCondition README:49 and LabConstrictor-Playground README:32 say Intel Macs are not supported, yet both pages show an 'Intel 179 MB .pkg' button that lc.js even promotes for an Intel Mac; the cause is a template matrix that builds macos-15-intel unconditionally (release_constructor.yml:93). VLab4Mic README contradicts itself (line 39 'ARM64 or Intel', line 47 'Intel Macs are not supported'), so nothing may be claimed for it. Skeptic verdict: author-driven field only, no 'not stated' line on every page.",
+   "files": [
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/catalogue.py",
+    "content/submit.md",
+    "tests/test_site.py",
+    "tests/test_catalogue.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": true,
+   "tests": "Three tests: platforms present (unlisted asset hidden from tiles and table, explicit line shown), absent (unchanged output), listed-but-missing (AppProblem naming the app). JSON-LD test for operatingSystem and for testing apps. The three apps add the line in their own manifests (item 13)."
+  },
+  {
+   "order": 12,
+   "title": "Download detection hardening (arm64, iPad, ARM message, no-system line)",
+   "what": "cards.py:115: replace the bare SYSTEM_LABELS[(os, arch)] KeyError (reproduced for Linux-arm64) by an AppProblem naming the app and the unsupported architecture, or extend SYSTEM_LABELS and name buttons by arch whenever a system has more than one. lc.js lcSystem (lines 9-16): treat MacIntel with navigator.maxTouchPoints > 1 as null (iPadOS reports a Macintosh UA); when the system is null add one static-safe line 'Installers are for Windows, macOS and Linux computers' plus 'or open in Colab' when the app has Colab; lc.js:46 must append the ARM message as a second line instead of overwriting the Windows/Linux hint, and derive its text from the assets ('this release has x86_64 only'). Extract lcSystem(ua, platform, uaData, touchPoints) as a pure function.",
+   "why": "Reproduced in 18 simulated browser setups: iPad is silently treated as a Mac; on ARM Windows/Linux the hint with the unsigned-installer and bash instructions is overwritten; a release with an arm64 Linux asset stops the whole build with a bare KeyError. Minor severity but cheap.",
+   "files": [
+    "scripts/lcsite/cards.py",
+    "scripts/lcsite/assets.py",
+    "docs/assets/javascripts/lc.js",
+    "scripts/lcsite/pages_apps.py",
+    "tests/test_site.py"
+   ],
+   "effort": "S",
+   "needs_other_repo": false,
+   "tests": "Python test: an arm64 Linux asset raises AppProblem naming the app. A node --test table of lcSystem for the 18 cases used in the audit (Mac Chrome arm/x86, Safari, Firefox, Windows x64/ARM, Linux, iPhone, iPad, Android, Chromebook, FreeBSD)."
+  },
+  {
+   "order": 13,
+   "title": "Trust labels: write the definitions once, make the chip meaningful",
+   "what": "content/guides/using-apps.md: new section 'How to read the labels': Community = automatic checks at every build (public repository, valid manifest, installers from the app's own GitHub release); it says nothing about whether results are correct, whether installers are safe, or whether the app runs on your system. Verified = a maintainer installed and ran that exact version on the stated date (wording to be confirmed by the owners, see ask_user). A publication or DOI describes the method and is not a test of this release. pages_apps.LEGEND (lines 12-14) becomes one sentence plus a link; content/submit.md:46-49 links to the section instead of repeating it; the header chip becomes a link to it; the Details row is named 'Listing' with the 'does not say whether the results are correct' sentence; the Community chip gets a style distinct from the route chips Desktop/Colab (outlined; update DESIGN.md:49 colour roles first). When verified_version differs from the latest release tag show 'Last verified: 0.1.4, 1 September 2026 (not the current release)' instead of erasing it. The Cite row is labelled 'Reference' and a fixed line says what a DOI means. The site shows no systems, tester or 'Install tested' wording until a real procedure exists.",
+   "why": "Two definitions of the tiers already differ (LEGEND vs submit.md:48); the header chip is an unexplained bare span; Community shares class and colour with route chips; a superseded verification is silently erased; 0 of 6 apps is verified so the labels discriminate nothing yet. Skeptic verdict: fix wording and placement, do not build a `tested` object for a dormant tier.",
+   "files": [
+    "content/guides/using-apps.md",
+    "content/submit.md",
+    "scripts/lcsite/pages_apps.py",
+    "scripts/lcsite/cards.py",
+    "docs/assets/stylesheets/lc.css",
+    "DESIGN.md",
+    "README.md",
+    "AGENTS.md",
+    "tests/test_site.py"
+   ],
+   "effort": "M",
+   "needs_other_repo": false,
+   "tests": "Test that is_verified false with a stale verified_version renders the 'Last verified' line; test that the chip is a link to the guide section; check_site must find the anchor; grep test that the tier definition text exists in only one place (using-apps.md)."
+  },
+  {
+   "order": 14,
+   "title": "Other repositories: vendored schemas, initialiser, template, app manifests (after items 7, 8, 11 are published)",
+   "what": "In this order, each as a pull request in its own repository (nothing is pushed from here): (1) LabConstrictor_streamlit: copy the new schema into schemas/, add form fields for inputs, outputs, limitations, 1-6 quickstart steps, status and categories in manifest_form.py and app_manifest.py, update tests/test_app_manifest.py and test_manifest_form.py; the declined-manifest checkbox says 'without this file the app cannot be listed'. (2) Template LabConstrictor: migration v0_1_15_to_v0_1_16 with resources replacing .tools/schema/*, check_app_manifest.py (prints ::error only for invalid manifests, ::warning for the recommended fields, never blocks an installer build) and .tools/docs/app_manifest.md; add a documented opt-out of the macos-15-intel matrix entry in release_constructor.yml:93 so apps that do not support Intel Macs stop publishing the x86_64 pkg; fix the typos in .tools/docs/notebook_usage.md ('finnisehd', 'LabConstrisctor') and replace the install-guide screenshot that shows another app's name (LabChronicle). (3) The six apps add to their own labconstrictor-app.yaml what their READMEs already say: inputs, outputs, limitations, status, 3-5 quickstart steps (CellTracksColab: open the loading notebook, load the Zenodo test dataset from its README; GuessTheCondition: 'Create a demo experiment'; Playground: 'Make test data'; NucleiSky: the README demo), a docs_url, screenshots (NucleiSky 2D_QC.jpg panel with a caption, CellTracksColab Wiki/Screenshot*.png) and distribution.platforms for GuessTheCondition and Playground ([windows-x86_64, macos-arm64, linux-x86_64]); VLab4Mic resolves README lines 39 vs 47 first. VLab4Mic also reconsiders has_issues=false (enable issues or list another support route). VLab4Mic adds its bioRxiv DOI 10.64898/2026.06.02.729521.",
+   "why": "The site schema has additionalProperties false, so an author using a new field fails the template check and the bot until the vendored copies match; order matters. All content facts live in the apps' own repos, which keeps the single-source-of-truth rule. Bottleneck is author effort: 0/6 have quickstart or docs_url, 1/6 a screenshot.",
+   "files": [
+    "/home/user/LabConstrictor_streamlit/manifest_form.py",
+    "/home/user/LabConstrictor_streamlit/app_manifest.py",
+    "/home/user/LabConstrictor_streamlit/schemas/labconstrictor-app.schema.json",
+    "/home/user/LabConstrictor_streamlit/tests/test_app_manifest.py",
+    "/home/user/src-template/.tools/python/check_app_manifest.py",
+    "/home/user/src-template/.tools/schema/",
+    "/home/user/src-template/.template_sync/manifest.yaml",
+    "/home/user/src-template/.github/workflows/release_constructor.yml",
+    "/home/user/src-template/.tools/docs/app_manifest.md",
+    "/home/user/src-template/.tools/docs/notebook_usage.md",
+    "labconstrictor-app.yaml in each of the 6 app repositories"
+   ],
+   "effort": "L",
+   "needs_other_repo": true,
+   "tests": "Initialiser unit tests for the new fields (valid and invalid) and its refusal to write an invalid manifest; template check test with ::warning for a missing recommended field and no exit failure; a CI or test step that diffs each vendored schema copy against the site schema (skipped with a printed reason when the sibling checkout is absent)."
+  }
+ ],
+ "manifest_fields": [
+  {
+   "name": "inputs",
+   "type": "array of 1-6 plain-text strings, 5-200 characters each (schema 1, additive)",
+   "required": "recommended",
+   "shown_as": "'Works with' list under the app header, before 'Get it'; also indexed by search",
+   "missing_behaviour": "Optional. For kinds analysis, segmentation, simulation: one muted line 'Input and output formats: not stated by the author' plus one warning in build/problems.md; nothing shown for game, training, utility or testing apps. The app stays listed."
+  },
+  {
+   "name": "outputs",
+   "type": "array of 1-6 plain-text strings, 5-200 characters each (schema 1, additive)",
+   "required": "recommended",
+   "shown_as": "'Produces' list under the app header, before 'Get it'; also indexed by search",
+   "missing_behaviour": "Same as inputs (shared muted line and shared warning for the three scientific kinds)."
+  },
+  {
+   "name": "limitations",
+   "type": "array of 1-6 plain-text strings, 5-200 characters each (schema 1, additive)",
+   "required": "optional",
+   "shown_as": "'Limitations' h2 after 'Using it'",
+   "missing_behaviour": "Section omitted, no placeholder, no warning (a limitation cannot be demanded; the author chooses what to expose)."
+  },
+  {
+   "name": "status",
+   "type": "enum Experimental | Available | Deprecated (same vocabulary as labconstrictor-project.schema.json)",
+   "required": "recommended",
+   "shown_as": "Details row 'Development status (stated by the authors)'; a chip only for Experimental and Deprecated",
+   "missing_behaviour": "Details row reads 'Not stated'; one warning in build/problems.md for non-testing apps. Never defaulted, never inferred from the version number."
+  },
+  {
+   "name": "distribution.platforms",
+   "type": "array of enum windows-x86_64 | macos-arm64 | macos-x86_64 | linux-x86_64",
+   "required": "optional",
+   "shown_as": "Only the listed installers appear in the tiles and the All downloads table; an unlisted macOS Intel tile reads 'Intel Macs: not supported by this app's authors.'; JSON-LD operatingSystem derived from the offered systems",
+   "missing_behaviour": "Unchanged behaviour: every release installer is offered, no extra wording, no warning (documented in the schema description and submit.md). A listed platform with no matching release asset is an AppProblem naming the app."
+  },
+  {
+   "name": "quickstart (existing, optional)",
+   "type": "array of up to 6 strings (already in schema)",
+   "required": "recommended",
+   "shown_as": "'Using it' steps (already rendered at pages_apps.py:113-114)",
+   "missing_behaviour": "Line 'The authors have not given first-run steps.' above a paragraph labelled 'For any LabConstrictor desktop app:'; one warning for non-testing apps."
+  },
+  {
+   "name": "screenshots (existing, optional)",
+   "type": "array of {file, caption}, max 6 (already in schema)",
+   "required": "recommended",
+   "shown_as": "First screenshot in the decision area, the rest in a collapsed 'More screenshots'; alt text is the caption",
+   "missing_behaviour": "One warning in build/problems.md for non-testing apps; no visible negative line and no `shows` enum."
+  },
+  {
+   "name": "categories (existing, free text)",
+   "type": "array of up to 6 strings; stays free text, now documented as search keywords",
+   "required": "optional",
+   "shown_as": "'Topics' in Details; hidden search text",
+   "missing_behaviour": "Nothing shown; not a controlled vocabulary."
+  },
+  {
+   "name": "verified_on (registry, existing, now dependent)",
+   "type": "date in registry/*.yaml, dependentRequired with verified_version",
+   "required": "required",
+   "shown_as": "'Verified for <version> on <date>'; when superseded 'Last verified: <old version>, <date> (not the current release)'",
+   "missing_behaviour": "If verified_version is set without verified_on the registry file is invalid (named error). Without verified_version the app shows Community."
+  }
+ ],
+ "later": [
+  "Controlled `task` field replacing `kind` (AC-1 step 2): a one-shot cutover across the site, LabConstrictor_streamlit (app_manifest.py:40, manifest_form.py:21, two tests), submit.md and all 6 manifests, with no legacy alias. Revisit only when there are more apps than one controlled list would help. The label map would live in code next to KINDS, with VLab4Mic 'experiment design' spelling fixed in its own repo.",
+  "Synonym matching ('nucleus', 'alignment', 'cell migration'): only after a task field exists, kept in code beside the task labels, never per app.",
+  "Card app names as headings (h2 or h3 inside the whole-card link) so heading navigation lists apps; also tabindex and aria-label on the 7 horizontally scrollable .lc-scroll tables; site search at phone width. Needs a DESIGN.md decision first.",
+  "Typed references: label the DOI as article, preprint or software archive (`doi_kind` or a references list, or Crossref lookup at fetch time) and a licence cross-check between manifest and GitHub's detected SPDX id. Check first that the daily runner can reach Crossref.",
+  "Verify at fetch time that each Colab link points into the app's own repository and that the file exists (and that the pip project's PyPI project_urls name the repo); show the PyPI version beside the pip command. Adds a PyPI network edge and a snapshot field.",
+  "CITATION.cff in each app repo (none has one) and reading authors from it; matches napari hub and FAIR practice better than copying a DOI.",
+  "Offline static checker scripts/check_a11y.py (contrast pairs from the :root tokens, image width/height, first image not lazy, hidden form reserves space) and an optional Playwright script scripts/measure_site.py (overflow at 320/360/390, tab walk, layout-shift budget < 0.1, forced-colours screenshot) that prints a skip reason when Chromium is missing. Partly started inside items 3, 4, 5, 6.",
+  "Delete or mark dev-only seed/manifests/ (a drifted second copy of the apps' own files) once the apps' manifests are published; test that the four vendored schema copies match the site schema.",
+  "Tested host versions: optional `tested_with` string in the host plugin's own labconstrictor-project.schema.json, filled by the three plugin repos (QuPath 0.7, napari/Python version), not per app.",
+  "Make inputs/outputs hard requirements for new non-testing apps in the submission bot only after the initialiser form and template check collect them and the six existing manifests are filled.",
+  "Maintainer-run verification procedure: if more than the binary Verified badge is ever wanted, prefer automated install checks in CI over a contributor-declared 'tested OS'; a `verified_systems` list only when the first real verification is recorded.",
+  "Edge cases to check when a Mac is available: Chrome under Rosetta reporting x86, real Safari and Firefox detection, a real screen-reader pass, 400% zoom and text-spacing, Windows 11 ARM emulation of the x64 installer."
+ ],
+ "reject": [
+  {
+   "item": "Controlled vocabularies for category/task and a 'What do you want to do?' filter built on them",
+   "why": "Wrong size for 6 apps: real categories are unique free text, two benchmark examples (Segmentation, Image restoration) match zero apps, NucleiSky does registration not segmentation. Replace it by data-driven filter options (item 2); the only version worth discussing is the deferred `task` cutover."
+  },
+  {
+   "item": "Section 4 'Required' list as hard errors (inputs, outputs, screenshot, quickstart, docs, maintainer, status, limitations)",
+   "why": "Applied today it delists 6 of 6 apps (quickstart 0/6, docs_url 0/6, authors 0/6, screenshots 1/6, no inputs/outputs/status field), which AGENTS.md:62 and the no-silent-fallback rule forbid. BMZ only warns. Use warnings plus visible 'Not stated' first."
+  },
+  {
+   "item": "Schema 2 or a flag-day with required new fields",
+   "why": "`schema` is const 1 and legacy aliases are forbidden; additive optional fields in schema 1 are the only compatible route."
+  },
+  {
+   "item": "Three-tier completeness schema (labconstrictor-app.complete.schema.json), 'Description complete' status, hard gate for new submissions",
+   "why": "Skeptic: all 4 non-testing apps fail 7-9 tier-2 gaps so no real author could pass the bot; a second schema file defines the manifest twice; a 'complete' label reads as a quality mark next to Community/Verified. One recommended-fields tuple with warnings does the job."
+  },
+  {
+   "item": "Verification tier per version, per OS, with date, tester login (`tested` object, 'Install tested' rename)",
+   "why": "Nobody staffs it: 0 of 6 apps verified, releases ship 4 builds each and are frequent; the procedure is unwritten so the wording would be invented. Keep the binary badge, define it once, show a superseded verification honestly (item 13)."
+  },
+  {
+   "item": "Five separate trust panels (availability, status, compatibility, verification, validation)",
+   "why": "Overbuilt for 6 apps: availability and compatibility are already derived, verification exists, validation is the DOI. Only development status is new and is one optional field."
+  },
+  {
+   "item": "Per-app host integration objects (`integrations`: planned/experimental/usable, tools, tested_with)",
+   "why": "Host maturity belongs to the three plugins, which all say Experimental and 'untested'; a manifest `usable` would contradict their own guides and repeat one fact in several repos. Derive the wording from the plugin status (item 1)."
+  },
+  {
+   "item": "Site-side synonym table; first `categories` entry shown as 'the task'",
+   "why": "A second hand-maintained description, and the first category is an unordered free list no author ranked. Tokenised search (item 2) fixes the real defect."
+  },
+  {
+   "item": "Core Web Vitals p75 as acceptance criteria, Lighthouse CI, RUM",
+   "why": "Field metrics this site cannot produce: noindex/Disallow (mkdocs.yml:50), no analytics, no CrUX eligibility; Lighthouse cannot measure INP; adding Node and a live URL breaks 'the build never goes online'. Only lab CLS and image weight are measured and fixed (items 3, 6)."
+  },
+  {
+   "item": "`example_data` field, `data_note` on Colab routes, `requirements.gpu`/hardware free text, `shows` enum on screenshots, `doi_kind` now",
+   "why": "Each adds schema surface for few or zero apps, or asks authors to classify what a caption already says. Example data can be named in a quickstart step or docs_url; hardware needs go in `limitations` if the author states them."
+  },
+  {
+   "item": "Per-app copies of the unsigned-installer warning, Gatekeeper steps, Linux terminal help",
+   "why": "Already written once in /guides/install/ (template install.md); app pages carry a short hint and a link only (item 9)."
+  },
+  {
+   "item": "Benchmark page order B literally (Works with and Produces above Get it with placeholders), and a Get button on App Centre cards",
+   "why": "With empty fields the placeholders would push the download down on phones; sections render only when the author supplied them. DESIGN.md:40-41 forbids buttons in cards; the route badges already stay visible."
+  },
+  {
+   "item": "Removing the 'Works in' (now 'Also in') filter",
+   "why": "It is a legitimate discriminator (3 apps); the defect is the wording, fixed by item 1 and the data-driven options of item 2."
+  },
+  {
+   "item": "Site-wide statement about what happens to uploaded data for any app, and a site-written 'Intel Macs not supported' line for an app that has not declared it",
+   "why": "Would be claims the site cannot verify. Only the Colab service facts (account, internet, Google's servers) are written; unsupported platforms come only from the author's distribution.platforms."
+  },
+  {
+   "item": "Dropping napari/Fiji from the VLab4Mic seed on the grounds that its local clone has no lc_tools",
+   "why": "The local clone is stale; the live CellMigrationLab repo has src/vlab4mic_lc_tools and a manifest with hosts notebook, napari, fiji."
+  },
+  {
+   "item": "Microsoft Store EXE/MSI requirements as an install standard; 30-second timed usability tests with participants; 'nontrivial hardware requirements' as a required field",
+   "why": "Microsoft needs trusted-root code signing, silent install and immutable URLs the unsigned installers cannot meet; timings need participants and instrumentation; 'nontrivial' cannot be checked by a validator. Use only the listing practice (description, real screenshot)."
+  },
+  {
+   "item": "Forcing one global focus ring and removing the phantom fixed div after the footer",
+   "why": "Both focus styles already meet contrast; the extra stop was seen only in headless Chromium and fixing it blind could break Material's own focus handling."
+  }
+ ],
+ "ask_user": [
+  {
+   "question": "Which words should the development `status` field use?",
+   "recommendation": "Reuse the plugin vocabulary (Experimental, Available, Deprecated) so the site has one maturity word list; do not introduce stable/in-development/discontinued."
+  },
+  {
+   "question": "May the build only warn (not delist) when inputs, outputs, status, quickstart or screenshots are missing, and from when should the bot require inputs and outputs for new non-testing submissions?",
+   "recommendation": "Warn now; the site stays unlisted (extra.listed false) until the six manifests are filled; consider a hard requirement for new submissions only after the initialiser and template check collect the fields (a decision for later)."
+  },
+  {
+   "question": "Intel Macs for GuessTheCondition, Playground and VLab4Mic: stop building the Intel .pkg, or keep it and let authors declare distribution.platforms? VLab4Mic's README says both 'ARM64 or Intel' (line 39) and 'Intel Macs are not supported' (line 47).",
+   "recommendation": "Do both: add a documented Intel opt-out in the template workflow (removes the file at the source) and ship distribution.platforms for apps that must keep the asset; ask the VLab4Mic author which sentence is true before anything is declared."
+  },
+  {
+   "question": "What does a maintainer actually do to earn 'Verified', and should the badge keep that name?",
+   "recommendation": "Define it as 'a maintainer installed that exact version and ran it on the stated date', keep the word 'Verified' with a visible Community/Verified definition (item 13), and rename or add systems/tester fields only when a real procedure and the first verification exist."
+  },
+  {
+   "question": "Who fills in the six apps' own manifests (inputs, outputs, limitations, status, quickstart, screenshots, docs_url, platforms) and who approves the seed-draft wording used for preview?",
+   "recommendation": "The app owners, as six pull requests in their own repos, copying only what their READMEs already say; the site seed drafts stay marked DRAFT and are never presented as author-confirmed."
+  },
+  {
+   "question": "Is the replacement of NucleiSky's banner as its only screenshot (by a panel of docs/assets/2D_QC.jpg) acceptable, and may the site hide a banner-style picture from the screenshot slot?",
+   "recommendation": "Yes for the replacement, by the NucleiSky author; the site should not classify images, only render the author's list with caption as alt."
+  },
+  {
+   "question": "Is the launch decision (extra.listed false, noindex, Disallow: /) staying until the manifests are filled?",
+   "recommendation": "Keep unlisted until at least the four non-testing apps show Works with, Produces and a real screenshot; then list the site, because discoverability and any field performance data are blocked by that setting."
+  }
+ ],
+ "acceptance_results": "T1 find an app for cell tracking: PASS (home -> App Centre -> 'cell tracking' finds CellTracksColab in 3 actions); the 'nuclei segmentation' variant is a bare dead end (0 of 6, no list of what exists, no submit link; no such app exists) -> fixed by items 2 (AND search, informative empty state). T2 decide whether an app supports an image type: FAIL (no input formats, outputs or limitations on any page; facts only in READMEs) -> items 7, 8, 14. T3 download NucleiSky on a Mac: PASS (Apple Silicon/Intel chips, correct chip promoted on Chrome, both equal with a 'check About This Mac' hint on Safari/Firefox; Intel for the three apps that do not support it is a separate defect, items 11 and 14). T4 understand the unsigned Windows installer: PARTIAL (install guide is good and one click away, but 'unsigned' and the verify-the-source step are not on the app page, the owner is not visible text, no checksum) -> items 9, 10. T5 find an app usable in napari with unambiguous status: FAIL (filter 'Works in' vs chip 'Soon in napari' vs Details 'Works in') -> item 1. T6 start an app for the first time with a runnable example: FAIL (identical generic paragraph, 0/6 quickstarts, no example) -> items 8, 9, 14 (quickstart stays optional, with a warning). T7 report a problem / cite: PASS with caveats (DOI row bare, one dead issue link for VLab4Mic) -> items 10, 13. T8 browse on a phone with a keyboard: PARTIAL (no JS and no horizontal overflow pass at 320-390 px; menu focus order, hidden skip link and footer focus ring fail) -> items 4, 5."
+}
