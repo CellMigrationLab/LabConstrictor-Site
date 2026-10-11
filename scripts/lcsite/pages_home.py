@@ -43,10 +43,10 @@ def featured_band(featured: list[str], empty_text: str) -> str:
     return f'<section class="lc-band"><h2 class="lc-title">Featured apps</h2>{body}<p class="lc-more"><a class="lc-go" href="apps/">See every app</a></p></section>'
 
 
-def plugins_band(site: dict, stage: str, pills: str) -> str:
-    """The optional-integration section: one full-width panel, built like the tiles around it, with what a plugin is, its stage (from the plugins'
-    own status), the programs and one link to the Ecosystem page."""
+def plugins_band(site: dict, pills: str) -> str:
+    """The optional-integration section: one full-width panel, built like the tiles around it, with a sentence, a row of the plugins' stage
+    (from their own status) and the programs, and one link to the Ecosystem page."""
     p = site["plugins"]
     return (f'<section class="lc-band lc-band--soft"><h2 class="lc-title">{esc(p["title"])}</h2><div class="lc-panel">'
-            f'<p class="lc-lead-text">{esc(p["text"])}</p><p><span class="lc-badge lc-badge--status">{esc(stage)}</span> {esc(p["note"])}</p>{pills}'
+            f'<p class="lc-lead-text">{esc(p["text"])}</p>{pills}'
             f'<a class="lc-go" href="ecosystem/">{esc(p["link"])}</a></div></section>')

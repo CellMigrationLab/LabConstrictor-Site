@@ -71,7 +71,7 @@ Order, as the story goes: the hero (the notebook-first sentence, then the two pa
 
 - Wording rules (issue #15): write as you would to another scientist; say notebook, workflow, app, install, Python function. Never "packaged once, runs everywhere", "no coding required", "turn any notebook into a plugin" or "one click on every operating system". Installers per system are separate build outputs. The author needs Python; colleagues who install the app do not.
 - Featured apps are the registry's `featured` apps that are listed for users (never testing apps); with none, a plain sentence replaces the grid.
-- The plugin section is short and plainly labelled with the plugins' own stage (taken from their project files): selected, declared Python functions only, not whole notebooks; tested on Linux only so far; one link, to the Ecosystem page. No microscope hardware control is claimed.
+- The plugin section is short: one sentence, a chip with the plugins' own stage (taken from their project files) beside the program pills, and one link to the Ecosystem page. It makes no claim about operating systems. No microscope hardware control is claimed.
 - Every link that leaves a section is the green arrow link (`lc-go`).
 
 ## Citation

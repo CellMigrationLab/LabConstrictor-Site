@@ -31,10 +31,10 @@ def choice(title: str, text: str, href: str, label: str, cls: str = "") -> str:
             f'<span class="lc-go">{esc(label)}</span></a>')
 
 
-def program_pill_row() -> str:
-    """The program pills (logo + name, linked to each program's website) as one row, written without punctuation between them."""
+def program_pill_row(stage: str) -> str:
+    """The plugins' stage as a chip, then the program pills (logo + name, linked to each program's website), as one row."""
     table = hosts.load()
-    return '<p class="lc-pills">' + "".join(hosts.pill(k, table) for k in table) + "</p>"
+    return f'<p class="lc-pills"><span class="lc-badge lc-badge--status">{esc(stage)}</span>' + "".join(hosts.pill(k, table) for k in table) + "</p>"
 
 
 def plugin_stage() -> str:
@@ -57,7 +57,7 @@ def page_home(site: dict, apps: list[dict]) -> None:
     p.add(pages_home.comic_band(comic_figure()))
     p.add(pages_home.steps_band(site))
     p.add(pages_home.tiles_band([pages_home.how_tile(site), pages_demo.home_tile()]))
-    p.add(pages_home.plugins_band(site, plugin_stage(), program_pill_row()))
+    p.add(pages_home.plugins_band(site, program_pill_row(plugin_stage())))
     p.add(pages_home.featured_band([card(a) for a in featured], "No app is featured yet."))
     p.add(citation.cite_band(site))
     p.write()

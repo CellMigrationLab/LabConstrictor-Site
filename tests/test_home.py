@@ -1,6 +1,7 @@
 """The home page's sections after the hero: wording from the data files, only listed featured apps, an honest empty state, an optional plugin section."""
 
 import unittest
+from unittest import mock
 
 from lcsite import pages_demo, pages_home as ph, pages_site
 from lcsite.config import load_yaml, DATA
@@ -8,7 +9,7 @@ from lcsite.config import load_yaml, DATA
 SITE = {"steps_title": "From notebook to app",
         "steps": [{"title": "Develop in a notebook", "text": "Run it step by step."}, {"title": "Package it", "text": "Start from the template."}, {"title": "Share the app", "text": "Publish a release."}],
         "how_tile": {"title": "How it works", "text": "See how to turn a notebook workflow into an app.", "link": "See the steps"},
-        "plugins": {"title": "Use parts of your workflow in other software", "text": "Your notebook is still the main interface.", "note": "An entire notebook does not become a plugin.", "link": "Explore the ecosystem"}}
+        "plugins": {"title": "Make your workflow available in other software", "text": "Your notebook is still the main interface.", "link": "Explore the ecosystem"}}
 
 
 class StepsTests(unittest.TestCase):
@@ -34,7 +35,7 @@ class RealDataTests(unittest.TestCase):
     def test_the_real_site_data_builds_every_section(self) -> None:
         """data/site.yaml gives the steps, the How it works tile and the plugin section; the real wording promises nothing the issue rules out."""
         site = load_yaml(DATA / "site.yaml")
-        html = ph.steps_band(site) + ph.how_tile(site) + ph.plugins_band(site, "Experimental", "")
+        html = ph.steps_band(site) + ph.how_tile(site) + ph.plugins_band(site, "")
         for banned in ("Packaged once", "runs everywhere", "no coding", "turn any notebook into a plugin", "one click"):
             self.assertNotIn(banned.lower(), html.lower())
         self.assertIn("notebook", site["hero"]["text"].lower())
@@ -67,10 +68,13 @@ class PluginTests(unittest.TestCase):
     """The plugin section is optional, experimental and has one link."""
 
     def test_the_section_names_the_stage_and_links_to_the_ecosystem_once(self) -> None:
-        """The stage badge, the note and one link to the Ecosystem page."""
-        html = ph.plugins_band(SITE, "Experimental", '<p class="lc-pills"></p>')
+        """The stage chip (in the row of pills), no claim about operating systems, and one link to the Ecosystem page."""
+        from lcsite import pages_site
+        with mock.patch.object(pages_site.hosts, "load", return_value={}):
+            row = pages_site.program_pill_row("Experimental")
+        html = ph.plugins_band(SITE, row)
         self.assertIn(">Experimental<", html)
-        self.assertIn("An entire notebook does not become a plugin.", html)
+        self.assertNotIn("Linux", html)
         self.assertEqual(html.count('href="ecosystem/"'), 1)
 
 

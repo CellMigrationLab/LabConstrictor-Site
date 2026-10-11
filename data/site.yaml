@@ -22,9 +22,8 @@ how_tile:
   text: See how to turn a notebook workflow into an app.
   link: See the steps
 plugins:
-  title: Use parts of your workflow in other software
-  text: Your notebook is still the main interface. If a particular step would also be useful in napari, Fiji or QuPath, you can make its Python function available through an experimental plugin.
-  note: Only the Python functions you declare as tools are available there; an entire notebook does not become a plugin automatically. So far these integrations have been tested on Linux only, not on Windows or macOS.
+  title: Make your workflow available in other software
+  text: Your notebook is still the main interface. If the workflow would also be useful in napari, Fiji or QuPath, you can make it available through our plugins.
   link: Explore the ecosystem
 # Copied from the "Citation" section of the template's README.md (build_site.py stops if the README no longer has this DOI).
 citation:
