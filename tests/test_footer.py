@@ -15,6 +15,11 @@ class FooterCreditsTests(unittest.TestCase):
         for name, url in (("Cell Migration Lab", "https://cellmig.org/"), ("Henriques Lab", "https://henriqueslab.org/")):
             self.assertIn(f'<a href="{url}" target="_blank" rel="noopener">{name}</a>', layout)
 
+    def test_the_artwork_credit_names_its_creator_in_full(self) -> None:
+        """The logo and comic are credited to Iván Hidalgo-Cenalmor (full name, as in the citation)."""
+        layout = (ROOT / "overrides" / "main.html").read_text(encoding="utf-8")
+        self.assertIn("Logo and comic by Iván Hidalgo-Cenalmor.", layout)
+
     def test_the_site_metadata_names_both_labs(self) -> None:
         """Author and copyright in mkdocs.yml match the footer."""
         config = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")

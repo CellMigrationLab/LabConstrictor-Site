@@ -12,7 +12,7 @@ Copy one block per artwork.
 
 - Name of the work:
 - File in the repository (path on `doc_source`):
-- Creator (named only if they agree; otherwise write "not named at the creator's request"): Iván (first name given by the project lead on 2026-10-11; confirm the full name, probably Iván Hidalgo-Cenalmor as in the citation, and that he agrees to be named)
+- Creator (named only if they agree; otherwise write "not named at the creator's request"): Iván Hidalgo-Cenalmor (named by the project lead on 2026-10-11, who asked for the credit in the website footer)
 - Rights holder (person, lab or institution):
 - Licence (name and link; "all rights reserved" if none was granted):
 - Year created:
@@ -25,7 +25,7 @@ Copy one block per artwork.
 
 - Name of the work:
 - File(s) in the repository (path on `doc_source`):
-- Creator (named only if they agree; otherwise write "not named at the creator's request"): Iván (first name given by the project lead on 2026-10-11; confirm the full name, probably Iván Hidalgo-Cenalmor as in the citation, and that he agrees to be named)
+- Creator (named only if they agree; otherwise write "not named at the creator's request"): Iván Hidalgo-Cenalmor (named by the project lead on 2026-10-11, who asked for the credit in the website footer)
 - Rights holder (person, lab or institution):
 - Licence (name and link; "all rights reserved" if none was granted):
 - Year created:
