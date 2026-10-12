@@ -89,8 +89,9 @@ def main() -> None:
     copy_brand(args.doc_source_dir)
     pages_site.page_home(site, apps)
     pages_apps.page_catalogue(apps)
+    steps = guides.install_sections(args.template_dir, args.doc_source_dir)
     for app in apps:
-        pages_apps.page_app(app)
+        pages_apps.page_app(app, steps)
     write_ecosystem(ecosystem)
     pages_demo.page_demo(apps)
     pages_how.page_how()

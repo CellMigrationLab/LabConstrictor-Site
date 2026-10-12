@@ -16,12 +16,13 @@ class NotebookTests(unittest.TestCase):
 
     def test_each_listed_notebook_gets_a_row_and_nothing_else_does(self) -> None:
         """One row per listed notebook with Open in Colab and View on GitHub; a Drive notebook has no GitHub link; the label is escaped."""
-        html = pages_get.notebooks_list([
+        html = pages_get.notebooks_section({"manifest": {"distribution": {"installer": True, "colab": [
             {"label": "2D <b>", "url": "https://colab.research.google.com/github/o/r/blob/main/a.ipynb"},
-            {"label": "3D", "url": "https://colab.research.google.com/drive/abc"}], True)
+            {"label": "3D", "url": "https://colab.research.google.com/drive/abc"}]}}})
         self.assertEqual(html.count("<li>"), 2)
         self.assertEqual(html.count("Open in Colab"), 2)
         self.assertEqual(html.count("View on GitHub"), 1)
+        self.assertIn('class="lc-btn lc-btn--ghost lc-btn--small" href="https://github.com/o/r/blob/main/a.ipynb">View on GitHub', html)
         self.assertIn("2D &lt;b&gt;", html)
 
     def test_logo_svg_keeps_one_checked_path_only(self) -> None:

@@ -84,8 +84,10 @@ def jsonld(app: dict) -> str:
     return json.dumps(data).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
 
 
-def page_app(app: dict) -> None:
-    """apps/<slug>/index.md: everything a visitor needs to decide, install, cite and report a problem."""
+def page_app(app: dict, steps: dict[str, str]) -> None:
+    """apps/<slug>/index.md: everything a visitor needs to decide, install, cite and report a problem, in the order they need it: what it is
+    (About, the screenshots, what it works with), getting it on the computer (with the install steps of each system, `steps` from
+    guides.install_sections), the notebooks to open in the browser, first steps, limitations, how to cite, then every download and the details."""
     m = app["manifest"]
     p = Page(f"apps/{app['slug']}/index.md", title=m["name"], description=m["summary"], jsonld=jsonld(app), layout="wide", menu="apps/",
              edit_url=f"{app['html_url']}/edit/HEAD/labconstrictor-app.yaml")
@@ -94,13 +96,11 @@ def page_app(app: dict) -> None:
           f'<header class="lc-apphead"><div class="lc-apphead__name">{icon(app, 56)}<h1>{esc(m["name"])}</h1></div>'
           f'<p class="lc-lead">{esc(m["summary"])}</p><p>{badge(KINDS[m["kind"]])}{pages_facts.status_chip(app)}'
           f'{"".join(host_badge(h) for h in plugins)}{testing_badge(app)}</p><p>{header_links(app)}</p></header>')
-    p.add(pages_facts.works_with(app), pages_get.get_section(app))
-    for i, shot in enumerate(app["screenshots"], 1):
-        p.add(pages_facts.screenshot(app, i, shot))
-    p.add(pages_get.using_section(app), pages_facts.limitations(app), citation.app_section(app))
     if m.get("description"):
         p.add('<h2 id="about">About</h2>', paragraphs(m["description"]))
+    p.add(pages_facts.gallery(app), pages_facts.works_with(app), pages_get.get_section(app, steps), pages_get.notebooks_section(app),
+          pages_get.using_section(app), pages_facts.limitations(app), citation.app_section(app))
     if app["release"] and m["distribution"].get("installer"):
-        p.add(pages_get.downloads_table(app), pages_get.install_help())
+        p.add(pages_get.downloads_table(app))
     p.add(details_list(app))
     p.write()

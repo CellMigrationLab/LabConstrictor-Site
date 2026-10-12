@@ -42,7 +42,7 @@ function lcArchitecture() {
 }
 
 /**
- * On a Mac whose chip is known, make the matching button the filled one (in place: nothing moves).
+ * On a Mac whose chip is known, keep only the matching button strong green and the other light (in place: nothing moves).
  * @param {Element} tile - the Mac tile.
  * @param {string} arch - "arm" or "x86".
  * @returns {void}
@@ -50,8 +50,33 @@ function lcArchitecture() {
 function lcMarkChip(tile, arch) {
   const mine = tile.querySelector(`[data-arch="${arch === "arm" ? "arm64" : "x86_64"}"]`);
   if (!mine) return;
-  tile.querySelectorAll(".lc-btn").forEach((b) => b.classList.add("lc-btn--ghost"));
-  mine.classList.remove("lc-btn--ghost");
+  tile.querySelectorAll(".lc-btn").forEach((b) => b.classList.add("lc-btn--soft"));
+  mine.classList.remove("lc-btn--soft");
+}
+
+/**
+ * Open the install steps of one system (and close the others), then bring them into view: the reader has just downloaded its installer.
+ * @param {string} system - "windows", "macos" or "linux".
+ * @returns {void}
+ */
+function lcShowSteps(system) {
+  const steps = document.querySelector(`[data-lc-steps="${system}"]`);
+  if (!steps) return;
+  document.querySelectorAll("[data-lc-steps]").forEach((d) => { d.open = d === steps; });
+  steps.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+}
+
+/**
+ * A download button or a "steps" link opens the install steps of its system; the download itself goes ahead as usual.
+ * @returns {void}
+ */
+function lcInitSteps() {
+  document.querySelectorAll("[data-lc-download], [data-lc-steps-link]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      if (el.dataset.lcStepsLink) e.preventDefault();
+      lcShowSteps(el.dataset.lcDownload || el.dataset.lcStepsLink);
+    });
+  });
 }
 
 /**
@@ -84,6 +109,7 @@ function lcInitSystem() {
   }
   const tile = grid.querySelector(`[data-os="${system}"]`);
   tile.classList.add("is-yours");
+  tile.querySelectorAll(".lc-btn").forEach((b) => b.classList.remove("lc-btn--soft"));
   return lcArchitecture().then((arch) => {
     if (system === "macos" && arch) lcMarkChip(tile, arch);
     if (system !== "macos" && arch === "arm") lcWarnArm(tile);
@@ -243,6 +269,7 @@ function lcInitDrawer() {
  */
 function lcInit() {
   lcInitSystem();
+  lcInitSteps();
   lcInitFilter();
   lcInitCopy();
   lcInitDrawer();

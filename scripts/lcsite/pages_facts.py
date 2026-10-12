@@ -51,3 +51,11 @@ def screenshot(app: dict, number: int, shot: dict) -> str:
     width, height = pixel_size(DOCS / "assets" / "shots" / f"{app['slug']}-{number}.jpg")
     return (f'<figure class="lc-shot"><img class="lc-shot__img" src="assets/shots/{app["slug"]}-{number}.jpg" alt="{esc(shot["caption"])}" '
             f'width="{width}" height="{height}" loading="lazy"><figcaption aria-hidden="true">{esc(shot["caption"])}</figcaption></figure>')
+
+
+def gallery(app: dict) -> str:
+    """The authors' screenshots as a row of small pictures, each opening the full-size picture; "" without any."""
+    if not app["screenshots"]:
+        return ""
+    shots = "".join(f'<li><a href="assets/shots/{app["slug"]}-{i}.jpg">{screenshot(app, i, shot)}</a></li>' for i, shot in enumerate(app["screenshots"], 1))
+    return f'<ul class="lc-gallery" aria-label="Screenshots">{shots}</ul>'

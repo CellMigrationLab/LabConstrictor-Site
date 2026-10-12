@@ -93,6 +93,30 @@ def copy_images(text: str, doc_source: Path, page_file: str) -> str:
     return IMAGE.sub(image, text)
 
 
+SYSTEM_HEADINGS = {"windows": re.compile(r"\bwindows\b", re.I), "macos": re.compile(r"\bmac(?:os)?\b", re.I), "linux": re.compile(r"\blinux\b", re.I)}
+
+
+def install_sections(template_dir: Path, doc_source: Path) -> dict[str, str]:
+    """The template's install guide (install.md) cut into its per-system sections, as Markdown with the pictures copied, keyed windows,
+    macos and linux: an app page shows the steps of the system whose installer was just downloaded, without writing them a second time.
+    A section is found by its heading naming the system ("Windows", "Install on a Mac", ...). The picture paths are relative to a page two
+    folders deep (guides/<slug>/ and apps/<slug>/ both are). Stops the build when a system has no section."""
+    src = template_dir / ".tools" / "docs" / "install.md"
+    if not src.is_file():
+        fail(f"{src} not found: pass --template-dir with a checkout of {TEMPLATE_REPO}")
+    text = localise(copy_images(rewrite_links(own_repo_paths(src.read_text(encoding="utf-8")), set()), doc_source, "install.md"))
+    parts = re.split(r"^## +(.+?)\s*$", text, flags=re.M)
+    found: dict[str, str] = {}
+    for title, body in zip(parts[1::2], parts[2::2]):
+        for system, pattern in SYSTEM_HEADINGS.items():
+            if pattern.search(title) and system not in found:
+                found[system] = body.strip()
+    missing = [k for k in SYSTEM_HEADINGS if not found.get(k)]
+    if missing:
+        fail(f"{src}: no section for {', '.join(missing)} (a '## ' heading naming the system), so app pages cannot show its install steps")
+    return found
+
+
 def describe(markdown: str, where: str) -> str:
     """The meta description of a guide: its opening paragraph. Stops the build, naming the guide, when it has none."""
     try:

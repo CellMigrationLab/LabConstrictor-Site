@@ -109,6 +109,27 @@ def home_paths(browser: Browser, base: str) -> None:
     page.context.close()
 
 
+def app_download(browser: Browser, base: str) -> None:
+    """An app page on Windows: the Windows button is the strong one, the others light; clicking it downloads and opens the Windows steps."""
+    context = browser.new_context(viewport={"width": 1280, "height": 900}, accept_downloads=True,
+                                  user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36")
+    page, errors = context.new_page(), []
+    page.on("pageerror", lambda e: errors.append(str(e)))
+    page.route("**/releases/download/**", lambda r: r.fulfill(status=200, body="x", headers={"Content-Disposition": "attachment; filename=x.exe"}))
+    page.goto(base + "apps/nucleisky/", wait_until="load")
+    win = page.locator('[data-lc-download="windows"]').first
+    check("App page: the visitor's system has the strong button, the others the light one",
+          "lc-btn--soft" not in win.get_attribute("class") and "lc-btn--soft" in page.locator('[data-lc-download="linux"]').first.get_attribute("class"))
+    check("App page: every install step is folded before a download", page.evaluate("[...document.querySelectorAll('[data-lc-steps]')].every(d => !d.open)"))
+    with page.expect_download():
+        win.click()
+    page.wait_for_timeout(300)
+    check("App page: downloading the Windows installer opens the Windows steps only",
+          page.evaluate("[...document.querySelectorAll('[data-lc-steps]')].map(d => d.id + ':' + d.open).join()") == "steps-windows:true,steps-macos:false,steps-linux:false")
+    check("App page: no script error", not errors, str(errors))
+    context.close()
+
+
 def demo_flow(browser: Browser, base: str) -> None:
     """The demo: it opens on the installation, the part buttons come before the hint line, then launch the app, run the notebook to its
     result, see the keyboard tabs work, reset when the view changes, and pick a step of the connection by its diagram box."""
@@ -254,7 +275,7 @@ def main() -> int:
     server, base = serve()
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=args.chromium)
-        for group in (no_sideways_scroll, app_filter, how_controls, home_paths, demo_flow, demo_phone, demo_address, no_javascript, consistency):
+        for group in (no_sideways_scroll, app_filter, how_controls, home_paths, app_download, demo_flow, demo_phone, demo_address, no_javascript, consistency):
             group(browser, base)
         browser.close()
     server.shutdown()

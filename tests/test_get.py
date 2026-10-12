@@ -9,6 +9,7 @@ ASSET = {"name": "A-1.0.0-Windows-x86_64.exe", "os": "windows", "arch": "x86_64"
          "primary": True, "sha256": "ab" * 32}
 MAC = dict(ASSET, name="A-1.0.0-MacOSX-arm64.pkg", os="macos", arch="arm64", ext="pkg", sha256=None)
 INTEL = dict(MAC, arch="x86_64")
+STEPS = {"windows": "1. Double-click the `.exe`.", "macos": "1. Open the `.pkg`.", "linux": "1. Run `bash file.sh`."}
 
 
 def app(assets_list: list[dict], **dist: object) -> dict:
@@ -27,7 +28,7 @@ class PlatformTests(unittest.TestCase):
         have = cards.downloads(a)
         self.assertEqual([o["arch"] for o in have["macos"]], ["arm64"])
         self.assertNotIn("macOS (Intel)", pages_get.downloads_table(a))
-        self.assertIn("Intel Macs: not supported by this app's authors.", pages_get.get_section(a))
+        self.assertIn("Intel Macs: not supported by this app's authors.", pages_get.get_section(a, STEPS))
 
     def test_the_schema_checks_platforms(self) -> None:
         """An unknown platform, or platforms without an installer route, is refused."""
@@ -42,7 +43,7 @@ class PlatformTests(unittest.TestCase):
         """Absent platforms: both Mac installers, and no Intel line."""
         a = app([ASSET, MAC, INTEL])
         self.assertEqual(len(cards.downloads(a)["macos"]), 2)
-        self.assertNotIn("not supported", pages_get.get_section(a))
+        self.assertNotIn("not supported", pages_get.get_section(a, STEPS))
 
     def test_a_listed_platform_without_an_installer_stops_that_app(self) -> None:
         """The error names the app and the platform."""
@@ -77,10 +78,12 @@ class DownloadBlockTests(unittest.TestCase):
         self.assertEqual(text.megabytes(317528492), "317.5 MB")
 
     def test_the_colab_and_pip_routes_are_labelled(self) -> None:
-        """A Colab list carries the one sentence about the service; pip is labelled advanced with its command and PyPI link."""
+        """A Colab list has its own section, which starts with the sentence about the service; pip is labelled advanced with its command and PyPI link."""
         a = app([ASSET], colab=[{"label": "N", "url": "https://colab.research.google.com/x"}], pip="my-app")
-        html = pages_get.get_section(a)
-        self.assertIn("handled by Google", html)
+        notebooks = pages_get.notebooks_section(a)
+        self.assertTrue(notebooks.startswith('<h2 id="notebooks">Notebooks to open in your browser</h2><p>These run on Google'))
+        html = pages_get.get_section(a, STEPS)
+        self.assertNotIn("handled by Google", html)
         self.assertIn("Python package (advanced)", html)
         self.assertIn("pip install my-app", html)
         self.assertIn("https://pypi.org/project/my-app/", html)
@@ -111,14 +114,38 @@ if __name__ == "__main__":
 
 
 class TileLinkTests(unittest.TestCase):
-    """Each system tile links to its own section of the install guide."""
+    """Each system tile has its install steps on the page, opened by its download buttons."""
 
-    def test_each_tile_has_its_own_steps_link(self) -> None:
-        """Windows, macOS and Linux tiles point at their own anchors."""
+    def test_each_tile_has_its_own_steps_folded_on_the_page(self) -> None:
+        """Windows, macOS and Linux tiles link to their own folded steps (from the install guide), and their buttons name the system to open."""
         linux = dict(ASSET, name="A-1.0.0-Linux-x86_64.sh", os="linux", ext="sh")
-        html = pages_get.get_section(app([ASSET, MAC, linux]))
+        html = pages_get.get_section(app([ASSET, MAC, linux]), STEPS)
         for system in ("windows", "macos", "linux"):
-            self.assertIn(f'guides/install/#{system}"', html)
+            self.assertIn(f'href="#steps-{system}"', html)
+            self.assertIn(f'<details class="lc-steps__os" id="steps-{system}" data-lc-steps="{system}">', html)
+            self.assertIn(f'data-lc-download="{system}"', html)
+        self.assertIn("<code>bash file.sh</code>", html)
+        self.assertNotIn("<h2 id=\"install\">", html)
+
+    def test_only_systems_with_a_download_get_steps_and_every_button_starts_light(self) -> None:
+        """No Linux installer: no Linux steps. Every button is the light one until lc.js marks the visitor's system."""
+        html = pages_get.get_section(app([ASSET, MAC]), STEPS)
+        self.assertNotIn('id="steps-linux"', html)
+        self.assertEqual(html.count('class="lc-btn lc-btn--soft"'), html.count("data-lc-download="))
+
+    def test_a_picture_indented_under_a_step_keeps_the_numbering(self) -> None:
+        """The template indents a picture under step 2 by three spaces: steps 1 to 3 stay one numbered list."""
+        steps = dict(STEPS, windows="1. Download it.\n2. Click Run anyway.\n\n   ![SmartScreen](p.png)\n\n3. Follow the prompts.")
+        html = pages_get.get_section(app([ASSET]), steps)
+        windows = html[html.index('id="steps-windows"'):html.index("</details>")]
+        self.assertEqual(windows.count("<ol>"), 1)
+        self.assertEqual(windows.count("<li>"), 3)
+
+    def test_an_app_with_neither_installers_nor_pip_has_no_get_section(self) -> None:
+        """A notebook-only app does not get an empty "Get it on your computer"."""
+        only = dict(app([]), release=None)
+        only["manifest"]["distribution"] = {"colab": [{"label": "N", "url": "https://colab.research.google.com/x"}]}
+        self.assertEqual(pages_get.get_section(only, STEPS), "")
 
 
 class ReviewFixTests(unittest.TestCase):
@@ -127,7 +154,7 @@ class ReviewFixTests(unittest.TestCase):
     def test_a_system_the_authors_do_not_list_says_so_and_has_no_hint(self) -> None:
         """With only macos-arm64 listed, the Windows and Linux tiles say they are not offered, and print no hint about installing."""
         a = app([ASSET, MAC], platforms=["macos-arm64"])
-        html = pages_get.get_section(a)
+        html = pages_get.get_section(a, STEPS)
         self.assertIn("Not offered by this app", html)
         self.assertNotIn("No installer in this release.", html)
         self.assertNotIn("Windows steps", html)
@@ -137,8 +164,8 @@ class ReviewFixTests(unittest.TestCase):
         colab = {"colab": [{"label": "N", "url": "https://colab.research.google.com/x"}]}
         only = dict(app([]), release=None)
         only["manifest"]["distribution"] = colab
-        self.assertNotIn("desktop app", pages_get.get_section(only))
-        self.assertIn("desktop app", pages_get.get_section(app([ASSET], **colab)))
+        self.assertNotIn("desktop app", pages_get.notebooks_section(only))
+        self.assertIn("desktop app", pages_get.notebooks_section(app([ASSET], **colab)))
 
     def test_systems_follow_the_platforms_and_tags_keep_one_v(self) -> None:
         """The description names only offered systems; a tag already starting with v is not doubled."""
