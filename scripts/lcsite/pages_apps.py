@@ -22,8 +22,8 @@ def page_catalogue(all_apps: list[dict]) -> None:
     """apps/index.md: the filterable grid of the apps, then the apps for testing and maintenance listed apart."""
     apps = [a for a in all_apps if a["section"] == "apps"]
     testing = [a for a in all_apps if a["section"] == "testing"]
-    p = Page("apps/index.md", title="Apps", description=catalogue_text.catalogue_description(all_apps), layout="wide")
-    p.add('<section class="lc-pagehead"><h1>Apps</h1>',
+    p = Page("apps/index.md", title="App Centre", head_title="App Centre – LabConstrictor", description=catalogue_text.catalogue_description(all_apps), layout="wide")
+    p.add('<section class="lc-pagehead"><h1>App Centre</h1>',
           f'<p class="lc-lead">{esc(catalogue_text.catalogue_lead(all_apps))}</p></section>',
           filters.filter_bar(apps), f'<div data-lc-group>{grid(apps)}</div>',
           '<p class="lc-empty" data-lc-empty hidden><span data-lc-empty-text>No app matches.</span> Clear a filter or search for something broader, or <a href="submit/">add an app for this task</a>.</p>',
