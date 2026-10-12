@@ -31,13 +31,15 @@
   }
 
   /**
-   * A line "first | second" split at its first bar, both parts trimmed (the second is "" when there is no bar).
+   * A line "first | second" split at its first bar, both parts trimmed (the second is "" when there is no bar). A line that is only an
+   * address (a Colab link pasted without its label) is read as the second part, so the problem reported is the missing label.
    * @param {string} line - the line.
    * @returns {string[]} the two parts.
    */
   function pair(line) {
     const at = line.indexOf("|");
-    return at < 0 ? [line.trim(), ""] : [line.slice(0, at).trim(), line.slice(at + 1).trim()];
+    if (at < 0) return /^https?:\/\//.test(line.trim()) ? ["", line.trim()] : [line.trim(), ""];
+    return [line.slice(0, at).trim(), line.slice(at + 1).trim()];
   }
 
   /**
@@ -103,7 +105,7 @@
       if (typeof value !== "string") { say("must be text"); return; }
       if (s.minLength !== undefined && value.length < s.minLength) say("needs at least " + s.minLength + " characters (now " + value.length + ")");
       if (s.maxLength !== undefined && value.length > s.maxLength) say("may have at most " + s.maxLength + " characters (now " + value.length + ")");
-      if (s.pattern && !new RegExp(s.pattern).test(value)) say("is not in the expected form");
+      if (s.pattern && !new RegExp(s.pattern).test(value)) say(PATTERN_HINTS[path.split(".").filter((k) => !/^\d+$/.test(k)).pop() || ""] || "is not in the expected form");
     }
     if (s.type === "array") {
       if (!Array.isArray(value)) { say("must be a list"); return; }
@@ -158,6 +160,21 @@
     return "# yaml-language-server: $schema=" + schemaUrl + "\n" + keys.map((k) => k + ":" + yamlValue(manifest[k], "  ")).join("\n") + "\n";
   }
 
+  /** What a field that must follow a pattern should look like, keyed by the field's last name in the manifest. */
+  const PATTERN_HINTS = {
+    url: "must be a Colab link starting with https://colab.research.google.com/",
+    doi: "must look like 10.1371/journal.pbio.3002740 (without https://doi.org/)",
+    orcid: "must look like 0000-0002-1825-0097",
+    homepage: "must be an address starting with https://",
+    docs_url: "must be an address starting with https://",
+    icon: "must be the path of a PNG, JPG or GIF inside your repository, without a leading /",
+    path: "must be the path of a PNG, JPG or GIF inside your repository, without a leading /",
+    pip: "must be a package name: letters, digits, dots, dashes and underscores",
+  };
+
+  /** The part of a list entry a problem is about, in the words of the form's hints. */
+  const PARTS = { label: "the label", url: "the link", name: "the name", orcid: "the ORCID", path: "the path", caption: "the caption" };
+
   /**
    * The form field a problem belongs to: the first part of its path, with the routes of distribution mapped to their own fields.
    * @param {string} path - the problem's path.
@@ -169,7 +186,25 @@
   }
 
   /**
-   * Show the YAML, the problems (each beside its field and in the list) and whether the file can be downloaded.
+   * A problem in the reader's words: "Line 2, the link: is not in the expected form." for an entry of a list, "This field ..." otherwise
+   * (the message sits under its field, so the field is not named again).
+   * @param {{path: string, message: string}} problem - the problem.
+   * @returns {string} the sentence.
+   */
+  function sentence(problem) {
+    const parts = problem.path.split(".").slice(problem.path.startsWith("distribution.") ? 2 : 1);
+    const line = parts.length && /^\d+$/.test(parts[0]) ? "Line " + parts[0] : "";
+    const part = parts.length > 1 ? (PARTS[parts[1]] || parts[1]) : "";
+    const who = line ? line + (part ? ", " + part : "") + ":" : (problem.path === "distribution" ? "Choose" : "This field");
+    const text = problem.path === "distribution" ? "installers, Colab notebooks or a Python package (at least one)." : problem.message + ".";
+    return who + " " + text;
+  }
+
+  /** The fields the reader has changed: only their problems are shown beside them. */
+  const touched = new Set();
+
+  /**
+   * Show the YAML, the problems (each beside a field the reader has changed) and whether the file can be downloaded.
    * @param {HTMLElement} root - the form's section.
    * @param {Object} schema - the schema.
    * @returns {void}
@@ -185,13 +220,15 @@
     form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
     problems.forEach((p) => {
       const field = fieldOf(p.path);
+      if (!touched.has(field) && !(field === "distribution" && ["installer", "colab", "pip"].some((f) => touched.has(f)))) return;   // nothing in red before the reader has typed there
       const note = root.querySelector('[data-mf-error="' + field + '"]');
-      if (note) note.textContent = (note.textContent ? note.textContent + " " : "") + p.path + " " + p.message + ".";
+      if (note) note.textContent = (note.textContent ? note.textContent + " " : "") + sentence(p);
       const control = form.elements[field];
       if (control && control.setAttribute) control.setAttribute("aria-invalid", "true");
     });
     const status = one(root, "[data-mf-status]");
-    status.textContent = problems.length ? problems.length + (problems.length === 1 ? " field needs" : " fields need") + " attention before the file is ready."
+    const fields = new Set(problems.map((p) => fieldOf(p.path))).size;
+    status.textContent = problems.length ? (fields === 1 ? "1 field still needs" : fields + " fields still need") + " filling in or fixing before the file is ready."
       : "The file is ready: it passes the same checks as the App Centre.";
     status.classList.toggle("is-ok", !problems.length);
     const download = /** @type {HTMLButtonElement} */ (one(root, "[data-mf-download]"));
@@ -219,7 +256,8 @@
       hosts.append(label);
     });
     const form = one(root, "form");
-    form.addEventListener("input", () => refresh(root, schema));
+    form.addEventListener("input", (e) => { touched.add(/** @type {HTMLInputElement} */ (e.target).name); refresh(root, schema); });
+    form.addEventListener("change", (e) => { touched.add(/** @type {HTMLInputElement} */ (e.target).name); refresh(root, schema); });
     form.addEventListener("submit", (e) => e.preventDefault());
     one(root, "[data-mf-download]").addEventListener("click", (e) => {
       const text = /** @type {HTMLElement} */ (e.currentTarget).dataset.text || "";

@@ -105,7 +105,8 @@ def manifest_form(browser: Browser, base: str) -> None:
     page.on("pageerror", lambda e: errors.append(str(e)))
     page.goto(base + "submit/", wait_until="load")
     page.locator("[data-manifest-form]").wait_for(state="visible")
-    check("Submit form: empty, the file is not ready", page.locator("[data-mf-download]").is_disabled())
+    check("Submit form: empty, the file is not ready, and nothing is in red before the reader types",
+          page.locator("[data-mf-download]").is_disabled() and not page.evaluate("[...document.querySelectorAll('[data-mf-error]')].some(e => e.textContent)"))
     page.fill("#mf-name", "My App")
     page.fill("#mf-summary", "Counts nuclei in 2D microscopy images.")
     page.select_option("#mf-kind", "analysis")
@@ -114,7 +115,7 @@ def manifest_form(browser: Browser, base: str) -> None:
         page.click("[data-mf-download]")
     check("Submit form: it downloads labconstrictor-app.yaml", download.value.suggested_filename == "labconstrictor-app.yaml")
     page.fill("#mf-summary", "short")
-    check("Submit form: a too short summary is named beside its field", "summary needs at least 20" in page.inner_text('[data-mf-error="summary"]'))
+    check("Submit form: a too short summary is explained beside its field", "This field needs at least 20" in page.inner_text('[data-mf-error="summary"]'))
     check("Submit form: no script error", not errors, str(errors))
     context.close()
 

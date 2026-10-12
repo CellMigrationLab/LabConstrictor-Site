@@ -14,9 +14,9 @@
 [dir] .lc-demo__parts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; width: 100%; margin: 0 0 .8rem; }
 [dir] .md-typeset .lc-demo__part { display: flex; align-items: center; gap: .7rem; padding: .8rem 1rem; font-size: var(--fs-body); text-align: left; cursor: pointer; }
 .lc-demo__part[aria-selected="true"] .lc-num { background: #fff; color: var(--lc-accent-strong); }
-[dir] .lc-demo__views { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 .8rem; }
-[dir] .md-typeset .lc-demo__view { display: inline-flex; align-items: center; gap: .45rem; padding: .5rem 1rem; font-size: var(--fs-ui); cursor: pointer; }
-.lc-demo__view .lc-logo { width: 20px; height: 20px; margin: 0; border-radius: 3px; background: #fff; }
+[dir] .lc-demo__views { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; width: 100%; margin: 0 0 .8rem; }
+[dir] .md-typeset .lc-demo__view { display: flex; align-items: center; justify-content: center; gap: .55rem; padding: .7rem 1rem; font-size: var(--fs-body); cursor: pointer; }
+.lc-demo__view .lc-logo { width: 24px; height: 24px; margin: 0; border-radius: 3px; background: #fff; }
 .lc-demo__views[hidden] { display: none; }
 .lc-demo__os { margin: .5rem 0 0; }
 @media (max-width: 40rem) { [dir] .lc-demo__parts { grid-template-columns: 1fr; } }

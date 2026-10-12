@@ -135,7 +135,7 @@ Order, as the story goes: the hero (the notebook-first sentence, then the two pa
 
 ## Submit page
 
-- `/submit/` keeps the example manifest and the field table, and adds a **form that writes `labconstrictor-app.yaml` in the browser** (`submit_form.py` for the HTML, `docs/assets/javascripts/manifest-form.js` for the work). It reads the published schema (`/schema/labconstrictor-app.schema.json`) and checks the file with it, so it cannot accept what the App Centre refuses; each problem is written beside its field, and Download stays disabled until the file passes. Nothing is sent anywhere. It first says that the repository web form already writes this file when its App Centre option is kept. Without JavaScript the form stays hidden and the example is shown.
+- `/submit/` keeps the example manifest and the field table, and adds a **form that writes `labconstrictor-app.yaml` in the browser** (`submit_form.py` for the HTML, `docs/assets/javascripts/manifest-form.js` for the work). It reads the published schema (`/schema/labconstrictor-app.schema.json`) and checks the file with it, so it cannot accept what the App Centre refuses; each problem is written in plain words beside its field once the reader has changed that field (nothing is red on an empty form; a list entry is named by its line), and Download stays disabled until the file passes. Nothing is sent anywhere. It first says that the repository web form already writes this file when its App Centre option is kept. Without JavaScript the form stays hidden and the example is shown.
 
 ## Footer
 
