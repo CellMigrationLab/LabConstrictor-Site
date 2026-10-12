@@ -72,7 +72,7 @@ def features_html(items: list[dict], doc_source: Path, apps: list[dict], taken: 
     return '<div data-search-exclude><ul class="lc-features">' + "".join(cards) + "</ul></div>"   # card text would make every hub match every query
 
 
-HUB_KEYS = {"title", "lead", "cards", "demo", "how", "flow_title"}
+HUB_KEYS = {"title", "lead", "cards", "demo", "how", "flow_title", "why_title"}
 
 
 def check_hub(name: str, hub: dict) -> None:
@@ -80,6 +80,8 @@ def check_hub(name: str, hub: dict) -> None:
     extra = set(hub) - HUB_KEYS - ({"lead"} if name == "docs" else set())
     if extra:
         fail(f"data/hubs.yaml: {name} has keys nothing reads: {sorted(extra)}")
+    if ("flow_title" in hub) != ("why_title" in hub):
+        fail(f"data/hubs.yaml: {name} needs both flow_title (the steps) and why_title (the heading of the cards under them), or neither")
 
 
 def notes_html(hub: dict) -> str:
@@ -98,14 +100,15 @@ def flow_html(title: str, steps: list[dict]) -> str:
 
 
 def write_hub(track: str, hub: dict, nav: list[dict], doc_source: Path, apps: list[dict], taken: dict[str, Path]) -> None:
-    """<track>/index.md: the introduction, the picture cards, then every guide of the track."""
+    """<track>/index.md: the introduction, then (on a hub with steps, Build) the steps first and the picture cards under their own heading
+    (why_title), else the picture cards; then the notes. The guides of the track are in the sidebar."""
     p = Page(f"{track}/index.md", title=hub["title"], description=hub["lead"], guide_nav=nav, guide_id="", guide_track=track,
              guide_track_title=TRACKS[track], menu="guides/", edit_url=f"{REPO}/edit/main/data/hubs.yaml")
     p.add(f'<section class="lc-pagehead"><h1>{esc(hub["title"])}</h1><p class="lc-lead">{esc(hub["lead"])}</p></section>')
+    if "flow_title" in hub:
+        p.add(flow_html(hub["flow_title"], pages_how.load()["steps"]), f'<h2 class="lc-title">{esc(hub["why_title"])}</h2>')
     p.add(features_html(hub["cards"], doc_source, apps, taken))
     p.add(notes_html(hub))
-    if "flow_title" in hub:
-        p.add(flow_html(hub["flow_title"], pages_how.load()["steps"]))
     p.write()
 
 

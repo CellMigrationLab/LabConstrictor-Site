@@ -1,5 +1,7 @@
 # The "How LabConstrictor works" page (/how-it-works/): a quick overview of the whole process, one step at a time.
-# Each step: a one-line summary (shown on the home page), what you do (text), what to remember (know), where you can customise (customise, may be empty) and the guides.
+# Each step: a one-line summary (shown on the Build hub), one sentence on what the step is (text) and a numbered "What to do" list (do):
+# concrete actions, each with the guide that shows how (href and label; an action that needs no guide has text only).
+# What can be customised is listed once, after the last step (make_it_yours).
 # No code and no interactive panels: the guides (linked from every step) do the detail. Every statement follows the guide it links to.
 # Written here only; pages_how.py checks the exact keys and that every link goes to a page of the site.
 title: How LabConstrictor works
@@ -11,86 +13,100 @@ steps:
     summary: "Develop and test your analysis in a Jupyter notebook that runs in JupyterLab and, ideally, in Colab."
     text: Start with a notebook that already works for you. It is what your colleagues open in the installed app, so there is no separate interface to write.
     region: [6, 55, 820, 127]
-    customise:
-      - The notebook is your app's interface, so its text, widgets and layout are entirely yours.
-    know:
-      - "The app opens your notebooks in JupyterLab. Ideally they also run in Google Colab: put Colab-only setup inside a check for Colab, and use ipywidgets rather than Colab forms, which do not work in JupyterLab."
-      - Paste the version cell from the guide at the top of each notebook, set current_version and notebook_name (the file name without .ipynb), and raise the version whenever the notebook's logic changes. The app's Welcome notebook uses it to offer updates.
-      - By default, code cells are hidden in the installed app (users can show them with Show/Hide Code), so put what users must read in Markdown cells.
-    guides:
-      - {href: guides/notebook-portability/, label: Write notebooks that run in both Colab and JupyterLab}
-      - {href: guides/code-hiding/, label: Hide code cells}
-      - {href: "guides/notebook-upload/#1-prepare-your-notebook", label: Add the version cell}
+    do:
+      - text: "Make sure each notebook runs from top to bottom in JupyterLab, and ideally in Google Colab too: keep Colab-only setup inside a check for Colab, and use ipywidgets rather than Colab forms."
+        href: guides/notebook-portability/
+        label: Write notebooks that run in both Colab and JupyterLab
+      - text: "Paste the version cell at the top of each notebook, fill in current_version and notebook_name (the file name without .ipynb), and raise the version whenever the notebook's logic changes. The app's Welcome notebook uses it to offer updates."
+        href: "guides/notebook-upload/#1-prepare-your-notebook"
+        label: Add the version cell
+      - text: "Put what users must read in Markdown cells: code cells are hidden by default in the installed app, and users can show them with Show/Hide Code."
+        href: guides/code-hiding/
+        label: Hide code cells
   - id: step-2
     title: Create and initialise your repository
     summary: "Start from the GitHub template and give your app its name and version with the LabConstrictor web form."
-    text: Start from the LabConstrictor template on GitHub, then fill in the LabConstrictor web form, which gives your project its name and version and proposes the changes as a pull request.
+    text: Your app lives in a GitHub repository made from the LabConstrictor template. A web form gives it its name and version.
     region: [6, 188, 820, 199]
-    customise:
-      - Your app's name and version.
-      - Your own logo (used by the installer and as the desktop icon) and the banner and header images shown in the installer.
-      - Whether code cells are hidden or shown by default when users open a notebook.
-      - "How the App Centre will describe your app (the form writes labconstrictor-app.yaml): a one-sentence summary, the kind of app, the software it also works in and an optional longer description."
-    know:
-      - You need a GitHub account. Your repository can be public or private. A private one keeps access in your hands, so only people with access can download its installers, and only a public repository can be listed in the App Centre.
-      - Before you initialise it, complete the one-time template synchronisation setup, so that future template improvements can reach your repository.
-      - "The form asks for a project name, an initial version such as 0.0.1, your GitHub repository URL and a personal access token (classic, starting with ghp_). This is not the same token as the one for template updates."
-      - Accept the pull request that the form opens in your repository.
-    guides:
-      - {href: guides/create-repository/, label: Create your repository}
-      - {href: guides/initialise-repository/, label: Initialise your repository}
-      - {href: guides/template-synchronization/, label: Set up template updates}
-      - {href: guides/personal-access-token/, label: Create a personal access token}
-      - {href: guides/accept-pull-request/, label: Accept a pull request}
+    do:
+      - text: "Create your repository from the LabConstrictor template on GitHub (you need a GitHub account). It can be public or private: only people with access to a private repository can download its installers, and only a public one can be listed in the App Centre."
+        href: guides/create-repository/
+        label: Create your repository
+      - text: Set up template updates once, before you initialise the repository, so that future improvements of the template can reach it.
+        href: guides/template-synchronization/
+        label: Set up template updates
+      - text: "Create a personal access token for the web form (classic, starting with ghp_). It is not the same token as the one for template updates."
+        href: guides/personal-access-token/
+        label: Create a personal access token
+      - text: "Fill in the LabConstrictor web form: your project's name, an initial version such as 0.0.1, your repository's URL and the token. The form can also write how the App Centre will describe your app."
+        href: guides/initialise-repository/
+        label: Initialise your repository
+      - text: Accept the pull request that the form opens in your repository.
+        href: guides/accept-pull-request/
+        label: Accept a pull request
   - id: step-3
     title: Define your requirements
     summary: "List the packages each notebook needs in its own requirements.yaml file."
     text: Each notebook needs its own requirements.yaml, which lists the exact package versions it needs, its Python version and a short description.
     region: [6, 400, 820, 205]
-    customise: []
-    know:
-      - Generate it with the Requirements Generator notebook, in the environment where your notebook runs without errors, on your computer or in Colab.
-      - You can write the file by hand instead and check it with the Requirements Validator notebook.
-      - Helper code can live in your repository's src folder, or come from a package installed with pip (list it in requirements.yaml).
-    guides:
-      - {href: guides/notebook-requirements/, label: Generate the requirements of your notebook}
-      - {href: guides/external-code-upload/, label: Upload external code}
+    do:
+      - text: Run the Requirements Generator notebook in the environment where your notebook works without errors, on your computer or in Colab. It writes requirements.yaml for you.
+        href: guides/notebook-requirements/
+        label: Generate the requirements of your notebook
+      - text: If you prefer to write the file by hand, check it with the Requirements Validator notebook.
+      - text: "Keep helper code in your repository's src folder, or use a package installed with pip (list it in requirements.yaml)."
+        href: guides/external-code-upload/
+        label: Upload external code
   - id: step-4
     title: Add your notebook(s)
     summary: "Upload each notebook and its requirements with the LabConstrictor web form; a workflow checks them."
-    text: Upload your notebook and its requirements.yaml with the LabConstrictor web form, which opens a pull request in your repository.
+    text: Each notebook and its requirements.yaml go into your repository through the LabConstrictor web form, which opens a pull request.
     region: [6, 615, 820, 143]
-    customise:
-      - "Experimental: declare tools in a module named <package>_lc_tools next to your helper code in src, so that the napari, Fiji and QuPath plugins can run them. Only a development version of the installer registers them so far."
-    know:
-      - The form asks for your GitHub repository URL and a personal access token (classic) with write access. You can add several notebooks in one pull request.
-      - After you merge the pull request, a workflow records the notebook's version and changelog, hides its code, and tests that the packages of all your notebooks install together.
-      - If that test fails, the merge is undone automatically. Download the error log from the failed run's Artifacts, fix the notebook or its requirements and upload again.
-      - To update a notebook later, raise its version and upload it again under exactly the same file name.
-    guides:
-      - {href: guides/notebook-upload/, label: Add or update a notebook}
-      - {href: guides/personal-access-token/, label: Create a personal access token}
-      - {href: guides/workflow-status/, label: Check the status of workflows}
-      - {href: "https://github.com/CellMigrationLab/LabConstrictor-Tools/blob/main/docs/AUTHORING.md", label: "Declare tools for napari, Fiji and QuPath (experimental)"}
+    do:
+      - text: "Upload each notebook with its requirements.yaml in the web form, with your repository's URL and a personal access token (classic) with write access. Several notebooks can go in one pull request."
+        href: guides/notebook-upload/
+        label: Add or update a notebook
+      - text: "Merge the pull request. A workflow then records each notebook's version and changelog, hides its code and tests that the packages of all your notebooks install together."
+        href: guides/workflow-status/
+        label: Check the status of workflows
+      - text: "If that test fails, the merge is undone automatically: download the error log from the failed run's Artifacts, fix the notebook or its requirements and upload again."
+      - text: To update a notebook later, raise its version and upload it again under exactly the same file name.
+        href: "guides/notebook-upload/#how-to-update-an-existing-notebook"
+        label: Update a notebook
   - id: step-5
     title: Create a release and share it
     summary: "A release builds installers for Windows, macOS and Linux; share its link or list the app in the App Centre."
-    text: Publish a release on GitHub, and a workflow builds the installers. Share the link to your release, and anyone who can see your repository can install the app from it.
+    text: A release on GitHub builds an installer for each system. You share the release, and anyone who can see your repository can install the app from it.
     region: [6, 768, 820, 122]
-    customise:
-      - Add screenshots, a development status and the paper to cite to labconstrictor-app.yaml; the App Centre shows them on your app's page.
-    know:
-      - Before you start, check the Actions tab of your repository. No workflow should be running.
-      - The release tag is a version number in the form MAJOR.MINOR.PATCH, for example 0.0.1. It becomes your app's version, so make it higher than the last one.
-      - Each system gets its own installer, listed under the release's Assets when the workflow has finished, with a Welcome notebook that lists your notebooks and checks for updates. Try one yourself before you share it.
-      - The installers are not code-signed yet, so users' systems will warn them. Tell them to download only from your release. Installing needs an internet connection.
-      - To be found by others, submit your repository to the App Centre. It must be public and have a licence; the template's LICENSE file carries the Cell Migration Lab's copyright line, so put your own name in it.
-    guides:
-      - {href: guides/executable-creation/, label: Create installer files}
-      - {href: guides/workflow-status/, label: Check the status of workflows}
-      - {href: guides/install/, label: Install an app}
-      - {href: guides/app-manifest/, label: Describe your app for the App Centre}
-      - {href: submit/, label: Submit your app}
+    do:
+      - text: "Check the Actions tab of your repository: no workflow should be running."
+        href: guides/workflow-status/
+        label: Check the status of workflows
+      - text: "Publish a release whose tag is a version number in the form MAJOR.MINOR.PATCH (for example 0.0.1), higher than the last one. It becomes your app's version, and a workflow builds the installers."
+        href: guides/executable-creation/
+        label: Create installer files
+      - text: "When the workflow has finished, download the installer for your system from the release's Assets and try it yourself. It comes with a Welcome notebook that lists your notebooks and checks for updates."
+        href: guides/install/
+        label: Install an app
+      - text: "Share the link to your release. The installers are not code-signed yet, so tell people to download only from your release; installing needs an internet connection."
+      - text: "To be found by others, submit your repository to the App Centre. It must be public and have a licence: the template's LICENSE file carries the Cell Migration Lab's copyright line, so put your own name in it."
+        href: submit/
+        label: Submit your app
+make_it_yours:
+  title: Make it yours (optional)
+  items:
+    - text: Your own logo (the installer and desktop icon) and the banner and header images shown in the installer.
+      href: guides/installer-images/
+      label: Add your own logo and installer images
+    - text: Whether code cells are hidden or shown by default when users open a notebook.
+      href: guides/code-hiding/
+      label: Hide code cells
+    - text: "What the App Centre shows on your app's page: screenshots, the development status, what it works with and the paper to cite (labconstrictor-app.yaml)."
+      href: guides/app-manifest/
+      label: Describe your app for the App Centre
+    - text: "Experimental: tools that the napari, Fiji and QuPath plugins can run, declared in a module named <package>_lc_tools next to your helper code. Only a development version of the installer registers them so far."
+      href: "https://github.com/CellMigrationLab/LabConstrictor-Tools/blob/main/docs/AUTHORING.md"
+      label: "Declare tools for napari, Fiji and QuPath"
 map:
   pipeline_file: pipeline.webp
   pipeline_alt: "The developer workflow of the preprint in five blocks: 1 prepare notebooks, optional helper code and an icon; 2 make a repository from the template and initialise it with a form; 3 generate requirements.yaml with the Requirements Generator notebook; 4 submit the notebook and its requirements, which creates a pull request and starts automation A; 5 create a release, which starts automation B and attaches installers for Windows, macOS and Linux."
@@ -103,9 +119,8 @@ later:
   title: When you need more
   links:
     - {href: "guides/notebook-upload/#how-to-update-an-existing-notebook", label: Update a notebook}
-    - {href: guides/installer-images/, label: Add your own logo and installer images}
     - {href: guides/template-synchronization/, label: Keep up with template updates}
 handoff:
-  text: Your release has installers. See what the people who use your app do with them - install it, then open it.
+  text: "Your release has installers. See what the people who use your app do with them: install it, then open it."
   link: Try the demo
   href: demo/

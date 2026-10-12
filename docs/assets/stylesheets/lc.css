@@ -532,7 +532,7 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-content--wide .md-typeset > .admonition, .lc-content--wide .md-typeset > section > p, .lc-pagehead .lc-lead { max-width: 52rem; }
 
 /* grids of tiles and cards: one gap; buttons are rectangles with a 6px corner everywhere, including the call to action in the menu */
-[dir] .md-typeset ul.lc-grid, [dir] .md-typeset ul.lc-features, [dir] .md-typeset ul.lc-cats, [dir] .md-typeset ul.lc-related, .lc-tiles, .lc-choices, .lc-osgrid, [dir] .md-typeset .how__cols { gap: var(--gap-grid); }
+[dir] .md-typeset ul.lc-grid, [dir] .md-typeset ul.lc-features, [dir] .md-typeset ul.lc-cats, [dir] .md-typeset ul.lc-related, .lc-tiles, .lc-choices, .lc-osgrid { gap: var(--gap-grid); }
 .lc-menu a.lc-menu__cta { border-radius: .3rem; }
 
 /* pictures and code boxes: one corner radius each */

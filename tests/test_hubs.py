@@ -13,12 +13,18 @@ class HubDataTests(unittest.TestCase):
             hubs.check_hub("use", {"title": "t", "lead": "l", "cards": [], "hepl": {}})
 
     def test_the_build_flow_is_the_steps_of_how_it_works(self) -> None:
-        """The Build hub shows the same step cards as the home page, each linking to its step on How it works."""
+        """The Build hub shows the steps of How it works as cards, each linking to its step there."""
         steps = pages_how.load()["steps"]
         html = hubs.flow_html("From notebook to app", steps)
         self.assertEqual(html.count('<a class="lc-stepcard"'), len(steps))
         for step in steps:
             self.assertIn(f'href="how-it-works/#{step["id"]}"', html)
+
+    def test_steps_and_card_heading_come_together(self) -> None:
+        """A hub with steps needs the heading of the cards under them (and the reverse): the Build page opens with the steps."""
+        with self.assertRaises(SystemExit):
+            hubs.check_hub("build", {"title": "t", "lead": "l", "cards": [], "flow_title": "Steps"})
+        hubs.check_hub("build", {"title": "t", "lead": "l", "cards": [], "flow_title": "Steps", "why_title": "Why"})
 
     def test_the_notes_hold_the_demo_and_how_lines_and_no_help_line(self) -> None:
         """The demo and how-it-works lines render with their link; a help line is no longer shown; no notes give an empty string."""

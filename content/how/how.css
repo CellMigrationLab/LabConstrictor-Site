@@ -19,17 +19,20 @@
 [dir] .md-typeset .how__step { margin: 0 0 2rem; scroll-margin-top: 4.5rem; }
 .how__step > h2 { display: flex; align-items: center; gap: .8rem; margin: 0 0 .8rem; outline: none; }
 .md-typeset .how__text { max-width: 52rem; }
-[dir] .md-typeset .how__cols { display: grid; grid-template-columns: 1fr; gap: 1rem; margin: 1.2rem 0 0; }
-@media (min-width: 40rem) and (max-width: 63.99rem) { [dir] .md-typeset .how__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-[dir] .md-typeset .how__box { margin: 0; }
+[dir] .md-typeset .how__box { margin: 1.2rem 0 0; }
 [dir] .md-typeset .how__box:not(.how__box--custom) { border: 1px solid var(--lc-line); background: #fff; }
 [dir] .md-typeset .how__box h3 { margin: 0 0 .6rem; }
 .md-typeset .how__box h3 span { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--lc-muted); }
 [dir] .md-typeset .how__box ul { margin: 0; }
 [dir] .md-typeset ul.how__guides { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
 [dir] .md-typeset ul.how__guides > li { margin: 0; }
-[dir] .md-typeset ul.how__know > li { margin-bottom: .45rem; }
-[dir] .md-typeset .how__box ul.how__know > li:last-child { margin-bottom: 0; }
+/* "What to do": numbered actions, each with its guide on the line below */
+[dir] .md-typeset ol.how__do { margin: 0; padding-left: 1.3rem; }
+[dir] .md-typeset ol.how__do > li { margin: 0 0 .8rem; padding-left: .2rem; }
+[dir] .md-typeset ol.how__do > li:last-child { margin-bottom: 0; }
+[dir] .md-typeset ol.how__do > li::marker { font-weight: 700; color: var(--lc-accent-strong); }
+[dir] .md-typeset ol.how__do .lc-go { display: table; margin-top: .25rem; }
+[dir] .md-typeset ol.how__do--plain { list-style: disc; }
 .md-typeset .how__nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.8rem 0 0; padding-top: 1.1rem; border-top: 1px solid var(--lc-line); }
 [dir] .md-typeset .how__step a.lc-go { font-size: var(--fs-ui); }
 [dir] .md-typeset a.how__back { font-weight: 600; font-size: var(--fs-ui); color: var(--lc-muted); text-decoration: none; }

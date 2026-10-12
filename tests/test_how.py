@@ -10,11 +10,11 @@ class DataTests(unittest.TestCase):
     """The data file."""
 
     def test_the_real_data_is_valid(self) -> None:
-        """data/how-it-works.yaml loads: five steps, each with things to remember and at least one guide."""
+        """data/how-it-works.yaml loads: five steps, each with a list of actions of which at least one links to a guide."""
         data = pages_how.load()
         self.assertEqual(len(data["steps"]), 5)
         for step in data["steps"]:
-            self.assertTrue(step["know"] and step["guides"], step["id"])
+            self.assertTrue(any("href" in a for a in step["do"]), step["id"])
 
     def test_wrong_keys_stop_the_build(self) -> None:
         """A step without its keys, or with an unknown key, is an error that names the data file."""
@@ -24,9 +24,10 @@ class DataTests(unittest.TestCase):
             pages_how.check_keys("handoff", {"text": "t", "link": "l", "href": "h", "extra": 1}, pages_how.HANDOFF_KEYS)
 
     def test_repeated_ids_and_empty_lists_stop_the_build(self) -> None:
-        """Two steps with one id, a step with nothing to remember and a step without guides are each an error."""
+        """Two steps with one id, a step with no action, a step whose actions link to no guide and an action with a link but no label are each an error."""
         steps = pages_how.load()["steps"]
-        for change in (lambda s: s[1].update(id=s[0]["id"]), lambda s: s[0].update(know=[]), lambda s: s[0].update(guides=[])):
+        for change in (lambda s: s[1].update(id=s[0]["id"]), lambda s: s[0].update(do=[]), lambda s: s[0].update(do=[{"text": "t"}]),
+                       lambda s: s[0]["do"].append({"text": "t", "href": "guides/x/"})):
             broken = copy.deepcopy(steps)
             change(broken)
             with self.assertRaises(SystemExit):
@@ -36,16 +37,20 @@ class DataTests(unittest.TestCase):
 class PageTests(unittest.TestCase):
     """What the page shows."""
 
-    def test_every_step_has_a_numbered_link_a_section_and_its_guides(self) -> None:
-        """The row of numbered links and the sections agree, and each section links to its guides."""
+    def test_every_step_has_a_numbered_link_a_section_and_one_list_of_actions(self) -> None:
+        """The row of numbered links and the sections agree; each section has one "What to do" list, one item per action, each with its guide."""
         data = pages_how.load()
         row = pages_how.stepper(data)
         for i, step in enumerate(data["steps"]):
             html = pages_how.step_html(data, i)
             self.assertIn(f'href="#{step["id"]}"', row)
             self.assertIn(f'id="{step["id"]}"', html)
-            for guide in step["guides"]:
-                self.assertIn(f'href="{guide["href"]}"', html)
+            self.assertEqual(html.count("<h3>What to do</h3>"), 1)
+            self.assertNotIn("Good to know", html)
+            self.assertEqual(html.split('<ol class="how__do">')[1].split("</ol>")[0].count("<li>"), len(step["do"]))
+            for action in step["do"]:
+                if "href" in action:
+                    self.assertIn(f'<a class="lc-go" href="{action["href"]}">', html)
 
     def test_the_steps_lead_to_each_other_and_the_last_hands_over_to_the_demo(self) -> None:
         """The first step has no Back, the middle ones have both, and the last step has the hand-over to the demo instead of Next."""
@@ -58,12 +63,14 @@ class PageTests(unittest.TestCase):
         self.assertIn(f'href="{data["handoff"]["href"]}"', last)
         self.assertEqual(data["handoff"]["href"], "demo/")
 
-    def test_customisation_is_shown_only_where_there_is_something_to_customise(self) -> None:
-        """Steps 1, 2, 4 and 5 have a "Make it yours" tile; a step with an empty list has none."""
+    def test_make_it_yours_is_listed_once_after_the_last_step(self) -> None:
+        """Only the last step has the "Make it yours (optional)" box, with every customisation guide."""
         data = pages_how.load()
-        for i, step in enumerate(data["steps"]):
-            self.assertEqual("Make it yours" in pages_how.step_html(data, i), bool(step["customise"]), step["id"])
-        self.assertEqual([bool(s["customise"]) for s in data["steps"]], [True, True, False, True, True])
+        shown = ["Make it yours" in pages_how.step_html(data, i) for i in range(len(data["steps"]))]
+        self.assertEqual(shown, [False, False, False, False, True])
+        last = pages_how.step_html(data, len(data["steps"]) - 1)
+        for item in data["make_it_yours"]["items"]:
+            self.assertIn(f'href="{item["href"]}"', last)
 
     def test_the_picture_at_the_side_frames_each_of_the_five_steps(self) -> None:
         """One loop and one fade per step, alt texts, sizes, caption and the CC BY credit are there; a missing picture stops the build."""
@@ -88,7 +95,7 @@ class PageTests(unittest.TestCase):
     def test_a_line_that_yaml_turned_into_a_mapping_stops_the_build(self) -> None:
         """An unquoted "a: b" in a list is read as a mapping; the build names the step instead of printing a dict."""
         steps = copy.deepcopy(pages_how.load()["steps"])
-        steps[0]["know"].append({"The notebook is your app's interface": "its text is yours."})
+        steps[0]["do"].append({"text": {"The notebook is your app's interface": "its text is yours."}})
         with self.assertRaises(SystemExit):
             pages_how.check_steps(steps)
 

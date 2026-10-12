@@ -1,5 +1,5 @@
 """The page /how-it-works/: a quick overview of the whole process, one step at a time, from data/how-it-works.yaml.
-No code and no panels: every step says what to do and what to remember, and links to the guides that show how."""
+No code and no panels: every step is one numbered list of what to do, each action linked to the guide that shows how."""
 
 import shutil
 
@@ -10,8 +10,10 @@ from .text import esc
 
 SOURCE = CONTENT / "how"
 OUT = DOCS / "assets" / "how"
-TOP_KEYS = {"title", "lead", "steps_title", "steps", "map", "figure_credit", "later", "handoff"}
-STEP_KEYS = {"id", "title", "summary", "text", "region", "customise", "know", "guides"}
+TOP_KEYS = {"title", "lead", "steps_title", "steps", "make_it_yours", "map", "figure_credit", "later", "handoff"}
+STEP_KEYS = {"id", "title", "summary", "text", "region", "do"}
+ACTION_KEYS = ({"text"}, {"text", "href", "label"})   # an action with the guide that shows how, or (when no guide is needed) text only
+YOURS_KEYS = {"title", "items"}
 MAP_KEYS = {"pipeline_file", "pipeline_alt", "caption"}
 CREDIT_KEYS = {"text", "link", "href"}
 LINK_KEYS = {"href", "label"}
@@ -33,8 +35,22 @@ def check_links(where: str, links: object) -> None:
         check_keys(f"a link of {where}", link, LINK_KEYS)
 
 
+def check_actions(where: str, actions: object) -> None:
+    """Stop the build unless `actions` is a non-empty list of {text} or {text, href, label} items whose values are plain text, and at
+    least one of them links to a guide."""
+    if not isinstance(actions, list) or not actions:
+        fail(f"data/how-it-works.yaml: {where} needs a list of actions")
+    for action in actions:
+        if not isinstance(action, dict) or set(action) not in ACTION_KEYS:
+            fail(f"data/how-it-works.yaml: an action of {where} needs text, and href with label when it links to a guide; got {action!r}")
+        if not all(isinstance(v, str) for v in action.values()):
+            fail(f"data/how-it-works.yaml: an action of {where} is not plain text (a colon followed by a space in unquoted YAML makes a mapping): {action!r}")
+    if not any("href" in a for a in actions):
+        fail(f"data/how-it-works.yaml: {where} links to no guide")
+
+
 def check_steps(steps: object) -> None:
-    """Stop the build unless the steps are a list with unique ids, exact keys, at least one thing to remember, a list of things to customise and at least one guide."""
+    """Stop the build unless the steps are a list with unique ids, exact keys and a list of actions that links to at least one guide."""
     if not isinstance(steps, list) or len(steps) < 2:
         fail("data/how-it-works.yaml: steps needs a list of at least two steps")
     ids = [s["id"] for s in steps if isinstance(s, dict) and "id" in s]
@@ -42,18 +58,13 @@ def check_steps(steps: object) -> None:
         fail(f"data/how-it-works.yaml: step ids must be present and unique, got {ids}")
     for step in steps:
         check_keys(f"step {step['id']}", step, STEP_KEYS)
-        if not isinstance(step["know"], list) or not step["know"] or not isinstance(step["customise"], list):
-            fail(f"data/how-it-works.yaml: step {step['id']} needs a list of things to remember and a list (possibly empty) of things to customise")
-        for line in step["know"] + step["customise"]:
-            if not isinstance(line, str):
-                fail(f"data/how-it-works.yaml: step {step['id']} has a line that is not plain text (a colon followed by a space in unquoted YAML makes a mapping): {line!r}")
-        check_links(f"step {step['id']}", step["guides"])
+        check_actions(f"step {step['id']}", step["do"])
         if not (isinstance(step["region"], list) and len(step["region"]) in (0, 4) and all(isinstance(n, int) for n in step["region"])):
             fail(f"data/how-it-works.yaml: the region of step {step['id']} must be [] (the end-user picture) or [x, y, width, height] in pixels of the pipeline picture")
 
 
 def load() -> dict:
-    """data/how-it-works.yaml, checked: the exact keys everywhere, unique step ids, things to remember and guides for every step."""
+    """data/how-it-works.yaml, checked: the exact keys everywhere, unique step ids, actions linked to guides for every step."""
     data = load_yaml(DATA / "how-it-works.yaml")
     check_keys("the top level", data, TOP_KEYS)
     check_keys("map", data["map"], MAP_KEYS)
@@ -64,6 +75,8 @@ def load() -> dict:
     check_keys("later", data["later"], LATER_KEYS)
     check_keys("handoff", data["handoff"], HANDOFF_KEYS)
     check_steps(data["steps"])
+    check_keys("make_it_yours", data["make_it_yours"], YOURS_KEYS)
+    check_actions("make_it_yours", data["make_it_yours"]["items"])
     check_links("later", data["later"]["links"])
     return data
 
@@ -103,10 +116,20 @@ def step_nav(steps: list[dict], i: int) -> str:
     return f'<p class="how__nav">{back}{nxt}</p>'
 
 
+def actions_html(actions: list[dict], cls: str) -> str:
+    """A numbered list of actions, each followed by the action link to the guide that shows how (when it has one)."""
+    items = "".join(f'<li>{esc(a["text"])}' + (f' <a class="lc-go" href="{esc(a["href"])}">{esc(a["label"])}</a>' if "href" in a else "") + "</li>"
+                    for a in actions)
+    return f'<ol class="{cls}">{items}</ol>'
+
+
 def last_step_extras(data: dict) -> str:
-    """What closes the last step: the optional later parts, as links to guides, and the hand-over to the installed-app demo."""
-    h, later = data["handoff"], data["later"]
-    return (f'<h3>{esc(later["title"])}</h3>{links_html(later["links"], "how__guides how__guides--wide")}'
+    """What closes the last step: what can be customised (once for the whole process), the optional later parts as links to guides, and
+    the hand-over to the demo."""
+    h, later, yours = data["handoff"], data["later"], data["make_it_yours"]
+    title = yours["title"].replace(" (optional)", "")
+    return (f'<section class="how__box how__box--custom"><h3>{esc(title)} <span>(optional)</span></h3>{actions_html(yours["items"], "how__do how__do--plain")}</section>'
+            f'<h3>{esc(later["title"])}</h3>{links_html(later["links"], "how__guides how__guides--wide")}'
             f'<aside class="how__handoff"><p>{esc(h["text"])}</p><a class="lc-btn lc-btn--primary" href="{esc(h["href"])}">{esc(h["link"])}</a></aside>')
 
 
@@ -121,23 +144,15 @@ def map_html(data: dict) -> str:
             f'<p class="how__caption">{esc(m["caption"])}</p><p class="how__credit">{esc(c["text"])} <a href="{esc(c["href"])}">{esc(c["link"])}</a></p></aside>')
 
 
-def customise(step: dict) -> str:
-    """The "Make it yours" tile of a step: what the author can customise there, or nothing when there is nothing to customise."""
-    if not step["customise"]:
-        return ""
-    items = "".join(f"<li>{esc(c)}</li>" for c in step["customise"])
-    return f'<section class="how__box how__box--custom"><h3>Make it yours <span>(optional)</span></h3><ul>{items}</ul></section>'
-
-
 def step_html(data: dict, i: int) -> str:
-    """One step: its number and title and what you do, then tiles (what to remember, what to customise when there is something, the guides), and the way on."""
+    """One step: its number and title, one sentence on what it is, then one "What to do" list (each action with its guide), and the way on.
+    The last step also lists what can be customised, the later parts and the hand-over to the demo."""
     steps = data["steps"]
     s = steps[i]
-    know = "".join(f"<li>{esc(k)}</li>" for k in s["know"])
     extras = last_step_extras(data) if i + 1 == len(steps) else ""
     return (f'<section class="how__step" id="{esc(s["id"])}"><h2 tabindex="-1"><span class="lc-num">{i + 1}</span> {esc(s["title"])}</h2>'
-            f'<p class="how__text">{esc(s["text"])}</p><div class="how__cols"><section class="how__box"><h3>Good to know</h3><ul class="how__know">{know}</ul></section>'
-            f'{customise(s)}<section class="how__box"><h3>Guides</h3>{links_html(s["guides"], "how__guides")}</section></div>{extras}{step_nav(steps, i)}</section>')
+            f'<p class="how__text">{esc(s["text"])}</p><section class="how__box"><h3>What to do</h3>{actions_html(s["do"], "how__do")}</section>'
+            f'{extras}{step_nav(steps, i)}</section>')
 
 
 def page_how() -> None:
