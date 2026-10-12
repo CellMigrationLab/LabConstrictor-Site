@@ -235,6 +235,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 [dir] .md-typeset .lc-feature__live { display: block; margin: 0; padding: .9rem; list-style: none; }
 .lc-feature__shot--wide > a > img { height: auto; max-height: 100%; align-self: center; object-fit: contain; }
 .lc-feature__shot--wide { align-items: center; padding: 0 .8rem; }
+.lc-feature__shot--wide > a { display: flex; align-items: center; }   /* a very wide picture sits in the middle of the frame, not at its top */
 .lc-help { padding: .8rem 1rem; border-left: 3px solid var(--lc-accent-strong); background: var(--lc-soft); border-radius: .3rem; }
 .lc-feature__body { display: flex; flex-direction: column; gap: .3rem; padding: 1rem 1.1rem 1.1rem; }
 .lc-feature__body strong { font-family: var(--lc-display); font-size: var(--fs-h3); color: var(--lc-strong); line-height: 1.25; }

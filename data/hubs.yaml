@@ -64,8 +64,8 @@ build:
       text: Write them for both, and people can try them in the browser first.
       href: guides/notebook-portability/
       link: Notebooks for Colab and JupyterLab
-      image: {doc_source: colab_vs_local/colab.png}
-      alt: A notebook form in Google Colab with a model chooser and a Hide code button.
+      image: {doc_source: colab_vs_local/local_option2.png}
+      alt: "A notebook cell written with ipywidgets, which work in both Colab and JupyterLab: a model dropdown, a Confirm Selection button and the line You selected: Model A."
     - title: Others can find it
       text: List it in the App Centre, with a download for each system and a page of its own.
       href: submit/
