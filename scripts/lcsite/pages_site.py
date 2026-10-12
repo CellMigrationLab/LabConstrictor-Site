@@ -1,6 +1,6 @@
 """Home, ecosystem and submit pages."""
 
-from . import catalogue_text, citation, hosts, pages_demo, pages_home, pages_how, pages_related, projects
+from . import catalogue_text, citation, hosts, pages_demo, pages_home, pages_related, projects
 from .cards import card, github_badge
 from .config import CONTENT, DOCS, REPO, fail
 from .page import Page
@@ -45,17 +45,16 @@ def plugin_stage() -> str:
 
 
 def page_home(site: dict, apps: list[dict]) -> None:
-    """index.md: hero with the logo and the two paths (use / make), then the comic (the problem), the five steps of How it works as cards (the solution), the two demo tiles (installed app, Windows installation), the optional plugin section, featured apps and the citation."""
+    """index.md: hero with the logo and the two paths (find an app / make one, which opens How it works), then the comic (the problem), the two demo tiles (Windows installation, installed app), the optional plugin section, featured apps and the citation."""
     hero = site["hero"]
     featured = pages_home.featured_apps(apps)
     p = Page("index.md", title="LabConstrictor", head_title=f"{site['name']}: {hero['title']}", description=hero["text"], template="home.html")
     p.add(f'<section class="lc-hero"><div class="lc-hero__in"><div><h1>{esc(hero["title"])}</h1><p>{esc(hero["text"])}</p>'
           '<div class="lc-choices">'
           + choice("I want to find an app", catalogue_text.home_find_text(apps), "apps/", "Open the App Centre")
-          + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "build/", "Why and how to build one", "lc-choice--make") +
+          + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "how-it-works/", "See how it works, step by step", "lc-choice--make") +
           '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256" loading="eager" fetchpriority="high"></div></div></section>')
     p.add(pages_home.comic_band(comic_figure()))
-    p.add(pages_home.steps_band(site, pages_how.load()["steps"]))
     p.add(pages_home.tiles_band(site["tiles_title"], pages_demo.home_tiles()))
     p.add(pages_home.plugins_band(site, program_pill_row(plugin_stage())))
     p.add(pages_home.featured_band([card(a) for a in featured], "No app is featured yet."))

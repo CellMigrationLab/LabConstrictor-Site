@@ -106,6 +106,6 @@ later:
     - {href: guides/installer-images/, label: Add your own logo and installer images}
     - {href: guides/template-synchronization/, label: Keep up with template updates}
 handoff:
-  text: Your release has installers. Explore what the people who install your app receive.
-  link: Explore an installed app
+  text: Your release has installers. See what the people who use your app do with them - install it, then open it.
+  link: Try the demo
   href: demo/

@@ -1,12 +1,19 @@
 """The interactive demo page (/demo/) and its home-page tile. Everything shown comes from data/demo.yaml and content/demo/."""
 
-from . import demo_media, demo_option_a
+from . import demo_media, demo_option_a, hosts
 from .cards import github_badge
 from .config import DATA, REPO, load_yaml
 from .page import Page
 from .text import esc
 
 TABS = (("notebook", "Notebook"), ("napari", "napari"), ("fiji", "Fiji"))
+PARTS = ("install", "use")   # the two parts of the demo, in their order on the page; /demo/?demo=use opens the second (demo.js reads it before the first drawing)
+PART_LABELS = {"install": "See how installation works (Windows)", "use": "Explore the installed app"}
+
+
+def tab_logo(key: str) -> str:
+    """The logo in a view tab: JupyterLab for the notebook, the program's own logo for napari and Fiji."""
+    return hosts.service_logo("jupyter") if key == "notebook" else hosts.logo(key)
 STATIC = (("reference_full.webp", "The reference image: a tiled widefield image of DAPI-stained nuclei, many small round blobs on black.", "The whole reference field."),
           ("query.webp", "The small image to locate: a software-generated crop with about thirty nuclei, rotated and rescaled.", "The small image: a random crop generated from the reference (rotated and rescaled by NucleiSky's Generate Random Crop)."),
           ("reference_roi_green.webp", "The part of the reference where the small image was found, nuclei shown in green.", "The region of the reference where NucleiSky found it."))
@@ -18,21 +25,23 @@ def load() -> dict:
 
 
 def tab_buttons() -> str:
-    """The three view tabs: real buttons with tab semantics; the first is selected in the static HTML."""
+    """The three view tabs, each with its program's logo: real buttons with tab semantics; the first is selected in the static HTML.
+    They belong to the installed-app part, so they are hidden while the installation part shows."""
     out = []
     for i, (key, label) in enumerate(TABS):
         out.append(f'<button type="button" role="tab" id="demo-tab-{key}" aria-controls="demo-panel-{key}" aria-selected="{"true" if i == 0 else "false"}" '
-                   f'tabindex="{0 if i == 0 else -1}" class="lc-btn lc-btn--small" data-demo-act="view" data-view="{key}">{label}</button>')
-    return '<div class="lc-demo__tabs" role="tablist" aria-label="Interface">' + "".join(out) + '</div>'
+                   f'tabindex="{0 if i == 0 else -1}" class="lc-btn lc-demo__view" data-demo-act="view" data-view="{key}">{tab_logo(key)}<span>{label}</span></button>')
+    return '<div class="lc-demo__tabs lc-demo__views" role="tablist" aria-label="Interface" data-view-tabs hidden>' + "".join(out) + '</div>'
 
 
 def category_tabs() -> str:
-    """The two parts of the demo: the installed app (shown first) and, optionally, how installation works on Windows. Real buttons with tab semantics."""
+    """The two parts of the demo, in the order a colleague meets them: how installation works on Windows (shown first), then the installed
+    app. Real buttons with tab semantics, as wide as the page."""
     out = []
-    for i, (key, label) in enumerate((("use", "Explore the installed app"), ("install", "See how installation works (Windows)"))):
+    for i, key in enumerate(PARTS):
         out.append(f'<button type="button" role="tab" id="demo-cat-tab-{key}" aria-controls="demo-cat-{key}" aria-selected="{"true" if i == 0 else "false"}" '
-                   f'class="lc-btn lc-btn--small" data-demo-act="cat" data-cat="{key}">{label}</button>')
-    return '<div class="lc-demo__tabs" role="tablist" aria-label="Part of the demo">' + "".join(out) + '</div>'
+                   f'class="lc-btn lc-demo__part" data-demo-act="cat" data-cat="{key}"><span class="lc-num">{i + 1}</span>{PART_LABELS[key]}</button>')
+    return '<div class="lc-demo__tabs lc-demo__parts" role="tablist" aria-label="Part of the demo">' + "".join(out) + '</div>'
 
 
 def panels(shown: dict[str, str], example: dict) -> str:
@@ -53,22 +62,21 @@ def static_figures(text: dict) -> str:
 
 
 def about_and_features(text: dict) -> str:
-    """The short note on the example app (NucleiSky), then one line with the guides for trying it for real."""
-    a, t = text["about"], text["try_it"]
-    links = " and ".join(f'<a href="{esc(link["href"])}">{esc(link["label"])}</a>' for link in t["links"])
-    c = text["credit"]
+    """The short note on the example app (NucleiSky)."""
+    a, c = text["about"], text["credit"]
     return (f'<section class="lc-demo__about"><h2>{esc(a["title"])}</h2><p>{esc(a["text"])} {github_badge(c["nucleisky_repo"])} '
-            f'<a href="apps/nucleisky/">{esc(a["app_link"])}</a></p><p>{esc(t["text"])} {links}.</p></section>')
+            f'<a href="apps/nucleisky/">{esc(a["app_link"])}</a></p></section>')
 
 
 def how_it_works(text: dict) -> str:
     """The six steps of how the real bridge works, as a clickable list with a three-box diagram. Shown only for the napari and Fiji views."""
     steps = "".join(f'<li><button type="button" class="lc-how__step" data-demo-sim data-act="how" data-i="{i}" aria-pressed="{"true" if i == 1 else "false"}">{esc(s)}</button></li>'
                     for i, s in enumerate(text["how"]["steps"], 1))
-    boxes = "".join(f'<span class="lc-how__box" data-box="{i}">{esc(label)}</span>' for i, label in enumerate(("Installed app and its Python environment", "LabConstrictor-Tools bridge", "napari, Fiji or QuPath")))
+    boxes = "".join(f'<button type="button" class="lc-how__box" data-demo-sim data-act="how" data-i="{step}" data-box="{i}">{esc(label)}</button>'
+                    for i, (label, step) in enumerate((("Installed app and its Python environment", 1), ("LabConstrictor-Tools bridge", 3), ("napari, Fiji or QuPath", 4))))
     hosts = "".join(f'<tr><th scope="row">{esc(h["name"])}</th><td><code>{esc(h["where"])}</code></td><td>{esc(h["detail"])}</td></tr>' for h in text["how"]["hosts"])
-    return (f'<section class="lc-how" data-how hidden><h2>{esc(text["how"]["title"])}</h2><p class="lc-small">Click a step to see where it happens.</p>'
-            f'<div class="lc-how__diagram" aria-hidden="true">{boxes}</div><ol>{steps}</ol>'
+    return (f'<section class="lc-how" id="demo-how" data-how hidden><h2>{esc(text["how"]["title"])}</h2><p class="lc-small">Click a box or a step to see where it happens.</p>'
+            f'<div class="lc-how__diagram">{boxes}</div><ol>{steps}</ol>'
             f'<h3>{esc(text["how"]["hosts_title"])}</h3><table class="lc-how__hosts"><thead><tr><th scope="col">Program</th><th scope="col">Where to find it</th><th scope="col">What happens</th></tr></thead><tbody>{hosts}</tbody></table>'
             f'<p>{esc(text["how"]["note"])} {github_badge(text["credit"]["tools_repo"], "LabConstrictor-Tools")}</p></section>')
 
@@ -99,23 +107,22 @@ def page_demo(apps: list[dict]) -> None:
     p.add(f'<section class="lc-pagehead"><h1>{esc(text["title"])}</h1>'
           f'<p class="lc-lead">{esc(text["lead"])}</p><p>{esc(text["packaging"]["text"])} <a class="lc-go" href="{esc(text["packaging"]["href"])}">{esc(text["packaging"]["link"])}</a></p></section>')
     installer = demo_media.render(demo_media.read_window("installer"), shown, "windows/installer.html")
-    p.add(f'<div class="lc-demo" data-demo data-search-exclude><div class="lc-demo__live"><p class="lc-demo__next" data-next></p>{category_tabs()}'
-          f'<div role="tabpanel" id="demo-cat-install" aria-labelledby="demo-cat-tab-install" data-cat-panel="install" class="lc-demo__panel" hidden>{installer}</div>'
-          f'<div role="tabpanel" id="demo-cat-use" aria-labelledby="demo-cat-tab-use" data-cat-panel="use">{tab_buttons()}'
-          f'<p class="lc-demo__experimental" data-demo-experimental hidden>{esc(text["experimental"])}</p>{panels(shown, example)}{how_it_works(text)}</div></div>{static_figures(text)}</div>')
+    os_note = text["other_systems"]
+    p.add(f'<div class="lc-demo" data-demo data-search-exclude><div class="lc-demo__live">{category_tabs()}{tab_buttons()}<p class="lc-demo__next" data-next></p>'
+          f'<div role="tabpanel" id="demo-cat-install" aria-labelledby="demo-cat-tab-install" data-cat-panel="install"><div class="lc-demo__panel">{installer}</div>'
+          f'<p class="lc-small lc-demo__os">{esc(os_note["text"])} <a href="{esc(os_note["href"])}">{esc(os_note["link"])}</a></p></div>'
+          f'<div role="tabpanel" id="demo-cat-use" aria-labelledby="demo-cat-tab-use" data-cat-panel="use" hidden>'
+          f'<p class="lc-demo__experimental" data-demo-experimental hidden>{esc(text["experimental"])} <a href="#demo-how">{esc(text["how"]["title"])} &darr;</a></p>{panels(shown, example)}{how_it_works(text)}</div></div>{static_figures(text)}</div>')
     p.add(about_and_features(text))
     p.add(credits(text))
     p.write()
 
 
-PARTS = ("use", "install")   # the two parts of the demo; /demo/?demo=<part> opens one (demo.js reads it before the first drawing)
-
-
 def part_url(part: str) -> str:
-    """The address of one part of the demo: the plain page for the installed app (its default), ?demo=install for the installation."""
+    """The address of one part of the demo: the plain page for the installation (the first part), ?demo=use for the installed app."""
     if part not in PARTS:
         raise ValueError(f"data/demo.yaml: a tile names the part {part!r}, not one of {PARTS}")
-    return "demo/" if part == "use" else f"demo/?demo={part}"
+    return "demo/" if part == PARTS[0] else f"demo/?demo={part}"
 
 
 def tile_html(tile: dict) -> str:
@@ -125,5 +132,5 @@ def tile_html(tile: dict) -> str:
 
 
 def home_tiles() -> list[str]:
-    """The home page's two demo tiles (wording from data/demo.yaml): the installed app and the simulated Windows installation."""
+    """The home page's two demo tiles (wording from data/demo.yaml): the simulated Windows installation and the installed app."""
     return [tile_html(t) for t in load_yaml(DATA / "demo.yaml")["tiles"]]

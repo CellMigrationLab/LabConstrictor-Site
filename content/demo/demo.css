@@ -10,6 +10,16 @@
 .lc-demo__tabs { display: inline-flex; gap: .4rem; margin-right: .6rem; }
 .lc-demo__tabs .lc-btn[aria-selected="false"] { background: #fff; color: #1c5f1c; border: 1px solid #1c5f1c; }
 .lc-demo__panel { margin-top: .8rem; overflow-x: auto; border: 1px solid #c9ccd1; border-radius: 6px; }
+/* the two parts as wide numbered buttons, then the program tabs (with their logos) of the installed app, then the hint line */
+[dir] .lc-demo__parts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; width: 100%; margin: 0 0 .8rem; }
+[dir] .md-typeset .lc-demo__part { display: flex; align-items: center; gap: .7rem; padding: .8rem 1rem; font-size: var(--fs-body); text-align: left; cursor: pointer; }
+.lc-demo__part[aria-selected="true"] .lc-num { background: #fff; color: var(--lc-accent-strong); }
+[dir] .lc-demo__views { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 .8rem; }
+[dir] .md-typeset .lc-demo__view { display: inline-flex; align-items: center; gap: .45rem; padding: .5rem 1rem; font-size: var(--fs-ui); cursor: pointer; }
+.lc-demo__view .lc-logo { width: 20px; height: 20px; margin: 0; border-radius: 3px; background: #fff; }
+.lc-demo__views[hidden] { display: none; }
+.lc-demo__os { margin: .5rem 0 0; }
+@media (max-width: 40rem) { [dir] .lc-demo__parts { grid-template-columns: 1fr; } }
 .lc-demo__static { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
 .lc-demo__fig img { width: 100%; height: auto; }
 .lc-demo__how { margin: 1rem 0; }
@@ -128,7 +138,8 @@
 .fj__bar p { margin: .15rem 0; }
 .fj__menu { display: flex; gap: .9rem; }
 .fj__tools { display: flex; gap: 4px; }
-.fj__tools i { width: 18px; height: 18px; background: #d6d6d6; border: 1px solid #bdbdbd; }
+.fj__tools i { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; color: #333; background: #f4f4f4; border: 1px solid #c4c4c4; }
+.fj__tools svg { width: 16px; height: 16px; }
 .fj__link { border: 0; background: none; padding: .3rem 0; min-height: 24px; color: #1a56a8; text-decoration: underline; font: inherit; cursor: pointer; }
 .fj__status { color: #444; }
 .fj__stage { display: flex; flex-wrap: wrap; gap: .8rem; align-items: flex-start; margin-top: .6rem; }
@@ -201,7 +212,8 @@
 /* "How the connection works": a diagram and a clickable list of steps, only for napari and Fiji */
 .lc-how { margin: 1rem 0; } .lc-how ol { padding-left: 1.4rem; max-width: 46rem; }
 .lc-how__diagram { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .6rem 0; }
-.lc-how__box { padding: .5rem .8rem; border: 2px solid #cbd5e1; border-radius: 8px; background: #fff; }
+.lc-how__box { padding: .5rem .8rem; border: 2px solid #cbd5e1; border-radius: 8px; background: #fff; color: inherit; font: inherit; cursor: pointer; }
+.lc-how__box:hover { border-color: #e11d48; }
 .lc-how__box + .lc-how__box::before { content: "\2192"; margin-right: .6rem; color: #64748b; }
 .lc-how__box.is-active { border-color: #e11d48; background: #fff1f2; font-weight: 700; }
 .lc-how__step { display: block; width: 100%; padding: .35rem .5rem; border: 0; border-radius: 6px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }

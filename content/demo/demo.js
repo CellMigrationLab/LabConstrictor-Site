@@ -141,11 +141,11 @@
   }
 
   /**
-   * The part of the demo the address asks for: ?demo=install opens the installation walkthrough; any other address opens the installed app.
+   * The part of the demo the address asks for: ?demo=use opens the installed app; any other address opens the installation walkthrough (the first part).
    * @returns {string} 'install' or 'use'.
    */
   function partFromAddress() {
-    return new URLSearchParams(location.search).get('demo') === 'install' ? 'install' : 'use';
+    return new URLSearchParams(location.search).get('demo') === 'use' ? 'use' : 'install';
   }
 
   /**

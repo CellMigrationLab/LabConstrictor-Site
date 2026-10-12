@@ -100,13 +100,24 @@ def how_controls(browser: Browser, base: str) -> None:
     page.context.close()
 
 
+def home_paths(browser: Browser, base: str) -> None:
+    """The home page: "I want to make an app" opens How it works, and the steps are not repeated on the home page."""
+    page, errors = open_page(browser, base, "", 1280)
+    check("Home: the make-an-app card opens How it works", page.locator("a.lc-choice--make").get_attribute("href") == "how-it-works/")
+    check("Home: no step cards on the home page", page.locator("a.lc-stepcard").count() == 0)
+    check("Home: no script error", not errors, str(errors))
+    page.context.close()
+
+
 def demo_flow(browser: Browser, base: str) -> None:
-    """The demo: launch the app, run the notebook to its result, see the keyboard tabs work, and reset when the view changes."""
+    """The demo: it opens on the installation, the part buttons come before the hint line, then launch the app, run the notebook to its
+    result, see the keyboard tabs work, reset when the view changes, and pick a step of the connection by its diagram box."""
     page, errors = open_page(browser, base, "demo/", 1280)
-    check("Demo: it opens on the installed app, not on the installer", page.get_attribute("#demo-cat-tab-use", "aria-selected") == "true" and page.locator("#demo-cat-install").is_hidden())
-    page.click("#demo-cat-tab-install")
-    check("Demo: the Windows installer is one click away", page.locator("#demo-cat-install").is_visible())
+    check("Demo: it opens on the installation (the first part), with the program tabs hidden", page.get_attribute("#demo-cat-tab-install", "aria-selected") == "true"
+          and page.locator("#demo-cat-use").is_hidden() and page.locator("[data-view-tabs]").is_hidden())
+    check("Demo: the part buttons come before the hint line", page.evaluate("!!(document.querySelector('.lc-demo__parts').compareDocumentPosition(document.querySelector('[data-next]')) & Node.DOCUMENT_POSITION_FOLLOWING)"))
     page.click("#demo-cat-tab-use")
+    check("Demo: the installed app shows its program tabs, each with a logo", page.locator("[data-view-tabs]").is_visible() and page.locator(".lc-demo__view .lc-logo").count() == 3)
     page.dblclick("#demo-panel-notebook [data-act=launch]")
     for selector in ('[data-act="run-welcome"]', '[data-act="open-app"]', '[data-act="run-init"]', '[data-act="run-step"][data-step="1"]'):
         page.locator("#demo-panel-notebook " + selector).first.click()
@@ -117,6 +128,8 @@ def demo_flow(browser: Browser, base: str) -> None:
     page.focus("#demo-tab-napari")
     page.keyboard.press("ArrowRight")
     check("Demo: the arrow key moves to the Fiji tab", page.get_attribute("#demo-tab-fiji", "aria-selected") == "true")
+    page.click('.lc-how__box[data-box="1"]')
+    check("Demo: a diagram box of How the connection works selects its step", page.get_attribute('.lc-how__step[data-i="3"]', "aria-pressed") == "true")
     check("Demo: no script error", not errors, str(errors))
     page.context.close()
 
@@ -124,7 +137,7 @@ def demo_flow(browser: Browser, base: str) -> None:
 def demo_phone(browser: Browser, base: str) -> None:
     """The demo on a phone: the whole notebook runs to its result, and every window fits its panel with no value squeezed into a narrow
     column (the fixed label column of the real widgets, the six-column notebook table)."""
-    page, errors = open_page(browser, base, "demo/", 390)
+    page, errors = open_page(browser, base, "demo/?demo=use", 390)
     for _ in range(30):
         guide = page.locator("#demo-panel-notebook .is-next")
         if not guide.count():
@@ -153,22 +166,22 @@ def demo_address(browser: Browser, base: str) -> None:
     page, errors = open_page(browser, base, "", 1280)
     installed = "#demo-cat-use:not([hidden])"
     install = "#demo-cat-install:not([hidden])"
-    page.click('a.lc-tile[href$="demo/?demo=install"]')
-    page.locator(install).wait_for(state="visible")
-    check("Demo address: the installation tile opens the installation part", page.get_attribute("#demo-cat-tab-install", "aria-selected") == "true")
-    page.reload()
-    page.locator(install).wait_for(state="visible")
-    check("Demo address: a reload keeps the installation part", page.locator(installed).count() == 0)
-    page.click("#demo-cat-tab-use")
-    check("Demo address: choosing the installed app writes ?demo=use", page.evaluate("location.search") == "?demo=use")
+    page.click('a.lc-tile[href$="demo/?demo=use"]')
+    page.locator(installed).wait_for(state="visible")
+    check("Demo address: the installed-app tile opens the installed app", page.get_attribute("#demo-cat-tab-use", "aria-selected") == "true")
     page.reload()
     page.locator(installed).wait_for(state="visible")
-    check("Demo address: a reload keeps the installed app", page.get_attribute("#demo-cat-tab-use", "aria-selected") == "true")
+    check("Demo address: a reload keeps the installed app", page.locator(install).count() == 0)
+    page.click("#demo-cat-tab-install")
+    check("Demo address: choosing the installation writes ?demo=install", page.evaluate("location.search") == "?demo=install")
+    page.reload()
+    page.locator(install).wait_for(state="visible")
+    check("Demo address: a reload keeps the installation", page.get_attribute("#demo-cat-tab-install", "aria-selected") == "true")
     page.go_back()
     check("Demo address: Back returns to the home page (changing the part adds no history entry)", page.evaluate("location.pathname") == "/")
     page.goto(base + "demo/")
-    page.locator(installed).wait_for(state="visible")
-    check("Demo address: the plain page opens the installed app", page.get_attribute("#demo-cat-tab-use", "aria-selected") == "true")
+    page.locator(install).wait_for(state="visible")
+    check("Demo address: the plain page opens the installation", page.get_attribute("#demo-cat-tab-install", "aria-selected") == "true")
     check("Demo address: no script error", not errors, str(errors))
     page.context.close()
 
@@ -191,7 +204,8 @@ ROLES = {   # a role: the elements that must look exactly alike on every page (f
     "tile and card title": ".lc-card__title strong, .lc-feature__body strong, .lc-cat strong, .lc-choice strong, .lc-tile__title, .lc-related__title, .lc-stepcard__title",
     "card and tile description": ".lc-card__text, .lc-stepcard__text, .lc-feature__body span, .lc-cat span, .lc-related__item p:not(.lc-small)",
     "action link": "a.lc-go",
-    "button": "a.lc-btn:not(.lc-btn--small), button.lc-btn:not(.lc-btn--small)",
+    "button": "a.lc-btn:not(.lc-btn--small), button.lc-btn:not(.lc-btn--small):not(.lc-demo__part)",
+    "demo part button": "button.lc-demo__part",
     "small button": ".lc-btn--small",
     "badge": "span.lc-badge",
     "lead": "p.lc-lead",
@@ -211,7 +225,7 @@ ROLES = {   # a role: the elements that must look exactly alike on every page (f
 LOOK = ("fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing", "textTransform", "color")
 BOXES = ("borderRadius", "paddingTop", "paddingLeft")   # for the boxes: tile, card, panel and callout
 BOX_ROLES = {"tile": "a.lc-tile, a.lc-cat, a.lc-stepcard, .lc-choice, .lc-panel, .lc-related__item, .lc-ostile, .how__box:not(.how__box--custom)", "callout box": ".lc-help, .lc-demo__next, blockquote, .how__handoff"}
-VARIANTS = {"button", "small button", "badge", "menu item", "docs menu link"}   # filled, ghost, status or host variants differ in colour only
+VARIANTS = {"button", "demo part button", "small button", "badge", "menu item", "docs menu link"}   # filled, ghost, status or host variants differ in colour only
 
 
 def consistency(browser: Browser, base: str) -> None:
@@ -240,7 +254,7 @@ def main() -> int:
     server, base = serve()
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=args.chromium)
-        for group in (no_sideways_scroll, app_filter, how_controls, demo_flow, demo_phone, demo_address, no_javascript, consistency):
+        for group in (no_sideways_scroll, app_filter, how_controls, home_paths, demo_flow, demo_phone, demo_address, no_javascript, consistency):
             group(browser, base)
         browser.close()
     server.shutdown()

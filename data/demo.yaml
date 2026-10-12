@@ -1,30 +1,29 @@
 # Wording of the interactive demo (/demo/) and its home-page tile. The numbers shown in the three windows are NOT here:
 # they come from content/demo/example.json (written by tools/demo_assets/make_demo_assets.py), so they are never typed twice.
-title: Explore an installed app
-description: A hands-on preview of what colleagues see when they open an installed LabConstrictor app, using a real NucleiSky example. No analysis runs here; every result was computed in advance.
-lead: "See what colleagues get when they install a LabConstrictor app: the notebook in JupyterLab and, as experimental previews, napari and Fiji. NucleiSky, a microscopy registration tool, is one real example. This is an interactive preview: no analysis runs here, and every result was computed in advance from example data."
+title: Install and use an app
+description: Install a LabConstrictor app on Windows, then open it, in a hands-on preview with a real NucleiSky example. Nothing is installed and no analysis runs here.
+lead: "Follow what a colleague does with a LabConstrictor app: install it on Windows, then open it in JupyterLab and, as experimental previews, in napari and Fiji. NucleiSky, a microscopy registration tool, is the example. This is an interactive preview: nothing is downloaded or installed, no analysis runs here, and every result was computed in advance from example data."
 packaging:
   text: Curious how an app like this is made?
   link: See how an app is packaged
   href: how-it-works/
 tiles:
-  - title: Explore an installed app
-    text: Preview the Welcome notebook and a real NucleiSky example as colleagues see them in an installed app. No analysis runs here; the results were computed in advance.
-    link: Open the demo
-    part: use
   - title: See how installation works (Windows)
     text: Step through a simulated Windows installer, from the downloaded file to the Start menu. Nothing is downloaded or installed.
     link: Try the installation demo
     part: install
+  - title: Explore an installed app
+    text: Preview the Welcome notebook and a real NucleiSky example as colleagues see them in an installed app. No analysis runs here; the results were computed in advance.
+    link: Open the installed app
+    part: use
+other_systems:
+  text: "On macOS you open a .pkg file instead (and may need Open Anyway in Privacy & Security the first time); on Linux you run the .sh file with bash in a terminal."
+  link: Install guide for every system
+  href: guides/install/
 about:
   title: About the example
   text: This demo uses NucleiSky as its example. NucleiSky is an open-source tool that aligns microscopy images by matching the arrangement of cell nuclei, like stars in a constellation. It finds where a small image sits inside a large one and estimates the rotation, scale and shift. The small image here is a random crop generated from the large one, so the correct answer is known. NucleiSky is one app built with LabConstrictor; every app has its own notebooks.
   app_link: Open the NucleiSky page
-try_it:
-  text: To try it for real, see
-  links:
-    - {href: guides/code-hiding/, label: Hide code cells}
-    - {href: guides/image-software/, label: Use apps in your image software}
 experimental: Experimental preview. The NucleiSky tool shown here is not in the released NucleiSky app, which lists notebook support only; it exists on development branches. Expect bugs and changes.
 how:
   title: How the connection works

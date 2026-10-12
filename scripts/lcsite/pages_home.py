@@ -1,7 +1,6 @@
-"""The home page's sections after the hero, in the order of the story: the problem (the comic), the solution (the steps of How it works, as cards), the two demo tiles, the optional plugin section, the featured apps.
+"""The home page's sections after the hero, in the order of the story: the problem (the comic), the two demo tiles, the optional plugin section, the featured apps.
 Wording is in data/site.yaml and data/demo.yaml; the apps shown are the ones the catalogue marks as featured."""
 
-from . import pages_how
 from .text import esc
 
 
@@ -9,13 +8,6 @@ from .text import esc
 def featured_apps(apps: list[dict]) -> list[dict]:
     """The apps the home page features: marked `featured` in the registry and listed for users (never the ones kept apart under testing)."""
     return [a for a in apps if a["featured"] and a["section"] == "apps"]
-
-
-def steps_band(site: dict, steps: list[dict]) -> str:
-    """"How it works": the five steps of the How it works page as cards (pages_how.step_cards, one source for every page), then a link to
-    the full walkthrough."""
-    return (f'<section class="lc-band lc-band--soft"><h2 class="lc-title">{esc(site["steps_title"])}</h2>{pages_how.step_cards(steps)}'
-            f'<p class="lc-more"><a class="lc-go" href="how-it-works/">{esc(site["steps_link"])}</a></p></section>')
 
 
 def comic_band(comic: str) -> str:

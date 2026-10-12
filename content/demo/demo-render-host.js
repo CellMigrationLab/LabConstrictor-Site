@@ -17,6 +17,7 @@
       d.setSelected(t, on);
       d.one(root, '#demo-cat-' + t.dataset.cat).hidden = !on;
     });
+    d.one(root, '[data-view-tabs]').hidden = state.cat !== 'use';   // the Notebook, napari and Fiji tabs belong to the installed app
   }
 
   /**

@@ -27,3 +27,8 @@ services:
     url: https://colab.research.google.com
     color: "#F9AB00"
     logo: {repo: simple-icons/simple-icons, path: icons/googlecolab.svg}
+  jupyter:
+    name: JupyterLab
+    url: https://jupyter.org
+    color: "#F37726"
+    logo: {repo: simple-icons/simple-icons, path: icons/jupyter.svg}

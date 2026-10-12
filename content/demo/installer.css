@@ -1,12 +1,12 @@
 /* The Windows installer part of /demo/: the look of a conda-constructor (NSIS) setup wizard on Windows, drawn from its page text. */
 .lc-demo__cats { margin: .6rem 0 0; }
-.wi { font: 12px/1.45 "Segoe UI", Tahoma, Arial, sans-serif; color: #000; background: #e9edf2; min-height: 22rem; padding: 1rem; }
+.wi { font: 14px/1.5 "Segoe UI", Tahoma, Arial, sans-serif; color: #000; background: #e9edf2; min-height: 22rem; padding: 1rem; }
 .wi__browser { margin: 0 0 .6rem; padding: .3rem .6rem; background: #fff; border: 1px solid #c9ccd1; border-radius: 4px; color: #555; }
 .wi__dl, .wi__smart, .wi__startmenu { max-width: 30rem; padding: .8rem 1rem; background: #fff; border: 1px solid #c9ccd1; }
 .wi__file { display: inline-flex; align-items: center; gap: .6rem; margin: .5rem 0; padding: .5rem; text-align: left; font: inherit; color: inherit; background: #fff; border: 1px solid transparent; cursor: pointer; }
 .wi__file:hover, .wi__file.is-selected { background: #cce8ff; border-color: #99d1ff; }
 .wi__fileicon { flex: none; width: 2.5rem; height: 2.5rem; }
-.wi__note { margin: .4rem 0 0; color: #555; font-size: 11px; }
+.wi__note { margin: .4rem 0 0; color: #555; font-size: 13px; }
 .wi__smart { background: #0f4c9c; color: #fff; border-color: #0f4c9c; }
 .wi__app { display: flex; align-items: center; gap: .8rem; margin: .8rem 0; } .wi__app img { flex: none; width: 2.5rem; height: 2.5rem; border-radius: 6px; } .wi__app p { margin: 0; }
 .wi__stitle { margin: 0 0 .6rem; font-size: 1.15rem; font-weight: 600; }
@@ -24,7 +24,7 @@
 .wi__head { display: flex; justify-content: space-between; gap: .5rem; margin-bottom: .8rem; padding: .5rem 0 .5rem 1rem; background: #fff; border-bottom: 1px solid #a0a0a0; }
 .wi__head p { margin: 0; } .wi__head p:last-child { padding-left: 1rem; }
 .wi__head img { flex: none; width: 75px; height: 28px; margin-right: .5rem; object-fit: contain; }
-.wi__license { height: 7rem; margin: 0 1rem .5rem; padding: .4rem; overflow: auto; background: #fff; border: 1px solid #7a7a7a; font: 11px/1.4 Consolas, monospace; white-space: pre-wrap; }
+.wi__license { height: 7rem; margin: 0 1rem .5rem; padding: .4rem; overflow: auto; background: #fff; border: 1px solid #7a7a7a; font: 12px/1.4 Consolas, monospace; white-space: pre-wrap; }
 .wi__radio, .wi__check { display: block; margin: .4rem 1rem; }
 .wi__group { margin: .8rem 1rem .2rem; font-weight: 600; }
 .wi__path { display: flex; gap: .5rem; margin: 0 1rem; }
@@ -32,9 +32,11 @@
 .wi__fake { padding: .2rem .8rem; background: #e1e1e1; border: 1px solid #adadad; color: #777; }
 .wi__bar { height: 1.2rem; margin: 1rem; background: #e6e6e6; border: 1px solid #bcbcbc; }
 .wi__bar span { display: block; height: 100%; width: 0; background: #06b025; }
-.wi__log { display: block; margin: 0 1rem; max-height: 6rem; overflow: hidden; font: 11px/1.4 Consolas, monospace; color: #333; }
+.wi__log { display: block; margin: 0 1rem; max-height: 6rem; overflow: hidden; font: 13px/1.45 Consolas, monospace; color: #333; }
 .wi__log span { display: block; }
-.wi__cmd { margin: .6rem 1rem; padding: .4rem .6rem; background: #000; color: #ddd; font-size: 11px; }
+.wi__cmdbox { margin: .6rem 1rem; }
+.wi__cmdnote { margin: 0 0 .3rem; }
+.wi__cmd { margin: 0; padding: .4rem .6rem; background: #0c0c0c; color: #ccc; font: 13px/1.45 Consolas, monospace; }
 .wi__buttons { display: flex; justify-content: flex-end; gap: .5rem; margin: 0; padding: .6rem .8rem; background: #f0f0f0; border: 1px solid #888; border-top: 0; }
 .wi__dl .wi__buttons, .wi__startmenu .wi__buttons { border: 0; }
 .wi__btn { min-width: 5.2rem; min-height: 1.7rem; padding: .15rem .8rem; font: inherit; color: #000; background: #e1e1e1; border: 1px solid #adadad; cursor: pointer; }
@@ -45,4 +47,4 @@
 .wi__start { color: #fff; background: transparent; } .wi__start:hover { background: #3a3a3a; border-color: #555; }
 .wi__startmenu .wi__note { color: #bbb; }
 @media (max-width: 40rem) { .wi__banner { display: none; } .wi__head img { display: none; } }
-.wi__cmd code { background: none; color: #fff; padding: 0; }
+[dir] .md-typeset .wi img, [dir] .md-typeset .wi .wi__app img { border-radius: 0; }   /* Windows draws the installer pictures with square corners */

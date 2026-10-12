@@ -2,7 +2,7 @@
 (function (ns) {
   /**
    * @typedef {Object} DemoState
-   * @property {string} cat - 'use' (the installed app, shown first) or 'install' (how installation works on Windows, an optional part).
+   * @property {string} cat - 'install' (how installation works on Windows, shown first) or 'use' (the installed app).
    * @property {string} page - the installer page showing (a data-page value).
    * @property {number} progress - installer progress, 0 to 100.
    * @property {boolean} installed - whether the simulated install has finished.
@@ -53,7 +53,7 @@
    */
   function fresh() {
     return {
-      cat: 'use', page: 'download', progress: 0, installed: false, selectedKey: '',
+      cat: 'install', page: 'download', progress: 0, installed: false, selectedKey: '',
       view: 'notebook', launched: false, welcomeRun: false, opened: false, nbTab: 'welcome', code: false,
       init: false, optA: false, aTab: '_common', step: 0, done: 0, crop: 'external', seg: 'new', acc: { inst: false, thr: false, adv: false },
       checked: false, scenario: false, updated: false, busy: false, how: 1, fijiDialog: true, selected: '',
