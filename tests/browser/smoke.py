@@ -121,6 +121,33 @@ def demo_flow(browser: Browser, base: str) -> None:
     page.context.close()
 
 
+def demo_phone(browser: Browser, base: str) -> None:
+    """The demo on a phone: the whole notebook runs to its result, and every window fits its panel with no value squeezed into a narrow
+    column (the fixed label column of the real widgets, the six-column notebook table)."""
+    page, errors = open_page(browser, base, "demo/", 390)
+    for _ in range(30):
+        guide = page.locator("#demo-panel-notebook .is-next")
+        if not guide.count():
+            break
+        target = guide.first
+        target.scroll_into_view_if_needed()
+        (target.dblclick if target.get_attribute("data-act") == "launch" else target.click)()
+        page.wait_for_timeout(1300)
+    check("Demo on a phone: the notebook runs to the end (no step left to click)", page.locator("#demo-panel-notebook .is-next").count() == 0)
+    squeezed = """sel => [...document.querySelectorAll(sel + ' .ns-input, ' + sel + ' .fj__field, ' + sel + ' .nb__table td, ' + sel + ' .np__field')]
+        .filter(e => e.getClientRects().length && e.getBoundingClientRect().width < 90 && e.textContent.trim().length > 6).map(e => e.textContent.trim())"""
+    for tab in ("notebook", "napari", "fiji"):
+        page.click(f"#demo-tab-{tab}") if tab != "notebook" else None
+        panel = f"#demo-panel-{tab}"
+        if tab == "notebook":
+            page.evaluate("document.querySelectorAll('#demo-panel-notebook [data-from-welcome]').forEach(e => e.hidden = false)")
+        wide = page.evaluate("sel => { const p = document.querySelector(sel); return [...p.querySelectorAll('*')].filter(e => e.scrollWidth > e.clientWidth + 1 && getComputedStyle(e).overflowX !== 'visible' && getComputedStyle(e).textOverflow !== 'ellipsis' && !e.matches('.nb__log, pre, .lc-sr')).map(e => e.className) }", panel)
+        check(f"Demo on a phone: the {tab} window fits its panel (no sideways scroll inside)", not wide, str(wide))
+        check(f"Demo on a phone: no value of the {tab} window is squeezed into a narrow column", not page.evaluate(squeezed, panel), str(page.evaluate(squeezed, panel)))
+    check("Demo on a phone: no script error", not errors, str(errors))
+    page.context.close()
+
+
 def demo_address(browser: Browser, base: str) -> None:
     """The two demo tiles of the home page open the right part of the demo, and the address keeps it through a tab change, a reload and Back."""
     page, errors = open_page(browser, base, "", 1280)
@@ -213,7 +240,7 @@ def main() -> int:
     server, base = serve()
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=args.chromium)
-        for group in (no_sideways_scroll, app_filter, how_controls, demo_flow, demo_address, no_javascript, consistency):
+        for group in (no_sideways_scroll, app_filter, how_controls, demo_flow, demo_phone, demo_address, no_javascript, consistency):
             group(browser, base)
         browser.close()
     server.shutdown()

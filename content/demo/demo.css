@@ -55,6 +55,7 @@
 .nb__table { width: 100%; border-collapse: collapse; margin: .6rem 0; font-size: 12px; display: block; overflow-x: auto; }
 .nb__table th { background: #c24e00; color: #fff; padding: .4rem; text-align: center; }
 .nb__table td { padding: .4rem; border: 1px solid #e0e0e0; vertical-align: middle; }
+.nb__table td:last-child { padding-inline: 1rem; }   /* room for the guide loop round the button, so the table does not scroll */
 .nb__open { background: #1565c0; color: #fff; border: 0; border-radius: 4px; padding: .5rem .9rem; font-weight: 700; cursor: pointer; }
 .nb__open:disabled { background: #bdbdbd; cursor: not-allowed; }
 .nb__ok, .nb__result { margin: .3rem 0; }
@@ -149,6 +150,29 @@
   .nb, .np, .fj { min-width: 0; }
   .nb__side, .nb__menu, .np__menu, .fj__menu, .fj__tools { display: none; }
   .np__cols { grid-template-columns: 1fr; }
+  .np__cols > *, .np__row input[type="range"] { min-width: 0; }
+}
+/* phones: a label above its value (the fixed label column of the real widgets leaves no room), the notebook table as one card per notebook */
+@media (max-width: 40rem) {
+  .nb__doc { padding: .8rem; }
+  .ns-row, .fj__row { flex-wrap: wrap; row-gap: .15rem; }
+  .ns-row .ns-flabel, .ns-row .ns-field + .ns-flabel, .fj__row label { flex: 1 1 100%; text-align: left; }
+  .ns-row .ns-field + .ns-flabel { margin-top: .3rem; }
+  .ns-select { min-width: 0; }
+  .fj__row:has(.fj__box) label { flex: 0 1 auto; }
+  .fj__field { min-width: 0; overflow-wrap: anywhere; }
+  .nb__table, .nb__table tbody, .nb__table tr, .nb__table td { display: block; }
+  .nb__table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .nb__table { overflow: visible; }
+  .nb__table tr { margin: 0 0 .6rem; border: 1px solid #e0e0e0; }
+  .nb__table td, .nb__table td:last-child { display: flex; gap: .6rem; padding-inline: .4rem; border: 0; border-top: 1px solid #eee; }
+  .nb__table td:first-child { border-top: 0; font-weight: 700; background: #fbe9dc; }
+  .nb__table td:not(:first-child)::before { flex: 0 0 6.5rem; color: #616161; font-weight: 600; }
+  .nb__table td:nth-child(2)::before { content: "Description"; }
+  .nb__table td:nth-child(3)::before { content: "Local Version"; }
+  .nb__table td:nth-child(4)::before { content: "Status"; }
+  .nb__table td:nth-child(5)::before { content: "Update?"; }
+  .nb__table td:nth-child(6)::before { content: "Open Notebook"; }
 }
 @media (prefers-reduced-motion: no-preference) { .lc-view__layer { transition: opacity .15s; } }
 
