@@ -94,6 +94,8 @@ def app_download(browser: Browser, base: str) -> None:
     page.wait_for_timeout(300)
     check("App page: downloading the Windows installer opens the Windows steps only",
           page.evaluate("[...document.querySelectorAll('[data-lc-steps]')].map(d => d.id + ':' + d.open).join()") == "steps-windows:true,steps-macos:false,steps-linux:false")
+    check("App page: the clicked download button keeps readable text (white on green)",
+          win.evaluate("e => getComputedStyle(e).color") == "rgb(255, 255, 255)")
     check("App page: no script error", not errors, str(errors))
     context.close()
 

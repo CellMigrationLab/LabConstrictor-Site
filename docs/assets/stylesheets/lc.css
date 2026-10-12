@@ -99,6 +99,8 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 /* ------------------------------------------------------------------ buttons and badges */
 .md-typeset .lc-btn { display: inline-block; padding: .55rem 1.1rem; border: 1px solid var(--lc-accent-strong); border-radius: .3rem; background: var(--lc-accent-strong); color: #fff; font-size: var(--fs-ui); font-weight: 600; text-decoration: none; transition: background .15s, color .15s; }
 .md-typeset .lc-btn:hover { background: var(--lc-accent-deep); border-color: var(--lc-accent-deep); color: #fff; }
+.md-typeset a.lc-btn:focus, .md-typeset a.lc-btn:hover { color: #fff; }   /* the theme's a:focus colour would paint a clicked button's text the colour of its own background */
+.md-typeset a.lc-btn--ghost:focus, .md-typeset a.lc-btn--soft:focus { color: var(--lc-accent-strong); }
 .md-typeset .lc-btn--ghost { background: transparent; color: var(--lc-accent-strong); }
 .md-typeset .lc-btn--ghost:hover { background: var(--lc-accent-soft); color: var(--lc-accent-strong); }
 .md-typeset .lc-btn--soft { background: var(--lc-accent-soft); border-color: #c3e3bf; color: var(--lc-accent-strong); }   /* the downloads of the other systems: same colour family, lighter */
