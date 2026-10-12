@@ -88,7 +88,7 @@ def page_ecosystem(tiers: list[dict], related: dict) -> None:
         items = "".join(ecosystem_card(c) for c in tier["cards"])
         p.add(f'<h2 class="lc-tier" id="{esc(tier["key"])}">{esc(tier["title"])}</h2><p>{esc(tier["text"])}</p><ul class="lc-grid">{items}</ul>')
     p.add(pages_related.teaser(related))
-    names = [h["name"] for h in hosts.load().values()] + [s["name"] for s in hosts.load_services().values()]
+    names = [h["name"] for h in hosts.load().values()]   # the logos this page shows (the Colab logo appears on app pages, not here)
     p.add(f'<p class="lc-small">The logos of {", ".join(names[:-1])} and {names[-1]} belong to their owners and are shown only to identify them.</p>')
     p.write()
 

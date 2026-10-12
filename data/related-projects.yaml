@@ -12,7 +12,7 @@ title: Related projects and alternative approaches
 page_title: Other ways to share notebooks and scientific tools
 teaser:
   heading: Related projects
-  lead: Independent projects, not part of LabConstrictor, that take other routes to sharing notebooks and scientific tools.
+  lead: Separate projects, not part of LabConstrictor, that take other routes to sharing notebooks and scientific tools.
   title: Other ways to share notebooks and scientific tools
   text: >-
     LabConstrictor packages notebooks as desktop applications. Other projects help researchers
@@ -25,7 +25,6 @@ intro: >-
   installable desktop applications that run locally in their own software environment, and it
   builds its installers with conda constructor. The projects below take other routes. Which one
   fits depends on where the notebook has to run, on the data and on the people who will use it.
-  They are complementary and can be combined.
 disclosure: >-
   Some of the people who wrote LabConstrictor are also authors of publications about
   DL4MicEverywhere, ZeroCostDL4Mic and BiaPy. We describe every project here from its own
@@ -38,14 +37,14 @@ groups:
       - name: Album
         approach: >-
           Runs scientific solutions (tools and routines), each in its own micromamba
-          environment, and shares them through catalogs kept in Git.
+          environment, and shares them through catalogues kept in Git.
         fit: you want to share a scientific tool as a solution that others install and run through Album.
         docs: https://docs.album.solutions
         site: https://album.solutions
         checked: 2026-10-11
       - name: JupyterLab Desktop
         approach: >-
-          A cross-platform desktop application for JupyterLab for Windows, macOS and Linux.
+          A desktop application for JupyterLab on Windows, macOS and Linux.
           The Python environment can be set globally or per project.
         fit: >-
           you want JupyterLab on your own computer as a general-purpose application, with a
@@ -83,7 +82,7 @@ groups:
       - name: Binder
         approach: >-
           Opens a Git repository as a live Jupyter session in a web browser. BinderHub builds
-          the image on demand, and one public deployment of BinderHub is open to anyone to use.
+          the image on demand, and a free public deployment of BinderHub is open to anyone.
         fit: collaborators should be able to open a repository's notebooks in a browser without installing anything.
         docs: https://mybinder.readthedocs.io
         site: https://mybinder.org
@@ -116,8 +115,8 @@ groups:
         checked: 2026-10-11
       - name: ZeroCostDL4Mic
         approach: >-
-          A collection of Jupyter notebooks for Google Colab, with a graphical interface, for
-          deep learning in microscopy.
+          A collection of Jupyter notebooks for Google Colab, with simple forms, for deep learning in
+          microscopy.
         fit: you want to run deep-learning microscopy notebooks in Google Colab.
         repo: HenriquesLab/ZeroCostDL4Mic
         doi: 10.1038/s41467-021-22518-0

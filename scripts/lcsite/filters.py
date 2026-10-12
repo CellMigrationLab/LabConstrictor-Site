@@ -28,6 +28,6 @@ def filter_bar(apps: list[dict]) -> str:
     return ('<form class="lc-filter" data-lc-filter data-search-exclude role="search" onsubmit="return false" hidden>'
             '<label class="lc-filter__search">Search<input type="search" data-lc-search placeholder="Name, task, what it does"></label>'
             + select("kind", "Kind", options(KINDS, kinds)) + select("route", "How do you want to run it?", options(ROUTE_LABELS, ways))
-            + select("host", "Also in", options(HOSTS, plugins)) +
+            + select("host", "Also runs in", options(HOSTS, plugins)) +
             '<p class="lc-filter__count" data-lc-count aria-live="polite"></p>'
             '<button type="button" class="lc-btn lc-btn--ghost lc-btn--small" data-lc-reset>Clear filters</button></form>')

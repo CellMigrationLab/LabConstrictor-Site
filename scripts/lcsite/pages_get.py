@@ -14,7 +14,7 @@ def steps_link(system: str, label: str) -> str:
 
 HINTS = {
     "windows": f"Installers built with LabConstrictor are not code-signed yet, so Windows may warn you. Run files only from this app's GitHub release. See the {steps_link('windows', 'Windows steps')}.",
-    "macos": f"Not sure which? Apple menu, About This Mac: Intel, or M1 and later (Apple Silicon). If macOS refuses to open it, see the {steps_link('macos', 'macOS steps')}.",
+    "macos": f"Not sure which? Open the Apple menu, then About This Mac: Intel means Intel, M1 or later means Apple Silicon. If macOS refuses to open it, see the {steps_link('macos', 'macOS steps')}.",
     "linux": f"Needs a terminal. Run it with: bash &lt;file name&gt;. See the {steps_link('linux', 'Linux steps')}.",
 }
 COLAB_FILE = re.compile(r"^https://colab\.research\.google\.com/github/([^/]+)/([^/]+)/blob/([^/]+)/(.+)$")
@@ -81,8 +81,8 @@ def pip_block(package: str) -> str:
     """The pip route, labelled as the advanced one, with the exact command and where the package lives."""
     return ('<h3 id="pip">Python package (advanced)</h3>'
             f'<div class="lc-code"><code>pip install {esc(package)}</code><button type="button" class="lc-btn lc-btn--ghost lc-btn--small" data-copy>Copy</button></div>'
-            f'<p class="lc-small">The package named by the author on PyPI (<a href="https://pypi.org/project/{esc(package)}/">pypi.org/project/{esc(package)}</a>); '
-            'its version may differ from the desktop app.</p>')
+            f'<p class="lc-small">The PyPI package the authors name (<a href="https://pypi.org/project/{esc(package)}/">pypi.org/project/{esc(package)}</a>); '
+            'its version can differ from the desktop app&#39;s.</p>')
 
 
 def get_section(app: dict) -> str:
@@ -110,7 +110,7 @@ def using_section(app: dict) -> str:
     parts.append("<ol>" + "".join(f"<li>{esc(step)}</li>" for step in m["quickstart"]) + "</ol>" if "quickstart" in m
                  else '<p>The authors have not given first-run steps.</p>')
     if m["distribution"].get("installer"):
-        parts.append('<p><strong>For any LabConstrictor desktop app:</strong> after installing, open the app from your Start Menu or Applications folder. '
+        parts.append('<p><strong>For any LabConstrictor desktop app:</strong> after installing, open the app from the Start menu (Windows), the Applications folder (macOS) or your applications menu (Linux). A terminal window opens with it: keep it open while you work. '
                      'Its Welcome notebook lists the app&#39;s notebooks; the <a href="guides/notebook-usage/">notebook usage guide</a> shows how to work with it.</p>')
     docs, label = (m["docs_url"], "Documentation") if m.get("docs_url") else (app["html_url"] + "#readme", "README on GitHub")
     parts.append(f'<p>Read more: <a href="{esc(docs)}">{label}</a>.</p>')
@@ -136,5 +136,5 @@ def downloads_table(app: dict) -> str:
 
 def install_help() -> str:
     """"How to install": a pointer to the install guide (the template's page, imported by the site), so the steps are written once."""
-    return ('<h2 id="install">How to install</h2><p>Step by step for Windows, macOS and Linux, with the pictures: '
+    return ('<h2 id="install">How to install</h2><p>Step-by-step instructions for Windows, macOS and Linux (installing needs an internet connection, because the installer downloads the app&#39;s Python packages): '
             '<a href="guides/install/">Install an app</a>.</p>')

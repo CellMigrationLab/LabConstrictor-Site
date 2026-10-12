@@ -24,7 +24,7 @@ def works_with(app: dict) -> str:
     if blocks:
         return '<section class="lc-works">' + "".join(blocks) + "</section>"
     if m["kind"] in SCIENTIFIC_KINDS and app["section"] != "testing":
-        return '<p class="lc-small lc-works__none">Input and output formats: not stated by the author.</p>'
+        return '<p class="lc-small lc-works__none">Input and output formats: not stated by the authors.</p>'
     return ""
 
 
@@ -37,7 +37,7 @@ def limitations(app: dict) -> str:
 def status_row(app: dict) -> str:
     """The Details value for development status: what the authors state, or "Not stated"."""
     m = app["manifest"]
-    return esc(m["status"]) if "status" in m else "Not stated"
+    return esc(m["status"]) if "status" in m else "Not stated by the authors"
 
 
 def status_chip(app: dict) -> str:

@@ -9,7 +9,7 @@ from .page import Page
 from .validate import optional_list
 from .text import esc, long_date, paragraphs
 
-NOTICE = ("Apps are listed after automatic checks: a public repository, a valid manifest and downloads from the app's own GitHub release. "
+NOTICE = ("Apps are listed after automatic checks: a public repository, a valid description file (labconstrictor-app.yaml) and downloads from the app's own GitHub release. "
           "That is not a security audit and not a test of the results: download only from an owner you trust.")
 
 
@@ -27,8 +27,8 @@ def page_catalogue(all_apps: list[dict]) -> None:
           f'<p class="lc-lead">{esc(catalogue_text.catalogue_lead(all_apps))}</p></section>',
           filters.filter_bar(apps), f'<div data-lc-group>{grid(apps)}</div>',
           '<p class="lc-empty" data-lc-empty hidden><span data-lc-empty-text>No app matches.</span> Clear a filter or search for something broader, or <a href="submit/">add an app for this task</a>.</p>',
-          (f'<div data-lc-group class="lc-testing"><h2 class="lc-title">Testing and maintenance</h2><p>Apps that check or '
-           f'maintain LabConstrictor itself, not for analysing your data. Useful to see that your computer works, or what a template can do.</p>{grid(testing)}</div>' if testing else ""),
+          (f'<div data-lc-group class="lc-testing"><h2 class="lc-title">Testing and maintenance</h2><p>Apps for checking LabConstrictor and showing what it makes, '
+           f'not for analysing your data: use them to check that your computer is ready, or to see what an app built from the template looks like.</p>{grid(testing)}</div>' if testing else ""),
           f'<p class="lc-small lc-notice">{NOTICE}</p>',
           '<p class="lc-cta"><a class="lc-btn" href="submit/">Add your app</a></p>')
     p.write()
@@ -37,7 +37,7 @@ def page_catalogue(all_apps: list[dict]) -> None:
 def details_list(app: dict) -> str:
     """The facts: kind, version, license, authors, categories, links (the citation has its own section)."""
     m = app["manifest"]
-    rows = [("Kind", KINDS[m["kind"]]), ("Development status (stated by the authors)", pages_facts.status_row(app)), ("Latest release", release_line(app)),
+    rows = [("Kind", KINDS[m["kind"]]), ("Development status", pages_facts.status_row(app)), ("Latest release", release_line(app)),
             ("License", esc(app["license"] or "Not stated")), ("Repository owner", esc(app["repo"].split("/")[0]))]
     if works_in(app):
         rows.append(("Also in (plugins)", works_in(app)))

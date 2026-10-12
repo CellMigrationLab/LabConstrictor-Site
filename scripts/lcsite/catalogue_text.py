@@ -30,8 +30,8 @@ def systems(apps: list[dict]) -> list[str]:
 
 
 def get_sentence(apps: list[dict]) -> str:
-    """"Install one in a few clicks, or open it in Colab." with only the ways that some app really offers ("" when none does)."""
-    phrases = {"installer": "install one in a few clicks", "colab": "open it in Colab", "pip": "install it with pip"}
+    """"Install one on your computer, or open it in Colab." with only the ways that some app really offers ("" when none does)."""
+    phrases = {"installer": "install one on your computer", "colab": "open it in Colab", "pip": "install it with pip"}
     found = [phrases[r] for r in ways(apps)]
     if not found:
         return ""
@@ -53,7 +53,7 @@ def home_find_text(apps: list[dict]) -> str:
     users = listed(apps)
     if not users:
         return "The App Centre has no app yet."
-    install = " Install in a few clicks." if "installer" in ways(users) else ""
+    install = " Install them on Windows, macOS or Linux." if "installer" in ways(users) else ""
     return f"Browse {plural(len(users), 'app')} built with LabConstrictor.{install}"
 
 

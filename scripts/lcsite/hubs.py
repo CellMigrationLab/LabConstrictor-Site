@@ -4,7 +4,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from . import sources
+from . import pages_how, sources
 from .cards import card
 from .config import DOCS, REPO, fail
 from .github import MAX_FILE
@@ -72,19 +72,14 @@ def features_html(items: list[dict], doc_source: Path, apps: list[dict], taken: 
     return '<div data-search-exclude><ul class="lc-features">' + "".join(cards) + "</ul></div>"   # card text would make every hub match every query
 
 
-FLOW_KEYS = {"title", "text", "href", "link"}
-HUB_KEYS = {"title", "lead", "cards", "demo", "how", "flow_title", "flow"}
+HUB_KEYS = {"title", "lead", "cards", "demo", "how", "flow_title"}
 
 
 def check_hub(name: str, hub: dict) -> None:
-    """Stop the build, naming data/hubs.yaml, for a hub key nobody reads or a flow step with missing or extra keys
-    (a comma inside an unquoted flow value once split a sentence into an ignored key)."""
+    """Stop the build, naming data/hubs.yaml, for a hub key nobody reads (a typo, or a block left from an earlier layout)."""
     extra = set(hub) - HUB_KEYS - ({"lead"} if name == "docs" else set())
     if extra:
         fail(f"data/hubs.yaml: {name} has keys nothing reads: {sorted(extra)}")
-    for step in (hub["flow"] if "flow" in hub else []):
-        if set(step) != FLOW_KEYS:
-            fail(f"data/hubs.yaml: a flow step of {name} needs exactly {sorted(FLOW_KEYS)}, got {sorted(step)} (quote values that contain a comma)")
 
 
 def notes_html(hub: dict) -> str:
@@ -98,8 +93,9 @@ def notes_html(hub: dict) -> str:
 
 
 def flow_html(title: str, steps: list[dict]) -> str:
-    """The numbered row of what you do to build an app, each step linking to its guide."""
-    items = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["text"])}</span><a class="lc-go" href="{esc(s["href"])}">{esc(s["link"])}</a></li>' for s in steps)
+    """The numbered row of what you do to build an app: the steps of How it works (data/how-it-works.yaml, the same as on the home page), each
+    with its one-line summary and a link to its first guide."""
+    items = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["summary"])}</span><a class="lc-go" href="{esc(s["guides"][0]["href"])}">{esc(s["guides"][0]["label"])}</a></li>' for s in steps)
     return f'<h2 class="lc-title">{esc(title)}</h2><ol class="lc-steps lc-steps--flow">{items}</ol>'
 
 
@@ -110,8 +106,8 @@ def write_hub(track: str, hub: dict, nav: list[dict], doc_source: Path, apps: li
     p.add(f'<section class="lc-pagehead"><h1>{esc(hub["title"])}</h1><p class="lc-lead">{esc(hub["lead"])}</p></section>')
     p.add(features_html(hub["cards"], doc_source, apps, taken))
     p.add(notes_html(hub))
-    if "flow" in hub:
-        p.add(flow_html(hub["flow_title"], hub["flow"]))
+    if "flow_title" in hub:
+        p.add(flow_html(hub["flow_title"], pages_how.load()["steps"]))
     p.write()
 
 
@@ -120,7 +116,7 @@ def write_docs_home(hubs: dict, nav: list[dict]) -> None:
     p = Page("guides/index.md", title="Docs", description="Guides for using LabConstrictor apps and for building your own.",
              guide_nav=nav, guide_id="", docs_home=True, menu="guides/", edit_url=f"{REPO}/edit/main/data/hubs.yaml")
     cards = "".join(f'<a class="lc-choice{" lc-choice--make" if t == "build" else ""}" href="{t}/"><strong>{esc(hubs[t]["title"])}</strong>'
-                    f'<span>{esc(hubs[t]["lead"])}</span><span class="lc-go">Open</span></a>' for t in TRACKS)
+                    f'<span>{esc(hubs[t]["lead"])}</span><span class="lc-go">Go to {esc(hubs[t]["title"])}</span></a>' for t in TRACKS)
     p.add(f'<h1>{esc(hubs["docs"]["title"])}</h1><p class="lc-lead">{esc(hubs["docs"]["lead"])}</p>',
           f'<div class="lc-choices">{cards}</div>', notes_html(hubs["use"]), notes_html(hubs["build"]),
           '<div class="lc-guides lc-guides--two">' + "".join(f'<section id="all-{t}"><h2>{esc(TRACKS[t])}</h2>{guide_lists(nav, t)}</section>' for t in TRACKS) + "</div>")

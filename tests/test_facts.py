@@ -34,7 +34,7 @@ class FactsTests(unittest.TestCase):
 
     def test_status_is_what_the_authors_state_or_not_stated(self) -> None:
         """The row shows the status or "Not stated"; a chip appears only for Experimental and Deprecated."""
-        self.assertEqual(pages_facts.status_row(app()), "Not stated")
+        self.assertEqual(pages_facts.status_row(app()), "Not stated by the authors")
         self.assertEqual(pages_facts.status_row(app(status="Available")), "Available")
         self.assertEqual(pages_facts.status_chip(app(status="Available")), "")
         self.assertIn("Experimental", pages_facts.status_chip(app(status="Experimental")))

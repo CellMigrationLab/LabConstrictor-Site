@@ -85,7 +85,7 @@ def credits(text: dict) -> str:
     c = text["credit"]
     return (f'<p class="lc-small">{esc(c["data"])} Data: <a href="https://doi.org/{c["dataset_doi"]}">doi:{c["dataset_doi"]}</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. '
             f'Method: NucleiSky, <a href="https://doi.org/{c["paper_doi"]}">doi:{c["paper_doi"]}</a>, {github_badge(c["nucleisky_repo"])}. '
-            'The result was computed offline with the released NucleiSky 2D code; how is recorded in <code>content/demo/README.md</code>.</p>')
+            f'The result was computed offline with the released NucleiSky 2D code (method: <a href="{REPO}/blob/main/content/demo/README.md">the demo&#39;s README on GitHub</a>).</p>')
 
 
 def page_demo(apps: list[dict]) -> None:

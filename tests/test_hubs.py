@@ -2,24 +2,23 @@
 
 import unittest
 
-from lcsite import hubs
-
-STEP = {"title": "T", "text": "x", "href": "a/", "link": "L"}
-
+from lcsite import hubs, pages_how
 
 class HubDataTests(unittest.TestCase):
-    """A hub key or a flow step that nothing reads stops the build."""
+    """A hub key that nothing reads stops the build; the Build hub shows the steps of How it works."""
 
     def test_an_unknown_hub_key_stops_the_build(self) -> None:
         """A key nobody reads (a typo, or a stale block) is an error naming data/hubs.yaml."""
         with self.assertRaises(SystemExit):
             hubs.check_hub("use", {"title": "t", "lead": "l", "cards": [], "hepl": {}})
 
-    def test_a_flow_step_split_by_a_comma_stops_the_build(self) -> None:
-        """An unquoted comma inside a flow value leaves an extra key; the check catches it."""
-        with self.assertRaises(SystemExit):
-            hubs.check_hub("build", {"title": "t", "lead": "l", "flow": [dict(STEP, **{"with one click.": None})]})
-        hubs.check_hub("build", {"title": "t", "lead": "l", "flow": [STEP]})
+    def test_the_build_flow_is_the_steps_of_how_it_works(self) -> None:
+        """The Build hub's numbered row has one item per How it works step, in order, each with its summary and its first guide."""
+        steps = pages_how.load()["steps"]
+        html = hubs.flow_html("From notebook to app", steps)
+        self.assertEqual(html.count("<li>"), len(steps))
+        for step in steps:
+            self.assertIn(f'href="{step["guides"][0]["href"]}"', html)
 
     def test_the_notes_hold_the_demo_and_how_lines_and_no_help_line(self) -> None:
         """The demo and how-it-works lines render with their link; a help line is no longer shown; no notes give an empty string."""

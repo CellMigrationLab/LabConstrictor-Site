@@ -7,10 +7,10 @@ docs:
   lead: Use an app someone built, or build your own.
 use:
   title: Use an app
-  lead: Install an app on your computer, open it, and, if you work in napari, Fiji or QuPath, run its tools there.
+  lead: Install an app on your computer, open it, and, for apps that declare tools, try them in napari, Fiji or QuPath (experimental).
   cards:
     - title: Install it
-      text: Download the installer for your system. It takes a few minutes and you only do it once. Windows may warn about an unsigned installer; the guide shows the two clicks that get past it.
+      text: Download the installer for your system. It takes a few minutes and you only do it once. Windows and macOS warn about unsigned installers; the guide shows how to continue.
       href: guides/install/
       link: Install an app
       image: {doc_source: Windows_Protected_your_PC.png}
@@ -22,11 +22,11 @@ use:
       image: {doc_source: Welcome_Notebook.png}
       alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks under orange header cells and a blue Open the notebook button.
     - title: Use it in your image software (experimental)
-      text: Apps that declare tools will run inside napari, Fiji and QuPath. These plugins are experimental; the picture is a prototype running a test app.
+      text: An app's declared tools can run in napari, Fiji and QuPath through experimental plugins; this needs a development version of the template. The picture is a prototype.
       href: guides/image-software/
-      link: How it works
+      link: Use apps in your image software
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/N2_napari_form.png}
-      alt: A prototype - napari with the LabConstrictor dock widget open on a test app, showing a form generated from a tool's declaration.
+      alt: "Prototype: napari with the LabConstrictor tools dock open on NucleiSky's Relocalize 2D tool, showing a form generated from the tool's declaration."
     - title: Connect it to a microscope
       text: "An example from NucleiSky, written by its authors for a Nikon microscope with NIS-Elements JOBS: scan a large area, find where a query image sits in it, then acquire there. Their guide says the same principles apply to other microscopes and software."
       href: guides/microscope/
@@ -35,7 +35,7 @@ use:
       alt: The NucleiSky job loaded in NIS-Elements JOBS, a list of acquisition, autofocus and analysis steps.
   demo:
     title: Want to see it first?
-    text: A hands-on preview of what colleagues see when they open an installed app, in a notebook, napari and Fiji, using example data.
+    text: "A hands-on preview of an installed app, with example data: the notebook, and experimental napari and Fiji views."
     href: demo/
     link: Try the demo
 build:
@@ -43,7 +43,7 @@ build:
   lead: Turn your Jupyter notebooks into an app that anyone can install with a download. You write notebooks; LabConstrictor builds the installers.
   cards:
     - title: Your users need only a download
-      text: One GitHub release builds installers for Windows, macOS and Linux. No Python, pip or terminal.
+      text: One GitHub release builds installers for Windows, macOS and Linux. Your users have no Python or pip to set up.
       href: guides/install/
       link: How users install
       image: {doc_source: Windows_App.png}
@@ -60,8 +60,8 @@ build:
       link: Customise the installer images
       image: {doc_source: Customisation_Custom.png}
       alt: The installer with a custom logo, banner and header, each labelled.
-    - title: The same notebooks run in Colab
-      text: Write them once and let people try them in the browser first.
+    - title: Its notebooks can also run in Colab
+      text: Write them for both, and people can try them in the browser first.
       href: guides/notebook-portability/
       link: Notebooks for Colab and JupyterLab
       image: {doc_source: colab_vs_local/colab.png}
@@ -72,18 +72,12 @@ build:
       link: Submit your app
       live_card: true
     - title: It can reach napari, Fiji and QuPath (experimental)
-      text: Apps that declare tools will run inside those programs. These plugins are experimental.
+      text: An app's declared tools can run in those programs through experimental plugins; this needs a development version of the template.
       href: guides/image-software/
-      link: How it works
+      link: Use apps in your image software
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/F2_fiji_form_top.png}
       alt: Fiji with a dialog generated from a tool's declaration, next to an image of bright spots.
-  flow_title: How it works
-  flow:
-    - {title: Create your repository, text: "From the template, with one click.", href: guides/create-repository/, link: Create a repository}
-    - {title: Initialise it, text: "Fill in a form; it opens a pull request in your repository.", href: guides/initialise-repository/, link: Initialise your repository}
-    - {title: Add your notebooks, text: "Upload them and generate their requirements.", href: guides/notebook-upload/, link: Upload your notebooks}
-    - {title: Publish a release, text: "One release builds the installers.", href: guides/executable-creation/, link: Create installers}
-    - {title: Share it, text: "List it in the App Centre so others can find it.", href: submit/, link: Submit your app}
+  flow_title: From notebook to app
   how:
     title: Want to see how it works inside?
     text: A quick overview, one step at a time, from a notebook to an app that people can install.

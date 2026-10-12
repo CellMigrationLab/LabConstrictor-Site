@@ -46,12 +46,12 @@ The [full schema]({{schema_url}}) lists every field (authors, DOI, screenshots a
 | | Fields |
 |---|---|
 | **Required** | `schema`, `name`, `summary`, `kind`, `distribution` |
-| **Recommended** (the page says "Not stated" or leaves it out; the build reports it, and your app stays listed) | `status`, `quickstart`, `screenshots`, a license, and for analysis, segmentation and simulation apps `inputs` and `outputs` |
+| **Recommended** (the page says "Not stated" or leaves it out; the build reports it, and your app stays listed) | `status`, `quickstart`, `screenshots`, a licence, and for analysis, segmentation and simulation apps `inputs` and `outputs` |
 | **Optional** | `limitations`, `description`, `authors`, `doi`, `categories`, `homepage`, `docs_url`, `icon` |
 
 ## 2. Make sure your release is ready
 
-- Your repository is **public** and has a **license**.
+- Your repository is **public** and has a **licence**.
 - If you offer installers: your latest GitHub release carries the files LabConstrictor builds (`Name-1.0.0-Windows-x86_64.exe`, and so on).
 - Colab links point to `colab.research.google.com`. **You choose which notebooks are shown:** list under `colab:` only the notebooks you want visitors to open, one entry each. A notebook that is in your repository but not in the list is not shown; each listed one appears on your app page with an *Open in Colab* button and a *View on GitHub* link.
 

@@ -62,4 +62,4 @@ def app_section(app: dict) -> str:
                 f'<p><a class="lc-go" href="{link}">Read the paper</a></p>{version_sentence(app)}')
     if app["section"] == "testing":
         return ""
-    return '<h2 id="cite">How to cite</h2><p>This app\'s listing names no publication to cite.</p>' + version_sentence(app)
+    return '<h2 id="cite">How to cite</h2><p>The authors name no publication to cite.</p>' + version_sentence(app)

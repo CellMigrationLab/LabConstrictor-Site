@@ -22,16 +22,16 @@ class CatalogueTextTests(unittest.TestCase):
 
     def test_colab_is_mentioned_only_when_some_app_offers_it(self) -> None:
         """No Colab route, no Colab sentence; one app with Colab is enough to mention it."""
-        self.assertEqual(ct.get_sentence([app()]), "Install one in a few clicks.")
+        self.assertEqual(ct.get_sentence([app()]), "Install one on your computer.")
         both = [app(), app(routes=("colab",), systems=())]
-        self.assertEqual(ct.get_sentence(both), "Install one in a few clicks or open it in Colab.")
+        self.assertEqual(ct.get_sentence(both), "Install one on your computer or open it in Colab.")
         self.assertEqual(ct.get_sentence([app(routes=("colab",), systems=())]), "Open it in Colab.")
 
     def test_nothing_is_promised_without_an_app_or_an_installer(self) -> None:
         """An empty catalogue says so; the home choice promises installers only when one exists."""
         self.assertEqual(ct.catalogue_lead([]), "No app is listed yet.")
         self.assertNotIn("Install", ct.home_find_text([app(routes=("pip",), systems=())]))
-        self.assertIn("Install in a few clicks", ct.home_find_text([app()]))
+        self.assertIn("Install them on Windows, macOS or Linux", ct.home_find_text([app()]))
 
     def test_the_home_text_counts_only_apps_for_users_and_names_no_field(self) -> None:
         """Testing apps are not counted on the home page, and the text does not limit the catalogue to one field of science."""
