@@ -6,7 +6,7 @@ hosts:
   napari:
     name: napari
     url: https://napari.org
-    plugin: CellMigrationLab/napari-labconstrictor
+    plugin: CellMigrationLab/LabConstrictor-napari
     logo: {repo: napari/napari, path: src/napari/resources/icon.ico}
   fiji:
     name: Fiji
