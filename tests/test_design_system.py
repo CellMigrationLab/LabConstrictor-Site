@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 FILES = [ROOT / "docs" / "assets" / "stylesheets" / "lc.css", ROOT / "content" / "how" / "how.css"]
 ALLOWED = ("var(--fs-", "0", "calc(var(--size)")   # 0 hides the search button's text; the monogram scales with its box
 RULE = re.compile(r"([^{}]+)\{([^{}]*)\}")
-TOKENS = {"xs", "sm", "ui", "body", "lead", "h3", "h2", "h1", "hero", "numeral"}
+TOKENS = {"xs", "sm", "ui", "body", "lead", "h3", "h2", "h1", "hero"}
 
 
 class TypeScaleTests(unittest.TestCase):

@@ -121,6 +121,31 @@ def demo_flow(browser: Browser, base: str) -> None:
     page.context.close()
 
 
+def demo_address(browser: Browser, base: str) -> None:
+    """The two demo tiles of the home page open the right part of the demo, and the address keeps it through a tab change, a reload and Back."""
+    page, errors = open_page(browser, base, "", 1280)
+    installed = "#demo-cat-use:not([hidden])"
+    install = "#demo-cat-install:not([hidden])"
+    page.click('a.lc-tile[href$="demo/?demo=install"]')
+    page.locator(install).wait_for(state="visible")
+    check("Demo address: the installation tile opens the installation part", page.get_attribute("#demo-cat-tab-install", "aria-selected") == "true")
+    page.reload()
+    page.locator(install).wait_for(state="visible")
+    check("Demo address: a reload keeps the installation part", page.locator(installed).count() == 0)
+    page.click("#demo-cat-tab-use")
+    check("Demo address: choosing the installed app writes ?demo=use", page.evaluate("location.search") == "?demo=use")
+    page.reload()
+    page.locator(installed).wait_for(state="visible")
+    check("Demo address: a reload keeps the installed app", page.get_attribute("#demo-cat-tab-use", "aria-selected") == "true")
+    page.go_back()
+    check("Demo address: Back returns to the home page (changing the part adds no history entry)", page.evaluate("location.pathname") == "/")
+    page.goto(base + "demo/")
+    page.locator(installed).wait_for(state="visible")
+    check("Demo address: the plain page opens the installed app", page.get_attribute("#demo-cat-tab-use", "aria-selected") == "true")
+    check("Demo address: no script error", not errors, str(errors))
+    page.context.close()
+
+
 def no_javascript(browser: Browser, base: str) -> None:
     """Without JavaScript the demo shows its static figures and no working-looking controls, and How it works shows all its steps one under the other."""
     page, _ = open_page(browser, base, "demo/", 1280, js=False)
@@ -136,8 +161,8 @@ ROLES = {   # a role: the elements that must look exactly alike on every page (f
     "page title (h1)": ".md-content h1:not(.lc-hero h1)",
     "section title (h2)": ".md-content h2:not(.lc-docs__nav h2)",
     "sub-title (h3 in the text)": ".md-content .md-typeset > h3, .md-content .md-typeset > section > h3",
-    "tile and card title": ".lc-card__title strong, .lc-feature__body strong, .lc-cat strong, .lc-choice strong, .lc-tile__title, .lc-related__title",
-    "card and tile description": ".lc-card__text, .lc-feature__body span, .lc-cat span, .lc-related__item p:not(.lc-small)",
+    "tile and card title": ".lc-card__title strong, .lc-feature__body strong, .lc-cat strong, .lc-choice strong, .lc-tile__title, .lc-related__title, .lc-stepcard__title",
+    "card and tile description": ".lc-card__text, .lc-stepcard__text, .lc-feature__body span, .lc-cat span, .lc-related__item p:not(.lc-small)",
     "action link": "a.lc-go",
     "button": "a.lc-btn:not(.lc-btn--small), button.lc-btn:not(.lc-btn--small)",
     "small button": ".lc-btn--small",
@@ -158,7 +183,7 @@ ROLES = {   # a role: the elements that must look exactly alike on every page (f
 }
 LOOK = ("fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing", "textTransform", "color")
 BOXES = ("borderRadius", "paddingTop", "paddingLeft")   # for the boxes: tile, card, panel and callout
-BOX_ROLES = {"tile": "a.lc-tile, a.lc-cat, .lc-choice, .lc-panel, .lc-related__item, .lc-ostile, .how__box:not(.how__box--custom)", "callout box": ".lc-help, .lc-demo__next, blockquote, .how__handoff"}
+BOX_ROLES = {"tile": "a.lc-tile, a.lc-cat, a.lc-stepcard, .lc-choice, .lc-panel, .lc-related__item, .lc-ostile, .how__box:not(.how__box--custom)", "callout box": ".lc-help, .lc-demo__next, blockquote, .how__handoff"}
 VARIANTS = {"button", "small button", "badge", "menu item", "docs menu link"}   # filled, ghost, status or host variants differ in colour only
 
 
@@ -188,7 +213,7 @@ def main() -> int:
     server, base = serve()
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=args.chromium)
-        for group in (no_sideways_scroll, app_filter, how_controls, demo_flow, no_javascript, consistency):
+        for group in (no_sideways_scroll, app_filter, how_controls, demo_flow, demo_address, no_javascript, consistency):
             group(browser, base)
         browser.close()
     server.shutdown()

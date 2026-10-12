@@ -93,10 +93,8 @@ def notes_html(hub: dict) -> str:
 
 
 def flow_html(title: str, steps: list[dict]) -> str:
-    """The numbered row of what you do to build an app: the steps of How it works (data/how-it-works.yaml, the same as on the home page), each
-    with its one-line summary and a link to its first guide."""
-    items = "".join(f'<li><strong>{esc(s["title"])}</strong><span>{esc(s["summary"])}</span><a class="lc-go" href="{esc(s["guides"][0]["href"])}">{esc(s["guides"][0]["label"])}</a></li>' for s in steps)
-    return f'<h2 class="lc-title">{esc(title)}</h2><ol class="lc-steps lc-steps--flow">{items}</ol>'
+    """The steps of building an app, as on the home page: the How it works cards (pages_how.step_cards), each linking to its step there."""
+    return f'<h2 class="lc-title">{esc(title)}</h2>{pages_how.step_cards(steps)}'
 
 
 def write_hub(track: str, hub: dict, nav: list[dict], doc_source: Path, apps: list[dict], taken: dict[str, Path]) -> None:

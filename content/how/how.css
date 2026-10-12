@@ -1,17 +1,16 @@
 /* /how-it-works/: a row of numbered steps and one step shown at a time (all of them, one under the other, without JavaScript). */
 .how__step[hidden] { display: none; }
-.how__num { font-family: var(--lc-sans); letter-spacing: normal; display: inline-flex; flex: none; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--lc-accent-strong); color: #fff; font-weight: 700; font-size: var(--fs-ui); }
 
 [dir] .md-typeset .how__stepper > ol { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; margin: 1.4rem 0 1.6rem; padding: 0; list-style: none; }
 [dir] .md-typeset .how__stepper > ol > li { margin: 0; }
 [dir] .md-typeset a.how__tab { display: flex; flex-direction: column; align-items: center; gap: .5rem; height: 100%; padding: .8rem .5rem; text-align: center; color: var(--lc-fg); text-decoration: none; border: 1px solid var(--lc-line); border-radius: var(--radius-box); background: #fff; transition: border-color .15s, box-shadow .15s, transform .15s; }
-.how__tab .how__num { background: #fff; color: var(--lc-accent-strong); box-shadow: inset 0 0 0 2px var(--lc-accent-strong); }
+.how__tab .lc-num { background: #fff; color: var(--lc-accent-strong); box-shadow: inset 0 0 0 2px var(--lc-accent-strong); }
 .how__name { font-size: var(--fs-ui); line-height: 1.3; }
 [dir] .md-typeset a.how__tab:hover { border-color: var(--lc-accent-strong); box-shadow: 0 .6rem 1.4rem rgba(28, 95, 28, .14); transform: translateY(-2px); }
 @media (prefers-reduced-motion: reduce) { [dir] .md-typeset a.how__tab:hover { transform: none; } }
 [dir] .md-typeset a.how__tab.is-current { border-color: var(--lc-accent-strong); background: var(--lc-band); }
 [dir] .md-typeset a.how__tab.is-current .how__name { font-weight: 700; color: var(--lc-strong); }
-.how__tab.is-current .how__num { background: var(--lc-accent-strong); color: #fff; }
+.how__tab.is-current .lc-num { background: var(--lc-accent-strong); color: #fff; }
 @media (max-width: 48rem) {
   [dir] .md-typeset .how__stepper > ol { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .4rem; }
   .how__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* the numbers stay; the step's own heading names it */

@@ -141,6 +141,28 @@
   }
 
   /**
+   * The part of the demo the address asks for: ?demo=install opens the installation walkthrough; any other address opens the installed app.
+   * @returns {string} 'install' or 'use'.
+   */
+  function partFromAddress() {
+    return new URLSearchParams(location.search).get('demo') === 'install' ? 'install' : 'use';
+  }
+
+  /**
+   * Show one part of the demo and write it into the address, replacing the history entry, so that a reload or a shared link opens the same part.
+   * @param {DemoContext} ctx - the controller context.
+   * @param {string} part - 'use' or 'install'.
+   * @returns {void}
+   */
+  function showPart(ctx, part) {
+    var url = new URL(location.href);
+    url.searchParams.set('demo', part);
+    history.replaceState(history.state, '', url);
+    ctx.state.cat = part;
+    sync(ctx);
+  }
+
+  /**
    * Handle a press on one of the demo's own controls (category tabs, view tabs).
    * @param {DemoContext} ctx - the controller context.
    * @param {HTMLElement} el - the control (it has data-demo-act).
@@ -150,7 +172,7 @@
   function onDemoControl(ctx, el) {
     var kind = el.dataset.demoAct;
     if (kind === 'view') { switchView(ctx, el.dataset.view); return; }
-    if (kind === 'cat') { ctx.state.cat = el.dataset.cat; sync(ctx); return; }
+    if (kind === 'cat') { showPart(ctx, el.dataset.cat); return; }
     throw new Error('demo: unknown data-demo-act "' + kind + '"');
   }
 
@@ -213,7 +235,7 @@
     var tabs = d.all(ctx.root, '[role="tab"]').filter(function (t) { return t.parentNode === tab.parentNode; });
     var next = tabAfterKey(tabs, tab, e.key);
     e.preventDefault();
-    if (next.dataset.view) { switchView(ctx, next.dataset.view); } else { ctx.state.cat = next.dataset.cat; sync(ctx); }
+    if (next.dataset.view) { switchView(ctx, next.dataset.view); } else { showPart(ctx, next.dataset.cat); }
     next.focus();
   }
 
@@ -242,6 +264,7 @@
     });
     root.addEventListener('keydown', function (e) { onKey(ctx, e); });
     root.classList.add('is-live');
+    ctx.state.cat = partFromAddress();   // before the first drawing, so the page opens on the part the address names
     sync(ctx);
   }
 

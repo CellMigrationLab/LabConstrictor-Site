@@ -81,9 +81,17 @@ def links_html(links: list[dict], cls: str) -> str:
     return f'<ul class="{cls}">' + "".join(f'<li><a class="lc-go" href="{esc(l["href"])}">{esc(l["label"])}</a></li>' for l in links) + "</ul>"
 
 
+def step_cards(steps: list[dict]) -> str:
+    """The steps as cards, for the home page and the Build hub: each whole card links to its step on How it works (number, title, one-line
+    summary). The titles, summaries and ids are the ones of data/how-it-works.yaml, so every page shows the same steps."""
+    cards = "".join(f'<li><a class="lc-stepcard" href="how-it-works/#{esc(s["id"])}"><span class="lc-num">{i}</span><h3 class="lc-stepcard__title">{esc(s["title"])}</h3>'
+                    f'<span class="lc-stepcard__text">{esc(s["summary"])}</span></a></li>' for i, s in enumerate(steps, 1))
+    return f'<ol class="lc-stepcards">{cards}</ol>'
+
+
 def stepper(data: dict) -> str:
     """The numbered steps as one row of links to their sections; the current one is marked by the script (without it, all steps show)."""
-    tabs = "".join(f'<li><a class="how__tab" href="#{esc(s["id"])}" aria-label="Step {i}: {esc(s["title"])}"><span class="how__num">{i}</span>'
+    tabs = "".join(f'<li><a class="how__tab" href="#{esc(s["id"])}" aria-label="Step {i}: {esc(s["title"])}"><span class="lc-num">{i}</span>'
                    f'<span class="how__name">{esc(s["title"])}</span></a></li>' for i, s in enumerate(data["steps"], 1))
     return f'<nav class="how__stepper" aria-label="{esc(data["steps_title"])}"><ol>{tabs}</ol></nav>'
 
@@ -127,7 +135,7 @@ def step_html(data: dict, i: int) -> str:
     s = steps[i]
     know = "".join(f"<li>{esc(k)}</li>" for k in s["know"])
     extras = last_step_extras(data) if i + 1 == len(steps) else ""
-    return (f'<section class="how__step" id="{esc(s["id"])}"><h2 tabindex="-1"><span class="how__num">{i + 1}</span> {esc(s["title"])}</h2>'
+    return (f'<section class="how__step" id="{esc(s["id"])}"><h2 tabindex="-1"><span class="lc-num">{i + 1}</span> {esc(s["title"])}</h2>'
             f'<p class="how__text">{esc(s["text"])}</p><div class="how__cols"><section class="how__box"><h3>Good to know</h3><ul class="how__know">{know}</ul></section>'
             f'{customise(s)}<section class="how__box"><h3>Guides</h3>{links_html(s["guides"], "how__guides")}</section></div>{extras}{step_nav(steps, i)}</section>')
 

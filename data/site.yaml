@@ -9,12 +9,9 @@ links:
   site_repo: https://github.com/CellMigrationLab/LabConstrictor-Site
   submit_issue: https://github.com/CellMigrationLab/LabConstrictor-Site/issues/new?template=submit-app.yml
   tools_docs: https://github.com/CellMigrationLab/LabConstrictor-Tools/tree/main/docs
-steps_title: From notebook to app
+steps_title: How it works
+steps_link: See the full walkthrough
 tiles_title: See it in action
-how_tile:
-  title: How it works
-  text: Five steps from a notebook to an app, with the figure from the preprint.
-  link: See the steps
 plugins:
   title: Make your workflow available in other software
   text: Your notebook is still the main interface. If the workflow would also be useful in napari, Fiji or QuPath, you can make it available through our plugins.

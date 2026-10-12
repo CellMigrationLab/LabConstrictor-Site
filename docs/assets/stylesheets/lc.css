@@ -26,7 +26,7 @@
   --lc-ok: #1c5f1c; --lc-ok-soft: #e4f4e2;
   /* type scale (the root is 20px, so .8rem is the 16px body): every font-size in the site's own CSS is one of these */
   --fs-xs: .64rem; --fs-sm: .68rem; --fs-ui: .72rem; --fs-body: .8rem; --fs-lead: .96rem; --fs-h3: 1.1rem; --fs-h2: 1.4rem; --fs-h1: clamp(1.36rem, 3vw, 1.8rem);
-  --fs-hero: clamp(2rem, 5.4vw, 3.5rem); --fs-numeral: 1.9rem;
+  --fs-hero: clamp(2rem, 5.4vw, 3.5rem);
   --pad-box: 1.2rem; --radius-box: 12px; --gap-grid: 1.2rem; --radius-img: 8px; --radius-code: 6px;
   --lc-wide: 64rem; --lc-text: 46rem; --lc-gutter: clamp(.8rem, 4vw, 2rem);
   --lc-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -135,12 +135,7 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-band { max-width: calc(var(--lc-wide) + 2 * var(--lc-gutter)); margin: 0 auto; padding: 2.2rem var(--lc-gutter); }
 .lc-band--soft { max-width: none; background: var(--lc-band); padding-left: max(var(--lc-gutter), calc((100% - var(--lc-wide)) / 2)); padding-right: max(var(--lc-gutter), calc((100% - var(--lc-wide)) / 2)); }   /* full-width band; the padding puts its content on the same left edge as the hero and the white bands */
 .lc-band--soft > * { max-width: none; margin-left: 0; margin-right: 0; }
-[dir] .md-typeset ol.lc-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.4rem; list-style: none; counter-reset: step; margin: 0 auto; padding: 0; }
-[dir] .md-typeset ol.lc-steps > li { margin-left: 0; }
-.lc-steps li { counter-increment: step; display: flex; flex-direction: column; gap: .3rem; margin: 0; padding-top: .6rem; border-top: 3px solid var(--lc-orange); }
-.lc-steps li::before { content: counter(step); font-family: var(--lc-display); font-size: var(--fs-numeral); font-weight: 700; color: var(--lc-accent-strong); line-height: 1; }
-.lc-steps strong { color: var(--lc-strong); }
-@media (max-width: 44rem) { .lc-choices { grid-template-columns: 1fr; } [dir] .md-typeset ol.lc-steps { grid-template-columns: 1fr; } .lc-hero__in { grid-template-columns: 1fr; } .lc-hero__art { order: -1; width: 9rem; } }
+@media (max-width: 44rem) { .lc-choices { grid-template-columns: 1fr; } .lc-hero__in { grid-template-columns: 1fr; } .lc-hero__art { order: -1; width: 9rem; } }
 
 /* ------------------------------------------------------------------ cards */
 [dir] .md-typeset ul.lc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr)); gap: 1.1rem; list-style: none; margin: 1rem 0; padding: 0; }
@@ -229,8 +224,6 @@ body { background: var(--lc-bg); color: var(--lc-fg); font-family: var(--lc-sans
 .lc-feature__body span { color: var(--lc-fg); line-height: 1.5; font-size: var(--fs-ui); }
 .lc-feature__body a { margin-top: auto; padding-top: .3rem; font-weight: 600; font-size: var(--fs-ui); color: var(--lc-accent-strong); text-decoration: none; }
 .lc-feature__body a:hover { text-decoration: underline; }
-[dir] .md-typeset ol.lc-steps--flow { grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); margin: 1rem 0 2.4rem; }
-.lc-steps--flow a { margin-top: .2rem; font-weight: 600; font-size: var(--fs-ui); color: var(--lc-accent-strong); text-decoration: none; }
 .lc-guides .lc-title { margin-top: 0; }
 .lc-docs__section summary { display: block; list-style: none; padding: .5rem 0 .3rem; font-size: var(--fs-xs); font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--lc-muted); cursor: pointer; }
 .lc-docs__section summary::-webkit-details-marker { display: none; }
@@ -388,7 +381,7 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-band--comic { padding-top: 2rem; padding-bottom: 2rem; }
 [dir] .md-typeset .lc-band--comic .lc-comic { margin: 0; width: 100%; max-width: none; padding: 0; }
 .lc-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
-.lc-tiles .lc-tile { max-width: none; margin: 0; height: 100%; align-items: center; }
+.lc-tiles .lc-tile { max-width: none; margin: 0; height: 100%; align-items: flex-start; }
 .lc-tiles .lc-tile img { width: 5.5rem; height: 5.5rem; object-fit: contain; }
 .lc-tile__body { gap: .5rem; }
 [dir] .md-typeset .lc-tile__body .lc-tile__title { margin: 0; font-family: var(--lc-display); font-size: var(--fs-h3); font-weight: 600; line-height: 1.3; letter-spacing: normal; color: var(--lc-strong); }
@@ -458,14 +451,14 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-ostile.is-yours::after { color: #fff; }
 
 /* title of a tile or card: display font, h3 size, 600 */
-.lc-card__title strong, .lc-choice strong, .lc-cat strong, .lc-feature__body strong, .lc-tile__title, [dir] .md-typeset .lc-related__title, [dir] .md-typeset .lc-ostile h3, [dir] .md-typeset .lc-tile__body .lc-tile__title {
+.lc-card__title strong, .lc-choice strong, .lc-cat strong, .lc-feature__body strong, .lc-tile__title, [dir] .md-typeset .lc-related__title, [dir] .md-typeset .lc-stepcard__title, [dir] .md-typeset .lc-ostile h3, [dir] .md-typeset .lc-tile__body .lc-tile__title {
   font-family: var(--lc-display); font-size: var(--fs-h3); font-weight: 600; line-height: 1.25; letter-spacing: -.01em; color: var(--lc-strong); }
 [dir] .md-typeset .lc-ostile h3, [dir] .md-typeset .lc-tile__body .lc-tile__title { margin: 0; }
 [dir] .md-typeset .lc-related__title { margin: 0 0 .4rem; }
 .lc-footer strong { font-family: var(--lc-display); font-size: var(--fs-h3); font-weight: 700; }
 
 /* description of a tile or card: ui size, 1.55 line height */
-.lc-card__text, .lc-feature__body span, .lc-cat span, .lc-choice p, .lc-tile__body > span:not(.lc-go), .lc-ostile p:not(.lc-small), .lc-related__item p:not(.lc-small) { font-size: var(--fs-ui); line-height: 1.55; color: var(--lc-fg); }
+.lc-card__text, .lc-stepcard__text, .lc-feature__body span, .lc-cat span, .lc-choice p, .lc-tile__body > span:not(.lc-go), .lc-ostile p:not(.lc-small), .lc-related__item p:not(.lc-small) { font-size: var(--fs-ui); line-height: 1.55; color: var(--lc-fg); }
 
 /* lead: the larger, light sentence under a title */
 .md-typeset .lc-lead, .md-typeset .lc-lead-text, .md-typeset .how__text, .md-typeset .lc-panel .lc-lead-text { font-size: var(--fs-lead); font-weight: 300; line-height: 1.6; color: var(--lc-fg); }
@@ -483,7 +476,7 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 
 /* tiles, cards and boxes: one padding, one radius, one border */
 [dir] .md-typeset .lc-choice, [dir] .md-typeset a.lc-tile, [dir] .md-typeset a.lc-cat, [dir] .md-typeset .lc-ostile, [dir] .md-typeset .lc-related__item, .md-typeset .lc-panel,
-[dir] .md-typeset .how__box, .lc-feature__body { padding: var(--pad-box); }
+[dir] .md-typeset .how__box, .lc-feature__body, [dir] .md-typeset a.lc-stepcard { padding: var(--pad-box); }
 [dir] .md-typeset .lc-choice, [dir] .md-typeset a.lc-tile, [dir] .md-typeset a.lc-cat, .lc-ostile, .lc-related__item, .lc-panel, .how__box, .lc-card, .lc-feature, .lc-notebooks > li,
 .md-typeset .lc-pager a, .lc-filter { border-radius: var(--radius-box); }
 .md-typeset .lc-card__main { padding: var(--pad-box) var(--pad-box) .8rem; }
@@ -493,10 +486,10 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 [dir] .md-typeset a.lc-cat { background: #fff; }
 
 /* tiles that are links behave the same: border turns green, the shadow appears, the tile rises one step; the focus ring is the same */
-[dir] .md-typeset .lc-feature, [dir] .md-typeset .lc-pager a { border: 1px solid var(--lc-line); background: #fff; transition: border-color .15s, box-shadow .15s, transform .15s; }
-[dir] .md-typeset .lc-feature:hover, [dir] .md-typeset .lc-pager a:hover { border-color: var(--lc-accent-strong); box-shadow: 0 .6rem 1.4rem rgba(28, 95, 28, .14); transform: translateY(-2px); }
-[dir] .md-typeset .lc-feature:focus-within, [dir] .md-typeset .lc-pager a:focus-visible { outline: 2px solid var(--lc-accent-strong); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) { [dir] .md-typeset .lc-feature:hover, [dir] .md-typeset .lc-pager a:hover { transform: none; } }
+[dir] .md-typeset .lc-feature, [dir] .md-typeset .lc-pager a, [dir] .md-typeset a.lc-stepcard { border: 1px solid var(--lc-line); border-radius: var(--radius-box); background: #fff; transition: border-color .15s, box-shadow .15s, transform .15s; }
+[dir] .md-typeset .lc-feature:hover, [dir] .md-typeset .lc-pager a:hover, [dir] .md-typeset a.lc-stepcard:hover { border-color: var(--lc-accent-strong); box-shadow: 0 .6rem 1.4rem rgba(28, 95, 28, .14); transform: translateY(-2px); }
+[dir] .md-typeset .lc-feature:focus-within, [dir] .md-typeset .lc-pager a:focus-visible, [dir] .md-typeset a.lc-stepcard:focus-visible { outline: 2px solid var(--lc-accent-strong); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { [dir] .md-typeset .lc-feature:hover, [dir] .md-typeset .lc-pager a:hover, [dir] .md-typeset a.lc-stepcard:hover { transform: none; } }
 
 /* callouts: a note set apart from the text. Green by default, orange for a warning or an experimental part; always a 4px edge on the left */
 [dir] .md-typeset .lc-help, [dir] .md-typeset blockquote, [dir] .md-typeset blockquote.lc-cite, .md-typeset .lc-demo__next, .md-typeset .how__handoff, [dir] .md-typeset .admonition,
@@ -529,7 +522,20 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 .lc-docs .md-content__inner img, .md-typeset .lc-shot img, .md-typeset .lc-comic img, .how__crop, [dir] .md-typeset .how__map img, .md-typeset .lc-demo__fig img, .lc-feature__shot { border-radius: var(--radius-img); }
 .md-typeset .highlight, .md-typeset pre, .md-typeset pre > code, .lc-code { border-radius: var(--radius-code); }
 .lc-docs__nav, .lc-footer, .lc-header { font-family: var(--lc-sans); letter-spacing: -.01em; }   /* the same font stack and tracking as the text */
-/* the home page's steps: the five steps of How it works in one row on a wide screen, one under the other below */
-@media (min-width: 60rem) { [dir] .md-typeset ol.lc-steps:not(.lc-steps--flow) { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.2rem; } }
-@media (max-width: 59.99rem) { [dir] .md-typeset ol.lc-steps:not(.lc-steps--flow) { grid-template-columns: 1fr; } }
-.lc-steps strong a { color: var(--lc-strong); }
+
+/* step number: the same green circle on the home page, the Build hub and How it works */
+.lc-num { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 50%; background: var(--lc-accent-strong); color: #fff;
+  font-family: var(--lc-sans); font-size: var(--fs-ui); font-weight: 700; letter-spacing: normal; line-height: 1; }
+
+/* the steps as cards (home page, Build hub): three then two on a wide screen, both rows filling the width; two columns, then one on a phone */
+[dir] .md-typeset ol.lc-stepcards { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--gap-grid); margin: 0; padding: 0; list-style: none; }
+[dir] .md-typeset ol.lc-stepcards > li { grid-column: span 2; margin: 0; }
+[dir] .md-typeset ol.lc-stepcards > li:nth-child(n+4) { grid-column: span 3; }
+[dir] .md-typeset a.lc-stepcard { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; height: 100%; color: var(--lc-fg); text-decoration: none; }
+[dir] .md-typeset a.lc-stepcard .lc-stepcard__title { margin: .2rem 0 0; }
+@media (max-width: 60rem) {
+  [dir] .md-typeset ol.lc-stepcards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [dir] .md-typeset ol.lc-stepcards > li, [dir] .md-typeset ol.lc-stepcards > li:nth-child(n+4) { grid-column: auto; }
+  [dir] .md-typeset ol.lc-stepcards > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+@media (max-width: 40rem) { [dir] .md-typeset ol.lc-stepcards { grid-template-columns: 1fr; } }

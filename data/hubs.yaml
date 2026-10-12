@@ -77,7 +77,7 @@ build:
       link: Use apps in your image software
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/F2_fiji_form_top.png}
       alt: Fiji with a dialog generated from a tool's declaration, next to an image of bright spots.
-  flow_title: From notebook to app
+  flow_title: How it works
   how:
     title: Want to see how it works inside?
     text: A quick overview, one step at a time, from a notebook to an app that people can install.

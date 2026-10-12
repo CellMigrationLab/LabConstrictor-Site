@@ -7,11 +7,15 @@ packaging:
   text: Curious how an app like this is made?
   link: See how an app is packaged
   href: how-it-works/
-tile:
-  title: Explore an installed app
-  text: Preview what colleagues see when they open a LabConstrictor app. A simulation with a real, precomputed example; nothing to install.
-  link: Open the demo
-  alt: A microscopy field of nuclei shown in green
+tiles:
+  - title: Explore an installed app
+    text: Preview the Welcome notebook and a real NucleiSky example as colleagues see them in an installed app. No analysis runs here; the results were computed in advance.
+    link: Open the demo
+    part: use
+  - title: See how installation works (Windows)
+    text: Step through a simulated Windows installer, from the downloaded file to the Start menu. Nothing is downloaded or installed.
+    link: Try the installation demo
+    part: install
 about:
   title: About the example
   text: This demo uses NucleiSky as its example. NucleiSky is an open-source tool that aligns microscopy images by matching the arrangement of cell nuclei, like stars in a constellation. It finds where a small image sits inside a large one and estimates the rotation, scale and shift. The small image here is a random crop generated from the large one, so the correct answer is known. NucleiSky is one app built with LabConstrictor; every app has its own notebooks.

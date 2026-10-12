@@ -1,6 +1,7 @@
-"""The home page's sections after the hero, in the order of the story: the problem (the comic), the solution (the steps of How it works), the two tiles, the optional plugin section, the featured apps.
+"""The home page's sections after the hero, in the order of the story: the problem (the comic), the solution (the steps of How it works, as cards), the two demo tiles, the optional plugin section, the featured apps.
 Wording is in data/site.yaml and data/demo.yaml; the apps shown are the ones the catalogue marks as featured."""
 
+from . import pages_how
 from .text import esc
 
 
@@ -10,18 +11,11 @@ def featured_apps(apps: list[dict]) -> list[dict]:
     return [a for a in apps if a["featured"] and a["section"] == "apps"]
 
 
-def steps_band(title: str, steps: list[dict]) -> str:
-    """"From notebook to app": the steps of How it works (data/how-it-works.yaml, already checked), each with its title, linked to its step on that
-    page, and its one-line summary; the same steps in the same order, written once."""
-    items = "".join(f'<li><strong><a href="how-it-works/#{esc(s["id"])}">{esc(s["title"])}</a></strong><span>{esc(s["summary"])}</span></li>' for s in steps)
-    return f'<section class="lc-band lc-band--soft"><h2 class="lc-title">{esc(title)}</h2><ol class="lc-steps">{items}</ol></section>'
-
-
-def how_tile(site: dict) -> str:
-    """The "How it works" tile, built like the demo tile: a picture, a title, a sentence and a link to the author tour."""
-    t = site["how_tile"]
-    return (f'<a class="lc-tile" href="how-it-works/"><img class="lc-icon" src="assets/images/logo.png" alt="" width="88" height="88" loading="lazy">'
-            f'<div class="lc-tile__body"><h3 class="lc-tile__title">{esc(t["title"])}</h3><span>{esc(t["text"])}</span><span class="lc-go">{esc(t["link"])}</span></div></a>')
+def steps_band(site: dict, steps: list[dict]) -> str:
+    """"How it works": the five steps of the How it works page as cards (pages_how.step_cards, one source for every page), then a link to
+    the full walkthrough."""
+    return (f'<section class="lc-band lc-band--soft"><h2 class="lc-title">{esc(site["steps_title"])}</h2>{pages_how.step_cards(steps)}'
+            f'<p class="lc-more"><a class="lc-go" href="how-it-works/">{esc(site["steps_link"])}</a></p></section>')
 
 
 def comic_band(comic: str) -> str:
@@ -30,7 +24,8 @@ def comic_band(comic: str) -> str:
 
 
 def tiles_band(title: str, tiles: list[str]) -> str:
-    """The two tiles under their heading, next to each other (stacked on a phone): the author tour and the installed-app demo, equal in size and look."""
+    """The two demo tiles under their heading, next to each other (stacked on a phone), equal in size and look: the installed app and the
+    simulated Windows installation, two parts of the same /demo/ page."""
     return f'<section class="lc-band"><h2 class="lc-title">{esc(title)}</h2><div class="lc-tiles">{"".join(tiles)}</div></section>'
 
 

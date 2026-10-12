@@ -49,7 +49,7 @@ def static_figures(text: dict) -> str:
     """What a reader without JavaScript sees: the three real images with captions and descriptions."""
     figs = "".join(f'<figure class="lc-demo__fig"><img src="assets/demo/{f}" alt="{esc(alt)}" loading="lazy"><figcaption>{esc(cap)}</figcaption></figure>'
                    for f, alt, cap in STATIC)
-    return f'<noscript><p class="lc-demo__nojs">This is a static view. Turn on JavaScript to try the interactive version.</p><div class="lc-demo__static">{figs}</div>{how_plain(text)}</noscript>'
+    return f'<noscript><p class="lc-demo__nojs">This is a static view. Turn on JavaScript to try the interactive version and the Windows installation walkthrough.</p><div class="lc-demo__static">{figs}</div>{how_plain(text)}</noscript>'
 
 
 def about_and_features(text: dict) -> str:
@@ -108,13 +108,22 @@ def page_demo(apps: list[dict]) -> None:
     p.write()
 
 
-def tile_html(text: dict) -> str:
-    """The home-page tile: one card-sized link to the demo, with a picture and a short line."""
-    t = text["tile"]
-    return (f'<a class="lc-tile" href="demo/"><img src="assets/demo/reference_roi_green.webp" alt="{esc(t["alt"])}" width="320" height="320" loading="lazy">'
-            f'<div class="lc-tile__body"><h3 class="lc-tile__title">{esc(t["title"])}</h3><span>{esc(t["text"])}</span><span class="lc-go">{esc(t["link"])}</span></div></a>')
+PARTS = ("use", "install")   # the two parts of the demo; /demo/?demo=<part> opens one (demo.js reads it before the first drawing)
 
 
-def home_tile() -> str:
-    """The home page's demo tile (wording from data/demo.yaml)."""
-    return tile_html(load_yaml(DATA / "demo.yaml"))
+def part_url(part: str) -> str:
+    """The address of one part of the demo: the plain page for the installed app (its default), ?demo=install for the installation."""
+    if part not in PARTS:
+        raise ValueError(f"data/demo.yaml: a tile names the part {part!r}, not one of {PARTS}")
+    return "demo/" if part == "use" else f"demo/?demo={part}"
+
+
+def tile_html(tile: dict) -> str:
+    """One home-page tile: a card-sized link, with no picture, to one part of the demo."""
+    return (f'<a class="lc-tile" href="{part_url(tile["part"])}"><div class="lc-tile__body"><h3 class="lc-tile__title">{esc(tile["title"])}</h3>'
+            f'<span>{esc(tile["text"])}</span><span class="lc-go">{esc(tile["link"])}</span></div></a>')
+
+
+def home_tiles() -> list[str]:
+    """The home page's two demo tiles (wording from data/demo.yaml): the installed app and the simulated Windows installation."""
+    return [tile_html(t) for t in load_yaml(DATA / "demo.yaml")["tiles"]]

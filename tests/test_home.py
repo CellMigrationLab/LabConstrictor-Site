@@ -1,53 +1,65 @@
 """The home page's sections after the hero: wording from the data files, only listed featured apps, an honest empty state, an optional plugin section."""
 
 import unittest
+from html import escape as html_escape
 from unittest import mock
 
 from lcsite import pages_demo, pages_home as ph, pages_how, pages_site
 from lcsite.config import load_yaml, DATA
 
-SITE = {"steps_title": "From notebook to app",
-        "how_tile": {"title": "How it works", "text": "See how to turn a notebook workflow into an app.", "link": "See the steps"},
+SITE = {"steps_title": "How it works", "steps_link": "See the full walkthrough",
         "plugins": {"title": "Make your workflow available in other software", "text": "Your notebook is still the main interface.", "link": "Explore the ecosystem"}}
 
 
 class StepsTests(unittest.TestCase):
-    """The home page's steps are the steps of How it works, written once in data/how-it-works.yaml."""
+    """The home page's "How it works" band: the steps of How it works as whole-card links, written once in data/how-it-works.yaml."""
 
-    def test_the_steps_mirror_how_it_works_in_order_and_link_to_each_step(self) -> None:
-        """One numbered item per How it works step, in the same order, each title linked to its step and followed by its summary."""
+    def test_one_card_per_step_in_order_each_linking_to_its_step(self) -> None:
+        """One card per step, in the same order, the whole card a link to how-it-works/#step-N with its number, title and summary."""
         steps = pages_how.load()["steps"]
-        html = ph.steps_band("From notebook to app", steps)
-        self.assertIn("From notebook to app", html)
-        self.assertEqual(html.count("<li>"), len(steps))
-        positions = [html.index(f'href="how-it-works/#{s["id"]}"') for s in steps]
+        html = ph.steps_band(SITE, steps)
+        self.assertIn('<h2 class="lc-title">How it works</h2>', html)
+        self.assertEqual(html.count('<a class="lc-stepcard"'), len(steps))
+        positions = [html.index(f'<a class="lc-stepcard" href="how-it-works/#{s["id"]}">') for s in steps]
         self.assertEqual(positions, sorted(positions))
-        for step in steps:
-            self.assertIn(f'>{step["title"]}</a></strong><span>', html.replace("&#x27;", "'").replace("(s)", "(s)"))
+        for i, step in enumerate(steps, 1):
+            self.assertIn(f'<span class="lc-num">{i}</span>', html)
+            self.assertIn(html_escape(step["summary"]), html)
+        self.assertIn('href="how-it-works/">See the full walkthrough</a>', html)
 
 
 class RealDataTests(unittest.TestCase):
     """The real data files fit the sections."""
 
     def test_the_real_site_data_builds_every_section(self) -> None:
-        """data/site.yaml gives the steps, the How it works tile and the plugin section; the real wording promises nothing the issue rules out."""
+        """data/site.yaml gives the steps band and the plugin section; the real wording promises nothing the issue rules out."""
         site = load_yaml(DATA / "site.yaml")
-        html = ph.steps_band(site["steps_title"], pages_how.load()["steps"]) + ph.how_tile(site) + ph.plugins_band(site, "")
-        for banned in ("Packaged once", "runs everywhere", "no coding", "turn any notebook into a plugin", "one click"):
+        html = ph.steps_band(site, pages_how.load()["steps"]) + ph.plugins_band(site, "")
+        for banned in ("Packaged once", "runs everywhere", "no coding", "turn any notebook into a plugin", "one click", "few clicks"):
             self.assertNotIn(banned.lower(), html.lower())
         self.assertIn("notebook", site["hero"]["text"].lower())
 
-    def test_both_tiles_have_a_picture_a_title_a_sentence_and_a_link(self) -> None:
-        """The How it works tile and the demo tile are built the same way, so they look equal."""
-        site = load_yaml(DATA / "site.yaml")
-        for tile in (ph.how_tile(site), pages_demo.home_tile()):
-            for part in ('class="lc-tile"', "<img ", '<h3 class="lc-tile__title">', 'class="lc-go"'):
+    def test_two_demo_tiles_without_pictures_open_the_two_parts_of_the_demo(self) -> None:
+        """The installed-app tile opens /demo/, the installation tile /demo/?demo=install; both are built the same way and have no picture."""
+        tiles = pages_demo.home_tiles()
+        self.assertEqual(len(tiles), 2)
+        self.assertIn('href="demo/"', tiles[0])
+        self.assertIn('href="demo/?demo=install"', tiles[1])
+        self.assertIn("(Windows)", tiles[1])
+        for tile in tiles:
+            for part in ('class="lc-tile"', '<h3 class="lc-tile__title">', 'class="lc-go"'):
                 self.assertIn(part, tile)
+            self.assertNotIn("<img", tile)
+
+    def test_a_tile_naming_an_unknown_part_stops_the_build(self) -> None:
+        """Only the two parts of the demo can be named."""
+        with self.assertRaises(ValueError):
+            pages_demo.part_url("napari")
 
     def test_the_tiles_sit_under_their_own_heading(self) -> None:
         """The band has an h2 from site.yaml ("See it in action") before the tiles, whose titles are h3."""
         site = load_yaml(DATA / "site.yaml")
-        html = ph.tiles_band(site["tiles_title"], [ph.how_tile(site)])
+        html = ph.tiles_band(site["tiles_title"], pages_demo.home_tiles())
         self.assertTrue(html.startswith('<section class="lc-band"><h2 class="lc-title">See it in action</h2>'))
 
 

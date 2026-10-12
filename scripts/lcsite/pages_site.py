@@ -45,7 +45,7 @@ def plugin_stage() -> str:
 
 
 def page_home(site: dict, apps: list[dict]) -> None:
-    """index.md: hero with the logo and the two paths (use / make), then the comic (the problem), the five steps of How it works (the solution), the How it works and demo tiles, the optional plugin section, featured apps and the citation."""
+    """index.md: hero with the logo and the two paths (use / make), then the comic (the problem), the five steps of How it works as cards (the solution), the two demo tiles (installed app, Windows installation), the optional plugin section, featured apps and the citation."""
     hero = site["hero"]
     featured = pages_home.featured_apps(apps)
     p = Page("index.md", title="LabConstrictor", head_title=f"{site['name']}: {hero['title']}", description=hero["text"], template="home.html")
@@ -55,8 +55,8 @@ def page_home(site: dict, apps: list[dict]) -> None:
           + choice("I want to make an app", "Turn your notebooks into installers for Windows, macOS and Linux.", "build/", "Why and how to build one", "lc-choice--make") +
           '</div></div><div class="lc-hero__art"><img src="assets/images/logo.png" alt="The LabConstrictor logo: a green snake coiled around an orange notebook" width="256" height="256" loading="eager" fetchpriority="high"></div></div></section>')
     p.add(pages_home.comic_band(comic_figure()))
-    p.add(pages_home.steps_band(site["steps_title"], pages_how.load()["steps"]))
-    p.add(pages_home.tiles_band(site["tiles_title"], [pages_home.how_tile(site), pages_demo.home_tile()]))
+    p.add(pages_home.steps_band(site, pages_how.load()["steps"]))
+    p.add(pages_home.tiles_band(site["tiles_title"], pages_demo.home_tiles()))
     p.add(pages_home.plugins_band(site, program_pill_row(plugin_stage())))
     p.add(pages_home.featured_band([card(a) for a in featured], "No app is featured yet."))
     p.add(citation.cite_band(site))
