@@ -81,7 +81,7 @@ class Facts(HTMLParser):
                 self._open_link["img_alt"] = True
         elif tag == "button" or (tag == "a" and "lc-btn" in classes):
             demo = "act" if "data-demo-act" in a else "sim" if "data-demo-sim" in a else ""
-            self.buttons.append({"tag": tag, "classes": classes, "copy": "data-copy" in a or "data-lc-reset" in a, "main": self._in_main,
+            self.buttons.append({"tag": tag, "classes": classes, "copy": "data-copy" in a or "data-lc-reset" in a or "data-mf-download" in a or "data-mf-copy" in a, "main": self._in_main,
                                  "demo": demo, "type": attr(a, "type")})
 
     def handle_endtag(self, tag: str) -> None:
@@ -157,7 +157,7 @@ def button_problems(name: str, f: Facts) -> list[str]:
         if b["demo"] and b["tag"] == "button" and b["type"] != "button":
             found.append(f"{name}: a demo <button> without type=button")
         if b["tag"] == "button" and b["main"] and not b["copy"] and not b["demo"]:
-            found.append(f"{name}: a <button> in the content that is neither a copy nor a clear-filters button nor a demo control")
+            found.append(f"{name}: a <button> in the content that is neither a copy, a clear-filters or a manifest-form button nor a demo control")
         if b["tag"] == "button" and b["main"] and "lc-btn" not in b["classes"] and b["demo"] != "sim":
             found.append(f"{name}: a <button> in the content is not styled as a button")
     return found

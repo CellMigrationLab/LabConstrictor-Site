@@ -3,6 +3,7 @@ title: Submit your app
 description: How to list your LabConstrictor app in the App Centre.
 layout: wide
 edit_url: https://github.com/CellMigrationLab/LabConstrictor-Site/edit/main/content/submit.md
+page_js: [assets/javascripts/manifest-form.js]
 ---
 
 # Submit your app
@@ -12,7 +13,9 @@ Built an app with LabConstrictor? Listing it takes three steps and no one needs 
 
 ## 1. Add a manifest to your repository
 
-Create a file called `labconstrictor-app.yaml` in the root of your app's repository:
+Your app describes itself in a file called `labconstrictor-app.yaml` in the root of its repository.
+
+{{manifest_form}}
 
 ```yaml
 # yaml-language-server: $schema={{schema_url}}

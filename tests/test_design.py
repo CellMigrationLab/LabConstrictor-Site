@@ -48,7 +48,7 @@ class DesignTests(unittest.TestCase):
         facts.feed(bad)
         report = "\n".join(check_design.all_problems({"p/index.html": facts}))
         for expected in ("2 h1", "lang", "no description", "skipped", "new tab with rel", "opens in a new tab", "does not say where",
-                         "not a GitHub pill", "no alt attribute", "neither a copy nor"):
+                         "not a GitHub pill", "no alt attribute", "neither a copy, a clear-filters"):
             self.assertIn(expected, report)
 
 

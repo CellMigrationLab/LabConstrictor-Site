@@ -133,6 +133,14 @@ Order, as the story goes: the hero (the notebook-first sentence, then the two pa
 - Links are only pills: the GitHub pill for a repository, the Documentation and Website pills for its pages (these two pills may be used for third-party projects here), plus the DOI text link. Prose holds no address, bracket or volatile word (popular, fastest, best, stars, downloads), and makes no maintenance, popularity or superiority claim. No logos.
 - The closing paragraph says it is our view, and the helper line links to the home `#cite` block, to "Edit this list on GitHub" (the second edit link of a page written from two files) and to the issues.
 
+## Submit page
+
+- `/submit/` keeps the example manifest and the field table, and adds a **form that writes `labconstrictor-app.yaml` in the browser** (`submit_form.py` for the HTML, `docs/assets/javascripts/manifest-form.js` for the work). It reads the published schema (`/schema/labconstrictor-app.schema.json`) and checks the file with it, so it cannot accept what the App Centre refuses; each problem is written beside its field, and Download stays disabled until the file passes. Nothing is sent anywhere. It first says that the repository web form already writes this file when its App Centre option is kept. Without JavaScript the form stays hidden and the example is shown.
+
+## Footer
+
+- "A project of the Cell Migration Lab, in collaboration with the Henriques Lab." (decision of the project lead).
+
 ## Interactions
 
 - Hover: text links underline; cards lift; pills change border colour. Focus: one visible outline colour for all links (white in the dark footer; content links keep the theme's ring), and the skip link shows above the header. Everything works from the keyboard.

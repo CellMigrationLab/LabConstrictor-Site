@@ -556,3 +556,31 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
   [dir] .md-typeset ol.lc-stepcards > li:last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
 @media (max-width: 40rem) { [dir] .md-typeset ol.lc-stepcards { grid-template-columns: 1fr; } }
+
+/* /submit/: the form that writes labconstrictor-app.yaml in the browser; the fields at the left, the file at the right (stacked on a phone) */
+.lc-mf { margin: 1rem 0 1.4rem; padding: var(--pad-box); border: 1px solid var(--lc-line); border-radius: var(--radius-box); background: var(--lc-soft); }
+[dir] .md-typeset .lc-mf h3 { margin-top: 0; }
+.lc-mf__cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap-grid); align-items: start; }
+.lc-mf__cols > *, .lc-mf__group { min-width: 0; }
+.lc-mf__hint { overflow-wrap: anywhere; }
+@media (max-width: 60rem) { .lc-mf__cols { grid-template-columns: 1fr; } }
+.lc-mf__field { display: grid; gap: .25rem; margin: 0 0 .9rem; }
+.lc-mf__field label, .lc-mf__group legend { font-size: var(--fs-ui); font-weight: 600; color: var(--lc-strong); }
+.lc-mf input[type="text"], .lc-mf textarea, .lc-mf select { width: 100%; padding: .4rem .55rem; border: 1px solid var(--lc-line); border-radius: 6px; background: #fff; color: var(--lc-fg); font: inherit; font-size: var(--fs-ui); }
+.lc-mf textarea { resize: vertical; }
+.lc-mf [aria-invalid="true"] { border-color: #b42318; }
+.lc-mf__hint { font-size: var(--fs-sm); color: var(--lc-muted); }
+.lc-mf__error { font-size: var(--fs-sm); color: #b42318; }
+.lc-mf__error:empty { display: none; }
+.lc-mf__group { margin: 0 0 .9rem; padding: .7rem .9rem; border: 1px solid var(--lc-line); border-radius: 8px; background: #fff; }
+.lc-mf__check { display: block; margin: 0 0 .6rem; font-size: var(--fs-ui); }
+.lc-mf__hosts { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; font-size: var(--fs-ui); }
+[dir] .md-typeset details.lc-mf__more { margin: 0; }
+[dir] .md-typeset details.lc-mf__more[open] > summary { margin-bottom: .9rem; }
+.lc-mf__out { position: sticky; top: 4.5rem; }
+@media (max-width: 60rem) { .lc-mf__out { position: static; } }
+[dir] .md-typeset .lc-mf__status { margin: 0 0 .5rem; font-size: var(--fs-ui); font-weight: 600; color: #b42318; }
+[dir] .md-typeset .lc-mf__status.is-ok { color: var(--lc-accent-strong); }
+[dir] .md-typeset .lc-mf__yaml { margin: 0; max-height: 28rem; overflow: auto; }
+[dir] .md-typeset .lc-mf__actions { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: .7rem 0 0; }
+.md-typeset .lc-mf__actions .lc-btn:disabled { opacity: .5; cursor: not-allowed; }

@@ -1,6 +1,6 @@
 """Home, ecosystem and submit pages."""
 
-from . import catalogue_text, citation, hosts, pages_demo, pages_home, pages_related, projects
+from . import catalogue_text, citation, hosts, pages_demo, pages_home, pages_related, projects, submit_form
 from .cards import card, github_badge
 from .config import CONTENT, DOCS, REPO, fail
 from .page import Page
@@ -93,7 +93,8 @@ def page_ecosystem(tiers: list[dict], related: dict) -> None:
 
 
 def page_submit(site: dict, schema_url: str) -> None:
-    """submit.md: content/submit.md with {{submit_issue}} and {{schema_url}} filled in from the site data."""
+    """submit.md: content/submit.md with {{submit_issue}}, {{schema_url}} and the manifest form ({{manifest_form}}) filled in from the site data."""
     text = (CONTENT / "submit.md").read_text(encoding="utf-8")
     text = text.replace("{{submit_issue}}", site["links"]["submit_issue"]).replace("{{schema_url}}", schema_url)
+    text = text.replace("{{manifest_form}}", submit_form.form_html("../schema/labconstrictor-app.schema.json", site["links"]["init_form"]))
     (DOCS / "submit.md").write_text(text, encoding="utf-8")
