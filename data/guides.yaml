@@ -19,7 +19,7 @@ sections:
   - title: Use apps in your image software
     items:
       - {slug: image-software, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/user-guide.md}
-      - {slug: napari, repo: CellMigrationLab/napari-labconstrictor, path: docs/user-guide.md}
+      - {slug: napari, repo: CellMigrationLab/LabConstrictor-napari, path: docs/user-guide.md}
       - {slug: fiji, repo: CellMigrationLab/LabConstrictor-Fiji, path: docs/user-guide.md}
       - {slug: qupath, repo: CellMigrationLab/LabConstrictor-QuPath, path: docs/user-guide.md}
   - title: Connect to a microscope

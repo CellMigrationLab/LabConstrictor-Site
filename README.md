@@ -29,7 +29,7 @@ Find the thing you want to change; edit it **there**, never in the site's genera
 | The **How it works** steps and explanations | `data/how-it-works.yaml` | this repository |
 | The **How it works** figure and interactive stepper | `content/how/`, `tools/how_figures/crop_preprint_figure.py` | this repository |
 | Two user pages that live in the template: *Notebook usage after installation*, *Troubleshooting an installed app* | `.tools/docs/notebook_usage.md`, `.tools/docs/troubleshooting_installed_app.md` | LabConstrictor |
-| The **napari**, **Fiji** or **QuPath** guide | `docs/user-guide.md` | [napari-labconstrictor](https://github.com/CellMigrationLab/napari-labconstrictor), [LabConstrictor-Fiji](https://github.com/CellMigrationLab/LabConstrictor-Fiji), [LabConstrictor-QuPath](https://github.com/CellMigrationLab/LabConstrictor-QuPath) |
+| The **napari**, **Fiji** or **QuPath** guide | `docs/user-guide.md` | [LabConstrictor-napari](https://github.com/CellMigrationLab/LabConstrictor-napari), [LabConstrictor-Fiji](https://github.com/CellMigrationLab/LabConstrictor-Fiji), [LabConstrictor-QuPath](https://github.com/CellMigrationLab/LabConstrictor-QuPath) |
 | The overview *Use apps inside napari, Fiji and QuPath* | `docs/user-guide.md` | [LabConstrictor-Tools](https://github.com/CellMigrationLab/LabConstrictor-Tools) |
 | The **Connect to a microscope** guide | `docs/smart_microscopy/smart_microscopy.md` | [NucleiSky](https://github.com/CellMigrationLab/NucleiSky) |
 | A card on the **Ecosystem** page (name, summary, status) | `docs/labconstrictor-project.yaml` (the template's card is inline in `data/ecosystem.yaml`) | the project's own repository; template exception in this repository |

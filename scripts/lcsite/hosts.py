@@ -84,5 +84,5 @@ def pill(key: str, hosts: dict[str, dict], label: str = "") -> str:
 
 
 def host_of_plugin(repo: str, hosts: dict[str, dict]) -> str | None:
-    """The host key of one of our plugin repositories (CellMigrationLab/napari-labconstrictor -> napari), or None for any other repository."""
+    """The host key of one of our plugin repositories (CellMigrationLab/LabConstrictor-napari -> napari), or None for any other repository."""
     return next((k for k, h in hosts.items() if h["plugin"] == repo), None)

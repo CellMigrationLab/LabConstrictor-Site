@@ -8,7 +8,7 @@ tiers:
     title: Use apps inside your image software
     text: Apps can offer tools, Python functions that you fill in through a form, in the software you already use. These plugins are experimental; expect bugs, missing features and changes.
     items:
-      - repo: CellMigrationLab/napari-labconstrictor
+      - repo: CellMigrationLab/LabConstrictor-napari
       - repo: CellMigrationLab/LabConstrictor-Fiji
       - repo: CellMigrationLab/LabConstrictor-QuPath
   - key: dev
