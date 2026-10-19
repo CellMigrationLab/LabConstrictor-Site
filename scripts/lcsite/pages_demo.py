@@ -8,7 +8,8 @@ from .text import esc
 
 TABS = (("notebook", "Notebook"), ("napari", "napari"), ("fiji", "Fiji"))
 PARTS = ("install", "use")   # the two parts of the demo, in their order on the page; /demo/?demo=use opens the second (demo.js reads it before the first drawing)
-PART_LABELS = {"install": "See how installation works (Windows)", "use": "Explore the installed app"}
+PART_LABELS = {"install": "See how installation works", "use": "Explore the installed app"}
+SYSTEMS = (("windows", "Windows"), ("macos", "macOS"))   # the installers the first part can show; the first is the default (/demo/?os=macos opens the second; any other value opens the first)
 
 
 def tab_logo(key: str) -> str:
@@ -35,13 +36,30 @@ def tab_buttons() -> str:
 
 
 def category_tabs() -> str:
-    """The two parts of the demo, in the order a colleague meets them: how installation works on Windows (shown first), then the installed
+    """The two parts of the demo, in the order a colleague meets them: how installation works (shown first), then the installed
     app. Real buttons with tab semantics, as wide as the page."""
     out = []
     for i, key in enumerate(PARTS):
         out.append(f'<button type="button" role="tab" id="demo-cat-tab-{key}" aria-controls="demo-cat-{key}" aria-selected="{"true" if i == 0 else "false"}" '
                    f'class="lc-btn lc-demo__part" data-demo-act="cat" data-cat="{key}"><span class="lc-num">{i + 1}</span>{PART_LABELS[key]}</button>')
     return '<div class="lc-demo__tabs lc-demo__parts" role="tablist" aria-label="Part of the demo">' + "".join(out) + '</div>'
+
+
+def system_tabs() -> str:
+    """The Windows | macOS switch of the installation part: real buttons with tab semantics, Windows selected in the static HTML."""
+    out = []
+    for i, (key, label) in enumerate(SYSTEMS):
+        out.append(f'<button type="button" role="tab" id="demo-os-tab-{key}" aria-controls="demo-os-{key}" aria-selected="{"true" if i == 0 else "false"}" '
+                   f'tabindex="{0 if i == 0 else -1}" class="lc-btn lc-demo__system" data-demo-act="os" data-os="{key}">{label}</button>')
+    return '<div class="lc-demo__tabs lc-demo__systems" role="tablist" aria-label="Operating system of the installer">' + "".join(out) + '</div>'
+
+
+def install_part(installers: dict[str, str], os_note: dict) -> str:
+    """The installation part: the system switch, one tab panel per installer (the first, Windows, shown) and the line on the other systems."""
+    panels_html = "".join(f'<div role="tabpanel" id="demo-os-{key}" aria-labelledby="demo-os-tab-{key}" data-os-panel="{key}"{"" if i == 0 else " hidden"}>'
+                          f'<div class="lc-demo__panel">{installers[key]}</div></div>' for i, (key, _) in enumerate(SYSTEMS))
+    return (f'<div role="tabpanel" id="demo-cat-install" aria-labelledby="demo-cat-tab-install" data-cat-panel="install">{system_tabs()}{panels_html}'
+            f'<p class="lc-small lc-demo__os">{esc(os_note["text"])} <a href="{esc(os_note["href"])}">{esc(os_note["link"])}</a></p></div>')
 
 
 def panels(shown: dict[str, str], example: dict) -> str:
@@ -58,7 +76,7 @@ def static_figures(text: dict) -> str:
     """What a reader without JavaScript sees: the three real images with captions and descriptions."""
     figs = "".join(f'<figure class="lc-demo__fig"><img src="assets/demo/{f}" alt="{esc(alt)}" loading="lazy"><figcaption>{esc(cap)}</figcaption></figure>'
                    for f, alt, cap in STATIC)
-    return f'<noscript><p class="lc-demo__nojs">This is a static view. Turn on JavaScript to try the interactive version and the Windows installation walkthrough.</p><div class="lc-demo__static">{figs}</div>{how_plain(text)}</noscript>'
+    return f'<noscript><p class="lc-demo__nojs">This is a static view. Turn on JavaScript to try the interactive version and the installation walkthroughs for Windows and macOS.</p><div class="lc-demo__static">{figs}</div>{how_plain(text)}</noscript>'
 
 
 def about_and_features(text: dict) -> str:
@@ -103,14 +121,13 @@ def page_demo(apps: list[dict]) -> None:
     shown = dict(demo_media.values(example), **demo_media.installer_values(), **demo_option_a.values(text))
     demo_media.copy_assets()
     p = Page("demo/index.md", title=text["title"], description=text["description"], layout="wide", menu="demo/",
-             page_css=["assets/demo/demo.css", "assets/demo/installer.css"], page_js=[f"assets/demo/{name}" for name in demo_media.SCRIPTS], edit_url=f"{REPO}/edit/main/data/demo.yaml")
+             page_css=["assets/demo/demo.css", "assets/demo/installer.css", "assets/demo/macos.css"], page_js=[f"assets/demo/{name}" for name in demo_media.SCRIPTS], edit_url=f"{REPO}/edit/main/data/demo.yaml")
     p.add(f'<section class="lc-pagehead"><h1>{esc(text["title"])}</h1>'
           f'<p class="lc-lead">{esc(text["lead"])}</p><p>{esc(text["packaging"]["text"])} <a class="lc-go" href="{esc(text["packaging"]["href"])}">{esc(text["packaging"]["link"])}</a></p></section>')
-    installer = demo_media.render(demo_media.read_window("installer"), shown, "windows/installer.html")
-    os_note = text["other_systems"]
+    installers = {"windows": demo_media.render(demo_media.read_window("installer"), shown, "windows/installer.html"),
+                  "macos": demo_media.render(demo_media.read_window("installer", "macos"), shown, "macos/installer.html")}
     p.add(f'<div class="lc-demo" data-demo data-search-exclude><div class="lc-demo__live">{category_tabs()}{tab_buttons()}<p class="lc-demo__next" data-next></p>'
-          f'<div role="tabpanel" id="demo-cat-install" aria-labelledby="demo-cat-tab-install" data-cat-panel="install"><div class="lc-demo__panel">{installer}</div>'
-          f'<p class="lc-small lc-demo__os">{esc(os_note["text"])} <a href="{esc(os_note["href"])}">{esc(os_note["link"])}</a></p></div>'
+          f'{install_part(installers, text["other_systems"])}'
           f'<div role="tabpanel" id="demo-cat-use" aria-labelledby="demo-cat-tab-use" data-cat-panel="use" hidden>'
           f'<p class="lc-demo__experimental" data-demo-experimental hidden>{esc(text["experimental"])} <a href="#demo-how">{esc(text["how"]["title"])} &darr;</a></p>{panels(shown, example)}{how_it_works(text)}</div></div>{static_figures(text)}</div>')
     p.add(about_and_features(text))
@@ -132,5 +149,5 @@ def tile_html(tile: dict) -> str:
 
 
 def home_tiles() -> list[str]:
-    """The home page's two demo tiles (wording from data/demo.yaml): the simulated Windows installation and the installed app."""
+    """The home page's two demo tiles (wording from data/demo.yaml): the simulated installation (Windows or macOS) and the installed app."""
     return [tile_html(t) for t in load_yaml(DATA / "demo.yaml")["tiles"]]

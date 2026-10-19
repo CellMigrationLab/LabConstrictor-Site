@@ -5,7 +5,7 @@
 
 Needs Playwright for Python and a Chromium. Serves site/ on a free local port and checks, at phone and desktop widths: no sideways
 scrolling on the main pages, the App Centre filter, the steps of How it works, Home's make-an-app path, an app page's download and install steps,
-the submit page's manifest form, the demo (smoke_demo.py: its flow, tabs, phone layout and address),
+the submit page's manifest form, the demo (smoke_demo.py: its flow, tabs, phone layout and address, and the macOS installer walkthrough),
 the no-JavaScript fallback, and that every role (titles, links, buttons, badges, tiles, tables, callouts) looks the same on every page. Prints one line per check and exits with status 1 when any fails.
 """
 
@@ -15,7 +15,7 @@ import sys
 from playwright.sync_api import Browser, sync_playwright
 
 from smoke_common import FAILURES, SITE, check, open_page, serve
-from smoke_demo import demo_address, demo_flow, demo_phone
+from smoke_demo import demo_address, demo_flow, demo_macos, demo_macos_address, demo_phone
 
 PAGES = ("", "apps/", "demo/", "how-it-works/", "ecosystem/", "related-projects/", "guides/", "use/", "build/", "submit/")
 ALL_PAGES = ("", "apps/", "apps/nucleisky/", "apps/celltrackscolab/", "demo/", "how-it-works/", "ecosystem/", "related-projects/", "guides/", "guides/notebook-upload/", "guides/image-software/", "use/", "build/", "submit/")
@@ -190,7 +190,7 @@ def main() -> int:
     server, base = serve()
     with sync_playwright() as p:
         browser = p.chromium.launch(executable_path=args.chromium)
-        for group in (no_sideways_scroll, app_filter, how_controls, home_paths, app_download, manifest_form, demo_flow, demo_phone, demo_address, no_javascript, consistency):
+        for group in (no_sideways_scroll, app_filter, how_controls, home_paths, app_download, manifest_form, demo_flow, demo_phone, demo_address, demo_macos, demo_macos_address, no_javascript, consistency):
             group(browser, base)
         browser.close()
     server.shutdown()

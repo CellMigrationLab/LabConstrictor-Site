@@ -25,7 +25,7 @@ class RealDataTests(unittest.TestCase):
         tiles = pages_demo.home_tiles()
         self.assertEqual(len(tiles), 2)
         self.assertIn('href="demo/"', tiles[0])
-        self.assertIn("(Windows)", tiles[0])
+        self.assertIn("Windows or macOS", tiles[0])
         self.assertIn('href="demo/?demo=use"', tiles[1])
         for tile in tiles:
             for part in ('class="lc-tile"', '<h3 class="lc-tile__title">', 'class="lc-go"'):

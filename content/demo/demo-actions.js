@@ -5,6 +5,7 @@
   var WELCOME_OPEN = 'NucleiSky is open in JupyterLab with the Welcome notebook.';
   var DELAYS_MS = { 'run-init': 700, 'run-welcome': 700, 'test-connection': 900, 'update': 700 };
   var WIDGET_DELAYS_MS = { 1: 900, 2: 900, 3: 2200 };
+  var INSTALLING_PAGES = ['installing', 'mac-installing'];   // the installer pages that run the simulated install
 
   /**
    * A reply to the controller after an action.
@@ -34,7 +35,7 @@
   }
 
   /**
-   * Go to an installer page; the "Installing" page starts the simulated install.
+   * Go to an installer page (Windows or macOS); the "Installing" pages start the simulated install.
    * @param {DemoState} state - the state to change.
    * @param {HTMLElement} el - the pressed button (data-go names the page).
    * @returns {ActionReply} the reply.
@@ -42,11 +43,11 @@
   function inst(state, el) {
     state.page = el.dataset.go;
     state.selectedKey = '';
-    return reply(ns.guide.installTarget(state.page), 'Installer page: ' + state.page + '.', state.page === 'installing');
+    return reply(ns.guide.installTarget(state.page), 'Installer page: ' + state.page.replace('mac-', '') + '.', INSTALLING_PAGES.indexOf(state.page) >= 0);
   }
 
   /**
-   * Open the installed app from the Start menu: the Use part, Welcome notebook.
+   * Open the installed app from the Start menu (Windows) or the Applications folder (macOS): the Use part, Welcome notebook.
    * @param {DemoState} state - the state to change.
    * @returns {ActionReply} the reply.
    */

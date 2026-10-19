@@ -4,7 +4,16 @@
   var INSTALL_NEXT = {
     download: '.wi__file', smart: '.wi__sl', smart2: '[data-go="welcome"]', welcome: '[data-go="license"]', license: '[data-go="type"]',
     type: '[data-go="folder"]', folder: '[data-go="options"]', options: '[data-go="installing"]', installing: '[data-needs-install]',
-    finish: '[data-go="start"]', start: '.wi__start'
+    finish: '[data-go="start"]', start: '.wi__start',
+    'mac-download': '.mi__file', 'mac-blocked': '[data-go="mac-settings"]', 'mac-settings': '[data-go="mac-confirm"]', 'mac-confirm': '[data-go="mac-intro"]',
+    'mac-intro': '[data-go="mac-readme"]', 'mac-readme': '[data-go="mac-licence"]', 'mac-licence': '[data-go="mac-agree"]', 'mac-agree': '[data-go="mac-dest"]',
+    'mac-dest': '[data-go="mac-type"]', 'mac-type': '[data-go="mac-installing"]', 'mac-installing': '[data-needs-install]', 'mac-summary': '[data-go="mac-keep"]',
+    'mac-keep': '[data-go="mac-finder"]', 'mac-finder': '.mi__app'
+  };
+  var MAC_HINTS = {
+    'mac-blocked': 'macOS blocks an installer it cannot verify the first time. Click Done, then open Privacy & Security.',
+    'mac-settings': 'Click Open Anyway. The button appears only after you tried to open the file once.',
+    'mac-confirm': 'Check the file name, then click Open Anyway.'
   };
   var STEP_NAMES = { 1: 'Load & Process', 2: 'Load Masks & Extract Features', 3: 'Run adaptive NucleiSky2D' };
 
@@ -19,14 +28,16 @@
   }
 
   /**
-   * The hint for the installer: the main control of the current page, and a sentence on the first page only.
+   * The hint for the installer: the main control of the current page, and a sentence on the first page (and, on a Mac, on the three pages of the unsigned-installer warning).
    * @param {DemoState} state - the state.
    * @returns {{target: string, text: string}} what to circle and say.
    */
   function installHint(state) {
     var text = '';
-    if (state.page === 'download') {
+    if (state.page === 'download' || state.page === 'mac-download') {
       text = state.selectedKey ? 'Now double-click the file to start the installer (or press Enter).' : 'Double-click the downloaded installer to start it.';
+    } else if (Object.prototype.hasOwnProperty.call(MAC_HINTS, state.page)) {
+      text = MAC_HINTS[state.page];
     }
     return { target: installTarget(state.page), text: text };
   }

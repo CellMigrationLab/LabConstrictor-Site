@@ -6,14 +6,15 @@ import shutil
 from pathlib import Path
 
 from .config import CONTENT, DOCS, fail
-from .text import esc, megabytes
+from .text import esc, gigabytes_from_kbytes, megabytes
 
 SOURCE = CONTENT / "demo"
 OUT = DOCS / "assets" / "demo"
 IMAGES = ("install-banner.webp", "install-header.webp", "nucleisky-icon.png", "qc_figure.webp", "seg_figure.webp", "reference_full.webp", "reference_roi.webp", "reference_roi_green.webp", "aligned_roi.webp", "aligned_roi_magenta.webp",
           "query.webp")
-SCRIPTS = ("demo-dom.js", "demo-state.js", "demo-render-host.js", "demo-render-notebook.js", "demo-guide.js", "demo-actions.js", "demo.js")   # load order
-CODE = SCRIPTS + ("demo.css", "installer.css")
+SCRIPTS = ("demo-dom.js", "demo-state.js", "demo-render-host.js", "demo-render-macos.js", "demo-render-notebook.js", "demo-guide.js", "demo-os.js", "demo-actions.js",
+           "demo.js")   # load order
+CODE = SCRIPTS + ("demo.css", "installer.css", "macos.css")
 MAX_BYTES = 400_000          # one image above this stops the build: the page must stay light
 PLACEHOLDER = re.compile(r"\{\{(\w+)\}\}")
 REQUIRED = {"images": ("reference_px", "query_px", "reference_um_per_px", "query_um_per_px"), "nuclei": ("reference", "query"),
@@ -70,12 +71,13 @@ def values(example: dict) -> dict[str, str]:
     }
 
 
-INSTALLER_KEYS = ("app_name", "app_version", "exe_name", "exe_size_bytes", "source")
+INSTALLER_KEYS = ("app_name", "app_version", "exe_name", "exe_size_bytes", "pkg_name", "pkg_size_bytes", "pkg_install_kbytes", "source")
 
 
 def installer_values() -> dict[str, str]:
-    """What the Windows installer pages show about the example app: its name, version, installer file and size (from the stored
-    content/demo/installer.json, not from a live release) and its licence text. A missing file or key stops the build naming it."""
+    """What the installer pages (Windows and macOS) show about the example app: its name, version, installer files and sizes, the disk space
+    the macOS package asks for (from the stored content/demo/installer.json, not from a live release) and its licence text.
+    A missing file or key stops the build naming it."""
     path = SOURCE / "installer.json"
     if not path.is_file():
         fail(f"{path} is missing: run tools/demo_assets/installer_record.py")
@@ -87,7 +89,10 @@ def installer_values() -> dict[str, str]:
     if not licence.is_file():
         fail(f"{licence} is missing")
     return {"app_name": esc(record["app_name"]), "app_version": esc(record["app_version"]), "exe_name": esc(record["exe_name"]),
-            "exe_size": megabytes(record["exe_size_bytes"]), "license_text": esc(licence.read_text(encoding="utf-8").strip())}
+            "exe_size": megabytes(record["exe_size_bytes"]),
+            "pkg_name": esc(record["pkg_name"]), "pkg_size": megabytes(record["pkg_size_bytes"]), "pkg_install_gb": gigabytes_from_kbytes(record["pkg_install_kbytes"]),
+            "install_home": esc("~/" + record["app_name"].lower()),   # the default folder the macOS package's own Read Me names (~/nucleisky)
+            "license_text": esc(licence.read_text(encoding="utf-8").strip())}
 
 
 def footprint_points(example: dict) -> str:
@@ -105,9 +110,10 @@ def render(template: str, shown: dict[str, str], name: str) -> str:
     return PLACEHOLDER.sub(fill, template)
 
 
-def read_window(name: str) -> str:
-    """content/demo/windows/<name>.html; it must be one element with no blank lines (Markdown would break it)."""
-    path = SOURCE / "windows" / f"{name}.html"
+def read_window(name: str, folder: str = "windows") -> str:
+    """content/demo/<folder>/<name>.html (the program windows are in `windows`, the macOS installer in `macos`); it must be one element
+    with no blank lines (Markdown would break it)."""
+    path = SOURCE / folder / f"{name}.html"
     if not path.is_file():
         fail(f"{path} is missing")
     text = path.read_text(encoding="utf-8").strip()
