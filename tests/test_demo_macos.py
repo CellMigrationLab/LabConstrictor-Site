@@ -72,7 +72,7 @@ class FlowTests(unittest.TestCase):
     """Every page of the walkthrough exists, leads somewhere that exists, and can be reached from the first one."""
 
     def test_the_pages_are_the_ones_the_real_flow_has_in_order(self) -> None:
-        """Download, the two warnings and Privacy & Security, the seven installer pages (with the licence sheet), the Bin prompt and Finder."""
+        """Download, the two warnings and Privacy & Security, the seven installer pages (with the license sheet), the Trash prompt and Finder."""
         self.assertEqual(list(pages()), ["mac-download", "mac-blocked", "mac-settings", "mac-confirm", "mac-intro", "mac-readme", "mac-licence", "mac-agree",
                                          "mac-dest", "mac-type", "mac-installing", "mac-summary", "mac-keep", "mac-finder"])
 
@@ -97,7 +97,7 @@ class FlowTests(unittest.TestCase):
         self.assertEqual(named, set(pages()))
 
     def test_the_installing_page_waits_for_the_install_and_the_two_sheets_are_inert_behind(self) -> None:
-        """Continue on the progress page is disabled until the install ends; behind the licence sheet nothing can be focused."""
+        """Continue on the progress page is disabled until the install ends; behind the license sheet nothing can be focused."""
         self.assertRegex(pages()["mac-installing"], r'<button[^>]*data-needs-install[^>]*>Continue</button>')
         self.assertRegex(pages()["mac-agree"], r'class="mi__behind" aria-hidden="true" inert')
         self.assertIn('role="progressbar"', pages()["mac-installing"])
@@ -109,7 +109,7 @@ class WordingTests(unittest.TestCase):
     def test_the_real_macos_wording_is_there(self) -> None:
         """The labels a colleague will look for appear exactly as macOS prints them."""
         html = mac_html()
-        for phrase in ("Not Opened", "Apple could not verify", "Done", "Move to Bin", "Privacy &amp; Security", "Open Anyway", "Introduction", "Read Me", "Licence",
+        for phrase in ("Not Opened", "Apple could not verify", "Done", "Move to Trash", "Privacy &amp; Security", "Open Anyway", "Introduction", "Read Me", "License",
                        "Destination Select", "Installation Type", "Install for me only", "Install on a specific disk...", "requires about 1.3 GB of space",
                        "Standard Install on", "Install", "Installing", "completed successfully", "Close", "Keep", "Applications"):
             self.assertIn(phrase, html)
