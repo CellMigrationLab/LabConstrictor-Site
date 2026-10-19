@@ -59,6 +59,11 @@ def megabytes(size: int) -> str:
     return f"{size / 10**6:.1f} MB"
 
 
+def gigabytes_from_kbytes(kbytes: int) -> str:
+    """An installer's `installKBytes` (units of 1024 bytes) as gigabytes (10**9 bytes) with one decimal: 1307878 -> "1.3"."""
+    return f"{kbytes * 1024 / 10**9:.1f}"
+
+
 def plural(n: int, word: str) -> str:
     """plural(1, "app") -> "1 app"; plural(2, "app") -> "2 apps"."""
     return f"{n} {word}{'' if n == 1 else 's'}"

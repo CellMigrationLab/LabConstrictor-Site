@@ -94,7 +94,7 @@ class PageTests(unittest.TestCase):
 
 
 class ScriptConsistencyTests(unittest.TestCase):
-    """demo.js and the window partials must agree (the script itself has no browser test here)."""
+    """demo.js and the window partials must agree (the script itself has no browser test here; tests/browser/smoke_demo.py walks it by hand)."""
 
     def test_every_data_act_in_the_windows_has_a_handler(self) -> None:
         """A control marked data-act that demo.js does not handle would be dead, so each value must be a key of its actions map."""
@@ -103,12 +103,16 @@ class ScriptConsistencyTests(unittest.TestCase):
         used = set()
         for name in ("notebook", "napari", "fiji", "installer"):
             used |= set(re.findall(r'data-act="([a-z-]+)"', demo_media.read_window(name)))
+        used |= set(re.findall(r'data-act="([a-z-]+)"', demo_media.read_window("installer", "macos")))
         self.assertEqual(used - handled, set())
 
     def test_tab_panels_and_controls_reference_existing_ids(self) -> None:
         """Every aria-controls in the windows names an element that exists, and tab ids are unique."""
         shown = dict(demo_media.values(example()), footprint=demo_media.footprint_points(example()), **demo_option_a.values(pages_demo.load()["text"]))
-        html = pages_demo.tab_buttons() + pages_demo.category_tabs() + '<div id="demo-cat-install"></div><div id="demo-cat-use"></div>' + pages_demo.panels(shown, example())
+        installers = {"windows": demo_media.render(demo_media.read_window("installer"), dict(shown, **demo_media.installer_values()), "w"),
+                      "macos": demo_media.render(demo_media.read_window("installer", "macos"), dict(shown, **demo_media.installer_values()), "m")}
+        html = (pages_demo.tab_buttons() + pages_demo.category_tabs() + pages_demo.install_part(installers, {"text": "t", "href": "h/", "link": "l"})
+                + '<div id="demo-cat-use"></div>' + pages_demo.panels(shown, example()))
         ids = re.findall(r'\bid="([^"]+)"', html)
         self.assertEqual(len(ids), len(set(ids)))
         for target in re.findall(r'aria-controls="([^"]+)"', html):
@@ -148,6 +152,7 @@ class ScriptConsistencyTests(unittest.TestCase):
         """Simulated-window titles are not headings, so the page's own outline stays clean."""
         for name in ("notebook", "napari", "fiji", "installer"):
             self.assertNotRegex(demo_media.read_window(name), r"<h[1-6][ >]")
+        self.assertNotRegex(demo_media.read_window("installer", "macos"), r"<h[1-6][ >]")
 
 
 class CheckerTests(unittest.TestCase):

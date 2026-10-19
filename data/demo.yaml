@@ -1,15 +1,15 @@
 # Wording of the interactive demo (/demo/) and its home-page tile. The numbers shown in the three windows are NOT here:
 # they come from content/demo/example.json (written by tools/demo_assets/make_demo_assets.py), so they are never typed twice.
 title: Install and use an app
-description: Install a LabConstrictor app on Windows, then open it, in a hands-on preview with a real NucleiSky example. Nothing is installed and no analysis runs here.
-lead: "Follow what a colleague does with a LabConstrictor app: install it on Windows, then open it in JupyterLab and, as experimental previews, in napari and Fiji. NucleiSky, a microscopy registration tool, is the example. This is an interactive preview: nothing is downloaded or installed, no analysis runs here, and every result was computed in advance from example data."
+description: Install a LabConstrictor app on Windows or macOS, then open it, in a hands-on preview with a real NucleiSky example. Nothing is installed and no analysis runs here.
+lead: "Follow what a colleague does with a LabConstrictor app: install it on Windows or macOS, then open it in JupyterLab and, as experimental previews, in napari and Fiji. NucleiSky, a microscopy registration tool, is the example. This is an interactive preview: nothing is downloaded or installed, no analysis runs here, and every result was computed in advance from example data."
 packaging:
   text: Curious how an app like this is made?
   link: See how an app is packaged
   href: how-it-works/
 tiles:
-  - title: See how installation works (Windows)
-    text: Step through a simulated Windows installer, from the downloaded file to the Start menu. Nothing is downloaded or installed.
+  - title: See how installation works
+    text: Step through a simulated installer for Windows or macOS, from the downloaded file to opening the app. Nothing is downloaded or installed.
     link: Try the installation demo
     part: install
   - title: Explore an installed app
@@ -17,7 +17,7 @@ tiles:
     link: Open the installed app
     part: use
 other_systems:
-  text: "On macOS you open a .pkg file instead (and may need Open Anyway in Privacy & Security the first time); on Linux you run the .sh file with bash in a terminal."
+  text: "On Linux you run the .sh file with bash in a terminal instead of opening an installer."
   link: Install guide for every system
   href: guides/install/
 about:

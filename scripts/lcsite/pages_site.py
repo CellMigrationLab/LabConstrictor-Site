@@ -45,7 +45,7 @@ def plugin_stage() -> str:
 
 
 def page_home(site: dict, apps: list[dict]) -> None:
-    """index.md: hero with the logo and the two paths (find an app / make one, which opens How it works), then the comic (the problem), the two demo tiles (Windows installation, installed app), the optional plugin section, featured apps and the citation."""
+    """index.md: hero with the logo and the two paths (find an app / make one, which opens How it works), then the comic (the problem), the two demo tiles (installation on Windows or macOS, installed app), the optional plugin section, featured apps and the citation."""
     hero = site["hero"]
     featured = pages_home.featured_apps(apps)
     p = Page("index.md", title="LabConstrictor", head_title=f"{site['name']}: {hero['title']}", description=hero["text"], template="home.html")

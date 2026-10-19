@@ -3,9 +3,13 @@
  "app_version": "0.1.1",
  "exe_name": "NucleiSky-0.1.1-Windows-x86_64.exe",
  "exe_size_bytes": 317528492,
+ "pkg_name": "NucleiSky-0.1.1-MacOSX-arm64.pkg",
+ "pkg_size_bytes": 191733879,
+ "pkg_install_kbytes": 1307878,
  "source": {
   "repo": "CellMigrationLab/NucleiSky",
   "release_url": "https://github.com/CellMigrationLab/NucleiSky/releases/tag/0.1.1",
-  "recorded": "2026-10-11"
+  "recorded": "2026-10-11",
+  "pkg_install_kbytes_from": "installKBytes of the package's Distribution file (read from the 0.1.1 arm64 .pkg, which also declares hostArchitectures=arm64)"
  }
 }

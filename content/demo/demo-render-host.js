@@ -34,18 +34,19 @@
   }
 
   /**
-   * Draw the installer: the current page, the progress bar, the log lines reached and the Next button.
+   * Draw the Windows installer: the current page, the progress bar, the log lines reached and the Next button.
    * @param {Element} root - the demo root.
    * @param {DemoState} state - the state to draw.
    * @returns {void}
    */
   function renderInstaller(root, state) {
-    d.all(root, '[data-page]').forEach(function (p) { p.hidden = p.dataset.page !== state.page; });
-    d.one(root, '[data-progress] span').style.width = state.progress + '%';
-    d.one(root, '[data-progress]').setAttribute('aria-valuenow', String(state.progress));
-    d.all(root, '[data-log] [data-at]').forEach(function (l) { l.hidden = state.progress < Number(l.dataset.at); });
-    d.one(root, '[data-cmd]').hidden = state.progress < 85;
-    d.one(root, '[data-needs-install]').disabled = !state.installed;
+    var win = d.one(root, '[data-os-panel="windows"]');   // the macOS pages have their own drawing (demo-render-macos.js)
+    d.all(win, '[data-page]').forEach(function (p) { p.hidden = p.dataset.page !== state.page; });
+    d.one(win, '[data-progress] span').style.width = state.progress + '%';
+    d.one(win, '[data-progress]').setAttribute('aria-valuenow', String(state.progress));
+    d.all(win, '[data-log] [data-at]').forEach(function (l) { l.hidden = state.progress < Number(l.dataset.at); });
+    d.one(win, '[data-cmd]').hidden = state.progress < 85;
+    d.one(win, '[data-needs-install]').disabled = !state.installed;
     setInstallHead(root, state.installed);
   }
 

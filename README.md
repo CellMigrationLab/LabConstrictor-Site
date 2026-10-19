@@ -45,7 +45,7 @@ Find the thing you want to change; edit it **there**, never in the site's genera
 | Home page text and the copied LabConstrictor citation | `data/site.yaml` | this repository |
 | The **Submit** page | `content/submit.md` | this repository |
 | The **demo** page and its home tile (wording) | `data/demo.yaml` | this repository |
-| The demo's notebook, napari, Fiji and installer views, interactions and styles | `content/demo/windows/`, `content/demo/demo*.js`, `content/demo/demo.css`, `content/demo/installer.css` | this repository |
+| The demo's notebook, napari, Fiji and installer views, interactions and styles | `content/demo/windows/`, `content/demo/macos/installer.html`, `content/demo/demo*.js`, `content/demo/demo.css`, `content/demo/installer.css`, `content/demo/macos.css` | this repository |
 | The demo's measured result and microscopy images | `content/demo/example.json` and images; regenerate with `tools/demo_assets/make_demo_assets.py`; provenance in `content/demo/README.md` | this repository |
 | The demo's example installer and matcher settings | `content/demo/installer.json` and `matcher_config.json`; regenerate with `tools/demo_assets/installer_record.py` and `matcher_config.py` | this repository |
 | The **menu** | `nav:` in `mkdocs.yml` | this repository |

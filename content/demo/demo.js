@@ -15,6 +15,8 @@
     root.dataset.step = state.step;
     ns.renderHost.cat(root, state);
     ns.renderHost.installer(root, state);
+    ns.renderMac.os(root, state);
+    ns.renderMac.installer(root, state);
     ns.renderHost.views(root, state);
     ns.renderNotebook.steps(root, state);
     ns.renderNotebook.notebook(root, state);
@@ -81,9 +83,9 @@
     ctx.installTimer = setInterval(function () {
       ctx.state.progress = Math.min(100, ctx.state.progress + INSTALL_STEP_PERCENT);
       ctx.state.installed = ctx.state.progress === 100;
-      if (ctx.state.installed) { stopInstall(ctx); say(ctx, 'Installation complete. Click Next.'); }
+      if (ctx.state.installed) { stopInstall(ctx); say(ctx, 'Installation complete. Click ' + (ctx.state.os === 'macos' ? 'Continue' : 'Next') + '.'); }
       sync(ctx);
-      if (ctx.state.installed) { d.one(ctx.root, '[data-page="installing"] [data-needs-install]').focus(); }
+      if (ctx.state.installed) { d.one(ctx.root, '[data-page="' + ctx.state.page + '"] [data-needs-install]').focus(); }
     }, INSTALL_STEP_MS);
   }
 
@@ -118,15 +120,33 @@
   }
 
   /**
-   * Start again from the first state, with every field back to its written value.
+   * Start again from the first state, with every field back to its written value; the installer's system (Windows or macOS) is kept.
    * @param {DemoContext} ctx - the controller context.
    * @returns {void}
    */
   function restart(ctx) {
+    var os = ctx.state.os;
     clearBusy(ctx);
     stopInstall(ctx);
     ctx.state = ns.fresh();
+    ctx.state.os = os;
+    ctx.state.page = ns.os.firstPage(os);
     d.resetControls(ctx.root);
+  }
+
+  /**
+   * Show the other installer (Windows or macOS) from its first page and write the choice into the address; changing the system always restarts the walkthrough.
+   * @param {DemoContext} ctx - the controller context.
+   * @param {string} os - 'windows' or 'macos'.
+   * @returns {void}
+   */
+  function switchOs(ctx, os) {
+    if (os !== ctx.state.os) {
+      ctx.state.os = os;
+      restart(ctx);
+      ns.os.remember(os);
+    }
+    sync(ctx);
   }
 
   /**
@@ -163,7 +183,7 @@
   }
 
   /**
-   * Handle a press on one of the demo's own controls (category tabs, view tabs).
+   * Handle a press on one of the demo's own controls (part tabs, system tabs, view tabs).
    * @param {DemoContext} ctx - the controller context.
    * @param {HTMLElement} el - the control (it has data-demo-act).
    * @returns {void}
@@ -173,6 +193,7 @@
     var kind = el.dataset.demoAct;
     if (kind === 'view') { switchView(ctx, el.dataset.view); return; }
     if (kind === 'cat') { showPart(ctx, el.dataset.cat); return; }
+    if (kind === 'os') { switchOs(ctx, el.dataset.os); return; }
     throw new Error('demo: unknown data-demo-act "' + kind + '"');
   }
 
@@ -230,12 +251,12 @@
    * @returns {void}
    */
   function onKey(ctx, e) {
-    var tab = e.target.closest('[role="tab"][data-view], [role="tab"][data-cat]');
+    var tab = e.target.closest('[role="tab"][data-view], [role="tab"][data-cat], [role="tab"][data-os]');
     if (!tab || KEYS.indexOf(e.key) < 0) { return; }
     var tabs = d.all(ctx.root, '[role="tab"]').filter(function (t) { return t.parentNode === tab.parentNode; });
     var next = tabAfterKey(tabs, tab, e.key);
     e.preventDefault();
-    if (next.dataset.view) { switchView(ctx, next.dataset.view); } else { showPart(ctx, next.dataset.cat); }
+    if (next.dataset.view) { switchView(ctx, next.dataset.view); } else if (next.dataset.os) { switchOs(ctx, next.dataset.os); } else { showPart(ctx, next.dataset.cat); }
     next.focus();
   }
 
@@ -265,6 +286,8 @@
     root.addEventListener('keydown', function (e) { onKey(ctx, e); });
     root.classList.add('is-live');
     ctx.state.cat = partFromAddress();   // before the first drawing, so the page opens on the part the address names
+    ctx.state.os = ns.os.fromAddress();   // and on the installer it names (?os=macos)
+    ctx.state.page = ns.os.firstPage(ctx.state.os);
     sync(ctx);
   }
 

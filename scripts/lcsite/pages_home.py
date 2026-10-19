@@ -17,7 +17,7 @@ def comic_band(comic: str) -> str:
 
 def tiles_band(title: str, tiles: list[str]) -> str:
     """The two demo tiles under their heading, next to each other (stacked on a phone), equal in size and look: the installed app and the
-    simulated Windows installation, two parts of the same /demo/ page."""
+    simulated installation (Windows or macOS), two parts of the same /demo/ page."""
     return f'<section class="lc-band"><h2 class="lc-title">{esc(title)}</h2><div class="lc-tiles">{"".join(tiles)}</div></section>'
 
 
