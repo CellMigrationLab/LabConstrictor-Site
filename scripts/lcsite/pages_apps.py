@@ -34,6 +34,13 @@ def page_catalogue(all_apps: list[dict]) -> None:
     p.write()
 
 
+def own_homepage(app: dict) -> str:
+    """The manifest's homepage, or "" when it has none or it is only the repository address: the repository is always
+    linked by its GitHub pill, and a second plain link to it would break the one-look-per-link rule (check_design)."""
+    homepage = app["manifest"]["homepage"] if "homepage" in app["manifest"] else ""
+    return "" if homepage.rstrip("/").lower() == app["html_url"].rstrip("/").lower() else homepage
+
+
 def details_list(app: dict) -> str:
     """The facts: kind, version, license, authors, categories, links (the citation has its own section)."""
     m = app["manifest"]
@@ -45,7 +52,7 @@ def details_list(app: dict) -> str:
         rows.append(("Authors", ", ".join(esc(a["name"]) for a in m["authors"])))
     if m.get("categories"):
         rows.append(("Topics", ", ".join(esc(c) for c in m["categories"])))
-    links = [("Report a problem", app["html_url"] + "/issues" if app["has_issues"] else ""), ("Homepage", m.get("homepage")), ("Documentation", m.get("docs_url"))]
+    links = [("Report a problem", app["html_url"] + "/issues" if app["has_issues"] else ""), ("Homepage", own_homepage(app)), ("Documentation", m.get("docs_url"))]
     shown = [f'<a href="{esc(u)}">{t}</a>' for t, u in links if u] + ([] if app["has_issues"] else ["No issue tracker on GitHub"])
     rows.append(("Links", " · ".join(shown)))
     return '<h2 id="details">Details</h2><dl class="lc-facts">' + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows) + "</dl>"
@@ -57,8 +64,8 @@ def header_links(app: dict) -> str:
     pills = [github_badge(app["repo"])]
     if m.get("docs_url"):
         pills.append(link_pill(m["docs_url"], "Documentation", "docs"))
-    if m.get("homepage"):
-        pills.append(link_pill(m["homepage"], "Website", "web"))
+    if own_homepage(app):
+        pills.append(link_pill(own_homepage(app), "Website", "web"))
     return "".join(pills)
 
 
