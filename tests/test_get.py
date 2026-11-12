@@ -109,6 +109,17 @@ class DownloadBlockTests(unittest.TestCase):
         self.assertIn("No issue tracker on GitHub", quiet)
 
 
+    def test_a_homepage_that_is_the_repository_is_not_linked_twice(self) -> None:
+        """A homepage equal to the repository (any case, trailing slash) gives no Homepage link and no Website pill; another homepage gives both."""
+        same = app([ASSET])
+        same["manifest"]["homepage"] = "https://github.com/O/a/"
+        self.assertNotIn("Homepage", pages_apps.details_list(same))
+        self.assertNotIn("Website", pages_apps.header_links(same))
+        other = app([ASSET])
+        other["manifest"]["homepage"] = "https://a.example/"
+        self.assertIn('<a href="https://a.example/">Homepage</a>', pages_apps.details_list(other))
+        self.assertIn("Website", pages_apps.header_links(other))
+
 if __name__ == "__main__":
     unittest.main()
 
