@@ -50,7 +50,7 @@ The [full schema]({{schema_url}}) lists every field (authors, DOI, screenshots a
 |---|---|
 | **Required** | `schema`, `name`, `summary`, `kind`, `distribution` |
 | **Recommended** (the page says "Not stated" or leaves it out; the build reports it, and your app stays listed) | `status`, `quickstart`, `screenshots`, a licence, and for analysis, segmentation and simulation apps `inputs` and `outputs` |
-| **Optional** | `limitations`, `description`, `authors`, `doi`, `categories`, `homepage`, `docs_url`, `icon` |
+| **Optional** | `limitations`, `description`, `authors`, `doi`, `categories`, `homepage`, `docs_url`, `icon`, `host_requirements` (the oldest napari, Fiji or QuPath plugin your tools need; the app page lists it under "Plugin versions" and the plugins tell people with an older one to update) |
 
 ## 2. Make sure your release is ready
 

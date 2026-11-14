@@ -105,7 +105,7 @@ def page_app(app: dict, steps: dict[str, str]) -> None:
           f'{"".join(host_badge(h) for h in plugins)}{testing_badge(app)}</p><p>{header_links(app)}</p></header>')
     if m.get("description"):
         p.add('<h2 id="about">About</h2>', paragraphs(m["description"]))
-    p.add(pages_facts.gallery(app), pages_facts.works_with(app), pages_get.get_section(app, steps), pages_get.notebooks_section(app),
+    p.add(pages_facts.gallery(app), pages_facts.works_with(app), pages_facts.plugin_versions(app), pages_get.get_section(app, steps), pages_get.notebooks_section(app),
           pages_get.using_section(app), pages_facts.limitations(app), citation.app_section(app))
     if app["release"] and m["distribution"].get("installer"):
         p.add(pages_get.downloads_table(app))

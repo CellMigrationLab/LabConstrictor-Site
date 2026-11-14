@@ -28,6 +28,31 @@ def works_with(app: dict) -> str:
     return ""
 
 
+PLUGINS = {"napari": "napari", "fiji": "Fiji", "qupath": "QuPath"}   # the order of the manifest schema's host_requirements
+
+
+def plugin_versions(app: dict) -> str:
+    """"Plugin versions": the oldest LabConstrictor plugin of each program the manifest's host_requirements asks for, so that people
+    install a new enough one from the start (the plugins say the same when theirs is older). Nothing when the manifest asks for none."""
+    m = app["manifest"]
+    wanted = m["host_requirements"] if "host_requirements" in m else {}
+    items = []
+    for key, name in PLUGINS.items():
+        if key not in wanted:
+            continue
+        need = wanted[key]
+        repo = f"https://github.com/CellMigrationLab/LabConstrictor-{name}/releases/latest"
+        what = [f"{esc(need['min_version'])} or newer"] if "min_version" in need else []
+        what += [f"with <code>{esc(f)}</code>" for f in optional_list(need, "features")]
+        why = f": {esc(need['why'])}" if "why" in need else ""
+        strict = " (required)" if "required" in need and need["required"] else ""
+        items.append(f'<li><a href="{esc(repo)}">LabConstrictor-{name}</a> {" ".join(what)}{strict}{why}</li>')
+    if not items:
+        return ""
+    return ('<h2 id="plugin-versions">Plugin versions</h2><p class="lc-small">The authors say it needs at least:</p>'
+            f'<ul>{"".join(items)}</ul>')
+
+
 def limitations(app: dict) -> str:
     """The "Limitations" section, only when the manifest lists some (nobody can be required to list limits)."""
     items = optional_list(app["manifest"], "limitations")
