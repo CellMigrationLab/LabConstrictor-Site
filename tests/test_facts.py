@@ -13,6 +13,18 @@ def app(kind: str = "analysis", section: str = "apps", **extra: object) -> dict:
 class FactsTests(unittest.TestCase):
     """What the page says for a fact that is there, and for one that is not."""
 
+    def test_plugin_versions_list_what_the_manifest_asks_for(self) -> None:
+        """Each plugin the manifest asks for, in the schema's order, with its version, features, reason and update link."""
+        need = {"qupath": {"min_version": "0.1.0-alpha.6", "features": ["shapes_owner_v1"], "why": "Replace keeps <yours>"},
+                "fiji": {"min_version": "0.1.0-alpha.6", "required": True}}
+        html = pages_facts.plugin_versions(app(host_requirements=need))
+        self.assertIn('id="plugin-versions"', html)
+        self.assertLess(html.index("LabConstrictor-Fiji"), html.index("LabConstrictor-QuPath"))
+        self.assertIn("0.1.0-alpha.6 or newer with <code>shapes_owner_v1</code>: Replace keeps &lt;yours&gt;", html)
+        self.assertIn("LabConstrictor-Fiji/releases/latest", html)
+        self.assertIn("or newer (required)", html)
+        self.assertEqual(pages_facts.plugin_versions(app()), "")
+
     def test_inputs_and_outputs_are_listed_as_escaped_plain_text(self) -> None:
         """The authors' lines appear under Works with and Produces, and HTML in them is escaped."""
         html = pages_facts.works_with(app(inputs=["TIFF <img src=x>"], outputs=["A table of positions"]))
