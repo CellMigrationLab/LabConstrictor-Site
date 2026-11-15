@@ -19,7 +19,7 @@ Everything in this folder is **generated** by `tools/demo_assets/make_demo_asset
 | `query.webp` | the query (a generated random crop), shown at 3× |
 | `nuclei_outlines_roi.webp` | outlines of the reference nuclei in that region (from the supplied masks) |
 | `qc_figure.webp`, `run_log.txt` | NucleiSky's own quality-control figure and its printed output (matrices removed) for the adaptive run, shown in the notebook view |
-| `nucleisky-icon.png` | the app icon, cropped (circle only) and shrunk from `app/logo/Gemini_Generated_Image_kc5ezfkc5ezfkc5e.png` in the NucleiSky repository (the file name suggests it was made with an image generator: rights to be confirmed, see planning/QUESTIONS-FOR-AUTHORS.md) |
+| `nucleisky-icon.png` | the app icon, cropped (circle only) and shrunk from `app/logo/Gemini_Generated_Image_kc5ezfkc5ezfkc5e.png` in the NucleiSky repository (the file name suggests it was made with an image generator: rights to be confirmed with the NucleiSky authors) |
 | `example.json` | inputs (SHA-256), pixel sizes, transform, attempts, footprint corners, display windows |
 
 Display only: intensities are stretched linearly between the 1st and 99.8th percentiles; images are enlarged with bicubic interpolation and saved as WebP. No value shown on the page is computed from these images.
