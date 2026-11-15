@@ -36,6 +36,23 @@ class GuideTests(unittest.TestCase):
         self.assertIn("(../one-x/index.md#h)", text)
         self.assertIn("https://github.com/CellMigrationLab/LabConstrictor/blob/main/README.md", text)
 
+    def test_unlisted_design_notes_are_not_warned_about(self) -> None:
+        """The migration design notes stay off the site without a warning; links to them go to GitHub; other unlisted pages are named."""
+        import contextlib
+        import io
+        with tempfile.TemporaryDirectory() as tmp:
+            docs = Path(tmp) / "docs"
+            docs.mkdir()
+            for name in ("README.md", "one.md", "migration_0_1_28.md", "stray.md"):
+                (docs / name).write_text("# x\n", encoding="utf-8")
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err):
+                guides.warn_unlisted(docs, [{"items": [{"file": "one.md"}]}], [])
+        self.assertIn("stray.md", err.getvalue())
+        self.assertNotIn("migration_0_1_28.md", err.getvalue())
+        text = guides.rewrite_links("[n](migration_0_1_28.md)", {"one.md"})
+        self.assertIn("https://github.com/CellMigrationLab/LabConstrictor/blob/main/.tools/docs/migration_0_1_28.md", text)
+
     def test_template_footer_navigation_is_removed(self) -> None:
         """Template footer navigation is removed."""
         body = 'Text\n<div align="center">\n\n[Previous](a.md) [Home](README.md)\n\n</div>\n'

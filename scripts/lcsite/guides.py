@@ -18,6 +18,7 @@ from .page import Page
 from .text import esc, lead_paragraph
 
 SKIP = {"download_executable.md"}   # written per app (it carries one app's name); the generic install.md replaces it
+DESIGN_NOTE = re.compile(r"migration_\d+_\d+_\d+\.md")   # the template's per-version design notes: kept in the template, not user guides
 LINK = re.compile(r"\]\(\s*(?!(?:[a-z][a-z0-9+.-]*:|#|/))(?:\./)?([A-Za-z0-9_./-]+\.[A-Za-z0-9]+)(#[^)\s]*)?\s*\)")
 IMAGE = re.compile(rf"https://github\.com/{TEMPLATE_REPO}/(?:blob|raw)/doc_source/([^\s)\"'?]+)(?:\?raw=true)?")
 NAV_BLOCK = re.compile(r'<div align="center">(?:(?!</div>).)*?(?:Previous|Next|[Hh]ome)(?:(?!</div>).)*?</div>', re.S)
@@ -208,9 +209,10 @@ def write_guide(g: dict, nav: list[dict], tail: str, template: tuple, pages: dic
 
 
 def warn_unlisted(docs_dir: Path, theirs: list[dict], own: list[dict]) -> None:
-    """Print a WARNING for each page in the template's docs that its README does not list (so it is not on the site)."""
+    """Print a WARNING for each page in the template's docs that its README does not list (so it is not on the site);
+    the migration design notes are left off the site on purpose (links to them go to GitHub)."""
     listed = {g["file"] for s in theirs + own for g in s["items"] if "file" in g} | SKIP | {"README.md"}
-    for name in sorted(p.name for p in docs_dir.glob("*.md") if p.name not in listed):
+    for name in sorted(p.name for p in docs_dir.glob("*.md") if p.name not in listed and not DESIGN_NOTE.fullmatch(p.name)):
         print(f"WARNING: {docs_dir.name}/{name} is not listed in the README of the template's docs, so it is not on the site", file=sys.stderr)
 
 
