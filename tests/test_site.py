@@ -70,7 +70,7 @@ class DataTests(unittest.TestCase):
 
 
 class RobotsTests(unittest.TestCase):
-    """The site stays out of search engines until `extra.listed` is true."""
+    """`extra.listed` decides whether search engines may crawl the site."""
 
     def test_unlisted_robots_disallows_everything(self) -> None:
         """robots.txt for an unlisted site blocks all crawling and names no sitemap."""

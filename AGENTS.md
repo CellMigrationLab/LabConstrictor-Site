@@ -40,7 +40,7 @@ Each fact is written in one place. Fix it there, never in a generated file.
 - **Moved addresses**: `data/redirects.yaml` (old -> new, both with a trailing slash) writes a small redirect page at the old address; the build stops if the old address is a real page or the new one does not exist. Add a line whenever a page is renamed, including a template doc renamed in the template.
 - The logo and the comic come from the template's `doc_source` branch.
 - **Generated and git-ignored**: `docs/index.md`, `docs/apps/`, `docs/guides/`, `docs/use/`, `docs/build/`, `docs/ecosystem.md`, `docs/submit.md`, `docs/demo/`, `docs/assets/demo/`, `docs/llms.txt`, `docs/assets/{icons,shots,docs-img,images,hubs}/`, `build/`, `site/`.
-- The site is unlisted while `extra.listed` is `false` in `mkdocs.yml` (noindex on every page, `robots.txt` disallows all, empty sitemap). `site_url` is the address everything follows.
+- The site is indexable because `extra.listed` is `true` in `mkdocs.yml` (`false` would put noindex on every page, make `robots.txt` disallow all and empty the sitemap). `site_url` is the address everything follows.
 
 ## Design
 
