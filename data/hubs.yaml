@@ -22,7 +22,7 @@ use:
       image: {doc_source: Welcome_Notebook.png}
       alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks under orange header cells and a blue Open the notebook button.
     - title: Use it in your image software (experimental)
-      text: An app's declared tools can run in napari, Fiji and QuPath through experimental plugins; this needs a development version of the template. The picture is a prototype.
+      text: An app's declared tools can run in napari, Fiji and QuPath through experimental plugins. The picture is a prototype.
       href: guides/image-software/
       link: Use apps in your image software
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/N2_napari_form.png}
@@ -72,7 +72,7 @@ build:
       link: Submit your app
       live_card: true
     - title: It can reach napari, Fiji and QuPath (experimental)
-      text: An app's declared tools can run in those programs through experimental plugins; this needs a development version of the template.
+      text: An app's declared tools can run in those programs through experimental plugins.
       href: guides/image-software/
       link: Use apps in your image software
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/F2_fiji_form_top.png}

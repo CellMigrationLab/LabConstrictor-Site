@@ -115,7 +115,7 @@ class WordingTests(unittest.TestCase):
             self.assertIn(phrase, html)
 
     def test_it_states_only_what_is_sourced(self) -> None:
-        """Unsigned and Apple silicon are said (install guide; the package's own architecture and file name); nothing is said about Intel Macs (planning/DECISIONS.md 18)."""
+        """Unsigned and Apple silicon are said (install guide; the package's own architecture and file name); nothing is said about Intel Macs (no app owner has stated whether Intel Macs are supported)."""
         html = mac_html()
         self.assertIn("not code-signed", html)
         self.assertIn("Apple silicon", html)

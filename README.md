@@ -1,8 +1,8 @@
 # LabConstrictor website
 
-**Preview:** <https://cellmigrationlab.github.io/LabConstrictor-Site/>
+**Site:** <https://cellmigrationlab.github.io/LabConstrictor-Site/>
 
-The preview is accessible but has not been officially launched. Its pages tell search engines not to index them; this is not an access restriction. The intended public address is `https://labconstrictor.cellmig.org/`. Some LabConstrictor guides already link to that address, and app manifests reference its schema URL. Check that the domain works before announcing the launch.
+The intended public address is `https://labconstrictor.cellmig.org/`. Some LabConstrictor guides already link to that address, and app manifests reference its schema URL. Check that the domain works before announcing the launch.
 
 ## What it does
 
@@ -72,11 +72,11 @@ Successful `main` and scheduled builds deploy the site; the time it takes depend
 
 A missing or invalid guide, required picture or ecosystem project file stops the build. **App catalogue failures are different:** if an individual app's manifest or release cannot be resolved, that app is omitted and the reason is recorded in `build/problems.md`. Pull-request builds fail when any registered app is omitted; `main` and scheduled builds can publish the remaining apps. A scheduled build also opens or updates an issue about omitted apps.
 
-## Going public
+## Search engines
 
-In `mkdocs.yml`, `extra: listed: false` adds `noindex` instructions to the pages, creates an empty sitemap and writes a disallowing `robots.txt`. These are indexing instructions, not access controls. On the GitHub Pages project URL, the generated `robots.txt` is not at the host root, so the page-level `noindex` instruction is especially important.
+`extra: listed: true` in `mkdocs.yml` lets search engines index the site: the sitemap lists every page and `robots.txt` allows crawling. Setting it to `false` adds `noindex` instructions to the pages, creates an empty sitemap and writes a disallowing `robots.txt` (indexing instructions, not access controls).
 
-At launch, confirm the custom domain and the links already pointing to it, update `site_url`, and set `extra: listed: true`.
+When the custom domain goes live, confirm the links already pointing to it and update `site_url`.
 
 ## For developers and agents
 
