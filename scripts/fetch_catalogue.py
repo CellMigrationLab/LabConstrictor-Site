@@ -1,13 +1,14 @@
 """Resolve the registry into build/snapshot.json (the only step that uses the network).
 
-    python scripts/fetch_catalogue.py [--strict] [--manifest-dir seed/manifests]
+    python scripts/fetch_catalogue.py [--strict] [--manifest-dir DIR]
 
 Reads registry/*.yaml, each app's labconstrictor-app.yaml and latest GitHub release.
 Writes build/snapshot.json, build/problems.md and build/media/<app>/ (icons, screenshots).
 Apps that cannot be resolved are left out and listed in problems.md; --strict makes the
 command exit with status 3 when there are any (use it in pull-request checks). A GitHub outage (network, rate limit,
 server error) stops the fetch with status 4 and writes nothing, so the site is never rebuilt from a half-empty catalogue.
---manifest-dir previews manifests that are not yet in the app repositories (development only).
+--manifest-dir DIR reads each app's manifest from DIR/<repo name>.yaml instead of its repository, to preview
+a manifest change before it is pushed (development only).
 """
 
 import argparse
