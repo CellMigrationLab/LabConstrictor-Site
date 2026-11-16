@@ -105,7 +105,7 @@ make_it_yours:
       href: guides/app-manifest/
       label: Describe your app for the App Centre
     - text: "Experimental: tools that the napari, Fiji and QuPath plugins can run, declared in a module named <package>_lc_tools next to your helper code. The installers register them when the app is installed."
-      href: "https://github.com/CellMigrationLab/LabConstrictor-Tools/blob/main/docs/AUTHORING.md"
+      href: guides/writing-tools/
       label: "Declare tools for napari, Fiji and QuPath"
 map:
   pipeline_file: pipeline.webp
