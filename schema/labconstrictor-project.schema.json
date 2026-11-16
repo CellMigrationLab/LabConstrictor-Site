@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://labconstrictor.cellmig.org/schema/labconstrictor-project.schema.json",
+  "$id": "https://cellmigrationlab.github.io/LabConstrictor-Site/schema/labconstrictor-project.schema.json",
   "title": "docs/labconstrictor-project.yaml",
   "description": "How a project around LabConstrictor (a plugin, a library, a web form) describes itself on the LabConstrictor website's Ecosystem page. Kept in the project's own repository at docs/labconstrictor-project.yaml.",
   "type": "object",
