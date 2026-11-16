@@ -38,6 +38,16 @@ class DesignTests(unittest.TestCase):
         self.assertIn('src="s.png" loading="lazy"', out)
         self.assertIn('<img src="logo.png">', out)
 
+    def test_a_sibling_site_on_the_same_host_is_outside(self) -> None:
+        """Another project's pages on github.io share the host name but not the path: they open in a new tab; the site's own pages do not."""
+        from lcsite.text import opens_new_tab
+        site = "https://cellmigrationlab.github.io/LabConstrictor-Site/"
+        self.assertTrue(opens_new_tab("https://cellmigrationlab.github.io/LabConstrictor-Tools/INSTALL/", site))
+        self.assertTrue(opens_new_tab("https://cellmigrationlab.github.io/LabConstrictor-Site-old/", site))
+        self.assertFalse(opens_new_tab("https://cellmigrationlab.github.io/LabConstrictor-Site/guides/", site))
+        self.assertFalse(opens_new_tab("https://cellmigrationlab.github.io/LabConstrictor-Site", site))
+        self.assertFalse(opens_new_tab("mailto:a@b.c", site))
+
     def test_design_rules_catch_what_they_claim_to(self) -> None:
         """A page that breaks the rules is reported for each break; a clean page for none."""
         import check_design
