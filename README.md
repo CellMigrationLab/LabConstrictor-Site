@@ -2,7 +2,7 @@
 
 **Site:** <https://cellmigrationlab.github.io/LabConstrictor-Site/>
 
-The intended public address is `https://labconstrictor.cellmig.org/`. Some LabConstrictor guides already link to that address, and app manifests reference its schema URL. Check that the domain works before announcing the launch.
+This is the site's permanent address; the manifest schemas are served from it too (`schema/`).
 
 ## What it does
 

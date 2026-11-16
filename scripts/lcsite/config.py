@@ -26,7 +26,7 @@ GENERATED = ["index.md", "apps", "guides", "use", "build", "ecosystem.md", "rela
              "demo", "assets/demo", "how-it-works", "assets/how", "assets/docs-img", "assets/hubs", "assets/hosts", "assets/icons", "assets/shots", "assets/images"]
 
 
-FINAL_URL = "https://labconstrictor.cellmig.org/"   # the address the docs and schemas name; until the domain is live the site is served elsewhere
+FINAL_URL = "https://labconstrictor.cellmig.org/"   # a custom domain once planned for the site, never live; links to it in imported docs are rewritten to SITE_URL
 
 
 def _site_url() -> str:

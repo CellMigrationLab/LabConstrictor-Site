@@ -76,6 +76,13 @@ def is_external(url: str) -> bool:
 
 def opens_new_tab(url: str, site_url: str) -> bool:
     """Web links that leave the site open in a new tab; site pages, fragments
-    and other schemes do not. Compared by host name, not by text prefix."""
+    and other schemes do not. A link is on the site when it has the site's host name
+    and lies under the site's path: on github.io, other projects of the same owner
+    (the LabConstrictor-Tools docs) share the host but are other sites."""
     link, site = urlsplit(str(url)), urlsplit(site_url)
-    return link.scheme.lower() in ("http", "https") and link.hostname != site.hostname
+    if link.scheme.lower() not in ("http", "https"):
+        return False
+    if link.hostname != site.hostname:
+        return True
+    base = site.path.rstrip("/") + "/"
+    return not (link.path.rstrip("/") + "/").startswith(base)

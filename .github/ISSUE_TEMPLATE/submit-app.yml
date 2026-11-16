@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Before you submit: your repository is public, has a license, contains a `labconstrictor-app.yaml`
-        ([how to write one](https://labconstrictor.cellmig.org/submit/)), and your latest release carries the installers (if you offer them).
+        ([how to write one](https://cellmigrationlab.github.io/LabConstrictor-Site/submit/)), and your latest release carries the installers (if you offer them).
   - type: input
     id: repo
     attributes:
