@@ -243,7 +243,7 @@ def claim_template_pages(own: list[dict], theirs: list[dict]) -> None:
 
 
 def read_sections(docs_dir: Path) -> tuple[list[dict], list[dict]]:
-    """Our own sections (data/guides.yaml, track "use") and the template's (its docs README, track "build"), each guide
+    """Our own sections (data/guides.yaml, track "use" unless a section says `track: build`) and the template's (its docs README, track "build"), each guide
     with its slug and where it comes from. Guides kept in other repositories are titled by their first heading."""
     own = load_yaml(DATA / "guides.yaml")["sections"]
     theirs = parse_index((docs_dir / "README.md").read_text(encoding="utf-8"))
@@ -252,7 +252,9 @@ def read_sections(docs_dir: Path) -> tuple[list[dict], list[dict]]:
         for g in s["items"]:
             g.update(slug=slug_of(g["file"]), from_template=True)
     for s in own:
-        s["track"] = "use"
+        s["track"] = s["track"] if "track" in s else "use"
+        if s["track"] not in TRACKS:
+            fail(f"data/guides.yaml: section {s['title']!r} has track {s['track']!r}, expected one of {sorted(TRACKS)}")
         s["items"] = [dict(g, from_template="template" in g) for g in s["items"]]
         for g in (g for g in s["items"] if "repo" in g):
             g["title"] = sources.title_of(sources.read(g["repo"], g["path"]), f"{g['repo']}/{g['path']}")
@@ -272,7 +274,7 @@ def build(template_dir: Path, doc_source: Path) -> list[dict]:
     clash = {g["slug"] for s in own for g in s["items"] if not g["from_template"]} & {g["slug"] for s in theirs for g in s["items"]}
     if clash:
         fail(f"guide address used twice (data/guides.yaml and the template): {sorted(clash)}")
-    sections = own + [s for s in theirs if s["items"]]
+    sections = [s for s in own if s["track"] == "use"] + [s for s in theirs if s["items"]] + [s for s in own if s["track"] == "build"]
     title_template_pages(sections, docs_dir)
     warn_unlisted(docs_dir, theirs, own)
     nav = nav_for(sections)
