@@ -62,7 +62,6 @@
       d.setSelected(t, on);
       d.one(root, '#demo-panel-' + t.dataset.view).hidden = !on;
     });
-    d.one(root, '[data-demo-experimental]').hidden = state.view === 'notebook';
     d.one(root, '[data-how]').hidden = state.view === 'notebook';
   }
 

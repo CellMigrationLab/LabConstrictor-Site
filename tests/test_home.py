@@ -61,7 +61,7 @@ class FeaturedTests(unittest.TestCase):
 
 
 class PluginTests(unittest.TestCase):
-    """The plugin section is optional, experimental and has one link."""
+    """The plugin section is optional and has one link; it names the plugins' stage only when it is not Available."""
 
     def test_the_section_names_the_stage_and_links_to_the_ecosystem_once(self) -> None:
         """The stage chip (in the row of pills), no claim about operating systems, and one link to the Ecosystem page."""
@@ -72,6 +72,12 @@ class PluginTests(unittest.TestCase):
         self.assertIn(">Experimental<", html)
         self.assertNotIn("Linux", html)
         self.assertEqual(html.count('href="ecosystem/"'), 1)
+
+    def test_available_plugins_get_no_stage_chip(self) -> None:
+        """Available is the normal case: the row has the program pills only."""
+        from lcsite import pages_site
+        with mock.patch.object(pages_site.hosts, "load", return_value={}):
+            self.assertNotIn("lc-badge--status", pages_site.program_pill_row("Available"))
 
 
 class EcosystemCardTests(unittest.TestCase):

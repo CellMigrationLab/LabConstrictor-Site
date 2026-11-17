@@ -138,7 +138,7 @@ def page_demo(apps: list[dict]) -> None:
     p.add(f'<div class="lc-demo" data-demo data-search-exclude><div class="lc-demo__live">{category_tabs()}{tab_buttons()}<p class="lc-demo__next" data-next></p>'
           f'{install_part(installers, text["other_systems"])}'
           f'<div role="tabpanel" id="demo-cat-use" aria-labelledby="demo-cat-tab-use" data-cat-panel="use" hidden>'
-          f'<p class="lc-demo__experimental" data-demo-experimental hidden>{esc(text["experimental"])} <a href="#demo-how">{esc(text["how"]["title"])} &darr;</a></p>{panels(shown, example)}{how_it_works(text)}</div></div>{static_figures(text)}</div>')
+          f'{panels(shown, example)}{how_it_works(text)}</div></div>{static_figures(text)}</div>')
     p.add(about_and_features(text))
     p.add(credits(text))
     p.write()

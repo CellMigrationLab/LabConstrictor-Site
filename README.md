@@ -6,7 +6,7 @@ This is the site's permanent address; the manifest schemas are served from it to
 
 ## What it does
 
-[LabConstrictor](https://github.com/CellMigrationLab/LabConstrictor) packages workflows developed in Jupyter notebooks as installable desktop apps. The notebooks remain the main interface. Authors can also expose selected Python functions in napari, Fiji or QuPath through optional, experimental plugins.
+[LabConstrictor](https://github.com/CellMigrationLab/LabConstrictor) packages workflows developed in Jupyter notebooks as installable desktop apps. The notebooks remain the main interface. Authors can also expose selected Python functions in napari, Fiji or QuPath through optional plugins.
 
 This repository contains the website, not the packaging template or the plugins. It includes:
 
