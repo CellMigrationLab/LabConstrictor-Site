@@ -8,7 +8,8 @@ Fails (exit status 1) and lists every problem when:
   - an "edit this page" link points at a generated file instead of its source,
   - a page has no current entry in the top menu, or cannot be reached from the home page within 3 clicks,
   - an imported guide carries active code (a script, frame, event handler or script address),
-  - a file that must exist is missing (sitemap, robots.txt, llms.txt, the schemas).
+  - a file that must exist is missing (sitemap, robots.txt, llms.txt, the schemas),
+  - a page shows Markdown as text: link syntax or a code fence outside code.
 Run it after `zensical build` and `write_sitemap.py`.
 """
 
@@ -166,11 +167,13 @@ def reach_problems(pages: dict[Path, PageParts], max_clicks: int = 3) -> list[st
 
 
 LITERAL_LINK = re.compile(r"\]\([^)\s]")
+LITERAL_FENCE = re.compile(r"```|~~~")   # a code block the Markdown did not see (it shows its fence and language name as text)
 CODE_BLOCK = re.compile(r"<(pre|code)\b.*?</\1>", re.S)
 
 
 def literal_markdown_problems() -> list[str]:
-    """Pages whose text still shows Markdown link syntax "](" outside code (a footer written in the wrong format), as "page: message" lines."""
+    """Pages whose text still shows Markdown link syntax "](" (a footer written in the wrong format) or a code fence (a code block written
+    where the site's Markdown does not see it) outside code, as "page: message" lines."""
     found = []
     for page in sorted(SITE.rglob("*.html")):
         text = page.read_text(encoding="utf-8")
@@ -178,6 +181,8 @@ def literal_markdown_problems() -> list[str]:
         visible = re.sub(r"<[^>]+>", "", CODE_BLOCK.sub("", main))
         if LITERAL_LINK.search(visible):
             found.append(f"{page.relative_to(SITE)}: shows literal Markdown link syntax ](...)")
+        if LITERAL_FENCE.search(visible):
+            found.append(f"{page.relative_to(SITE)}: shows a literal code fence (```); the code block was not rendered")
     return found
 
 

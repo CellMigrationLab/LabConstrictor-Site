@@ -13,7 +13,7 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from .config import CONTENT, DATA, DOCS, FINAL_URL, REPO, SITE_URL, TEMPLATE_REPO, fail, load_yaml
-from . import hosts, sources
+from . import gfm, hosts, sources
 from .page import Page
 from .text import esc, lead_paragraph
 
@@ -105,7 +105,7 @@ def install_sections(template_dir: Path, doc_source: Path) -> dict[str, str]:
     src = template_dir / ".tools" / "docs" / "install.md"
     if not src.is_file():
         fail(f"{src} not found: pass --template-dir with a checkout of {TEMPLATE_REPO}")
-    text = localise(copy_images(rewrite_links(own_repo_paths(src.read_text(encoding="utf-8")), set()), doc_source, "install.md"))
+    text = gfm.lists(localise(copy_images(rewrite_links(own_repo_paths(src.read_text(encoding="utf-8")), set()), doc_source, "install.md")))
     parts = re.split(r"^## +(.+?)\s*$", text, flags=re.M)
     found: dict[str, str] = {}
     for title, body in zip(parts[1::2], parts[2::2]):
@@ -159,7 +159,7 @@ def write_own(item: dict, nav: list[dict], tail: str) -> None:
     src = CONTENT / "guides" / item["file"]
     if not src.is_file():
         fail(f"data/guides.yaml lists {item['file']}, which is not in content/guides/")
-    text = localise(src.read_text(encoding="utf-8").strip())
+    text = gfm.lists(localise(src.read_text(encoding="utf-8").strip()))
     p = Page(f"guides/{item['slug']}/index.md", **guide_meta(nav, item["slug"]), description=describe(text, item["file"]),
              edit_url=f"{REPO}/edit/main/content/guides/{item['file']}")
     p.add(text, "", tail)
@@ -178,7 +178,7 @@ def write_source_guide(g: dict, nav: list[dict], tail: str, pages: dict[tuple[st
     where = f"{g['repo']}/{g['path']}"
     text = sources.read(g["repo"], g["path"])
     sources.check_links(text, where)
-    text = localise(sources.admonitions(sources.site_links(text, pages)))
+    text = gfm.lists(localise(sources.admonitions(sources.site_links(text, pages))))
     p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]), description=describe(text, where),
              edit_url=f"https://github.com/{g['repo']}/edit/main/{g['path']}")
     p.add(text.strip(), "", tail)
@@ -191,7 +191,7 @@ def write_template_guide(g: dict, docs_dir: Path, doc_source: Path, nav: list[di
     if not src.is_file():
         fail(f"README of the template lists {g['file']}, which does not exist")
     text = NAV_BLOCK.sub("", src.read_text(encoding="utf-8"))
-    text = localise(copy_images(rewrite_links(own_repo_paths(text), known), doc_source, g["file"]))
+    text = gfm.lists(localise(copy_images(rewrite_links(own_repo_paths(text), known), doc_source, g["file"])))
     edit = f"https://github.com/{TEMPLATE_REPO}/edit/main/.tools/docs/{g['file']}"
     p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]), description=describe(text, g["file"]), edit_url=edit)
     p.add(text.strip(), "", tail)

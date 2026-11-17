@@ -40,7 +40,7 @@ markdown_extensions:
   - attr_list
   - md_in_html
   - admonition
-  - fenced_code
+  - pymdownx.superfences   # fenced code also inside list items (fenced_code only sees it at the top level)
   - sane_lists
   - tables
   - toc:
