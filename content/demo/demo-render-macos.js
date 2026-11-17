@@ -35,7 +35,7 @@
   }
 
   /**
-   * Draw the macOS installer: the current page, the double-click target that was clicked once, and the progress page.
+   * Draw the macOS installer: the current page and the progress page (demo.js marks the double-click target that was clicked once).
    * @param {Element} root - the demo root.
    * @param {DemoState} state - the state to draw.
    * @returns {void}
@@ -43,7 +43,6 @@
   function renderInstaller(root, state) {
     var panel = d.one(root, '[data-os-panel="macos"]');
     d.all(panel, '[data-page]').forEach(function (p) { p.hidden = p.dataset.page !== state.page; });
-    d.all(panel, '[data-dbl]').forEach(function (el) { el.classList.toggle('is-selected', state.selectedKey === el.dataset.act + el.dataset.go); });
     renderProgress(panel, state);
   }
 

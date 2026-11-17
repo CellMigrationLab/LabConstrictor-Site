@@ -8,11 +8,9 @@ on:
     - cron: "23 5 * * *"      # daily: new releases of listed apps appear without a commit here
   workflow_dispatch:
 
+# Each job gets only what it needs (below): the build, which also runs on pull requests, can only read.
 permissions:
   contents: read
-  pages: write
-  id-token: write
-  issues: write
 
 # One run per branch at a time; a newer pull-request build cancels an older one, but a deploy is never cancelled.
 concurrency:
@@ -22,6 +20,11 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      left_out: ${{ steps.problems.outputs.left_out }}
+      problems: ${{ steps.problems.outputs.text }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -60,17 +63,16 @@ jobs:
       - name: Fetch the guides of the other repositories
         run: python scripts/fetch_guides.py
 
-      - name: Report left-out apps
+      # The report job (below) opens or updates the issue; problems.md holds text from app manifests, so the output ends with a
+      # random marker it cannot contain.
+      - name: Collect left-out apps
+        id: problems
         if: github.event_name == 'schedule'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cat build/problems.md >> "$GITHUB_STEP_SUMMARY"
           if grep -q '^- .*/' <(sed -n '/^# Catalogue problems/,/^## Warnings/p' build/problems.md); then
-            title="Catalogue: apps left out of the site"
-            number=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number')
-            if [ -n "$number" ]; then gh issue comment "$number" --body-file build/problems.md
-            else gh issue create --title "$title" --body-file build/problems.md; fi
+            end="END_$(openssl rand -hex 16)"
+            { echo "left_out=true"; echo "text<<$end"; cat build/problems.md; echo "$end"; } >> "$GITHUB_OUTPUT"
           fi
 
       - name: Generate pages
@@ -112,6 +114,9 @@ jobs:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -119,11 +124,32 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
 
+  # Apps left out of a daily build: open (or update) one issue, so the maintainers hear of it.
+  report:
+    if: always() && github.event_name == 'schedule' && needs.build.outputs.left_out == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      PROBLEMS: ${{ needs.build.outputs.problems }}
+    steps:
+      - name: Open or update the "apps left out" issue
+        run: |
+          title="Catalogue: apps left out of the site"
+          number=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number')
+          if [ -n "$number" ]; then printf '%s\n' "$PROBLEMS" | gh issue comment "$number" --body-file -
+          else printf '%s\n' "$PROBLEMS" | gh issue create --title "$title" --body-file -; fi
+
   # A failed daily build leaves the old site online and tells nobody: open (or update) an issue so someone looks.
   notify:
     if: always() && github.event_name == 'schedule' && (needs.build.result == 'failure' || needs.deploy.result == 'failure')
     needs: [build, deploy]
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}

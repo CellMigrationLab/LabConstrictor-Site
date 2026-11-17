@@ -11,7 +11,7 @@ from email.message import Message
 from typing import IO
 import urllib.error
 import urllib.request
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 
 from .config import AppProblem, FetchError
 
@@ -89,5 +89,6 @@ class GitHub:
             return None
 
     def raw(self, full_name: str, ref: str, path: str, limit: int = MAX_TEXT) -> bytes:
-        """A file from the repository at a branch or tag, at most `limit` bytes (larger files raise AppProblem)."""
-        return self._open(f"{RAW}/{full_name}/{ref}/{path}", "*/*", limit)
+        """A file from the repository at a branch or tag, at most `limit` bytes (larger files raise AppProblem).
+        The branch and path are quoted, so a file name with a space or other such character is fetched instead of crashing the fetch."""
+        return self._open(f"{RAW}/{full_name}/{quote(ref, safe='/')}/{quote(path, safe='/')}", "*/*", limit)

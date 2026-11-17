@@ -1,9 +1,12 @@
 """Catalogue rules: what is listed, what is left out, and that nothing is hidden."""
 
+import io
 import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
+
+from PIL import Image
 
 from lcsite import assets, catalogue, validate
 from lcsite.config import AppProblem
@@ -20,6 +23,13 @@ def release(url_repo: str = REPO, name: str = "Demo-1.0.0-Windows-x86_64.exe") -
     """A GitHub release payload with one asset."""
     return {"tag_name": "1.0.0", "published_at": "2026-10-01T00:00:00Z", "html_url": "u",
             "assets": [{"name": name, "size": 10, "browser_download_url": f"https://github.com/{url_repo}/releases/download/1.0.0/{name}"}]}
+
+
+def tiny_png() -> bytes:
+    """A real 2x2 PNG (an app's pictures are decoded when they are downloaded)."""
+    out = io.BytesIO()
+    Image.new("RGB", (2, 2)).save(out, format="PNG")
+    return out.getvalue()
 
 
 class FakeGitHub:
@@ -157,8 +167,8 @@ class ResolveTests(unittest.TestCase):
                 return release(name)
 
             def raw(self, name: str, ref: str, path: str, limit: int = 0) -> bytes:
-                """The manifest, or a picture whose bytes name the owner."""
-                return shot.encode() if path.endswith(".yaml") else b"\x89PNG\r\n\x1a\n" + name.encode()
+                """The manifest, or a real picture whose last bytes name the owner."""
+                return shot.encode() if path.endswith(".yaml") else tiny_png() + name.encode()
 
         twin = {**ENTRY, "repo": "p/demo-app"}
         with tempfile.TemporaryDirectory() as tmp, mock.patch.object(catalogue, "BUILD", Path(tmp)):

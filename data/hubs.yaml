@@ -22,11 +22,11 @@ use:
       image: {doc_source: Welcome_Notebook.png}
       alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks under orange header cells and a blue Open the notebook button.
     - title: Use it in your image software (experimental)
-      text: An app's declared tools can run in napari, Fiji and QuPath through experimental plugins. The picture is a prototype.
+      text: An app's declared tools can run in napari, Fiji and QuPath through experimental plugins. The picture shows the napari plugin.
       href: guides/image-software/
       link: Use apps in your image software
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/N2_napari_form.png}
-      alt: "Prototype: napari with the LabConstrictor tools dock open on NucleiSky's Relocalize 2D tool, showing a form generated from the tool's declaration."
+      alt: "napari with the LabConstrictor tools dock open on NucleiSky's Relocalize 2D tool, showing a form generated from the tool's declaration."
     - title: Connect it to a microscope
       text: "An example from NucleiSky, written by its authors for a Nikon microscope with NIS-Elements JOBS: scan a large area, find where a query image sits in it, then acquire there. Their guide says the same principles apply to other microscopes and software."
       href: guides/microscope/
@@ -35,7 +35,7 @@ use:
       alt: The NucleiSky job loaded in NIS-Elements JOBS, a list of acquisition, autofocus and analysis steps.
   demo:
     title: Want to see it first?
-    text: "A hands-on preview with example data: install an app on Windows, then open it in the notebook and in experimental napari and Fiji views."
+    text: "A hands-on preview with example data: install an app on Windows or macOS, then open it in the notebook and in experimental napari and Fiji views."
     href: demo/
     link: Try the demo
 build:

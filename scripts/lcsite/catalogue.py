@@ -15,7 +15,7 @@ from . import completeness
 from .assets import check_image, identities, parse_assets
 from .config import BUILD, MANIFEST_NAME, RESERVED_SLUGS, SNAPSHOT_FORMAT, AppProblem
 from .github import MAX_FILE, GitHub, NotFound
-from .images import check_square
+from .images import check_decodes, check_square
 from .text import slugify
 from .validate import MANIFEST_SCHEMA, check, load_plain_yaml, optional_list
 
@@ -78,6 +78,7 @@ def save_image(gh: GitHub, name: str, branch: str, path: str, slug: str, stem: s
     out = BUILD / "media" / slug / f"{stem}.{path.rsplit('.', 1)[1].lower()}"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(data)
+    check_decodes(out)
     return out.name
 
 

@@ -19,7 +19,7 @@ import yaml
 from lcsite import catalogue, registry
 from lcsite.config import BUILD, REGISTRY, AppProblem
 from lcsite.github import GitHub
-from lcsite.text import one_line
+from lcsite.text import one_line, slugify
 
 FIELD = re.compile(r"###\s*Repository\s+(\S+)")
 REPO = re.compile(r"^(?:https://github\.com/)?(?!\.+/)([A-Za-z0-9_.-]+)/(?!\.+(?:/|$))([A-Za-z0-9_.-]+?)(?:\.git)?/?$")
@@ -44,6 +44,21 @@ def new_entry(repo: dict, today: str) -> dict:
     return {"repo": repo["full_name"], "repo_id": repo["id"], "owner_id": repo["owner"]["id"], "added": today}
 
 
+def taken_names(gh: GitHub) -> dict[str, str]:
+    """The web addresses and display names the listed apps already use ({slug or lower-case name: repo}), as the site build reserves
+    them: a new app that reuses one would pass here but be left out of the site. A listed app whose manifest cannot be read right
+    now reserves only its address (the build leaves it out too, so its name is free)."""
+    taken = {}
+    for entry in registry.load_all():
+        taken[slugify(entry["repo"].split("/")[1])] = entry["repo"]
+        try:
+            manifest = catalogue.read_manifest(gh, entry["repo"], gh.repo(entry["repo"])["default_branch"], None)
+        except AppProblem:
+            continue
+        taken[manifest["name"].lower()] = entry["repo"]
+    return taken
+
+
 def check(body: str, gh: GitHub, today: str) -> tuple[dict | None, list[str]]:
     """(registry entry or None, report lines). The entry is returned only when every check passed."""
     try:
@@ -51,7 +66,7 @@ def check(body: str, gh: GitHub, today: str) -> tuple[dict | None, list[str]]:
         if any(e["repo"].lower() == name.lower() for e in registry.load_all()):
             raise AppProblem(f"{name} is already in the registry")
         entry = new_entry(gh.repo(name), today)
-        app = catalogue.resolve(entry, gh, None, {})
+        app = catalogue.resolve(entry, gh, None, taken_names(gh))
     except AppProblem as err:
         return None, [f"- ✘ {one_line(err)}"]
     lines = [f"- ✔ `{code(app['manifest']['name'])}`: manifest is valid", f"- ✔ latest release: {app['release']['tag'] if app['release'] else 'none (Colab or pip only)'}"]
