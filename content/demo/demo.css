@@ -1,9 +1,8 @@
 /* The /demo/ page. Everything is scoped under .lc-demo. Inside the three windows each program keeps its own look; colours below are
    sampled from real captures (napari's dark theme tokens, Fiji's Swing look, JupyterLab Light, NucleiSky's STYLE_CSS card colours). */
 .lc-demo { margin: 1rem 0 2rem; }
-.lc-demo__notice, .lc-demo__experimental { margin: 0 0 .6rem; padding: .35rem .7rem; border-radius: 6px; font-size: var(--fs-ui); }
+.lc-demo__notice { margin: 0 0 .6rem; padding: .35rem .7rem; border-radius: 6px; font-size: var(--fs-ui); }
 .lc-demo__notice { background: #eef5ee; border: 1px solid #b9d3b9; }
-.lc-demo__experimental { background: #fff4e5; border: 1px solid #e8c48a; }
 .lc-demo__live, .lc-demo [hidden] { display: none; }
 .lc-demo.is-live .lc-demo__live { display: block; }
 .lc-demo.is-live .lc-demo__static { display: none; }

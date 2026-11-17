@@ -7,7 +7,7 @@ docs:
   lead: Use an app someone built, or build your own.
 use:
   title: Use an app
-  lead: Install an app on your computer, open it, and, for apps that declare tools, try them in napari, Fiji or QuPath (experimental).
+  lead: Install an app on your computer, open it, and, for apps that declare tools, try them in napari, Fiji or QuPath.
   cards:
     - title: Install it
       text: Download the installer for your system. It takes a few minutes and you only do it once. Windows and macOS warn about unsigned installers; the guide shows how to continue.
@@ -21,8 +21,8 @@ use:
       link: Open and use an app
       image: {doc_source: Welcome_Notebook.png}
       alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks under orange header cells and a blue Open the notebook button.
-    - title: Use it in your image software (experimental)
-      text: An app's declared tools can run in napari, Fiji and QuPath through experimental plugins. The picture shows the napari plugin.
+    - title: Use it in your image software
+      text: An app's declared tools can run in napari, Fiji and QuPath through their plugins. The picture shows the napari plugin.
       href: guides/image-software/
       link: Use apps in your image software
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/N2_napari_form.png}
@@ -35,7 +35,7 @@ use:
       alt: The NucleiSky job loaded in NIS-Elements JOBS, a list of acquisition, autofocus and analysis steps.
   demo:
     title: Want to see it first?
-    text: "A hands-on preview with example data: install an app on Windows or macOS, then open it in the notebook and in experimental napari and Fiji views."
+    text: "A hands-on preview with example data: install an app on Windows or macOS, then open it in the notebook, in napari and in Fiji."
     href: demo/
     link: Try the demo
 build:
@@ -71,8 +71,8 @@ build:
       href: submit/
       link: Submit your app
       live_card: true
-    - title: It can reach napari, Fiji and QuPath (experimental)
-      text: An app's declared tools can run in those programs through experimental plugins.
+    - title: It can reach napari, Fiji and QuPath
+      text: An app's declared tools can run in those programs through their plugins.
       href: guides/image-software/
       link: Use apps in your image software
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/F2_fiji_form_top.png}

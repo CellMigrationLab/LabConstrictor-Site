@@ -19,6 +19,8 @@ class HostPhraseTests(unittest.TestCase):
             self.assertIn(phrase, cards.host_badge("napari"))
         with mock.patch.object(projects, "host_status", return_value="Install from GitHub"):
             self.assertEqual(cards.host_phrase("fiji"), "Fiji plugin: install from GitHub")
+        with mock.patch.object(projects, "host_status", return_value="Available"):   # the normal case: no stage word
+            self.assertEqual(cards.host_phrase("napari"), "napari plugin")
         with mock.patch.object(projects, "host_status", return_value="Soon"), self.assertRaises(SystemExit):
             cards.host_phrase("qupath")
         self.assertTrue(hasattr(pages_apps, "works_in"))

@@ -85,11 +85,11 @@ class PageTests(unittest.TestCase):
         self.assertEqual(len(re.findall(r'alt="[^"]{20,}"', html)), len(pages_demo.STATIC))
         self.assertEqual(html.count("<figcaption>"), len(pages_demo.STATIC))
 
-    def test_experimental_notice_and_precomputed_wording_are_in_the_data(self) -> None:
-        """The honesty wording the page must carry exists in data/demo.yaml."""
+    def test_precomputed_wording_is_in_the_data(self) -> None:
+        """The honesty wording the page must carry exists in data/demo.yaml (the plugins are no longer called experimental)."""
         text = pages_demo.load()["text"]
         self.assertIn("computed in advance", text["lead"])
-        self.assertIn("Experimental", text["experimental"])
+        self.assertNotIn("experimental", str(text).lower())
         self.assertIn("does not connect", text["how"]["note"].replace("This website does not connect", "does not connect"))
 
     def test_each_program_links_to_its_guide_instead_of_repeating_menu_paths(self) -> None:
