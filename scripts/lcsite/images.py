@@ -8,6 +8,7 @@ from .config import AppProblem
 
 ICON_PX, SHOT_PX = 192, 1200      # icons are square and small; screenshots are as wide as the app page
 Image.MAX_IMAGE_PIXELS = 40_000_000   # Pillow raises on larger images (decompression bombs)
+UNREADABLE = (OSError, SyntaxError, ValueError, Image.DecompressionBombError)   # what Pillow raises for a broken or oversized image
 
 
 def check_pixels(img: Image.Image, name: str) -> None:
@@ -31,8 +32,19 @@ def shrink(src: Path, dest: Path, max_side: int, square: bool = False) -> None:
                 img = img.resize((max_side, round(img.height * max_side / img.width)))
             dest.parent.mkdir(parents=True, exist_ok=True)
             img.save(dest, optimize=True)
-    except (OSError, Image.DecompressionBombError) as err:
+    except UNREADABLE as err:
         raise AppProblem(f"cannot read image {src.name}: {err}") from err
+
+
+def check_decodes(path: Path) -> None:
+    """Raise AppProblem unless the whole image decodes within the pixel limit. Run when an app's image is downloaded, so an image
+    that is too large or broken after a valid header leaves out that app's image there, not the whole site build later."""
+    try:
+        with Image.open(path) as img:
+            check_pixels(img, path.name)
+            img.load()
+    except UNREADABLE as err:
+        raise AppProblem(f"cannot read image {path.name}: {err}") from err
 
 
 def pixel_size(path: Path) -> tuple[int, int]:

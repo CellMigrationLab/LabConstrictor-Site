@@ -22,6 +22,7 @@ GENERIC_LINK_TEXT = {"here", "click here", "link", "more", "read more", "this", 
 DECORATIVE_IMAGE_PARENTS = ("lc-brand", "lc-footer__brand", "lc-icon", "lc-logo", "lc-view__layer")   # lc-view__layer: the picture stack carries one aria-label
 DESCRIPTION_LENGTH = (20, 200)
 # Known breaks of a rule in imported content we cannot change from here yet, each with the reason. A new break is never added silently.
+APP_PAGE = re.compile(r"^apps/[^/]+/index\.html$")
 KNOWN_EXCEPTIONS = {
     ("guides/template-synchronization/index.html", "this link"):
         "template_synchronization.md is tied to a migration resource of the template, so its wording changes with the next migration",
@@ -175,8 +176,9 @@ def image_problems(name: str, f: Facts) -> list[str]:
 
 
 def duplicate_descriptions(pages: dict[str, Facts]) -> list[str]:
-    """Two pages may not share a meta description."""
-    counts = Counter(attr(f.meta, "description") for f in pages.values() if f.meta.get("description"))
+    """Two pages may not share a meta description. An app page's description is its author's summary, which the site does not
+    control: two apps with the same summary must not stop the publish, so app pages are left out (the App Centre page is not)."""
+    counts = Counter(attr(f.meta, "description") for name, f in pages.items() if f.meta.get("description") and not APP_PAGE.match(name))
     return [f"description used by {n} pages: {d[:70]!r}" for d, n in counts.items() if n > 1]
 
 
@@ -197,7 +199,7 @@ def main() -> int:
     for page in sorted(SITE.rglob("*.html")):
         facts = read(page)
         if page.name != "404.html" and "refresh" not in page.read_text(encoding="utf-8")[:1500]:
-            pages[str(page.relative_to(SITE))] = facts
+            pages[page.relative_to(SITE).as_posix()] = facts   # the same names on Windows (KNOWN_EXCEPTIONS uses them)
     problems = all_problems(pages)
     for problem in problems:
         print(f"DESIGN {problem}", file=sys.stderr)

@@ -1,4 +1,5 @@
-/* The installer's operating system (Windows or macOS): its first page and its place in the address (?os=macos). Nothing here draws or changes the state. */
+/* The installer's operating system (Windows or macOS): its first page and its place in the address (?os=macos), and the demo's part in the
+   address (?demo=use). Nothing here draws or changes the state. */
 (function (ns) {
   var d = ns.dom;
   var FIRST_PAGES = { windows: 'download', macos: 'mac-download' };
@@ -32,5 +33,18 @@
     history.replaceState(history.state, '', url);
   }
 
-  ns.os = { firstPage: firstPage, fromAddress: fromAddress, remember: remember };
+  /**
+   * Write the demo's part into the address when it is not there yet, replacing the history entry, so that a reload or a shared link opens
+   * the same part (also when the installer's last step opened the installed app).
+   * @param {string} part - 'install' or 'use'.
+   * @returns {void}
+   */
+  function rememberPart(part) {
+    var url = new URL(location.href);
+    if ((url.searchParams.get('demo') === 'use' ? 'use' : 'install') === part) { return; }
+    url.searchParams.set('demo', part);
+    history.replaceState(history.state, '', url);
+  }
+
+  ns.os = { firstPage: firstPage, fromAddress: fromAddress, remember: remember, rememberPart: rememberPart };
 })(window.LCDemo = window.LCDemo || {});

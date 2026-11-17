@@ -59,5 +59,9 @@
   if (steps.length !== tabs.length) { throw new Error('how: ' + steps.length + ' steps but ' + tabs.length + ' numbered links'); }
   document.documentElement.classList.add('how-live');
   show(steps, tabs, indexFromAddress(steps), location.hash !== '');
-  window.addEventListener('hashchange', function () { show(steps, tabs, indexFromAddress(steps), true); });
+  window.addEventListener('hashchange', function () {
+    var other = location.hash !== '' && !steps.some(function (step) { return '#' + step.id === location.hash; });
+    if (other) { return; }   // another anchor of the page (the theme's "Skip to content"): the step stays
+    show(steps, tabs, indexFromAddress(steps), true);
+  });
 })();

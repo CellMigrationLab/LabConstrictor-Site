@@ -11,8 +11,9 @@ MONTHS = ("January", "February", "March", "April", "May", "June", "July", "Augus
 
 
 def esc(value: object) -> str:
-    """HTML-escape a value (None becomes an empty string)."""
-    return html.escape(str(value if value is not None else ""), quote=True)
+    """HTML-escape a value (None becomes an empty string). Square brackets become entities too, so text written by an app's
+    author ("[docs](https://github.com/...)") is shown as written and never turned into a link by `page.decorate_links`."""
+    return html.escape(str(value if value is not None else ""), quote=True).replace("[", "&#91;").replace("]", "&#93;")
 
 
 def paragraphs(text: str) -> str:

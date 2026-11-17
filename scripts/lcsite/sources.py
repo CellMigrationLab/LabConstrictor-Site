@@ -47,12 +47,17 @@ def read(repo: str, path: str) -> str:
     return target.read_text(encoding="utf-8")
 
 
+INLINE_MARKS = re.compile(r"(`+|\*\*|__)(.+?)\1")   # inline code and bold in a heading
+
+
 def title_of(text: str, where: str) -> str:
-    """The first `# Heading` of a guide: its title on the site. Stops the build when there is none."""
+    """The first `# Heading` of a guide as plain text: its title in the sidebar, the pager and the Docs list, which do not
+    render Markdown (so `code` and **bold** lose their marks there, as the page's own heading shows them). Stops the build
+    when there is none."""
     m = HEADING.search(text)
     if not m:
         fail(f"{where} has no '# Title' line")
-    return m.group(1)
+    return INLINE_MARKS.sub(r"\2", m.group(1))
 
 
 def admonitions(text: str) -> str:

@@ -74,6 +74,17 @@ class GithubListTests(unittest.TestCase):
         """GitHub only lets an ordered list that starts at 1 break a paragraph, so "2026. was" on its own line stays text."""
         self.assertEqual(gfm.lists("It happened in\n2026. Then more.\n"), "It happened in\n2026. Then more.\n")
 
+    def test_a_heading_right_after_an_item_ends_the_list(self) -> None:
+        """GitHub ends the list at "## Heading"; the text after it is a paragraph, not a code block made by a 4-space indent."""
+        html = render("- item\n## Heading\n\n  Some text\n")
+        self.assertIn("<h2", html)
+        self.assertEqual(shape(html), "<ul><li></li></ul><p></p>")
+
+    def test_a_list_of_another_kind_right_after_a_list_is_a_second_list(self) -> None:
+        """Bullets then numbers with no blank line, and a bullet under a numbered item but less indented than its text: two lists."""
+        self.assertEqual(shape(render("- a\n- b\n1. one\n2. two\n")), "<ul><li></li><li></li></ul><ol><li></li><li></li></ol>")
+        self.assertEqual(shape(render("1. Step one\n  - detail\n")), "<ol><li></li></ol><ul><li></li></ul>")
+
     def test_a_list_already_written_for_python_markdown_still_renders_the_same(self) -> None:
         """A list with 4-space continuation (the site's own hand-written guides) keeps its structure."""
         text = "1. First step.\n\n    More about it.\n\n2. Second step.\n"

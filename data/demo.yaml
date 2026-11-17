@@ -31,9 +31,9 @@ how:
     - A LabConstrictor app is installed on the user's computer.
     - When the app ships a tools module, its installer registers it on the computer at install time.
     - LabConstrictor-Tools exposes the scientific functions the app declares.
-    - napari or Fiji builds its own form from those declarations.
+    - napari, Fiji or QuPath builds its own form from those declarations.
     - The tool runs in the app's own Python environment, in a separate worker process.
-    - The results come back to napari or Fiji as images, layers, overlays, points or tables.
+    - The results come back to the program as images, layers, overlays, points or tables.
   hosts_title: The same installed app, three programs
   # `guide` is the slug of the program's guide in data/guides.yaml: install steps and menu paths are written only there.
   hosts:
@@ -45,7 +45,7 @@ how:
       detail: Results come back as image windows, overlays and tables. Shown on this page.
     - name: QuPath
       guide: qupath
-      detail: A prototype. The image open in QuPath is exported for the tool, and points and outlines come back onto the slide. Not shown on this page.
+      detail: The image open in QuPath is exported for the tool, and points and outlines come back onto the slide. Not shown on this page.
   note: Each program has its own plugin, and all three run the same installed app. This website does not connect to a Fiji or napari running on your computer. Everything on this page is a simulation built from one precomputed result.
 option_a:
   tabs:

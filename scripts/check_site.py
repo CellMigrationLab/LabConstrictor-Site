@@ -103,13 +103,14 @@ def link_problems(pages: dict[Path, PageParts]) -> list[str]:
 
 
 def author_strings(snapshot: dict) -> list[tuple[str, str]]:
-    """(app page, text) for every piece of manifest text that contains < > or a quote."""
+    """(app page, text) for every piece of manifest text that contains < > or a quote and has at least 4 letters or digits: shorter
+    text such as '">' or '<p>' also appears in every page's own markup, so finding it there proves nothing."""
     found = []
     for app in snapshot["apps"]:
         texts = json.dumps(app["manifest"], ensure_ascii=False)
         for value in re.findall(r'"((?:[^"\\]|\\.)*)"', texts):
             decoded = json.loads(f'"{value}"')
-            if UNSAFE.search(decoded):
+            if UNSAFE.search(decoded) and len(re.sub(r"[\W_]", "", decoded)) >= 4:
                 found.append((f"apps/{app['slug']}/index.html", decoded))
     return found
 

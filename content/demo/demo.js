@@ -13,6 +13,8 @@
   function sync(ctx) {
     var root = ctx.root, state = ctx.state;
     root.dataset.step = state.step;
+    ns.os.rememberPart(state.cat);
+    root.querySelectorAll('[data-dbl]').forEach(function (el) { el.classList.toggle('is-selected', state.selectedKey === el.dataset.act + el.dataset.go); });
     ns.renderHost.cat(root, state);
     ns.renderHost.installer(root, state);
     ns.renderMac.os(root, state);
@@ -169,15 +171,12 @@
   }
 
   /**
-   * Show one part of the demo and write it into the address, replacing the history entry, so that a reload or a shared link opens the same part.
+   * Show one part of the demo (sync writes it into the address).
    * @param {DemoContext} ctx - the controller context.
    * @param {string} part - 'use' or 'install'.
    * @returns {void}
    */
   function showPart(ctx, part) {
-    var url = new URL(location.href);
-    url.searchParams.set('demo', part);
-    history.replaceState(history.state, '', url);
     ctx.state.cat = part;
     sync(ctx);
   }
@@ -208,7 +207,6 @@
     if (el.dataset.nbTab) { ctx.state.nbTab = el.dataset.nbTab; sync(ctx); return; }
     if (el.hasAttribute('data-dbl') && clicks === 1) {
       ctx.state.selectedKey = el.dataset.act + el.dataset.go;
-      el.classList.add('is-selected');
       sync(ctx);
       return;
     }

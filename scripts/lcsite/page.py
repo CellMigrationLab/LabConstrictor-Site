@@ -1,6 +1,7 @@
 """One generated Markdown page, with links made relative to where it lives."""
 
 import re
+from typing import Callable
 
 import yaml
 
@@ -27,6 +28,7 @@ def new_tab_links(text: str) -> str:
 
 GITHUB_REPO_LINK = re.compile(r"\[([^\]]+)\]\((https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)/?\)")
 HOST_LINK = re.compile(r"\[([^\]]+)\]\((https://(?:napari\.org|fiji\.sc|qupath\.github\.io))/?\)")
+CODE = re.compile(r"(^ *(?P<fence>`{3,}|~{3,}).*?^ *(?P=fence)[`~]*[ \t]*$|<pre\b.*?</pre>|`[^`\n]+`)", re.S | re.M)
 
 
 def decorate_links(text: str) -> str:
@@ -43,7 +45,16 @@ def decorate_links(text: str) -> str:
         """The program's logo before its name, as a pill."""
         return pill(hosts_by_url[m.group(2)], table, m.group(1))
 
-    return HOST_LINK.sub(host, GITHUB_REPO_LINK.sub(repo, text))
+    return outside_code(text, lambda part: HOST_LINK.sub(host, GITHUB_REPO_LINK.sub(repo, part)))
+
+
+def outside_code(text: str, change: Callable[[str], str]) -> str:
+    """`text` with `change` applied everywhere except inside code (fenced blocks, <pre> blocks, `inline code`), which stays as written."""
+    out, pos = [], 0
+    for m in CODE.finditer(text):
+        out += [change(text[pos:m.start()]), m.group(0)]
+        pos = m.end()
+    return "".join(out) + change(text[pos:])
 
 
 class Page:

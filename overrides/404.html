@@ -1,0 +1,15 @@
+{#- The page GitHub Pages shows for an address that does not exist. Its links are absolute (the `url` filter on a 404
+    page starts at the site's root), so they work at any depth. -#}
+{% extends "main.html" %}
+
+{% block htmltitle %}<title>Page not found – {{ config.site_name }}</title>{% endblock %}
+
+{% block content %}
+<h1>Page not found</h1>
+<p>There is no page at this address. It may have moved, or the link may have a typo.</p>
+<ul>
+  <li><a href="{{ '' | url }}">Home page</a></li>
+  <li><a href="{{ 'apps/' | url }}">App Centre: every app</a></li>
+  <li><a href="{{ 'guides/' | url }}">Docs: every guide</a></li>
+</ul>
+{% endblock %}

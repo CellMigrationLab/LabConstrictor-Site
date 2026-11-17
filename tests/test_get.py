@@ -2,7 +2,7 @@
 
 import unittest
 
-from lcsite import assets, cards, catalogue, pages_apps, pages_get, text
+from lcsite import assets, cards, catalogue, gfm, pages_apps, pages_get, text
 from lcsite.config import AppProblem
 
 ASSET = {"name": "A-1.0.0-Windows-x86_64.exe", "os": "windows", "arch": "x86_64", "ext": "exe", "size": 317528492, "url": "https://github.com/o/a/releases/download/1.0.0/x.exe",
@@ -145,8 +145,9 @@ class TileLinkTests(unittest.TestCase):
         self.assertEqual(html.count('class="lc-btn lc-btn--soft"'), html.count("data-lc-download="))
 
     def test_a_picture_indented_under_a_step_keeps_the_numbering(self) -> None:
-        """The template indents a picture under step 2 by three spaces: steps 1 to 3 stay one numbered list."""
-        steps = dict(STEPS, windows="1. Download it.\n2. Click Run anyway.\n\n   ![SmartScreen](p.png)\n\n3. Follow the prompts.")
+        """The template indents a picture under step 2 by three spaces (guides.install_sections passes it through gfm.lists, as here):
+        steps 1 to 3 stay one numbered list."""
+        steps = dict(STEPS, windows=gfm.lists("1. Download it.\n2. Click Run anyway.\n\n   ![SmartScreen](p.png)\n\n3. Follow the prompts."))
         html = pages_get.get_section(app([ASSET]), steps)
         windows = html[html.index('id="steps-windows"'):html.index("</details>")]
         self.assertEqual(windows.count("<ol>"), 1)

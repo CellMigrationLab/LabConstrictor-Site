@@ -10,7 +10,8 @@ read two common habits differently, and the difference broke lists on the site:
    and the numbering after it broke.
 
 Inside a list item GitHub also lets a quote, a code block or the next item follow text directly; Python-Markdown needs a blank
-line there, so one is added.
+line there, so one is added. The same goes for where GitHub ends a list with no blank line: a heading, rule, quote, code block
+or HTML less indented than the item's text, or an item of another kind (numbers after bullets, or the reverse).
 
 `lists` rewrites these habits into what Python-Markdown expects, so a page looks the same on GitHub and on the site. Nothing
 else changes; code blocks are never touched inside (only moved right as a whole when they belong to a list item).
@@ -22,15 +23,21 @@ from dataclasses import dataclass
 ITEM = re.compile(r"^( *)([-*+]|(\d{1,9})[.)])( +)(?=\S)")
 FENCE = re.compile(r"^( *)(`{3,}|~{3,})")
 QUOTE = re.compile(r"^ *>")
+# A line that starts a block of its own (heading, rule, quote, code block, HTML): GitHub ends a list item there when the line is
+# indented less than the item's text, even with no blank line before it; Python-Markdown needs the blank line.
+BLOCK_START = re.compile(r"^ {0,3}(#{1,6}(?: |$)|([-*_])(?: *\2){2,} *$|>|`{3,}|~{3,}|<[A-Za-z!/])")
 PY_MARKDOWN_INDENT = 4   # Python-Markdown: the content of a list item is indented 4 spaces past its marker's column
 
 
 @dataclass
 class Level:
-    """One open list item: the column its text starts at in the source (GitHub), the column Python-Markdown needs, and whether
-    a blank line came inside it (then its last paragraph swallows a next item that follows it with no blank line)."""
+    """One open list item: the column its text starts at in the source (GitHub), the column Python-Markdown needs, the column of
+    its marker and the marker's kind ("-", "*", "+", or "." / ")" for numbers: a different kind starts a new list), and whether a
+    blank line came inside it (then its last paragraph swallows a next item that follows it with no blank line)."""
     source: int
     site: int
+    at: int = 0
+    kind: str = "-"
     loose: bool = False
 
 
@@ -81,24 +88,28 @@ class _Rewriter:
 
     def item_line(self, line: str, item: re.Match) -> None:
         """A list item: closes the deeper items, adds the blank line Python-Markdown needs before it, moves it under its parent."""
-        indent, closed = _indent(line), []
+        indent, closed, kind = _indent(line), [], item.group(2)[-1]
         while self.stack and indent < self.stack[-1].source:
             closed.append(self.stack.pop())
         starts_list = not self.stack and not closed and not self.previous_blank and self.out and item.group(3) in (None, "1")
         after_paragraph = not self.previous_blank and any(level.loose for level in closed) and not ITEM.match(self.out[-1])
-        if starts_list or after_paragraph:
+        other_list = not self.previous_blank and closed and closed[-1].kind != kind
+        if starts_list or after_paragraph or other_list:
             self.blank_line(loosen=False)   # GitHub starts a list (or the next item) here; Python-Markdown needs a blank line first
         top = self.stack[-1] if self.stack else None
         new_indent = top.site + (indent - top.source) if top else indent
         self.out.append(_moved(line, new_indent))
-        self.stack.append(Level(source=indent + len(item.group(2)) + len(item.group(4)), site=new_indent + PY_MARKDOWN_INDENT))
+        self.stack.append(Level(source=indent + len(item.group(2)) + len(item.group(4)), site=new_indent + PY_MARKDOWN_INDENT, at=indent, kind=kind))
 
     def text_line(self, line: str) -> None:
         """Any other line: inside an item it moves to 4 spaces past the item's marker; a quote or code block gets a blank line first."""
         indent, opening = _indent(line), FENCE.match(line)
-        if self.stack and self.previous_blank:
+        ends_items = self.stack and not self.previous_blank and indent < self.stack[-1].source and BLOCK_START.match(line)
+        if self.stack and (self.previous_blank or ends_items):
             while self.stack and indent < self.stack[-1].source:
                 self.stack.pop()
+        if ends_items:
+            self.blank_line(loosen=False)   # a heading, rule, quote, code block or HTML ends the list on GitHub
         new_indent = indent   # outside a list, or a line GitHub joins to the item's paragraph (it needs no indent)
         if self.stack and indent >= self.stack[-1].source:
             new_indent = self.stack[-1].site + (indent - self.stack[-1].source)

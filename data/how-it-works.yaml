@@ -20,7 +20,7 @@ steps:
       - text: "Paste the version cell at the top of each notebook, fill in current_version and notebook_name (the file name without .ipynb), and raise the version whenever the notebook's logic changes. The app's Welcome notebook uses it to offer updates."
         href: "guides/notebook-upload/#1-prepare-your-notebook"
         label: Add the version cell
-      - text: "Put what users must read in Markdown cells: code cells are hidden by default in the installed app, and users can show them with Show/Hide Code."
+      - text: "Put what users must read in Markdown cells: code cells can be hidden in the installed app (you choose whether they are hidden or shown by default), and users can show them with Show/Hide Code."
         href: guides/code-hiding/
         label: Hide code cells
   - id: step-2
@@ -32,9 +32,6 @@ steps:
       - text: "Create your repository from the LabConstrictor template on GitHub (you need a GitHub account). It can be public or private: only people with access to a private repository can download its installers, and only a public one can be listed in the App Centre."
         href: guides/create-repository/
         label: Create your repository
-      - text: Set up template updates once, before you initialise the repository, so that future improvements of the template can reach it.
-        href: guides/template-synchronization/
-        label: Set up template updates
       - text: "Create a personal access token for the web form (classic, starting with ghp_). It is not the same token as the one for template updates."
         href: guides/personal-access-token/
         label: Create a personal access token
@@ -89,7 +86,10 @@ steps:
         href: guides/install/
         label: Install an app
       - text: "Share the link to your release. The installers are not code-signed yet, so tell people to download only from your release; installing needs an internet connection."
-      - text: "To be found by others, submit your repository to the App Centre. It must be public and have a licence: the template's LICENSE file carries the Cell Migration Lab's copyright line, so put your own name in it."
+      - text: "Optional, after your first release: set up template updates, so that improvements of the template reach your repository as pull requests you review."
+        href: guides/template-synchronization/
+        label: Set up template updates
+      - text: "To be found by others, submit your repository to the App Centre. It must be public. Check its licence too: the template's LICENSE file carries the Cell Migration Lab's copyright line, so put your own name in it."
         href: submit/
         label: Submit your app
 make_it_yours:

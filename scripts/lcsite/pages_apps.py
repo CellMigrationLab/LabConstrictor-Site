@@ -4,7 +4,7 @@ import json
 
 from .cards import KINDS, SYSTEMS, badge, card, github_badge, host_badge, icon, link_pill, offered_assets, plugin_stage, release_line, testing_badge
 from . import catalogue_text, citation, filters, hosts, pages_facts, pages_get, projects
-from .config import SCIENTIFIC_KINDS
+from .config import REPO, SCIENTIFIC_KINDS
 from .page import Page
 from .validate import optional_list
 from .text import esc, long_date, paragraphs
@@ -22,7 +22,8 @@ def page_catalogue(all_apps: list[dict]) -> None:
     """apps/index.md: the filterable grid of the apps, then the apps for testing and maintenance listed apart."""
     apps = [a for a in all_apps if a["section"] == "apps"]
     testing = [a for a in all_apps if a["section"] == "testing"]
-    p = Page("apps/index.md", title="App Centre", head_title="App Centre – LabConstrictor", description=catalogue_text.catalogue_description(all_apps), layout="wide")
+    p = Page("apps/index.md", title="App Centre", head_title="App Centre – LabConstrictor", description=catalogue_text.catalogue_description(all_apps), layout="wide",
+             edit_url=f"{REPO}/edit/main/scripts/lcsite/pages_apps.py")   # its fixed wording; the rest comes from the apps
     p.add('<section class="lc-pagehead"><h1>App Centre</h1>',
           f'<p class="lc-lead">{esc(catalogue_text.catalogue_lead(all_apps))}</p></section>',
           filters.filter_bar(apps), f'<div data-lc-group>{grid(apps)}</div>',

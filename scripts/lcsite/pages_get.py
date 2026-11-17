@@ -7,6 +7,7 @@ import markdown
 
 from . import hosts
 from .cards import CHIPS, SYSTEM_LABELS, SYSTEMS, downloads, offered_assets, release_line
+from .page import outside_code
 from .text import esc, long_date, megabytes
 from .validate import optional_list
 
@@ -97,10 +98,11 @@ def pip_block(package: str) -> str:
 
 def install_steps(have: dict[str, list[dict]], steps: dict[str, str]) -> str:
     """The install steps of each system that has a download, from the template's install guide (guides.install_sections), each in a closed
-    disclosure: lc.js opens the one of the system whose installer was just clicked; without it the reader opens it. The template indents a
-    picture under a numbered step by three spaces, so the Markdown is read with that indentation (the numbering then carries on after it)."""
+    disclosure: lc.js opens the one of the system whose installer was just clicked; without it the reader opens it. The steps were already
+    rewritten for Python-Markdown (gfm.lists: 4-space indentation), so they are read with its default indentation. Line breaks become
+    spaces (the HTML sits inside a Markdown page, where a blank line would end it), except inside code, whose lines must stay."""
     blocks = "".join(f'<details class="lc-steps__os" id="steps-{k}" data-lc-steps="{k}"><summary>How to install on {SYSTEMS[k]}</summary>'
-                     f'{markdown.markdown(steps[k], tab_length=3).replace(chr(10), " ")}</details>' for k in SYSTEMS if have[k])
+                     f'{outside_code(markdown.markdown(steps[k]), lambda s: s.replace(chr(10), " "))}</details>' for k in SYSTEMS if have[k])
     return f'<div class="lc-steps">{blocks}<p class="lc-small">All systems, with pictures: <a href="guides/install/">Install an app</a>.</p></div>' if blocks else ""
 
 
