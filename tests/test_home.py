@@ -88,6 +88,42 @@ class EcosystemCardTests(unittest.TestCase):
         self.assertIn("<strong>LabConstrictor-Tools</strong>", other)
         self.assertNotIn("Plugin for", other)
 
+    def test_a_card_with_a_guide_leads_to_the_guide_and_keeps_the_repository_in_its_footer(self) -> None:
+        """The card's main link is the guide; the GitHub badge stays; no second Guide link repeats it."""
+        html = pages_site.ecosystem_card(dict(self.CARD, host=None, guide="napari"))
+        self.assertIn('class="lc-card__main" href="guides/napari/"', html)
+        self.assertIn("https://github.com/o/n", html)
+        self.assertNotIn(">Guide<", html)
+        self.assertNotIn(">Open<", html)
+
+    def test_a_card_without_a_guide_leads_to_its_repository(self) -> None:
+        """No guide on this site: the card leads where it did before."""
+        html = pages_site.ecosystem_card(dict(self.CARD, host=None))
+        self.assertIn('class="lc-card__main" href="https://github.com/o/n"', html)
+
+    def test_a_hosted_project_with_a_guide_keeps_an_open_link_to_its_address(self) -> None:
+        """A web app (its project file gives a url) leads to its guide, and its own address stays one click away."""
+        html = pages_site.ecosystem_card(dict(self.CARD, host=None, guide="initialise-repository", link="https://form.example"))
+        self.assertIn('class="lc-card__main" href="guides/initialise-repository/"', html)
+        self.assertIn('<a class="lc-go" href="https://form.example">Open</a>', html)
+
+
+class EcosystemGuideTests(unittest.TestCase):
+    """Which guide each card leads to."""
+
+    def test_a_repository_with_several_guides_gets_its_first_one(self) -> None:
+        """LabConstrictor-Tools keeps four guides; the default is the first in data/guides.yaml, not the last."""
+        from lcsite import projects
+        self.assertEqual(projects.guide_slugs()["CellMigrationLab/LabConstrictor-Tools"], "image-software")
+
+    def test_every_card_of_the_real_data_names_a_guide_except_the_playground(self) -> None:
+        """data/ecosystem.yaml: every card but the Playground's (no guide on this site) leads to a guide."""
+        from lcsite import projects
+        slugs = projects.guide_slugs()
+        tiers = load_yaml(DATA / "ecosystem.yaml")["tiers"]
+        without = [i["repo"] for t in tiers for i in t["items"] if "guide" not in i and i["repo"] not in slugs]
+        self.assertEqual(without, ["CellMigrationLab/LabConstrictor-Playground"])
+
 
 if __name__ == "__main__":
     unittest.main()

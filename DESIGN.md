@@ -75,7 +75,7 @@ Behaviour: a link that leaves the site opens in a new tab with `rel="noopener"` 
 
 ## Cards
 
-A card is **one link** (the whole card) to one destination: icon or logo and name, kind, summary, badges, a footer with its facts. App cards show the logo of each program the app declares a plugin for as a chip (the chips are not links; the plugin's stage, taken from the plugin's own project file, is there for screen readers). Ecosystem cards put the repository, the program and the guide in the footer. Cards that need separate actions (ecosystem cards) put them in the footer as a GitHub pill and an action link, never inside the main text. Cards of the same kind have the same parts in the same order.
+A card is **one link** (the whole card) to one destination: icon or logo and name, kind, summary, badges, a footer with its facts. App cards show the logo of each program the app declares a plugin for as a chip (the chips are not links; the plugin's stage, taken from the plugin's own project file, is there for screen readers). Ecosystem cards lead to the project's guide on this site (to its repository or hosted address when it has none) and put the repository and the program in the footer. Cards that need separate actions (ecosystem cards) put them in the footer as a GitHub pill and, for a hosted project, an Open action link, never inside the main text. Cards of the same kind have the same parts in the same order.
 
 ## Badges and pills
 
