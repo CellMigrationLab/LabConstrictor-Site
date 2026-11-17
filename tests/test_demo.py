@@ -92,6 +92,19 @@ class PageTests(unittest.TestCase):
         self.assertIn("Experimental", text["experimental"])
         self.assertIn("does not connect", text["how"]["note"].replace("This website does not connect", "does not connect"))
 
+    def test_each_program_links_to_its_guide_instead_of_repeating_menu_paths(self) -> None:
+        """The program table links to the guide that owns the install steps and menu paths, and repeats no menu path itself."""
+        html = pages_demo.how_it_works(pages_demo.load()["text"]) + pages_demo.how_plain(pages_demo.load()["text"])
+        for slug, name in (("napari", "napari"), ("fiji", "Fiji"), ("qupath", "QuPath")):
+            self.assertIn(f'<a href="guides/{slug}/">{name} guide</a>', html)
+        self.assertNotRegex(html, r"(Plugins|Extensions) &gt;")
+
+    def test_a_program_naming_an_unknown_guide_stops_the_build(self) -> None:
+        """A guide slug that data/guides.yaml does not have is named in the error, never shown as a dead link."""
+        with self.assertRaises(SystemExit) as ctx:
+            pages_demo.guide_link("no-such-guide", "napari")
+        self.assertIn("no-such-guide", str(ctx.exception))
+
 
 class ScriptConsistencyTests(unittest.TestCase):
     """demo.js and the window partials must agree (the script itself has no browser test here; tests/browser/smoke_demo.py walks it by hand)."""

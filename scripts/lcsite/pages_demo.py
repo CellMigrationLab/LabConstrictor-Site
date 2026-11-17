@@ -2,7 +2,7 @@
 
 from . import demo_media, demo_option_a, hosts
 from .cards import github_badge
-from .config import DATA, REPO, load_yaml
+from .config import DATA, REPO, fail, load_yaml
 from .page import Page
 from .text import esc
 
@@ -86,23 +86,32 @@ def about_and_features(text: dict) -> str:
             f'<a href="apps/nucleisky/">{esc(a["app_link"])}</a></p></section>')
 
 
+def guide_link(slug: str, name: str) -> str:
+    """A link to the program's guide, the only page with its install steps and menu paths. Input: a slug of data/guides.yaml and the
+    program's name. Output: the HTML link. Stops the build when data/guides.yaml has no guide with that slug."""
+    slugs = {g["slug"] for s in load_yaml(DATA / "guides.yaml")["sections"] for g in s["items"] if "slug" in g}
+    if slug not in slugs:
+        fail(f"data/demo.yaml: the host {name!r} names the guide {slug!r}, which data/guides.yaml does not have")
+    return f'<a href="guides/{esc(slug)}/">{esc(name)} guide</a>'
+
+
 def how_it_works(text: dict) -> str:
     """The six steps of how the real bridge works, as a clickable list with a three-box diagram. Shown only for the napari and Fiji views."""
     steps = "".join(f'<li><button type="button" class="lc-how__step" data-demo-sim data-act="how" data-i="{i}" aria-pressed="{"true" if i == 1 else "false"}">{esc(s)}</button></li>'
                     for i, s in enumerate(text["how"]["steps"], 1))
     boxes = "".join(f'<button type="button" class="lc-how__box" data-demo-sim data-act="how" data-i="{step}" data-box="{i}">{esc(label)}</button>'
                     for i, (label, step) in enumerate((("Installed app and its Python environment", 1), ("LabConstrictor-Tools bridge", 3), ("napari, Fiji or QuPath", 4))))
-    hosts = "".join(f'<tr><th scope="row">{esc(h["name"])}</th><td><code>{esc(h["where"])}</code></td><td>{esc(h["detail"])}</td></tr>' for h in text["how"]["hosts"])
+    hosts = "".join(f'<tr><th scope="row">{esc(h["name"])}</th><td>{guide_link(h["guide"], h["name"])}</td><td>{esc(h["detail"])}</td></tr>' for h in text["how"]["hosts"])
     return (f'<section class="lc-how" id="demo-how" data-how hidden><h2>{esc(text["how"]["title"])}</h2><p class="lc-small">Click a box or a step to see where it happens.</p>'
             f'<div class="lc-how__diagram">{boxes}</div><ol>{steps}</ol>'
-            f'<h3>{esc(text["how"]["hosts_title"])}</h3><table class="lc-how__hosts"><thead><tr><th scope="col">Program</th><th scope="col">Where to find it</th><th scope="col">What happens</th></tr></thead><tbody>{hosts}</tbody></table>'
+            f'<h3>{esc(text["how"]["hosts_title"])}</h3><table class="lc-how__hosts"><thead><tr><th scope="col">Program</th><th scope="col">Install and open it</th><th scope="col">What happens</th></tr></thead><tbody>{hosts}</tbody></table>'
             f'<p>{esc(text["how"]["note"])} {github_badge(text["credit"]["tools_repo"], "LabConstrictor-Tools")}</p></section>')
 
 
 def how_plain(text: dict) -> str:
     """The same steps as a plain list, for readers without JavaScript."""
     items = "".join(f"<li>{esc(s)}</li>" for s in text["how"]["steps"])
-    hosts = "".join(f'<li><strong>{esc(h["name"])}</strong> (<code>{esc(h["where"])}</code>): {esc(h["detail"])}</li>' for h in text["how"]["hosts"])
+    hosts = "".join(f'<li><strong>{esc(h["name"])}</strong> ({guide_link(h["guide"], h["name"])}): {esc(h["detail"])}</li>' for h in text["how"]["hosts"])
     return f'<h2>{esc(text["how"]["title"])}</h2><ol>{items}</ol><h3>{esc(text["how"]["hosts_title"])}</h3><ul>{hosts}</ul><p>{esc(text["how"]["note"])}</p>'
 
 

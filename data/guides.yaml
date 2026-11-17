@@ -26,7 +26,8 @@ sections:
   - title: Connect to a microscope
     items:
       - {slug: microscope, repo: CellMigrationLab/NucleiSky, path: docs/smart_microscopy/smart_microscopy.md}
-  - title: Publish the plugins and apps
+  - title: Tools for napari, Fiji and QuPath
     track: build      # shown at the end of the "Build an app" track, after the template's guides
     items:
+      - {slug: writing-tools, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/AUTHORING.md}
       - {slug: publishing, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/PUBLISHING.md}

@@ -24,8 +24,32 @@ Navigation: the top menu is Home, Apps, **Demo**, **How it works**, Ecosystem, *
 
 Each fact is written in one place. Fix it there, never in a generated file.
 
+### Which page owns which topic (the whole ecosystem)
+
+Every topic is written on exactly one page, its owner. Every other page (READMEs, other guides, app pages, this site's hand-written pages) links to the owner instead of repeating its steps or version numbers. The other LabConstrictor repositories point to this table.
+
+| Topic | Owner (single source) | Site page |
+|---|---|---|
+| Install an app | template `.tools/docs/install.md` | `/guides/install/` |
+| Use apps in napari, Fiji and QuPath (overview) | LabConstrictor-Tools `docs/user-guide.md` | `/guides/image-software/` |
+| Install and use the napari plugin | LabConstrictor-napari `docs/user-guide.md` | `/guides/napari/` |
+| Install and use the Fiji plugin | LabConstrictor-Fiji `docs/user-guide.md` | `/guides/fiji/` |
+| Install and use the QuPath extension | LabConstrictor-QuPath `docs/user-guide.md` | `/guides/qupath/` |
+| What works where | LabConstrictor-Tools `docs/CAPABILITIES.md` | `/guides/capabilities/` |
+| Write tools for an app | LabConstrictor-Tools `docs/AUTHORING.md` | `/guides/writing-tools/` |
+| Publish the plugins and apps | LabConstrictor-Tools `docs/PUBLISHING.md` | `/guides/publishing/` |
+| Technical reference of a plugin | that repository's `docs/REFERENCE.md` | GitHub only (developers) |
+| What an app does and how to use it | the app's README and `labconstrictor-app.yaml` | `/apps/<slug>/` |
+
+Rules agreed with the project lead:
+
+- A plugin's README gives one install line and links to its guide on this site.
+- Version numbers (for example a plugin's release or a supported program version) appear only in the owner guide.
+- LabConstrictor-Tools' own docs site (cellmigrationlab.github.io/LabConstrictor-Tools/) is developer reference only; pages for users live only on this site.
+- On this site, a hand-written page (`content/`, `data/`) never repeats a plugin's install steps, menu paths or version numbers: it links to the owner guide (the demo's program table does this with `guide:` in `data/demo.yaml`).
+
 - **Guides to build an app (track build)**: the template repository, `.tools/docs` (order and groups: its README), imported at build time. A template page that is really for users is placed in track use with `template: <file>` in `data/guides.yaml` (now `notebook_usage.md` and `troubleshooting_installed_app.md`); the build stops if the template drops it.
-- **Guides kept next to the code they describe**: `docs/user-guide.md` in LabConstrictor-napari, LabConstrictor-Fiji, LabConstrictor-QuPath and LabConstrictor-Tools, listed in `data/guides.yaml` as `{slug, repo, path}`. `scripts/fetch_guides.py` downloads them; the title is the first heading; GitHub alerts (`> [!WARNING]`) become admonitions; links and pictures must be absolute. To add a module, add one line.
+- **Guides kept next to the code they describe**: `docs/user-guide.md` in LabConstrictor-napari, LabConstrictor-Fiji, LabConstrictor-QuPath and LabConstrictor-Tools (which also gives `CAPABILITIES.md`, and, in the build track, `AUTHORING.md` and `PUBLISHING.md`), listed in `data/guides.yaml` as `{slug, repo, path}`. `scripts/fetch_guides.py` downloads them; the title is the first heading; GitHub alerts (`> [!WARNING]`) become admonitions; links and pictures must be absolute. To add a module, add one line.
 - **Menu titles** of template and repository guides are the page's own first heading (without a leading emoji), so a page and its menu entry never disagree.
 - **Ecosystem cards**: each project's `docs/labconstrictor-project.yaml` (checked against `schema/labconstrictor-project.schema.json`); `data/ecosystem.yaml` lists the repositories and headings. The template's card is inline there because its repository is copied into every app. Each card gets a GitHub badge and, when `data/guides.yaml` has a guide for that repository, a Guide link.
 - **Apps**: `registry/<owner>__<repo>.yaml` is a pointer (`repo`, `repo_id`, `owner_id`, `added`) plus optional curation: `featured` (home page), `section: testing` (listed apart under "Testing and maintenance", with a Testing badge). Everything an app says about itself is `labconstrictor-app.yaml` in its repository, checked against `schema/labconstrictor-app.schema.json`. Host chips on an app page ("napari plugin: experimental", the stage read from the plugin's own project file) link to the matching guide.
