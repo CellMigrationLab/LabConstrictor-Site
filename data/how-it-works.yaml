@@ -104,7 +104,7 @@ make_it_yours:
     - text: "What the App Centre shows on your app's page: screenshots, the development status, what it works with and the paper to cite (labconstrictor-app.yaml)."
       href: guides/app-manifest/
       label: Describe your app for the App Centre
-    - text: "Experimental: tools that the napari, Fiji and QuPath plugins can run, declared in a module named <package>_lc_tools next to your helper code. The installers register them when the app is installed."
+    - text: "Tools that the napari, Fiji and QuPath plugins can run, declared in a module named <package>_lc_tools next to your helper code. The installers register them when the app is installed."
       href: guides/writing-tools/
       label: "Declare tools for napari, Fiji and QuPath"
 map:

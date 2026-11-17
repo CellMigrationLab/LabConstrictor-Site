@@ -511,14 +511,14 @@ a.lc-badge:hover { filter: brightness(.95); text-decoration: underline; }
 [dir] .md-typeset .lc-feature:focus-within, [dir] .md-typeset .lc-pager a:focus-visible, [dir] .md-typeset a.lc-stepcard:focus-visible { outline: 2px solid var(--lc-accent-strong); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { [dir] .md-typeset .lc-feature:hover, [dir] .md-typeset .lc-pager a:hover, [dir] .md-typeset a.lc-stepcard:hover { transform: none; } }
 
-/* callouts: a note set apart from the text. Green by default, orange for a warning or an experimental part; always a 4px edge on the left */
+/* callouts: a note set apart from the text. Green by default, orange for a warning; always a 4px edge on the left */
 [dir] .md-typeset .lc-help, [dir] .md-typeset blockquote, [dir] .md-typeset blockquote.lc-cite, .md-typeset .lc-demo__next, .md-typeset .how__handoff, [dir] .md-typeset .admonition,
-.md-typeset .lc-demo__experimental, .md-typeset .lc-demo__notice, [dir] .md-typeset .how__box--custom {
+.md-typeset .lc-demo__notice, [dir] .md-typeset .how__box--custom {
   margin: 1rem 0; padding: .9rem var(--pad-box); border: 0; border-left: 4px solid var(--lc-accent-strong); border-radius: 0 var(--radius-box) var(--radius-box) 0; background: var(--lc-soft);
   box-shadow: none; font-size: var(--fs-body); font-weight: 400; color: var(--lc-fg); }
 .md-typeset .lc-demo__next { font-weight: 600; color: var(--lc-strong); }
 .lc-band--soft .lc-cite, .lc-band--soft blockquote { background: #fff; }
-[dir] .md-typeset .admonition, .md-typeset .lc-demo__experimental, [dir] .md-typeset .how__box--custom { border-left-color: var(--lc-orange); background: var(--lc-orange-soft); }
+[dir] .md-typeset .admonition, [dir] .md-typeset .how__box--custom { border-left-color: var(--lc-orange); background: var(--lc-orange-soft); }
 [dir] .md-typeset .how__box--custom { padding: var(--pad-box); }
 .md-typeset .admonition-title { font-size: var(--fs-body); font-weight: 600; }
 

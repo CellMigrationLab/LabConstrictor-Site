@@ -12,7 +12,7 @@ ROUTES = {"installer": "Desktop", "colab": "Colab", "pip": "pip"}
 ROUTE_LABELS = {"installer": "On my computer (Windows, macOS, Linux)", "colab": "In the browser (Colab)", "pip": "Python package (pip)"}
 SYSTEM_LABELS = {("windows", "x86_64"): "Windows 64-bit (Intel/AMD, x86_64)", ("windows", "arm64"): "Windows (ARM)", ("macos", "arm64"): "macOS (Apple Silicon)",
                  ("macos", "x86_64"): "macOS (Intel)", ("linux", "x86_64"): "Linux 64-bit (x86_64)", ("linux", "arm64"): "Linux (ARM)"}
-PLUGIN_STAGES = {"Experimental": "experimental", "Available": "available", "Install from GitHub": "install from GitHub", "Deprecated": "deprecated"}
+PLUGIN_STAGES = {"Experimental": "experimental", "Available": "", "Install from GitHub": "install from GitHub", "Deprecated": "deprecated"}   # Available is the normal case: no word
 SYSTEMS = {"windows": "Windows", "macos": "macOS", "linux": "Linux"}   # one download tile each, in this order
 CHIPS = {"arm64": "Apple Silicon (M1 or later)", "x86_64": "Intel"}     # macOS buttons are named by chip
 
@@ -59,8 +59,10 @@ def plugin_stage(status: str, key: str) -> str:
 
 
 def host_phrase(key: str) -> str:
-    """"napari plugin: experimental": what the site says about an app's host, taken from the plugin's own project file (never "soon")."""
-    return f"{HOSTS[key]} plugin: {plugin_stage(projects.host_status(key), key)}"
+    """"napari plugin" (Available), "napari plugin: deprecated" (any other stage): what the site says about an app's host, taken from the
+    plugin's own project file (never "soon")."""
+    stage = plugin_stage(projects.host_status(key), key)
+    return f"{HOSTS[key]} plugin: {stage}" if stage else f"{HOSTS[key]} plugin"
 
 
 def host_chip(key: str) -> str:
@@ -70,7 +72,7 @@ def host_chip(key: str) -> str:
 
 
 def host_badge(key: str) -> str:
-    """"napari plugin: experimental" with the program's logo, linked to our guide for it."""
+    """The host phrase ("napari plugin") with the program's logo, linked to our guide for it."""
     return (f'<a class="lc-badge lc-badge--host" href="{esc(HOST_GUIDES[key])}">{hosts.logo(key)}'
             f'<span>{esc(host_phrase(key))}</span></a>')
 

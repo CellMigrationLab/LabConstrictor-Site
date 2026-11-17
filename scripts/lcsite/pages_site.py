@@ -32,9 +32,11 @@ def choice(title: str, text: str, href: str, label: str, cls: str = "") -> str:
 
 
 def program_pill_row(stage: str) -> str:
-    """The plugins' stage as a chip, then the program pills (logo + name, linked to each program's website), as one row."""
+    """The plugins' stage as a chip (none when they are Available, the normal case), then the program pills (logo + name, linked to each
+    program's website), as one row."""
     table = hosts.load()
-    return f'<p class="lc-pills"><span class="lc-badge lc-badge--status">{esc(stage)}</span>' + "".join(hosts.pill(k, table) for k in table) + "</p>"
+    chip = "" if stage == "Available" else f'<span class="lc-badge lc-badge--status">{esc(stage)}</span>'
+    return f'<p class="lc-pills">{chip}' + "".join(hosts.pill(k, table) for k in table) + "</p>"
 
 
 def plugin_stage() -> str:
