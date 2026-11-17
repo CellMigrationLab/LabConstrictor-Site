@@ -5,6 +5,8 @@ data/ecosystem.yaml only says which repositories to list and under which heading
 schema/labconstrictor-project.schema.json; anything missing or invalid stops the build.
 The one exception is a project whose repository is copied into every app (the template): its card is written
 inline in data/ecosystem.yaml, with `name`, `text` and `status` next to `repo`.
+A card leads to the project's guide on this site: the first guide data/guides.yaml lists for its repository, or the
+guide an item names with `guide: <slug>` (scripts/check_site.py stops the build when that guide does not exist).
 """
 
 from functools import lru_cache
@@ -53,16 +55,19 @@ def host_status(key: str) -> str:
 
 
 def inline_card(item: dict) -> dict[str, Any]:
-    """A card written in data/ecosystem.yaml. Stops the build when a key is missing or unknown."""
-    if set(item) != INLINE_KEYS:
-        fail(f"data/ecosystem.yaml: an inline card needs exactly {sorted(INLINE_KEYS)}, got {sorted(item)}")
+    """A card written in data/ecosystem.yaml. Stops the build when a key is missing or unknown (`guide` is optional)."""
+    if set(item) - {"guide"} != INLINE_KEYS:
+        fail(f"data/ecosystem.yaml: an inline card needs exactly {sorted(INLINE_KEYS)} (and optionally guide), got {sorted(item)}")
     return {"name": item["name"], "summary": item["text"], "status": item["status"]}
 
 
 def guide_slugs() -> dict[str, str]:
-    """repository -> the slug of the guide kept in it (data/guides.yaml), to link each card to its guide."""
-    sections = load_yaml(DATA / "guides.yaml")["sections"]
-    return {g["repo"]: g["slug"] for s in sections for g in s["items"] if "repo" in g}
+    """repository -> the slug of the first guide kept in it (data/guides.yaml order), to link each card to its guide.
+    A repository with several guides (LabConstrictor-Tools) gets its first one unless data/ecosystem.yaml names another."""
+    slugs: dict[str, str] = {}
+    for g in (g for s in load_yaml(DATA / "guides.yaml")["sections"] for g in s["items"] if "repo" in g):
+        slugs.setdefault(g["repo"], g["slug"])
+    return slugs
 
 
 def resolve(ecosystem: dict) -> list[dict]:
@@ -74,6 +79,7 @@ def resolve(ecosystem: dict) -> list[dict]:
         for item in tier["items"]:
             data = inline_card(item) if "name" in item else load_project(item["repo"])
             link = data["url"] if "url" in data else f"https://github.com/{item['repo']}"
-            cards.append(dict(data, repo=item["repo"], host=host_of_plugin(item["repo"], hosts), link=link, guide=slugs[item["repo"]] if item["repo"] in slugs else None))
+            guide = item["guide"] if "guide" in item else slugs.get(item["repo"])
+            cards.append(dict(data, repo=item["repo"], host=host_of_plugin(item["repo"], hosts), link=link, guide=guide))
         tiers.append({"key": tier["key"], "title": tier["title"], "text": tier["text"], "cards": cards})
     return tiers

@@ -63,17 +63,21 @@ def page_home(site: dict, apps: list[dict]) -> None:
 
 
 def card_foot(card: dict) -> str:
-    """The footer of an ecosystem card: a GitHub badge for its repository and, when it has one, a link to its guide here."""
-    guide = f'<a class="lc-go" href="guides/{esc(card["guide"])}/">Guide</a>' if card["guide"] else ""
+    """The footer of an ecosystem card: a GitHub badge for its repository, the program it plugs into, and an Open link to a hosted
+    project (a web app) when the card itself leads to the guide instead."""
     program = hosts.pill(card["host"], hosts.load()) if card["host"] else ""
-    return f'<div class="lc-card__foot">{github_badge(card["repo"])}{program}{guide}</div>'
+    hosted = card["guide"] and card["link"] != f"https://github.com/{card['repo']}"
+    open_link = f'<a class="lc-go" href="{esc(card["link"])}">Open</a>' if hosted else ""
+    return f'<div class="lc-card__foot">{github_badge(card["repo"])}{program}{open_link}</div>'
 
 
 def ecosystem_card(card: dict) -> str:
-    """One project card: its name, summary and status, linked to its repository (or hosted app), with its guide. The card of a plugin is
-    titled "Plugin for <program>" (the project's own name is the program's, so the card says what the project is)."""
+    """One project card: its name, summary and status, linked to its guide on this site (or, without one, to its repository or hosted app);
+    the repository stays one click away in the footer. The card of a plugin is titled "Plugin for <program>" (the project's own name is
+    the program's, so the card says what the project is)."""
     title = f'Plugin for {card["name"]}' if card["host"] else card["name"]
-    return (f'<li class="lc-card lc-card--plain"><a class="lc-card__main" href="{esc(card["link"])}">'
+    href = f'guides/{card["guide"]}/' if card["guide"] else card["link"]
+    return (f'<li class="lc-card lc-card--plain"><a class="lc-card__main" href="{esc(href)}">'
             f'<span class="lc-card__title">{hosts.logo(card["host"]) if card["host"] else ""}<strong>{esc(title)}</strong></span><span class="lc-card__text">{esc(card["summary"])}</span>'
             f'<span class="lc-card__badges"><span class="lc-badge">{esc(card["status"])}</span></span></a>{card_foot(card)}</li>')
 

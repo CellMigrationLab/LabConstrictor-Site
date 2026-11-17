@@ -1,7 +1,10 @@
 # The projects around LabConstrictor, in tiers. Each project describes itself (name, summary, status, optional url)
 # in docs/labconstrictor-project.yaml in its own repository (schema/labconstrictor-project.schema.json); this file only
 # says which repositories to list and under which heading. Adding a project = adding one `- repo: owner/name` line.
-# The card links to the project's guide on this site automatically when data/guides.yaml has one for that repository.
+# A card leads to the project's guide on this site: the first guide data/guides.yaml lists for that repository, or the
+# one named here with `guide: <slug>` (any guide of the site, the template's included). The repository stays one click away
+# in the card's footer (the GitHub badge), and a hosted project's own address too (an Open link). A card with no guide
+# leads to its repository or hosted address.
 # Exception: the template is copied into every app repository, so its card is written here.
 tiers:
   - key: hosts
@@ -19,6 +22,9 @@ tiers:
         name: LabConstrictor template
         text: The GitHub template that turns notebooks into installers, with automatic template updates.
         status: Available
+        guide: before-getting-started      # the first guide of the "Build an app" track
       - repo: CellMigrationLab/LabConstrictor_streamlit
+        guide: initialise-repository       # the guide that walks through this form
       - repo: CellMigrationLab/LabConstrictor-Tools
+        guide: writing-tools               # this tier is for authors; its first guide (image-software) is for users
       - repo: CellMigrationLab/LabConstrictor-Playground
