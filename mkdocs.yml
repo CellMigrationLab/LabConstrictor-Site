@@ -18,6 +18,7 @@ theme:
     - navigation.top
     - search.suggest
     - search.highlight
+    - content.code.copy   # a Copy button on every code block (install commands in the guides)
   palette:
     scheme: default
     primary: custom

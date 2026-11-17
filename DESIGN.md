@@ -48,7 +48,7 @@ exactly one computed look across 14 pages; run by hand). **Add a new part to an 
 | Callout | A 4 px edge on the left, 12 px corners on the right, soft green background, body text: `lc-help`, quotes in guides, the citation, the demo hint, the How it works hand-over. Orange instead of green for a warning and "Make it yours" (admonitions). |
 | Table | 14.4 px, strong 600 header, a thin line between rows, no frame or shading, in guides, on app pages and in the demo. |
 | Button | A rectangle with a 6 px corner everywhere (also the menu's call to action); 14.4 px 600; small buttons 12.8 px. Pills (badges, GitHub pills) have the full round corner. |
-| Pictures and code | Pictures 8 px corner (`--radius-img`), code blocks 6 px (`--radius-code`), code 14.4 px. |
+| Pictures and code | Pictures 8 px corner (`--radius-img`), code blocks 6 px (`--radius-code`), code 14.4 px. Every code block has the theme's Copy button (`content.code.copy` in `mkdocs.yml`). |
 
 ## Headings and text
 
