@@ -137,7 +137,8 @@ def pager(prev: dict | None, nxt: dict | None) -> str:
 
 
 HOSTS_BY_SLUG = hosts.load()   # a guide named after a host (napari, fiji, qupath) shows that program's logo
-TRACKS = {"use": "Use an app", "build": "Build an app"}   # the two audiences; every guide section belongs to one
+TRACKS = {"use": "Use an app", "build": "Build an app", "connect": "Connect an app"}   # the three audiences; every guide section belongs to one
+# connect: people who make an app's tools run in napari, Fiji and QuPath (tool authors), and the reference those hosts follow
 
 
 def nav_for(sections: list[dict]) -> list[dict]:
@@ -176,7 +177,7 @@ def guide_lists(nav: list[dict], track: str) -> str:
 def write_source_guide(g: dict, nav: list[dict], tail: str, pages: dict[tuple[str, str], str]) -> None:
     """guides/<slug>/index.md from a guide kept in another repository (fetched by scripts/fetch_guides.py)."""
     where = f"{g['repo']}/{g['path']}"
-    text = sources.read(g["repo"], g["path"])
+    text = sources.resolve_relative(sources.read(g["repo"], g["path"]), g["repo"], g["path"])
     sources.check_links(text, where)
     text = gfm.lists(localise(sources.admonitions(sources.site_links(text, pages))))
     p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]), description=describe(text, where),
@@ -185,13 +186,16 @@ def write_source_guide(g: dict, nav: list[dict], tail: str, pages: dict[tuple[st
     p.write()
 
 
-def write_template_guide(g: dict, docs_dir: Path, doc_source: Path, nav: list[dict], known: set[str], tail: str) -> None:
-    """guides/<slug>/index.md from one page of the template's .tools/docs."""
+def write_template_guide(g: dict, template: tuple, nav: list[dict], tail: str, pages: dict[tuple[str, str], str]) -> None:
+    """guides/<slug>/index.md from one page of the template's .tools/docs (`template`: its docs folder, the doc_source checkout and
+    the names of its listed pages). A link to a page imported from another repository becomes that page here."""
+    docs_dir, doc_source, known = template
     src = docs_dir / g["file"]
     if not src.is_file():
         fail(f"README of the template lists {g['file']}, which does not exist")
     text = NAV_BLOCK.sub("", src.read_text(encoding="utf-8"))
-    text = gfm.lists(localise(copy_images(rewrite_links(own_repo_paths(text), known), doc_source, g["file"])))
+    text = sources.site_links(sources.docs_site_to_files(rewrite_links(own_repo_paths(text), known), TEMPLATE_REPO.split("/")[0]), pages)
+    text = gfm.lists(localise(copy_images(text, doc_source, g["file"])))
     edit = f"https://github.com/{TEMPLATE_REPO}/edit/main/.tools/docs/{g['file']}"
     p = Page(f"guides/{g['slug']}/index.md", **guide_meta(nav, g["slug"]), description=describe(text, g["file"]), edit_url=edit)
     p.add(text.strip(), "", tail)
@@ -201,7 +205,7 @@ def write_template_guide(g: dict, docs_dir: Path, doc_source: Path, nav: list[di
 def write_guide(g: dict, nav: list[dict], tail: str, template: tuple, pages: dict[tuple[str, str], str]) -> None:
     """Write one guide from wherever it lives: the template, another repository or this repository."""
     if g["from_template"]:
-        write_template_guide(g, template[0], template[1], nav, template[2], tail)
+        write_template_guide(g, template, nav, tail, pages)
     elif "repo" in g:
         write_source_guide(g, nav, tail, pages)
     else:
@@ -243,7 +247,7 @@ def claim_template_pages(own: list[dict], theirs: list[dict]) -> None:
 
 
 def read_sections(docs_dir: Path) -> tuple[list[dict], list[dict]]:
-    """Our own sections (data/guides.yaml, track "use" unless a section says `track: build`) and the template's (its docs README, track "build"), each guide
+    """Our own sections (data/guides.yaml, track "use" unless a section names another track) and the template's (its docs README, track "build"), each guide
     with its slug and where it comes from. Guides kept in other repositories are titled by their first heading."""
     own = load_yaml(DATA / "guides.yaml")["sections"]
     theirs = parse_index((docs_dir / "README.md").read_text(encoding="utf-8"))
@@ -262,7 +266,8 @@ def read_sections(docs_dir: Path) -> tuple[list[dict], list[dict]]:
 
 
 def build(template_dir: Path, doc_source: Path) -> list[dict]:
-    """Write guides/: our own sections (data/guides.yaml, track "use"), then the template's .tools/docs as track "build".
+    """Write guides/: our own "use" sections, the template's .tools/docs as track "build" (then our own "build" sections), and our own
+    "connect" sections (data/guides.yaml).
     Returns the sidebar sections (title, track, items) for the hub pages."""
     docs_dir = template_dir / ".tools" / "docs"
     if not docs_dir.is_dir():
@@ -274,7 +279,8 @@ def build(template_dir: Path, doc_source: Path) -> list[dict]:
     clash = {g["slug"] for s in own for g in s["items"] if not g["from_template"]} & {g["slug"] for s in theirs for g in s["items"]}
     if clash:
         fail(f"guide address used twice (data/guides.yaml and the template): {sorted(clash)}")
-    sections = [s for s in own if s["track"] == "use"] + [s for s in theirs if s["items"]] + [s for s in own if s["track"] == "build"]
+    sections = ([s for s in own if s["track"] == "use"] + [s for s in theirs if s["items"]]
+                + [s for s in own if s["track"] == "build"] + [s for s in own if s["track"] == "connect"])
     title_template_pages(sections, docs_dir)
     warn_unlisted(docs_dir, theirs, own)
     nav = nav_for(sections)

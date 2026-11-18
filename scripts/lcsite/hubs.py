@@ -1,4 +1,4 @@
-"""The two hub pages, /use/ and /build/: cards with a picture, then every guide of the track."""
+"""The hub pages, /use/, /build/ and /connect/: cards with a picture, then every guide of the track."""
 
 from pathlib import Path
 
@@ -114,18 +114,18 @@ def write_hub(track: str, hub: dict, nav: list[dict], doc_source: Path, apps: li
 
 def write_docs_home(hubs: dict, nav: list[dict]) -> None:
     """guides/index.md: the front page of the docs (menu entry "Docs"): one card per track, then every guide."""
-    p = Page("guides/index.md", title="Docs", description="Guides for using LabConstrictor apps and for building your own.",
+    p = Page("guides/index.md", title="Docs", description="Guides for using LabConstrictor apps, building your own, and connecting them to napari, Fiji and QuPath.",
              guide_nav=nav, guide_id="", docs_home=True, menu="guides/", edit_url=f"{REPO}/edit/main/data/hubs.yaml")
     cards = "".join(f'<a class="lc-choice{" lc-choice--make" if t == "build" else ""}" href="{t}/"><strong>{esc(hubs[t]["title"])}</strong>'
                     f'<span>{esc(hubs[t]["lead"])}</span><span class="lc-go">Go to {esc(hubs[t]["title"])}</span></a>' for t in TRACKS)
     p.add(f'<h1>{esc(hubs["docs"]["title"])}</h1><p class="lc-lead">{esc(hubs["docs"]["lead"])}</p>',
-          f'<div class="lc-choices">{cards}</div>', notes_html(hubs["use"]), notes_html(hubs["build"]),
-          '<div class="lc-guides lc-guides--two">' + "".join(f'<section id="all-{t}"><h2>{esc(TRACKS[t])}</h2>{guide_lists(nav, t)}</section>' for t in TRACKS) + "</div>")
+          f'<div class="lc-choices lc-choices--three">{cards}</div>', notes_html(hubs["use"]), notes_html(hubs["build"]),
+          '<div class="lc-guides lc-guides--tracks">' + "".join(f'<section id="all-{t}"><h2>{esc(TRACKS[t])}</h2>{guide_lists(nav, t)}</section>' for t in TRACKS) + "</div>")
     p.write()
 
 
 def write_all(hubs: dict, nav: list[dict], doc_source: Path, apps: list[dict]) -> None:
-    """Write both hub pages."""
+    """Write the hub pages and the Docs home."""
     taken: dict[str, Path] = {}
     for name, hub in hubs.items():
         check_hub(name, hub)

@@ -67,11 +67,11 @@ class SearchIndexTests(unittest.TestCase):
         card = load_yaml(DATA / "hubs.yaml")["use"]["cards"][0]
         with tempfile.TemporaryDirectory() as tmp:
             site = Path(tmp)
-            (site / "search.json").write_text(json.dumps({"items": [{"location": "use/", "text": card["text"]}, {"location": "build/", "text": "Build an app"}]}), encoding="utf-8")
+            (site / "search.json").write_text(json.dumps({"items": [{"location": "use/", "text": card["text"]}, {"location": "build/", "text": "Build an app"}, {"location": "connect/", "text": "Connect an app"}]}), encoding="utf-8")
             old, check_site.SITE = check_site.SITE, site
             try:
                 found = check_site.search_index_problems()
-                (site / "search.json").write_text(json.dumps({"items": [{"location": "use/", "text": "Use an app"}, {"location": "build/", "text": "Build an app"}]}), encoding="utf-8")
+                (site / "search.json").write_text(json.dumps({"items": [{"location": "use/", "text": "Use an app"}, {"location": "build/", "text": "Build an app"}, {"location": "connect/", "text": "Connect an app"}]}), encoding="utf-8")
                 clean = check_site.search_index_problems()
             finally:
                 check_site.SITE = old

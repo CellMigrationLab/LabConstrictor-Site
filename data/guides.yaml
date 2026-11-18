@@ -1,10 +1,13 @@
-# Guides for people who use apps ("Use an app" track), in sidebar order; a section with `track: build` goes at the end of the "Build an app" track. The guides for people who build apps
-# are imported from LabConstrictor/.tools/docs ("Build an app" track) and never copied here.
+# The guides of the three tracks, in sidebar order. Each section belongs to a track: "use" (the default: people who use apps),
+# "build" (shown after the template's own guides, which are imported from LabConstrictor/.tools/docs and never copied here) or
+# "connect" (people who make an app's tools run in napari, Fiji and QuPath, and the reference those plugins follow).
 #   file:      hand-written here, in content/guides/ (this repository is the only place it exists)
 #   repo/path: kept in another repository (a user guide next to the code it describes); fetched at build time by
-#              scripts/fetch_guides.py, titled by its first '# Heading'. Adding a module = adding one line here.
-#   template:  a page of the template's docs that is for users, shown here; title and text stay in the template
+#              scripts/fetch_guides.py, titled by its first '# Heading'. Adding a module = adding one line here. Its relative links are
+#              resolved: to the page here when the file it names is imported too, otherwise to the file on GitHub.
+#   template:  a page of the template's docs, shown in this section instead of the template's; title and text stay in the template
 #              (the build stops if the template no longer has it)
+# Pages for the people who maintain the plugins (test ledgers, conformance data, specifications, UI audits) stay in their repositories.
 # Guides a first-time reader must be able to follow to the end: scripts/check_site.py warns when one lacks "What you need" (or
 # "Before you start"), "Check that it worked" or "If something does not work".
 critical: [install, initialise-repository, notebook-requirements, notebook-upload, executable-creation]
@@ -26,8 +29,28 @@ sections:
   - title: Connect to a microscope
     items:
       - {slug: microscope, repo: CellMigrationLab/NucleiSky, path: docs/smart_microscopy/smart_microscopy.md}
-  - title: Tools for napari, Fiji and QuPath
-    track: build      # shown at the end of the "Build an app" track, after the template's guides
+  - title: Start here
+    track: connect
     items:
+      - {template: tools_bridge.md}
       - {slug: writing-tools, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/AUTHORING.md}
+  - title: Reference for tool authors
+    track: connect
+    items:
+      - {slug: tool-markers, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/MANIFEST.md}
+      - {slug: host-features, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/HOST_FEATURES.md}
+      - {slug: napari-reference, repo: CellMigrationLab/LabConstrictor-napari, path: docs/REFERENCE.md}
+      - {slug: fiji-reference, repo: CellMigrationLab/LabConstrictor-Fiji, path: docs/REFERENCE.md}
+      - {slug: qupath-reference, repo: CellMigrationLab/LabConstrictor-QuPath, path: docs/REFERENCE.md}
+  - title: Install, troubleshoot and publish
+    track: connect
+    items:
+      - {slug: tools-install, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/INSTALL.md}
+      - {slug: tools-operations, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/OPERATIONS.md}
       - {slug: publishing, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/PUBLISHING.md}
+  - title: How it fits together
+    track: connect
+    items:
+      - {slug: repositories, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/REPOSITORIES.md}
+      - {slug: template-registration, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/LABCONSTRICTOR_INTEGRATION.md}
+      - {slug: protocol, repo: CellMigrationLab/LabConstrictor-Tools, path: docs/PROTOCOL.md}

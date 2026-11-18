@@ -11,14 +11,14 @@ A static site made with Zensical (Material-compatible, `mkdocs.yml`), published 
 | Home | `/` | `pages_site.page_home` and `pages_home` (comic row, tiles), text in `data/site.yaml` |
 | App Centre and one page per app | `/apps/`, `/apps/<slug>/` | `pages_apps`, from the snapshot (`build/snapshot.json`) |
 | Docs (front page) | `/guides/` | `hubs.write_docs_home` |
-| Use / Build pages (picture cards) | `/use/`, `/build/` | `hubs`, from `data/hubs.yaml` |
+| Use / Build / Connect pages (picture cards) | `/use/`, `/build/`, `/connect/` | `hubs`, from `data/hubs.yaml` |
 | Every guide | `/guides/<slug>/` | `guides` (the sources are below) |
 | Ecosystem | `/ecosystem/` | `pages_site.page_ecosystem`, from `projects` and `related` (`pages_related`) |
 | Submit | `/submit/` | `pages_site.page_submit`, from `content/submit.md` |
 | How it works | `/how-it-works/` | `pages_how`, from `data/how-it-works.yaml` (five steps, one shown at a time by `content/how/how.js`; `how.css`) |
 | Demo | `/demo/` | `pages_demo`, from `data/demo.yaml`, `content/demo/` (windows, the macOS installer, script, style, images, `example.json`); home tile in `pages_site.page_home`, link in the Use hub |
 
-Navigation: the top menu is Home, Apps, **Demo**, **How it works**, Ecosystem, **Docs**, Submit your app (the green button) (`mkdocs.yml` `nav`); the footer is in `overrides/main.html`. Every guide page and the Use/Build pages show the **same docs sidebar** (both tracks, collapsible, the current section open; on phones it folds into a "Docs menu" drawer) and highlight *Docs* in the menu. A guide belongs to a track, **use** or **build**; its crumb and pager stay inside the track.
+Navigation: the top menu is Home, Apps, **Demo**, **How it works**, Ecosystem, **Docs**, Submit your app (the green button) (`mkdocs.yml` `nav`); the footer is in `overrides/main.html`. Every guide page and the Use/Build/Connect pages show the **same docs sidebar** (all three tracks, collapsible, the current section open; on phones it folds into a "Docs menu" drawer) and highlight *Docs* in the menu. A guide belongs to a track: **use** (people who use apps), **build** (people who turn notebooks into apps) or **connect** (people who make an app's tools run in napari, Fiji and QuPath, and the reference those plugins follow); its crumb and pager stay inside the track.
 
 ## Sources of truth
 
@@ -36,24 +36,33 @@ Every topic is written on exactly one page, its owner. Every other page (READMEs
 | Install and use the Fiji plugin | LabConstrictor-Fiji `docs/user-guide.md` | `/guides/fiji/` |
 | Install and use the QuPath extension | LabConstrictor-QuPath `docs/user-guide.md` | `/guides/qupath/` |
 | What works where | LabConstrictor-Tools `docs/CAPABILITIES.md` | `/guides/capabilities/` |
+| Expose an app's tools (the template side) | template `.tools/docs/tools_bridge.md` | `/guides/tools-bridge/` |
 | Write tools for an app | LabConstrictor-Tools `docs/AUTHORING.md` | `/guides/writing-tools/` |
+| Tool markers (every marker a tool can use) | LabConstrictor-Tools `docs/MANIFEST.md` | `/guides/tool-markers/` |
+| What each host does with each feature | LabConstrictor-Tools `docs/HOST_FEATURES.md` | `/guides/host-features/` |
+| Technical reference of a plugin | that repository's `docs/REFERENCE.md` | `/guides/napari-reference/`, `/guides/fiji-reference/`, `/guides/qupath-reference/` |
+| Install `labconstrictor-tools` by hand, check an installed app | LabConstrictor-Tools `docs/INSTALL.md` | `/guides/tools-install/` |
+| Shared installs, security, troubleshooting, releases and tags | LabConstrictor-Tools `docs/OPERATIONS.md` | `/guides/tools-operations/` |
 | Publish the plugins and apps | LabConstrictor-Tools `docs/PUBLISHING.md` | `/guides/publishing/` |
-| Technical reference of a plugin | that repository's `docs/REFERENCE.md` | GitHub only (developers) |
+| Where each part lives | LabConstrictor-Tools `docs/REPOSITORIES.md` | `/guides/repositories/` |
+| How the template registers an app's tools | LabConstrictor-Tools `docs/LABCONSTRICTOR_INTEGRATION.md` | `/guides/template-registration/` |
+| The protocol between a plugin and an app (schema, compatibility, app hosts, host requirements) | LabConstrictor-Tools `docs/PROTOCOL.md` | `/guides/protocol/` |
+| Maintainers' material (tests, regression ledger, conformance data, specifications, UI audits) | each repository's `docs/` | GitHub only |
 | What an app does and how to use it | the app's README and `labconstrictor-app.yaml` | `/apps/<slug>/` |
 
 Rules agreed with the project lead:
 
 - A plugin's README gives one install line and links to its guide on this site.
 - Version numbers (for example a plugin's release or a supported program version) appear only in the owner guide.
-- LabConstrictor-Tools' own docs site (cellmigrationlab.github.io/LabConstrictor-Tools/) is developer reference only; pages for users live only on this site.
+- Every page a reader needs, users and tool authors alike, is on this site (track connect holds the developer reference). LabConstrictor-Tools' own docs site (cellmigrationlab.github.io/LabConstrictor-Tools/) is for maintainers; a link to one of its pages from an imported guide becomes the page here when that page is imported.
 - On this site, a hand-written page (`content/`, `data/`) never repeats a plugin's install steps, menu paths or version numbers: it links to the owner guide (the demo's program table does this with `guide:` in `data/demo.yaml`).
 
 - **Guides to build an app (track build)**: the template repository, `.tools/docs` (order and groups: its README), imported at build time. A template page that is really for users is placed in track use with `template: <file>` in `data/guides.yaml` (now `notebook_usage.md` and `troubleshooting_installed_app.md`); the build stops if the template drops it.
-- **Guides kept next to the code they describe**: `docs/user-guide.md` in LabConstrictor-napari, LabConstrictor-Fiji, LabConstrictor-QuPath and LabConstrictor-Tools (which also gives `CAPABILITIES.md`, and, in the build track, `AUTHORING.md` and `PUBLISHING.md`), listed in `data/guides.yaml` as `{slug, repo, path}`. `scripts/fetch_guides.py` downloads them; the title is the first heading; GitHub alerts (`> [!WARNING]`) become admonitions; links and pictures must be absolute. To add a module, add one line.
+- **Guides kept next to the code they describe**: `docs/user-guide.md` in LabConstrictor-napari, LabConstrictor-Fiji, LabConstrictor-QuPath and LabConstrictor-Tools (which also gives `CAPABILITIES.md`, and, in the build track, `AUTHORING.md` and `PUBLISHING.md`), listed in `data/guides.yaml` as `{slug, repo, path}`. `scripts/fetch_guides.py` downloads them; the title is the first heading; GitHub alerts (`> [!WARNING]`) become admonitions; relative links and pictures are resolved against the file's place in its repository (`sources.resolve_relative`): a link to a file that is also imported becomes that page, any other becomes the file on GitHub, a picture its raw address. To add a module, add one line.
 - **Menu titles** of template and repository guides are the page's own first heading (without a leading emoji), so a page and its menu entry never disagree.
 - **Ecosystem cards**: each project's `docs/labconstrictor-project.yaml` (checked against `schema/labconstrictor-project.schema.json`); `data/ecosystem.yaml` lists the repositories and headings. The template's card is inline there because its repository is copied into every app. Each card leads to the project's guide on this site (the first guide `data/guides.yaml` lists for that repository, or the one a `guide:` key in `data/ecosystem.yaml` names) and keeps a GitHub badge in its footer, plus an Open link when the project is hosted (a web app). A card with no guide leads to its repository or hosted address.
 - **Apps**: `registry/<owner>__<repo>.yaml` is a pointer (`repo`, `repo_id`, `owner_id`, `added`) plus optional curation: `featured` (home page), `section: testing` (listed apart under "Testing and maintenance", with a Testing badge). Everything an app says about itself is `labconstrictor-app.yaml` in its repository, checked against `schema/labconstrictor-app.schema.json`. Host chips on an app page ("napari plugin", plus the stage when it is not Available, read from the plugin's own project file) link to the matching guide.
-- **Use / Build pictures and cards**: `data/hubs.yaml`; every picture is `doc_source:` (the template's `doc_source` branch) or `repo` + `path` (fetched), and needs alt text. A card marked `live_card` shows a real app card.
+- **Use / Build / Connect pictures and cards**: `data/hubs.yaml`; every picture is `doc_source:` (the template's `doc_source` branch) or `repo` + `path` (fetched), and needs alt text. A card marked `live_card` shows a real app card.
 - **Install guide**: the template's `.tools/docs/install.md` (generic, for every app), placed in track use with `template: install.md`. App pages only link to it; the OS tile's short hint lines are in `pages_apps.os_tile`.
 - **Citation**: `citation:` in `data/site.yaml` is a deliberate copy of the "Citation" section of the template README (`citation.check_template_readme` stops the build if the README loses the DOI); an app page cites only what its manifest `doi` says.
 - **Facts on an app page** (`inputs`, `outputs`, `limitations`, `status`) come only from the app's manifest; the site never infers them. `completeness.missing` turns recommended facts that are absent into warnings in `build/problems.md`.
@@ -63,7 +72,7 @@ Rules agreed with the project lead:
 - **Demo numbers and images**: `content/demo/example.json` and the `.webp` files are generated by `tools/demo_assets/make_demo_assets.py` (it runs the released NucleiSky code offline on the maintainers' images; provenance and licence in `content/demo/README.md`). Never edit them by hand; the site build only reads them.
 - **Moved addresses**: `data/redirects.yaml` (old -> new, both with a trailing slash) writes a small redirect page at the old address; the build stops if the old address is a real page or the new one does not exist. Add a line whenever a page is renamed, including a template doc renamed in the template.
 - The logo and the comic come from the template's `doc_source` branch.
-- **Generated and git-ignored**: `docs/index.md`, `docs/apps/`, `docs/guides/`, `docs/use/`, `docs/build/`, `docs/ecosystem.md`, `docs/submit.md`, `docs/demo/`, `docs/assets/demo/`, `docs/llms.txt`, `docs/assets/{icons,shots,docs-img,images,hubs}/`, `build/`, `site/`.
+- **Generated and git-ignored**: `docs/index.md`, `docs/apps/`, `docs/guides/`, `docs/use/`, `docs/build/`, `docs/connect/`, `docs/ecosystem.md`, `docs/submit.md`, `docs/demo/`, `docs/assets/demo/`, `docs/llms.txt`, `docs/assets/{icons,shots,docs-img,images,hubs}/`, `build/`, `site/`.
 - The site is indexable because `extra.listed` is `true` in `mkdocs.yml` (`false` would put noindex on every page, make `robots.txt` disallow all and empty the sitemap). `site_url` is the address everything follows.
 
 ## Design
@@ -103,7 +112,7 @@ The one deliberate exception is per-app: an app that cannot be resolved is left 
 - Every new behaviour gets a test in `tests/`, including its failure case.
 - **One look per role** (DESIGN.md, "The design system"): sizes are the `--fs-*` tokens only (`tests/test_design_system.py` fails on any other `font-size`), boxes use `--pad-box` and `--radius-box`; shared looks are defined in the "roles" section at the end of `lc.css`, not per part.
 - Escape app-written text (`text.esc`); never render it as HTML or Markdown.
-- Preserve public addresses (`/apps/<slug>/`, `/guides/<slug>/`, `/use/`, `/build/`, `/ecosystem/`, `/submit/`) unless a redirect is added.
+- Preserve public addresses (`/apps/<slug>/`, `/guides/<slug>/`, `/use/`, `/build/`, `/connect/`, `/ecosystem/`, `/submit/`) unless a redirect is added.
 
 ## Before you push
 
