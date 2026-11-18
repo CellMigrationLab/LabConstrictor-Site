@@ -23,3 +23,4 @@ Each guide ends with a section called *If something does not work*: [napari](../
 |---|---|
 | A workflow run failed in the Actions tab of your repository | [Check the status of GitHub workflows](../workflow-status/index.md#2-how-to-debug-a-failure) |
 | A problem while setting up your repository | [Troubleshooting repository setup](../troubleshooting/index.md) |
+| Your app's tools do not appear in napari, Fiji or QuPath, or a tool fails there | [Shared installs, security and troubleshooting](../tools-operations/index.md) |

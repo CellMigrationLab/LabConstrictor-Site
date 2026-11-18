@@ -12,6 +12,10 @@ Want to see the idea first? The [interactive demo](../../demo/index.md) lets you
 
 Look for an example in the app's documentation (the **Documentation** or **README** link on its page in the [App Centre](../../apps/index.md)). If it has one, run it first and compare with the result it describes.
 
+## Use it in napari, Fiji or QuPath
+
+Some apps also declare **tools**: analyses you can run from napari, Fiji or QuPath on the image you have open, with a form for the settings and the results drawn on the image. An app's page in the [App Centre](../../apps/index.md) shows which programs it works in. Install the plugin for your program once; [Use apps inside napari, Fiji and QuPath](../image-software/index.md) explains how.
+
 ## Keep your results
 
 Where a notebook writes its results is set in that notebook. Note the folder it names before you close JupyterLab, and copy what you want to keep.
