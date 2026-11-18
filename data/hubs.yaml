@@ -1,10 +1,11 @@
-# The two hub pages: /use/ (people who use apps) and /build/ (people who make them).
+# The hub pages: /use/ (people who use apps), /build/ (people who make them) and /connect/ (people who make an app's tools
+# run in napari, Fiji and QuPath).
 # Every picture is `doc_source: <file in the template's doc_source branch>` or `repo` + `path` (a file kept in
 # another repository, fetched by scripts/fetch_guides.py). Every picture needs an `alt`. Keep each claim true of
 # what the template builds today; the guides they link to are the proof.
 docs:
   title: Docs
-  lead: Use an app someone built, or build your own.
+  lead: Use an app someone built, build your own, or connect it to napari, Fiji and QuPath.
 use:
   title: Use an app
   lead: Install an app on your computer, open it, and, for apps that declare tools, try them in napari, Fiji or QuPath.
@@ -73,8 +74,8 @@ build:
       live_card: true
     - title: It can reach napari, Fiji and QuPath
       text: An app's declared tools can run in those programs through their plugins.
-      href: guides/image-software/
-      link: Use apps in your image software
+      href: connect/
+      link: Connect an app
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/F2_fiji_form_top.png}
       alt: Fiji with a dialog generated from a tool's declaration, next to an image of bright spots.
   flow_title: The five steps
@@ -84,3 +85,25 @@ build:
     text: A quick overview, one step at a time, from a notebook to an app that people can install.
     href: how-it-works/
     link: How LabConstrictor works
+connect:
+  title: Connect an app
+  lead: Declare your app's analyses once, in Python, and they run in napari, Fiji and QuPath through their plugins, with a form, results drawn on the image and a table.
+  cards:
+    - title: Declare a tool, get a form
+      text: A typed Python function becomes a tool. Each plugin builds the form from its declaration, so you write no interface code.
+      href: guides/writing-tools/
+      link: Write tools
+      image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/N4_napari_result.png}
+      alt: napari with the LabConstrictor tools panel open on NucleiSky's Relocalize 2D tool, a form of images, pixel sizes and segmentation settings, with the result of the run under the Run button.
+    - title: One menu entry in each program
+      text: The plugins list every installed app that declares tools. Each program's guide says what it does with each kind of input and result.
+      href: guides/host-features/
+      link: What each host does
+      image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/F0_fiji_menu.png}
+      alt: "Fiji's Plugins menu with the LabConstrictor entry open on LabConstrictor Tools."
+    - title: Errors people can act on
+      text: A tool that fails reports a sentence, a code and the run record, so the person, or you, can see what went wrong.
+      href: guides/tools-operations/
+      link: Troubleshoot
+      image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/F8_fiji_error_dialog.png}
+      alt: "A Fiji error dialog for a failed run: the message cannot read fake.tif, not a TIFF file, then the last lines of the worker, the run record and the log file."

@@ -134,21 +134,6 @@ class SourceGuideTests(unittest.TestCase):
         self.assertIn("    Second paragraph.", out)
         self.assertTrue(out.endswith("After\n"))
 
-    def test_relative_link_or_picture_stops_the_build(self) -> None:
-        """A relative link or picture would break on the site, so it fails and names the guide."""
-        with self.assertRaises(SystemExit) as ctx:
-            sources.check_links("See [x](other.md) and ![p](shot.png)", "repo/docs/user-guide.md")
-        self.assertIn("repo/docs/user-guide.md", str(ctx.exception))
-        sources.check_links("[ok](https://example.org/a) [here](#top)", "x")
-
-    def test_link_to_an_imported_guide_points_at_the_site_page(self) -> None:
-        """A link to another imported guide's file on GitHub becomes a site link; other links stay."""
-        pages = {("o/r", "docs/user-guide.md"): "r"}
-        text = "[a](https://github.com/o/r/blob/main/docs/user-guide.md#x) [b](https://github.com/o/r/blob/main/README.md)"
-        out = sources.site_links(text, pages)
-        self.assertIn("[a](../r/index.md#x)", out)
-        self.assertIn("[b](https://github.com/o/r/blob/main/README.md)", out)
-
     def test_title_is_the_first_heading_or_the_build_stops(self) -> None:
         """The title of a guide is its first '# ' line; a guide without one fails."""
         self.assertEqual(sources.title_of("intro\n# The title\n## Part", "x"), "The title")

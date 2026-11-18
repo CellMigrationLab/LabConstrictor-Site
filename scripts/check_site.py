@@ -200,11 +200,12 @@ def search_index_problems() -> list[str]:
     texts = {e["location"]: e["text"] for e in entries}
     hubs = load_yaml(DATA / "hubs.yaml")
     found = []
-    for track in ("use", "build"):
+    for track in ("use", "build", "connect"):
+        if track + "/" not in texts:
+            found.append(f"search.json has no entry for the {track} hub")
+            continue
         for card in hubs[track]["cards"]:
-            if track + "/" not in texts:
-                found.append(f"search.json has no entry for the {track} hub")
-            elif card["text"][:40] in texts[track + "/"]:
+            if card["text"][:40] in texts[track + "/"]:
                 found.append(f"search.json: the text of the {track} hub card {card['title']!r} is searchable (data-search-exclude is not honoured)")
     return found
 
