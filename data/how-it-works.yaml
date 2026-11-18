@@ -73,7 +73,7 @@ steps:
   - id: step-5
     title: Create a release and share it
     summary: "A release builds an installer for each system your app lists (Windows, macOS, Linux); share its link or list the app in the App Centre."
-    text: A release on GitHub builds an installer for each system listed under distribution.platforms in labconstrictor-app.yaml (all of them when you list none). You share the release, and anyone who can see your repository can install the app from it.
+    text: A release on GitHub builds an installer for each system listed under distribution.platforms in labconstrictor-app.yaml (every supported system when the field is left out). You share the release, and anyone who can see your repository can install the app from it.
     region: [6, 768, 820, 122]
     do:
       - text: "Check the Actions tab of your repository: no workflow should be running."

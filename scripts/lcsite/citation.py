@@ -54,12 +54,10 @@ def version_sentence(app: dict) -> str:
 
 
 def app_section(app: dict) -> str:
-    """The "How to cite" section of an app page, from the manifest's `doi`; "" for a testing app that has none."""
+    """The "How to cite" section of an app page, from the manifest's `doi`; "" for an app that names no publication."""
     doi = app["manifest"]["doi"] if "doi" in app["manifest"] else ""
     if doi:
         link = esc(doi_link(doi))
         return (f'<h2 id="cite">How to cite</h2><p>The authors give this publication to cite: <a href="{link}">doi:{esc(doi)}</a></p>'
                 f'<p><a class="lc-go" href="{link}">Read the paper</a></p>{version_sentence(app)}')
-    if app["section"] == "testing":
-        return ""
-    return '<h2 id="cite">How to cite</h2><p>The authors name no publication to cite.</p>' + version_sentence(app)
+    return ""
