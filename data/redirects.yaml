@@ -3,3 +3,4 @@
 # Example:  guides/old-name/: guides/new-name/
 redirects:
   guides/use-cases/: apps/   # template 0.1.36 removed its page of examples; the App Centre lists every app
+  apps/labconstrictor-demo/: apps/labconstrictor-playground/   # the Demo app was retired; the Playground shows everything it did and more
