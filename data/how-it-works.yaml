@@ -26,7 +26,7 @@ steps:
   - id: step-2
     title: Create and initialise your repository
     summary: "Start from the GitHub template and give your app its name and version with the LabConstrictor web form."
-    text: Your app lives in a GitHub repository made from the LabConstrictor template. A web form gives it its name and version.
+    text: The setup form opens a pull request in your new repository. Review and merge it to apply your app's name, version and settings.
     region: [6, 188, 820, 199]
     do:
       - text: "Create your repository from the LabConstrictor template on GitHub (you need a GitHub account). It can be public or private: only people with access to a private repository can download its installers, and only a public one can be listed in the App Centre."

@@ -8,7 +8,7 @@ page_js: [assets/javascripts/manifest-form.js]
 
 # Submit your app
 
-Built an app with LabConstrictor? Listing it takes three steps and no one needs to copy files around: **your app keeps its own description, and the App Centre reads it from your repository.**
+List your LabConstrictor app in three steps. **Its description stays in your GitHub repository, and the App Centre reads updates from there automatically.**
 { .lc-lead }
 
 ## 1. Add a manifest to your repository
@@ -64,7 +64,7 @@ The [full schema]({{schema_url}}) lists every field (authors, DOI, screenshots a
 
 The registry stores only a pointer to your repository. Version, downloads and description are always read from your latest release and manifest, so you never need to resubmit when you publish a new version.
 
-## Good to know
+## Downloads, ownership and removal
 
 - Installers are always downloaded from your own GitHub release. The App Centre never hosts files.
 - We record your repository's numeric ID. If the repository moves to a different owner, the listing pauses until a maintainer re-checks it.

@@ -1,6 +1,6 @@
 # Find your problem
 
-Find what you see in the left column, then follow the link on the right. Every row goes to a page that already describes it. If yours is not here, use the **Report a problem** link on the app's page (when the repository has an issue tracker), or open an issue in [this site's repository](https://github.com/CellMigrationLab/LabConstrictor-Site/issues/new) if the problem is with the site.
+Find the problem closest to what you see, then follow its link. If yours is not here, use the **Report a problem** link on the app's page (when the repository has an issue tracker), or open an issue in [this site's repository](https://github.com/CellMigrationLab/LabConstrictor-Site/issues/new) if the problem is with the site.
 
 ## An app on your computer
 
