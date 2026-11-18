@@ -61,9 +61,9 @@ class AppSectionTests(unittest.TestCase):
         self.assertIn("Read the paper", html)
         self.assertIn("latest release: v0.1.1", html)
 
-    def test_without_a_doi_it_only_says_the_listing_names_none(self) -> None:
-        """No invented reference; a testing app without a doi has no section; an app without a release has no version sentence."""
-        self.assertIn("The authors name no publication to cite", citation.app_section(app()))
+    def test_without_a_doi_there_is_no_section(self) -> None:
+        """No invented reference: an app that names no publication has no How to cite section; no release, no version sentence."""
+        self.assertEqual(citation.app_section(app()), "")
         self.assertEqual(citation.app_section(app(section="testing")), "")
         self.assertNotIn("Name the version", citation.app_section(app(release=False)))
 
