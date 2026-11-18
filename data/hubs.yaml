@@ -23,7 +23,7 @@ use:
       alt: The two Windows "protected your PC" dialogs, with More info and then Run anyway marked in red.
     - title: Open it and work
       text: The app opens in your browser with a Welcome notebook. Run its first cell to list the app's notebooks, pick one and follow the instructions written in it.
-      href: guides/using-apps/
+      href: guides/notebook-usage/
       link: Open and use an app
       image: {doc_source: Welcome_Notebook.png}
       alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks under orange header cells and a blue Open the notebook button.

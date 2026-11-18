@@ -16,7 +16,6 @@ sections:
     items:
       - {template: install.md}
       - {template: notebook_usage.md}
-      - {slug: using-apps, title: Open and use an app, file: using-apps.md}
       - {template: troubleshooting_installed_app.md}
       - {slug: help, title: Find your problem, file: help.md}
   - title: Use apps in your image software
