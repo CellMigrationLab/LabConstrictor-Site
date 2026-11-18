@@ -39,7 +39,6 @@ Find the thing you want to change; edit it **there**, never in the site's genera
 | The **Related projects** section of the Ecosystem page | `data/related-projects.yaml` | this repository |
 | The picture cards on the **Use** and **Build** pages | `data/hubs.yaml` | this repository |
 | Linked image-analysis software and service logos | `data/hosts.yaml` | this repository |
-| *Open and use an app* | `content/guides/using-apps.md` | this repository |
 | *Find your problem* help page | `content/guides/help.md` | this repository |
 | *Install an app* (steps for each system) | `.tools/docs/install.md` | LabConstrictor |
 | Home page text and the copied LabConstrictor citation | `data/site.yaml` | this repository |

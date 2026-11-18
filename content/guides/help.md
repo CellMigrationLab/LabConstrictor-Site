@@ -11,7 +11,7 @@ Find what you see in the left column, then follow the link on the right. Every r
 | An installer for Linux does not start | [Install on Linux](../install/index.md#install-on-linux) |
 | The app still appears in Windows' list of installed apps after uninstalling | [Troubleshooting an installed app](../troubleshooting-installed-app/index.md) |
 | JupyterLab does not start and Windows reports a certificate (ASN.1) error | [Troubleshooting an installed app](../troubleshooting-installed-app/index.md) |
-| The app opened and you do not know what to do | [Open and use an app](../using-apps/index.md) and [Use notebooks after installation](../notebook-usage/index.md) |
+| The app opened and you do not know what to do | [Open and use an app](../notebook-usage/index.md) |
 
 ## An app in napari, Fiji or QuPath
 

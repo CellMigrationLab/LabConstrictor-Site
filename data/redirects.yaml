@@ -3,4 +3,6 @@
 # Example:  guides/old-name/: guides/new-name/
 redirects:
   guides/use-cases/: apps/   # template 0.1.36 removed its page of examples; the App Centre lists every app
+  guides/using-apps/: guides/notebook-usage/   # template 0.1.38 merged the two first-run pages into notebook_usage.md
+  guides/keep-app-up-to-date/: guides/template-synchronization/   # template 0.1.38: one update page, "Keep your app up to date"
   apps/labconstrictor-demo/: apps/labconstrictor-playground/   # the Demo app was retired; the Playground shows everything it did and more

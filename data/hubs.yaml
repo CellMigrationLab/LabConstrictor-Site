@@ -6,6 +6,11 @@
 docs:
   title: Docs
   lead: Use an app someone built, build your own, or connect it to napari, Fiji and QuPath.
+  help: &help
+    title: Something not working?
+    text: Start from what you see, an error or a step that fails, and go to the page that fixes it.
+    href: guides/help/
+    link: Find your problem
 use:
   title: Use an app
   lead: Install an app on your computer, open it, and, for apps that declare tools, try them in napari, Fiji or QuPath.
@@ -18,7 +23,7 @@ use:
       alt: The two Windows "protected your PC" dialogs, with More info and then Run anyway marked in red.
     - title: Open it and work
       text: The app opens in your browser with a Welcome notebook. Run its first cell to list the app's notebooks, pick one and follow the instructions written in it.
-      href: guides/using-apps/
+      href: guides/notebook-usage/
       link: Open and use an app
       image: {doc_source: Welcome_Notebook.png}
       alt: The Welcome notebook in JupyterLab, with a table of the app's notebooks under orange header cells and a blue Open the notebook button.
@@ -31,7 +36,7 @@ use:
     - title: Connect it to a microscope
       text: "An example from NucleiSky, written by its authors for a Nikon microscope with NIS-Elements JOBS: scan a large area, find where a query image sits in it, then acquire there. Their guide says the same principles apply to other microscopes and software."
       href: guides/microscope/
-      link: Connect NucleiSky to a microscope
+      link: "Example: connect NucleiSky to a microscope"
       image: {repo: CellMigrationLab/NucleiSky, path: docs/smart_microscopy/assets/JOBS_NucleiSky.png}
       alt: The NucleiSky job loaded in NIS-Elements JOBS, a list of acquisition, autofocus and analysis steps.
   demo:
@@ -44,7 +49,7 @@ build:
   lead: Turn your Jupyter notebooks into an app that anyone can install with a download. You write notebooks; LabConstrictor builds the installers.
   cards:
     - title: Your users need only a download
-      text: One GitHub release builds installers for Windows, macOS and Linux. Your users have no Python or pip to set up.
+      text: One GitHub release builds an installer for each system your app lists (Windows, macOS, Linux). Your users have no Python or pip to set up.
       href: guides/install/
       link: How users install
       image: {doc_source: Windows_App.png}
@@ -85,10 +90,17 @@ build:
     text: A quick overview, one step at a time, from a notebook to an app that people can install.
     href: how-it-works/
     link: How LabConstrictor works
+  help: *help
 connect:
   title: Connect an app
   lead: Declare your app's analyses once, in Python, and they run in napari, Fiji and QuPath through their plugins, with a form, results drawn on the image and a table.
   cards:
+    - title: Start here
+      text: "Add tools to an app you already have: declare them in its src folder, and the app's installer registers them for the plugins."
+      href: guides/tools-bridge/
+      link: Expose your app's tools
+      image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/N5_napari_aligned_over_reference.png}
+      alt: "napari showing a tool's result drawn over the reference image."
     - title: Declare a tool, get a form
       text: A typed Python function becomes a tool. Each plugin builds the form from its declaration, so you write no interface code.
       href: guides/writing-tools/
@@ -107,3 +119,4 @@ connect:
       link: Troubleshoot
       image: {repo: CellMigrationLab/LabConstrictor-Tools, path: docs/img/F8_fiji_error_dialog.png}
       alt: "A Fiji error dialog for a failed run: the message cannot read fake.tif, not a TIFF file, then the last lines of the worker, the run record and the log file."
+  help: *help

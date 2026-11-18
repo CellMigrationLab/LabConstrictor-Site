@@ -72,7 +72,7 @@ def features_html(items: list[dict], doc_source: Path, apps: list[dict], taken: 
     return '<div data-search-exclude><ul class="lc-features">' + "".join(cards) + "</ul></div>"   # card text would make every hub match every query
 
 
-HUB_KEYS = {"title", "lead", "cards", "demo", "how", "flow_title", "why_title"}
+HUB_KEYS = {"title", "lead", "cards", "demo", "how", "help", "flow_title", "why_title"}
 
 
 def check_hub(name: str, hub: dict) -> None:
@@ -85,9 +85,9 @@ def check_hub(name: str, hub: dict) -> None:
 
 
 def notes_html(hub: dict) -> str:
-    """The one-line notes under a hub's cards (the demo link and the how-it-works link), written once for the hub pages and the Docs home."""
+    """The one-line notes under a hub's cards (the demo, how-it-works and find-your-problem links), written once for the hub pages and the Docs home."""
     out = ""
-    for key in ("demo", "how"):
+    for key in ("demo", "how", "help"):
         if key in hub:
             h = hub[key]
             out += f'<p class="lc-help"><strong>{esc(h["title"])}</strong> {esc(h["text"])} <a class="lc-go" href="{esc(h["href"])}">{esc(h["link"])}</a></p>'
@@ -119,7 +119,7 @@ def write_docs_home(hubs: dict, nav: list[dict]) -> None:
     cards = "".join(f'<a class="lc-choice{" lc-choice--make" if t == "build" else ""}" href="{t}/"><strong>{esc(hubs[t]["title"])}</strong>'
                     f'<span>{esc(hubs[t]["lead"])}</span><span class="lc-go">Go to {esc(hubs[t]["title"])}</span></a>' for t in TRACKS)
     p.add(f'<h1>{esc(hubs["docs"]["title"])}</h1><p class="lc-lead">{esc(hubs["docs"]["lead"])}</p>',
-          f'<div class="lc-choices lc-choices--three">{cards}</div>', notes_html(hubs["use"]), notes_html(hubs["build"]),
+          f'<div class="lc-choices lc-choices--three">{cards}</div>', notes_html(hubs["use"]), notes_html({"how": hubs["build"]["how"]}), notes_html(hubs["docs"]),
           '<div class="lc-guides lc-guides--tracks">' + "".join(f'<section id="all-{t}"><h2>{esc(TRACKS[t])}</h2>{guide_lists(nav, t)}</section>' for t in TRACKS) + "</div>")
     p.write()
 

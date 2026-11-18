@@ -26,12 +26,13 @@ class HubDataTests(unittest.TestCase):
             hubs.check_hub("build", {"title": "t", "lead": "l", "cards": [], "flow_title": "Steps"})
         hubs.check_hub("build", {"title": "t", "lead": "l", "cards": [], "flow_title": "Steps", "why_title": "Why"})
 
-    def test_the_notes_hold_the_demo_and_how_lines_and_no_help_line(self) -> None:
-        """The demo and how-it-works lines render with their link; a help line is no longer shown; no notes give an empty string."""
+    def test_the_notes_hold_the_demo_how_and_help_lines(self) -> None:
+        """The demo, how-it-works and find-your-problem lines render with their link; no notes give an empty string."""
         html = hubs.notes_html({"how": {"title": "Inside?", "text": "Read this.", "href": "g/", "link": "Go"}, "help": {"title": "Stuck?", "text": "x", "href": "h/", "link": "Help"}})
         self.assertIn("Inside?", html)
         self.assertIn('href="g/"', html)
-        self.assertNotIn("Stuck?", html)
+        self.assertIn("Stuck?", html)
+        self.assertLess(html.index("Inside?"), html.index("Stuck?"))
         self.assertEqual(hubs.notes_html({"title": "t"}), "")
 
 
